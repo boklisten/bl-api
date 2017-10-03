@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.0.37",
+    "@types/mongoose": "^4.7.23",
     "grunt": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
