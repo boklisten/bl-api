@@ -3,6 +3,7 @@ import * as express from 'express';
 import {Application} from "express";
 import {ItemModel} from "./db/model/item/item.model";
 import {MongoHandler} from "./db/mongoHandler";
+import {ItemEndpoint} from "./endpoint/item/item.endpoint";
 
 export class Server {
 
@@ -21,6 +22,10 @@ export class Server {
         });
 
         let mongoHandler = new MongoHandler();
+
+        let itemEndpoint = new ItemEndpoint(mongoHandler);
+
+        itemEndpoint.getById('test');
 
 
     }

@@ -1,6 +1,7 @@
 
-import {Model} from "mongoose";
-import {itemSchema} from "./item.schema";
 import * as mongoose from 'mongoose';
+import {IItem} from "./item.interface";
 
-export let ItemModel = mongoose.model('item', itemSchema);
+export interface ItemModel extends IItem, mongoose.Document {
+
+}

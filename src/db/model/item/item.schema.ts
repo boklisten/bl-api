@@ -2,16 +2,20 @@
 
 
 
-import {Schema} from "mongoose";
 
-export let itemSchema: Schema = new Schema(
+import * as mongoose from 'mongoose';
+
+export let ItemSchema = new mongoose.Schema(
     {
-        title: String,
+        title: {
+            type: String,
+            required: true
+        },
         type: {
             type: String,
             lowercase: true
         },
-        info: Schema.Types.Mixed,
+        info: mongoose.Schema.Types.Mixed,
         desc: String,
         price: Number,
         sell: Boolean,
