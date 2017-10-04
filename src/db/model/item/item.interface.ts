@@ -1,7 +1,9 @@
 
 
 
-export interface IItem {
+import {IDocument} from "../document.interface";
+
+export interface IItem extends IDocument{
     title: string,
     type: string
     info: any,

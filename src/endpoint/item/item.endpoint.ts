@@ -1,9 +1,8 @@
 
 import {Endpoint} from "../endpoint";
-import {ItemDocument} from "./item.document";
 import {MongoHandler} from "../../db/mongoHandler";
-import {ItemModel} from "../../db/model/item/item.model";
 import {Item} from "../../db/model/item/item";
+import {IItem} from "../../db/model/item/item.interface";
 
 export class ItemEndpoint implements Endpoint {
 
@@ -16,38 +15,59 @@ export class ItemEndpoint implements Endpoint {
 
     }
 
-    get(): Promise<ItemDocument[]> {
-        return Promise.reject('')
+    handleRequest(req: Request, data: any): Promise<any> {
+       return new Promise((resolve, reject) => {
+
+       });
     }
 
-    post(): Promise<ItemDocument> {
-        return Promise.reject('')
-    }
-
-    getById(id: string): Promise<ItemDocument> {
-        let newItem = new Item({title: 'Signatur 1'});
-
-        newItem.save((error, item) => {
-           if (error) {
-               console.log('the error', error);
-               return
-
-           }
-           console.log('saved the item', item)
+    get(filter: any): Promise<IItem[]> {
+        return new Promise((resolve, reject) => {
+            Item.find((error, items) => {
+                if (error) {
+                    reject(error);
+                    return
+                }
+                resolve(items)
+            })
         });
+    }
 
+    post(item: IItem): Promise<IItem> {
+        return new Promise((resolve, reject) => {
+            let newItem = new Item(item);
+
+            newItem.save((error, item) => {
+                if (error) {
+                    reject(error);
+                    return
+                }
+                resolve(item)
+            });
+        });
+    }
+
+    getById(id: string): Promise<IItem> {
+        return new Promise((resolve, reject) => {
+           Item.findOne({_id: id}, (error, item) => {
+               if (error || item === null) {
+                   reject(error);
+                   return
+               }
+               resolve(item);
+           });
+        });
+    }
+
+    put(): Promise<IItem> {
         return Promise.reject('')
     }
 
-    put(): Promise<ItemDocument> {
+    patch(): Promise<IItem> {
         return Promise.reject('')
     }
 
-    patch(): Promise<ItemDocument> {
-        return Promise.reject('')
-    }
-
-    deleteById(id: string): Promise<ItemDocument> {
+    deleteById(id: string): Promise<IItem> {
         return Promise.reject('')
     }
 }

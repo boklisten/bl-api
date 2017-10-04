@@ -1,21 +1,24 @@
 
 
 import {CollectionDocument} from "../db/document/collection-document";
+import {IDocument} from "../db/model/document.interface";
 
 export interface Endpoint {
     collectionName: string;
 
-    //gets the whole collection
-    get(): Promise<CollectionDocument[]>
+    handleRequest(req: Request, data: any): Promise<any>;
 
-    post(): Promise<CollectionDocument>
+    //gets the whole collection filtered by filter
+    get(filter: any): Promise<IDocument[]>
+
+    post(document: IDocument): Promise<IDocument>
 
     //gets a document based on the id
-    getById(id: string): Promise<CollectionDocument>
+    getById(id: string): Promise<IDocument>
 
-    put(id: string): Promise<CollectionDocument>
+    put(id: string): Promise<IDocument>
 
-    patch(id: string): Promise<CollectionDocument>
+    patch(id: string): Promise<IDocument>
 
-    deleteById(id: string): Promise<CollectionDocument>
+    deleteById(id: string): Promise<IDocument>
 }
