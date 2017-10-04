@@ -8,6 +8,8 @@ export interface SESchemaConfig {
         name: string,
         type: any,
         required: boolean,
-        permissionLevel: number
+        index?: boolean,
+        text?: boolean,
+        permissionLevel?: number
     }[];
 }

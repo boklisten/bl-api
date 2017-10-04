@@ -30,11 +30,21 @@ export class SESchema {
         let mschema: any = {};
 
         for (let value of schemaConfig.values) {
+
+            console.log('the index ', value.name, value.index);
+            if (!value.index) {
+                value.index = false;
+            }
             mschema[value.name] = {
                 type: value.type,
-                required: value.required
+                required: value.required,
+                index: value.index,
+                text: value.text
             }
         }
-        return new mongoose.Schema(mschema);
+        console.log('schema',  mschema);
+        let s = new mongoose.Schema(mschema);
+        //s.index({title: 1});
+        return s;
     }
 }

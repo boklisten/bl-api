@@ -14,7 +14,7 @@ export class EndpointMongodb {
         console.log('expressmongo.get called with: ', filter);
 
         return new Promise((resolve, reject) => {
-            this.schema.mongooseModel.find((error, docs) => {
+            this.schema.mongooseModel.find(filter,(error, docs) => {
                 if (error) {
                     console.log('got an error in expressmongo.get', error);
                     reject(error);

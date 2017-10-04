@@ -19,7 +19,7 @@ export type Path = {
     id: boolean,
     methods: {
         method: "get" | "post" | "put" | "patch" | "delete",
-        permissionLevel: number
+        permissionLevel?: number
     }[];
 }
 
@@ -62,12 +62,11 @@ export class EndpointExpress {
     }
 
     createGet(router: express.Router, path: Path) {
-        console.log('created GET', this.basePath + path.path);
-        router.get(this.basePath + path.path, (req: express.Request, res: express.Response) => {
-            console.log('GET ', this.basePath + path.path);
-            this.endpointMongoDb.get({}).then(
+
+        router.get(this.createPath(path.path), (req: express.Request, res: express.Response) => {
+            this.endpointMongoDb.get(this.generateFilter(req.query)).then(
+
                 (docs: SEDocument[]) => {
-                    console.log('we got some documents! ', docs);
                    res.send(docs);
                 },
                 (error) => {
@@ -78,14 +77,9 @@ export class EndpointExpress {
     }
 
     createPost(router: express.Router, path: Path) {
-        console.log('created POST', this.basePath + path.path);
-
-        router.post(this.basePath + path.path, (req: express.Request, res: express.Response) => {
-            console.log('POST ', this.basePath + path.path, req.body);
-
+        router.post(this.createPath(path.path), (req: express.Request, res: express.Response) => {
             this.endpointMongoDb.post(new SEDocument('item', req.body)).then(
                 (doc: SEDocument) => {
-                    console.log('we got some documents! ', doc);
                    res.send(doc);
                 },
                 (error) => {
@@ -103,5 +97,16 @@ export class EndpointExpress {
            }
         }
         return true;
+    }
+
+    createPath(path: string): string {
+        return '/' + this.basePath + '/' + path;
+    }
+
+    generateFilter(query: any) {
+        if (query.title) {
+            return { $text: { $search: query.title }};
+        }
+        return query;
     }
 }

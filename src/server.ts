@@ -6,6 +6,7 @@ import {EndpointConfig, EndpointExpress} from "./endpoint/endpoint.express";
 import {Application, Router} from "express";
 import {SESchema} from "./config/schema/se.schema";
 import {SESchemaConfig} from "./config/schema/se.schema.config";
+import {ItemConfig} from "./schema/item.config";
 let bodyParser = require('body-parser');
 
 export class Server {
@@ -23,50 +24,14 @@ export class Server {
 
         mongoose.connect('mongodb://localhost:27017/bl_test_a');
 
-        let schemaConfig: SESchemaConfig = {
-            name: 'item',
-            permissionLevel: 0,
-            values: [
-                {
-                    name: 'title',
-                    type: Schema.Types.String,
-                    required: true,
-                    permissionLevel: 0
-                }
-            ]
-        };
-
-        let testSchema = new SESchema(schemaConfig);
+        let itemConfig = new ItemConfig();
 
 
-
-
-        let config: EndpointConfig = {
-            basePath: '/api',
-            collectionName: 'item',
-            schema: testSchema,
-            paths: [
-                {
-                    path: '/items',
-                    id: false,
-                    methods: [
-                        {
-                            method: 'get',
-                            permissionLevel: 0
-                        },
-                        {
-                            method: "post",
-                            permissionLevel: 0
-                        }
-                    ]
-                }
-            ]
-
-        };
 
         this.router = Router();
 
-        let endpointExpress = new EndpointExpress(this.router, config);
+
+        let ItemEndpoint = new EndpointExpress(this.router, itemConfig);
 
         this.app.use(this.router);
 
