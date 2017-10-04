@@ -1,31 +1,79 @@
 
 import * as express from 'express';
-import {Application} from "express";
-import {ItemModel} from "./db/model/item/item.model";
-import {MongoHandler} from "./db/mongoHandler";
-import {ItemEndpoint} from "./endpoint/item/item.endpoint";
+import * as mongoose from 'mongoose';
+import {Schema} from 'mongoose';
+import {EndpointConfig, EndpointExpress} from "./endpoint/endpoint.express";
+import {Application, Router} from "express";
+import {SESchema} from "./config/schema/se.schema";
+import {SESchemaConfig} from "./config/schema/se.schema.config";
+let bodyParser = require('body-parser');
 
 export class Server {
 
     public app: Application;
+    private router: Router;
+    private port: number;
 
 
     constructor() {
+
         this.app = express();
+        this.app.use(bodyParser.json());
+        this.port = 3000;
 
-        this.app.get('/', (req, res) => {
-            res.send('Hello there')
+        mongoose.connect('mongodb://localhost:27017/bl_test_a');
+
+        let schemaConfig: SESchemaConfig = {
+            name: 'item',
+            permissionLevel: 0,
+            values: [
+                {
+                    name: 'title',
+                    type: Schema.Types.String,
+                    required: true,
+                    permissionLevel: 0
+                }
+            ]
+        };
+
+        let testSchema = new SESchema(schemaConfig);
+
+
+
+
+        let config: EndpointConfig = {
+            basePath: '/api',
+            collectionName: 'item',
+            schema: testSchema,
+            paths: [
+                {
+                    path: '/items',
+                    id: false,
+                    methods: [
+                        {
+                            method: 'get',
+                            permissionLevel: 0
+                        },
+                        {
+                            method: "post",
+                            permissionLevel: 0
+                        }
+                    ]
+                }
+            ]
+
+        };
+
+        this.router = Router();
+
+        let endpointExpress = new EndpointExpress(this.router, config);
+
+        this.app.use(this.router);
+
+        this.app.listen(this.port, () => {
+            console.log('api running on port: ', this.port);
         });
 
-        this.app.listen(3000, () => {
-           console.log('bl_api listening on: 3000');
-        });
-
-        let mongoHandler = new MongoHandler();
-
-        let itemEndpoint = new ItemEndpoint(mongoHandler);
-
-        itemEndpoint.getById('test');
 
 
     }
