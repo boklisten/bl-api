@@ -1,6 +1,6 @@
 
-import {SESchema} from "../config/schema/se.schema";
-import {SESchemaConfig} from "../config/schema/se.schema.config";
+import {SESchema} from "../../config/schema/se.schema";
+import {SESchemaConfig} from "../../config/schema/se.schema.config";
 import {Schema} from 'mongoose';
 
 export class ItemSchemaConfig implements SESchemaConfig {

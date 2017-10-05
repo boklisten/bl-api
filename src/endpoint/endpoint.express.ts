@@ -64,18 +64,31 @@ export class EndpointExpress {
     }
 
     createGet(router: express.Router, path: Path) {
+		if (!path.id) {
+			router.get(this.createPath(path.path), (req: express.Request, res: express.Response) => {
+				this.endpointMongoDb.get(this.generateFilter(req.query)).then(
+					(docs: SEDocument[]) => {
+					   res.send(docs);
+					},
+					(error) => {
+						console.log('something went wrong', error);
+					   res.send(error);
+					});
+				});
+		} else {
+			router.get(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
+				this.endpointMongoDb.getById(req.params.id).then(
+					(doc: SEDocument) => {
+						res.send(doc);
+					},
+					(error) => {
+						res.send(error);
+					}
+				)
 
-        router.get(this.createPath(path.path), (req: express.Request, res: express.Response) => {
-            this.endpointMongoDb.get(this.generateFilter(req.query)).then(
+			});
+		}
 
-                (docs: SEDocument[]) => {
-                   res.send(docs);
-                },
-                (error) => {
-                    console.log('something went wrong', error);
-                   res.send(error);
-                });
-        });
     }
 
     createPost(router: express.Router, path: Path) {

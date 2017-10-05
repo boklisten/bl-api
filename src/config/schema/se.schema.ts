@@ -3,7 +3,6 @@ import {SESchemaConfig} from "./se.schema.config";
 import * as mongoose from 'mongoose';
 
 export class SESchema {
-
     title: string;
     mongooseSchema: mongoose.Schema;
     mongooseModel: mongoose.Model<mongoose.Document>;
@@ -21,7 +20,6 @@ export class SESchema {
     }
 
     createMongooseModel(mongooseSchema: mongoose.Schema) {
-        console.log('creating the mongoose model');
         return mongoose.model<mongoose.Document>(this.schemaConfig.name, mongooseSchema);
     }
 
@@ -37,6 +35,7 @@ export class SESchema {
             if (!value.text) {
             	value.text = false;
 			}
+
             mschema[value.name] = {
                 type: value.type,
                 required: value.required,

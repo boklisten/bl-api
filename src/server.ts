@@ -6,7 +6,8 @@ import {EndpointConfig, EndpointExpress} from "./endpoint/endpoint.express";
 import {Application, Router} from "express";
 import {SESchema} from "./config/schema/se.schema";
 import {SESchemaConfig} from "./config/schema/se.schema.config";
-import {ItemConfig} from "./schema/item.config";
+import {ItemConfig} from "./schema/item/item.config";
+import {CustomerConfig} from "./schema/customer/customer.config";
 let bodyParser = require('body-parser');
 
 export class Server {
@@ -25,6 +26,7 @@ export class Server {
         mongoose.connect('mongodb://localhost:27017/bl_test_a', {useMongoClient: true});
 
         let itemConfig = new ItemConfig();
+        let customerConfig =  new CustomerConfig();
 
 
 
@@ -32,6 +34,7 @@ export class Server {
 
 
         let ItemEndpoint = new EndpointExpress(this.router, itemConfig);
+        let CustomerEndpoint = new EndpointExpress(this.router, customerConfig);
 
         this.app.use(this.router);
 

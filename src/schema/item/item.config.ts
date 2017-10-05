@@ -1,8 +1,8 @@
 
 
 
-import {EndpointConfig, Path} from "../endpoint/endpoint.express";
-import {SESchema} from "../config/schema/se.schema";
+import {EndpointConfig, Path} from "../../endpoint/endpoint.express";
+import {SESchema} from "../../config/schema/se.schema";
 import {ItemSchemaConfig} from "./item.schema.config";
 
 export class ItemConfig implements EndpointConfig {
