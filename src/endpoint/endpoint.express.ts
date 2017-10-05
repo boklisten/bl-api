@@ -4,6 +4,9 @@ import * as express from 'express';
 import {SESchema} from "../config/schema/se.schema";
 import {EndpointMongodb} from "./endpoint.mongodb";
 import {SEDocument} from "../db/model/se.document";
+import {SEResponseHandler} from "../response/se.response.handler";
+import {SEResponse} from "../response/se.response";
+import {SEErrorResponse} from "../response/se.error.response";
 
 
 
@@ -28,12 +31,14 @@ export class EndpointExpress {
     config: EndpointConfig;
     basePath: string;
     endpointMongoDb: EndpointMongodb;
+    resHandler: SEResponseHandler;
 
-    constructor(router: express.Router, config: EndpointConfig) {
+    constructor(router: express.Router, config: EndpointConfig, resHandler: SEResponseHandler) {
         this.router = router;
         this.config = config;
         this.basePath = config.basePath;
         this.endpointMongoDb = new EndpointMongodb(config.schema);
+        this.resHandler = resHandler;
 
         if (!this.createEndpoints(router, config)) {
             console.log('could not create endpoints for ', config.basePath);
@@ -69,21 +74,20 @@ export class EndpointExpress {
 			router.get(this.createPath(path.path), (req: express.Request, res: express.Response) => {
 				this.endpointMongoDb.get(this.generateFilter(req.query)).then(
 					(docs: SEDocument[]) => {
-					   res.send(docs);
+					   this.resHandler.sendResponse(res, new SEResponse(docs));
 					},
-					(error) => {
-						console.log('something went wrong', error);
-					   res.send(error);
+					(error: SEErrorResponse) => {
+						this.resHandler.sendErrorResponse(res, error);
 					});
 				});
 		} else {
 			router.get(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
 				this.endpointMongoDb.getById(req.params.id).then(
-					(doc: SEDocument) => {
-						res.send(doc);
+					(docs: SEDocument[]) => {
+						this.resHandler.sendResponse(res, new SEResponse(docs));
 					},
-					(error) => {
-						res.send(error);
+					(error: SEErrorResponse) => {
+						this.resHandler.sendErrorResponse(res, error);
 					}
 				)
 
@@ -95,7 +99,7 @@ export class EndpointExpress {
     createDelete(router: express.Router, path: Path) {
     	router.delete(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
     		this.endpointMongoDb.deleteById(req.params.id).then(
-				(doc: SEDocument) => {
+				(doc: SEDocument[]) => {
 					res.send(doc);
 				},
 				(error) => {
@@ -108,12 +112,11 @@ export class EndpointExpress {
         router.post(this.createPath(path.path), (req: express.Request, res: express.Response) => {
         	console.log('POST', req.body);
             this.endpointMongoDb.post(new SEDocument('item', req.body)).then(
-                (doc: SEDocument) => {
-                   res.send(doc);
+                (docs: SEDocument[]) => {
+            		this.resHandler.sendResponse(res, new SEResponse(docs));
                 },
-                (error) => {
-                    console.log('something went wrong', error);
-                   res.send(error);
+                (error: SEErrorResponse) => {
+                	this.resHandler.sendErrorResponse(res, error);
                 });
         });
     }
@@ -122,11 +125,11 @@ export class EndpointExpress {
     	router.patch(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
 
     		this.endpointMongoDb.patch(req.params.id, req.body).then(
-				(doc: SEDocument) => {
-					res.send(doc);
+				(docs: SEDocument[]) => {
+					this.resHandler.sendResponse(res, new SEResponse(docs));
 				},
-				(error) => {
-					res.send(error);
+				(error: SEErrorResponse) => {
+					this.resHandler.sendErrorResponse(res, error);
 				}
 			)
 		})
