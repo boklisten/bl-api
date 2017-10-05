@@ -104,8 +104,12 @@ export class EndpointExpress {
     }
 
     generateFilter(query: any) {
+
+    	console.log('the query', query);
         if (query.title) {
-            return { $text: { $search: query.title }};
+            console.log('the regex: ',  new RegExp(query.title, 'i'));
+            return { title: { $regex: new RegExp(query.title), $options: 'imx'}};
+
         }
         return query;
     }

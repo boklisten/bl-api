@@ -14,7 +14,6 @@ export class SESchema {
         this.mongooseSchema = this.createMongooseSchema(this.schemaConfig);
         this.mongooseModel = this.createMongooseModel(this.mongooseSchema);
         this.title = schemaConfig.name;
-        console.log('created the schema')
     }
 
     validateSchema(schemaConfig: SESchemaConfig): boolean {
@@ -31,10 +30,13 @@ export class SESchema {
 
         for (let value of schemaConfig.values) {
 
-            console.log('the index ', value.name, value.index);
             if (!value.index) {
                 value.index = false;
             }
+
+            if (!value.text) {
+            	value.text = false;
+			}
             mschema[value.name] = {
                 type: value.type,
                 required: value.required,
@@ -42,9 +44,6 @@ export class SESchema {
                 text: value.text
             }
         }
-        console.log('schema',  mschema);
-        let s = new mongoose.Schema(mschema);
-        //s.index({title: 1});
-        return s;
+        return new mongoose.Schema(mschema);
     }
 }

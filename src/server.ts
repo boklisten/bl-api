@@ -22,7 +22,7 @@ export class Server {
         this.app.use(bodyParser.json());
         this.port = 3000;
 
-        mongoose.connect('mongodb://localhost:27017/bl_test_a');
+        mongoose.connect('mongodb://localhost:27017/bl_test_a', {useMongoClient: true});
 
         let itemConfig = new ItemConfig();
 
