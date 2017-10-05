@@ -11,12 +11,9 @@ export class EndpointMongodb {
     }
 
     get(filter: any): Promise<SEDocument[]> {
-        console.log('expressmongo.get called with: ', filter);
-
         return new Promise((resolve, reject) => {
             this.schema.mongooseModel.find(filter,(error, docs) => {
                 if (error) {
-                    console.log('got an error in expressmongo.get', error);
                     reject(error);
                     return
                 }
@@ -26,15 +23,12 @@ export class EndpointMongodb {
                 for (let doc of docs) {
                    sdocs.push(new SEDocument(this.schema.title, doc));
                 }
-
-                console.log('got some docs');
                 resolve(sdocs);
             })
         });
     }
 
     post(document: SEDocument): Promise<SEDocument> {
-        console.log('expressmongo.post called with', document);
         return new Promise((resolve, reject) => {
         	document.data.creationTime = new Date().toISOString();
             let newDocument = new this.schema.mongooseModel(document.data);
@@ -88,6 +82,14 @@ export class EndpointMongodb {
     }
 
     deleteById(id: string): Promise<SEDocument> {
-        return Promise.reject('')
+    	return new Promise((resolve, reject) => {
+    		this.schema.mongooseModel.findByIdAndRemove(id, (error, doc) => {
+    			if (error || doc === null) {
+    				reject(error);
+    				return;
+				}
+				resolve(new SEDocument(this.schema.title, doc));
+			})
+    	});
     }
 }

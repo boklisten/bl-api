@@ -56,8 +56,9 @@ export class EndpointExpress {
                         break;
 					case "patch": this.createPatch(router, path);
 						break;
+					case "delete": this.createDelete(router, path);
+						break;
                 }
-
             }
         }
         return true;
@@ -90,6 +91,18 @@ export class EndpointExpress {
 		}
 
     }
+
+    createDelete(router: express.Router, path: Path) {
+    	router.delete(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
+    		this.endpointMongoDb.deleteById(req.params.id).then(
+				(doc: SEDocument) => {
+					res.send(doc);
+				},
+				(error) => {
+					res.send(error);
+				});
+		});
+	}
 
     createPost(router: express.Router, path: Path) {
         router.post(this.createPath(path.path), (req: express.Request, res: express.Response) => {
