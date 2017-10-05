@@ -8,6 +8,7 @@ import {SESchema} from "./config/schema/se.schema";
 import {SESchemaConfig} from "./config/schema/se.schema.config";
 import {ItemConfig} from "./schema/item/item.config";
 import {CustomerConfig} from "./schema/customer/customer.config";
+import {BranchConfig} from "./schema/branch/branch.config";
 let bodyParser = require('body-parser');
 
 export class Server {
@@ -27,6 +28,7 @@ export class Server {
 
         let itemConfig = new ItemConfig();
         let customerConfig =  new CustomerConfig();
+        let branchConfig = new BranchConfig();
 
 
 
@@ -35,6 +37,7 @@ export class Server {
 
         let ItemEndpoint = new EndpointExpress(this.router, itemConfig);
         let CustomerEndpoint = new EndpointExpress(this.router, customerConfig);
+        let BranchEndpoint = new EndpointExpress(this.router, branchConfig);
 
         this.app.use(this.router);
 

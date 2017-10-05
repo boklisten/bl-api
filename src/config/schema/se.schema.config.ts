@@ -7,7 +7,7 @@ export interface SESchemaConfig {
     values: {
         name: string,
         type: any,
-        required: boolean,
+        required?: boolean,
         index?: boolean,
         text?: boolean,
         permissionLevel?: number

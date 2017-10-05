@@ -36,6 +36,10 @@ export class SESchema {
             	value.text = false;
 			}
 
+			if (value.required === null) {
+            	value.required = true;
+			}
+
             mschema[value.name] = {
                 type: value.type,
                 required: value.required,
