@@ -44,6 +44,17 @@ export class SESchema {
                 text: value.text
             }
         }
+
+        mschema['lastUpdated'] = {
+        	type: mongoose.Schema.Types.Date,
+			required: false
+		};
+
+        mschema['creationTime'] = {
+        	type: mongoose.Schema.Types.Date,
+			required: false
+		};
+
         return new mongoose.Schema(mschema);
     }
 }

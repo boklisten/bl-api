@@ -36,6 +36,7 @@ export class EndpointMongodb {
     post(document: SEDocument): Promise<SEDocument> {
         console.log('expressmongo.post called with', document);
         return new Promise((resolve, reject) => {
+        	document.data.creationTime = new Date().toISOString();
             let newDocument = new this.schema.mongooseModel(document.data);
 
             newDocument.save((error, doc) => {
