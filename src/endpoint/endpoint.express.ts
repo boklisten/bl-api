@@ -39,7 +39,7 @@ export class EndpointExpress {
             console.log('could not create endpoints for ', config.basePath);
             return;
         }
-        console.log('made endpoints for ', config.basePath);
+        console.log('made endpoints for ', config.basePath + '/' + config.collectionName);
 
     }
 
@@ -106,6 +106,7 @@ export class EndpointExpress {
 
     createPost(router: express.Router, path: Path) {
         router.post(this.createPath(path.path), (req: express.Request, res: express.Response) => {
+        	console.log('POST', req.body);
             this.endpointMongoDb.post(new SEDocument('item', req.body)).then(
                 (doc: SEDocument) => {
                    res.send(doc);
@@ -119,7 +120,6 @@ export class EndpointExpress {
 
     createPatch(router: express.Router, path: Path) {
     	router.patch(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
-    		console.log('PATCH', req.body);
 
     		this.endpointMongoDb.patch(req.params.id, req.body).then(
 				(doc: SEDocument) => {

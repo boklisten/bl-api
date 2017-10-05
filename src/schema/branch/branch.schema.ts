@@ -20,11 +20,11 @@ export let BranchSchema = {
 	},
 	childBranches: {
 		type: [Schema.Types.ObjectId],
-		required: true
+		default: []
 	},
 	items: {
 		type: [Schema.Types.ObjectId],
-		required: true
+		default: []
 	},
 	payment: {
 		branchResponsible: {
@@ -54,12 +54,12 @@ export let BranchSchema = {
 		},
 		acceptedMethods: {
 			type: [Schema.Types.String],
-			required: true
+			default: []
 		}
 	},
 	contactInfo: {
 		phone: {
-			type: Schema.Types.Number,
+			type: Schema.Types.String,
 			required: true
 		},
 		email: {

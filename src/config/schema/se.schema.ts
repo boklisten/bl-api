@@ -29,12 +29,17 @@ export class SESchema {
 
         mschema['lastUpdated'] = {
         	type: mongoose.Schema.Types.Date,
-			required: false
+			default: Date.now()
 		};
 
         mschema['creationTime'] = {
         	type: mongoose.Schema.Types.Date,
-			required: false
+			default: Date.now()
+		};
+
+        mschema['active'] = {
+        	type: mongoose.Schema.Types.Boolean,
+			default: true
 		};
 
         return new mongoose.Schema(mschema);
