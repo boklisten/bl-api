@@ -64,8 +64,26 @@ export class EndpointMongodb {
         return Promise.reject('')
     }
 
-    patch(): Promise<SEDocument> {
-        return Promise.reject('')
+    patch(id: string, doc: SEDocument): Promise<SEDocument> {
+    	return new Promise((resolve, reject) => {
+    	   this.schema.mongooseModel.findById(id, (error, document) => {
+    			if (error || document === null) {
+    				reject(error);
+    				return;
+				}
+
+				document.set(doc);
+    			document.set({lastUpdated: new Date().toISOString()});
+    			document.save((error, updatedDocument) => {
+    				if (error || updatedDocument === null) {
+    					reject(error);
+    					return;
+					}
+
+					resolve(new SEDocument(this.schema.title, updatedDocument));
+				});
+		   })
+    	});
     }
 
     deleteById(id: string): Promise<SEDocument> {

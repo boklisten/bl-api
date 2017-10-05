@@ -54,6 +54,8 @@ export class EndpointExpress {
                         break;
                     case "post": this.createPost(router, path);
                         break;
+					case "patch": this.createPatch(router, path);
+						break;
                 }
 
             }
@@ -89,6 +91,21 @@ export class EndpointExpress {
         });
     }
 
+    createPatch(router: express.Router, path: Path) {
+    	router.patch(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
+    		console.log('PATCH', req.body);
+
+    		this.endpointMongoDb.patch(req.params.id, req.body).then(
+				(doc: SEDocument) => {
+					res.send(doc);
+				},
+				(error) => {
+					res.send(error);
+				}
+			)
+		})
+	}
+
     validateConfig(config: EndpointConfig): boolean {
         for (let path of config.paths) {
            for (let method of path.methods) {
@@ -99,8 +116,10 @@ export class EndpointExpress {
         return true;
     }
 
-    createPath(path: string): string {
-        return '/' + this.basePath + '/' + path;
+    createPath(path: string, id?: boolean): string {
+    	let thePath = '/' + this.basePath + '/' + path;
+    	if (id) thePath += '/:id';
+        return thePath;
     }
 
     generateFilter(query: any) {
