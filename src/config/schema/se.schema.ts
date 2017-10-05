@@ -7,10 +7,12 @@ export class SESchema {
     mongooseSchema: mongoose.Schema;
     mongooseModel: mongoose.Model<mongoose.Document>;
     schemaConfig: SESchemaConfig;
+    schema: any;
 
-    constructor(schemaConfig: SESchemaConfig) {
+    constructor(schemaConfig: SESchemaConfig, schema: any) {
         this.schemaConfig = schemaConfig;
-        this.mongooseSchema = this.createMongooseSchema(this.schemaConfig);
+        this.schema = schema;
+        this.mongooseSchema = this.createMongooseSchema(this.schema);
         this.mongooseModel = this.createMongooseModel(this.mongooseSchema);
         this.title = schemaConfig.name;
     }
@@ -23,30 +25,7 @@ export class SESchema {
         return mongoose.model<mongoose.Document>(this.schemaConfig.name, mongooseSchema);
     }
 
-    createMongooseSchema(schemaConfig: SESchemaConfig) {
-        let mschema: any = {};
-
-        for (let value of schemaConfig.values) {
-
-            if (!value.index) {
-                value.index = false;
-            }
-
-            if (!value.text) {
-            	value.text = false;
-			}
-
-			if (value.required === null) {
-            	value.required = true;
-			}
-
-            mschema[value.name] = {
-                type: value.type,
-                required: value.required,
-                index: value.index,
-                text: value.text
-            }
-        }
+    createMongooseSchema(mschema: any) {
 
         mschema['lastUpdated'] = {
         	type: mongoose.Schema.Types.Date,

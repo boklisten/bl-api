@@ -4,11 +4,12 @@
 import {EndpointConfig, Path} from "../../endpoint/endpoint.express";
 import {SESchema} from "../../config/schema/se.schema";
 import {ItemSchemaConfig} from "./item.schema.config";
+import {ItemSchema} from "./item.schema";
 
 export class ItemConfig implements EndpointConfig {
     basePath: string = 'api';
     collectionName: string = 'items';
-    schema: SESchema = new SESchema(new ItemSchemaConfig());
+    schema: SESchema = new SESchema(new ItemSchemaConfig(), ItemSchema);
     paths: Path[] = [
         {
             path: 'items',
