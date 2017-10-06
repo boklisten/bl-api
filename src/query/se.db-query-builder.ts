@@ -4,7 +4,7 @@ import {SEErrorResponse} from "../response/se.error.response";
 import {connect} from "mongodb";
 import {SEDbQuery} from "./se.db-query";
 
-export class SEQuery {
+export class SEDbQueryBuilder {
 
 	$or: any[];
 	limit: number;
@@ -43,6 +43,7 @@ export class SEQuery {
 		if (!this.setLimit(query.limit)) return false;
 		if (!this.setOnlyGet(query.og, validFields)) return false;
 		if (!this.setSkip(query.skip)) return false;
+		if (!this.setSort(query.sort, validFields)) return false;
 		return true;
 	}
 
@@ -109,9 +110,19 @@ export class SEQuery {
 		return true
 	}
 
-	setSort(sort: any): boolean {
+	setSort(sort: any, validFileds: string[]): boolean {
 		if (sort) {
+			let direction = 1;
+
 			if (!this.validateString(sort)) return false;
+			if (sort[0] === '-' && sort.length > 1) {
+				direction = -1;
+				sort = sort.substr(1, sort.length - 1);
+			}
+
+			if (validFileds.indexOf(sort) <= -1) return false;
+
+			this.sort[sort] = direction;
 
 		}
 
