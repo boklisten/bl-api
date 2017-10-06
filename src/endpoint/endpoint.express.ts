@@ -48,8 +48,6 @@ export class EndpointExpress {
             console.log('could not create endpoints for ', config.basePath);
             return;
         }
-        console.log('made endpoints for ', config.basePath + '/' + config.collectionName);
-
     }
 
     createEndpoints(router: express.Router, config: EndpointConfig) {
@@ -76,10 +74,8 @@ export class EndpointExpress {
     createGet(router: express.Router, path: Path) {
 		if (!path.id) {
 			router.get(this.createPath(path.path), (req: express.Request, res: express.Response) => {
-				console.log('query', req.query);
-				this.seQuery.getDbQuery(req.query, ['title', 'type', 'info.isbn', 'name']).then(
+				this.seQuery.getDbQuery(req.query, ['title', 'type', 'info.isbn', 'name', 'desc']).then(
 					(dbQuery: SEDbQuery) => {
-						console.log('hello there', dbQuery);
 						this.endpointMongoDb.get(dbQuery).then(
 							(docs: SEDocument[]) => {
 								this.resHandler.sendResponse(res, new SEResponse(docs));
@@ -121,8 +117,7 @@ export class EndpointExpress {
 
     createPost(router: express.Router, path: Path) {
         router.post(this.createPath(path.path), (req: express.Request, res: express.Response) => {
-        	console.log('POST', req.body);
-            this.endpointMongoDb.post(new SEDocument('item', req.body)).then(
+            this.endpointMongoDb.post(new SEDocument(this.config.collectionName, req.body)).then(
                 (docs: SEDocument[]) => {
             		this.resHandler.sendResponse(res, new SEResponse(docs));
                 },
@@ -134,7 +129,6 @@ export class EndpointExpress {
 
     createPatch(router: express.Router, path: Path) {
     	router.patch(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
-
     		this.endpointMongoDb.patch(req.params.id, req.body).then(
 				(docs: SEDocument[]) => {
 					this.resHandler.sendResponse(res, new SEResponse(docs));
@@ -160,27 +154,5 @@ export class EndpointExpress {
     	let thePath = '/' + this.basePath + '/' + path;
     	if (id) thePath += '/:id';
         return thePath;
-    }
-
-    generateFilter(query: any) {
-
-    	if (query.s) {
-    		console.log('the query is search', query.s);
-		}
-
-		if (query.limit) {
-    		console.log('query has limit ', query.limit);
-		}
-
-		if (query.og) {
-    		console.log('query has a only get: ', query.og);
-		}
-
-        if (query.title) {
-            console.log('the regex: ',  new RegExp(query.title, 'i'));
-            return { title: { $regex: new RegExp(query.title), $options: 'imx'}};
-
-        }
-        return query;
     }
 }

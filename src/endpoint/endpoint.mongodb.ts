@@ -86,8 +86,9 @@ export class EndpointMongodb {
     				return
 				}
 
-				document.set(doc);
+    			document.set(doc);
     			document.set({lastUpdated: new Date().toISOString()});
+
     			document.save((error, updatedDocument) => {
     				if (error || updatedDocument === null) {
     					reject(new SEErrorResponse(500, 'server error', error));

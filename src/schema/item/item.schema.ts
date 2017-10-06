@@ -16,6 +16,10 @@ export let ItemSchema = {
 		type: Schema.Types.Mixed,
 		required: true
 	},
+	desc: {
+		type: Schema.Types.String,
+		required: false
+	},
 	price: {
 		type: Schema.Types.Number,
 		required: true

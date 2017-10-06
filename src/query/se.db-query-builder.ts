@@ -8,7 +8,6 @@ export class SEDbQueryBuilder {
 
 	$or: any[];
 	limit: number;
-	filter: any;
 	skip: number;
 	sort: any;
 	onlyGet: any;
@@ -24,18 +23,26 @@ export class SEDbQueryBuilder {
 				reject(new SEErrorResponse(402, 'query not valid'));
 				return;
 			}
-			resolve(new SEDbQuery(this.filter, this.onlyGet, this.skip, this.sort, this.limit));
-
+			resolve(new SEDbQuery(this.createFilter(), this.onlyGet, this.skip, this.sort, this.limit));
 		});
 	}
 
 	private clearData() {
 		this.$or = [];
 		this.limit = 0;
-		this.filter = {};
 		this.skip = 0;
 		this.sort = {};
 		this.onlyGet = {};
+	}
+
+	private createFilter() {
+		let filter: any = {};
+		if (this.$or.length > 0) {
+			filter.$or = this.$or;
+		}
+
+		return filter;
+
 	}
 
 	private sanitizeQuery(query: any, validFields: string[]): boolean {
