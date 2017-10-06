@@ -2,6 +2,7 @@
 import {SESchema} from "../config/schema/se.schema";
 import {SEDocument} from "../db/model/se.document";
 import {SEErrorResponse} from "../response/se.error.response";
+import {SEDbQuery} from "../query/se.db-query";
 
 export class EndpointMongodb {
     schema: SESchema;
@@ -10,9 +11,10 @@ export class EndpointMongodb {
         this.schema = schema;
     }
 
-    get(filter: any): Promise<SEDocument[]> {
+    get(dbQuery: SEDbQuery): Promise<SEDocument[]> {
         return new Promise((resolve, reject) => {
-            this.schema.mongooseModel.find(filter,(error, docs) => {
+        	console.log('the query', dbQuery);
+            this.schema.mongooseModel.find(dbQuery.filter, dbQuery.onlyGet).limit(dbQuery.limit).skip(dbQuery.skip).sort(dbQuery.sort).exec((error, docs) => {
                 if (error) {
                     reject(new SEErrorResponse(403, 'client error', error));
                     return

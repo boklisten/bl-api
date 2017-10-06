@@ -2,25 +2,8 @@ module.exports = function(grunt) {
     "use strict";
 
     grunt.initConfig({
-        copy: {
-            build: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: "./public",
-                        src: ["**"],
-                        dest: "./dist/public"
-                    },
-                    {
-                        expand: true,
-                        cwd: "./views",
-                        src: ["**"],
-                        dest: "./dist/views"
-                    }
-                ]
-            }
-        },
         ts: {
+
             app: {
                 files: [{
                     src: ["src/\*\*/\*.ts", "!src/.baseDir.ts"],
@@ -37,22 +20,55 @@ module.exports = function(grunt) {
         watch: {
             ts: {
                 files: ["src/\*\*/\*.ts"],
-                tasks: ["ts"]
+                tasks: ["ts"],
             },
-            views: {
-                files: ["views/**/*.pug"],
-                tasks: ["copy"]
-            }
-        }
+	    js: {
+		files: ["dist/\*\*/\*.js"],
+		tasks: ["express:dev"],
+		options: {
+			spawn: false
+		}
+	    }
+        },
+	nodemon: {
+		dev: {
+			script: './dist/server.js'
+		}
+	},
+	express: {
+		dev: {
+			options: {
+				script: './dist/server.js'
+			}
+		}
+	},
+	concurrent: {
+		dev: {
+			tasks: ['ts', 'nodemon', 'watch:ts'],
+			options: {
+				logConcurrentOutput: true
+			}
+		}
+	}
     });
 
     grunt.loadNpmTasks("grunt-contrib-copy");
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-ts");
+    grunt.loadNpmTasks("grunt-nodemon"); 
+    grunt.loadNpmTasks("grunt-express-server"); 
+	grunt.loadNpmTasks("grunt-concurrent"); 
 
     grunt.registerTask("default", [
         "copy",
         "ts"
     ]);
+
+	grunt.registerTask("dev", [
+		'concurrent',
+		'ts',
+		'nodemon',
+		'watch:ts'
+	]);
 
 };

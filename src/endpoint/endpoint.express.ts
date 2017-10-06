@@ -7,6 +7,8 @@ import {SEDocument} from "../db/model/se.document";
 import {SEResponseHandler} from "../response/se.response.handler";
 import {SEResponse} from "../response/se.response";
 import {SEErrorResponse} from "../response/se.error.response";
+import {SEQuery} from "../query/se.query";
+import {SEDbQuery} from "../query/se.db-query";
 
 
 
@@ -32,6 +34,7 @@ export class EndpointExpress {
     basePath: string;
     endpointMongoDb: EndpointMongodb;
     resHandler: SEResponseHandler;
+    seQuery: SEQuery;
 
     constructor(router: express.Router, config: EndpointConfig, resHandler: SEResponseHandler) {
         this.router = router;
@@ -39,6 +42,7 @@ export class EndpointExpress {
         this.basePath = config.basePath;
         this.endpointMongoDb = new EndpointMongodb(config.schema);
         this.resHandler = resHandler;
+        this.seQuery = new SEQuery();
 
         if (!this.createEndpoints(router, config)) {
             console.log('could not create endpoints for ', config.basePath);
@@ -72,14 +76,22 @@ export class EndpointExpress {
     createGet(router: express.Router, path: Path) {
 		if (!path.id) {
 			router.get(this.createPath(path.path), (req: express.Request, res: express.Response) => {
-				this.endpointMongoDb.get(this.generateFilter(req.query)).then(
-					(docs: SEDocument[]) => {
-					   this.resHandler.sendResponse(res, new SEResponse(docs));
+				console.log('query', req.query);
+				this.seQuery.getDbQuery(req.query, ['title', 'type', 'info', 'name']).then(
+					(dbQuery: SEDbQuery) => {
+						console.log('hello there', dbQuery);
+						this.endpointMongoDb.get(dbQuery).then(
+							(docs: SEDocument[]) => {
+								this.resHandler.sendResponse(res, new SEResponse(docs));
+							},
+							(error: SEErrorResponse) => {
+								this.resHandler.sendErrorResponse(res, error);
+							});
 					},
 					(error: SEErrorResponse) => {
 						this.resHandler.sendErrorResponse(res, error);
 					});
-				});
+			});
 		} else {
 			router.get(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
 				this.endpointMongoDb.getById(req.params.id).then(
@@ -90,7 +102,6 @@ export class EndpointExpress {
 						this.resHandler.sendErrorResponse(res, error);
 					}
 				)
-
 			});
 		}
 
@@ -153,7 +164,18 @@ export class EndpointExpress {
 
     generateFilter(query: any) {
 
-    	console.log('the query', query);
+    	if (query.s) {
+    		console.log('the query is search', query.s);
+		}
+
+		if (query.limit) {
+    		console.log('query has limit ', query.limit);
+		}
+
+		if (query.og) {
+    		console.log('query has a only get: ', query.og);
+		}
+
         if (query.title) {
             console.log('the regex: ',  new RegExp(query.title, 'i'));
             return { title: { $regex: new RegExp(query.title), $options: 'imx'}};
