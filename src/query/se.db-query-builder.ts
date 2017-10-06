@@ -12,6 +12,7 @@ export class SEDbQueryBuilder {
 	sort: any;
 	onlyGet: any;
 	validParams: string[];
+	filterParams: {key: string, val: string}[];
 
 	constructor() {
 		this.clearData();
@@ -36,6 +37,7 @@ export class SEDbQueryBuilder {
 		this.sort = {};
 		this.onlyGet = {};
 		this.validParams = [];
+		this.filterParams = [];
 	}
 
 	private createFilter() {
@@ -44,11 +46,16 @@ export class SEDbQueryBuilder {
 			filter.$or = this.$or;
 		}
 
+		for (let keyval of this.filterParams) {
+			filter[keyval.key] = keyval.val;
+		}
+
 		return filter;
 
 	}
 
 	private sanitizeQuery(query: any): boolean {
+		this.setFilterParams(query);
 		if (!this.setSearchString(query.s)) return false;
 		if (!this.setLimit(query.limit)) return false;
 		if (!this.setOnlyGet(query.og)) return false;
@@ -78,7 +85,7 @@ export class SEDbQueryBuilder {
 		let baseParams: string[] = [];
 		for (let validParam of this.validParams) {
 			if (validParam[validParam.length-1] === '*' && validParam.length >= 2) {
-				baseParams.push(validParam.substr(0, validParam.length-2	));
+				baseParams.push(validParam.substr(0, validParam.length-1	));
 			} else {
 				baseParams.push(validParam);
 			}
@@ -86,6 +93,21 @@ export class SEDbQueryBuilder {
 		return baseParams;
 
 
+	}
+
+	setFilterParams(query: any) {
+		for (let key in query) {
+			if (key.indexOf('.') > -1) {
+				let k = key.substr(0, key.length-1);
+				if (this.getBaseSearchParams().indexOf(k) > -1) {
+					this.filterParams.push({key: key, val: query[key]});
+				}
+			} else {
+				if (this.getBaseSearchParams().indexOf(key) > -1) {
+					this.filterParams.push({key: key, val: query[key]});
+				}
+			}
+		}
 	}
 
 	setSearchString(s: any): boolean {
