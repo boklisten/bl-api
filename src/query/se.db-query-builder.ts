@@ -11,15 +11,17 @@ export class SEDbQueryBuilder {
 	skip: number;
 	sort: any;
 	onlyGet: any;
+	validParams: string[];
 
 	constructor() {
 		this.clearData();
 	}
 
-	public getDbQuery(query: any, validFields: string[]): Promise<SEDbQuery> {
+	public getDbQuery(query: any, validSearchParams: string[]): Promise<SEDbQuery> {
 		this.clearData();
+		this.validParams = validSearchParams;
 		return new Promise((resolve, reject) => {
-			if (!this.sanitizeQuery(query, validFields)) {
+			if (!this.sanitizeQuery(query)) {
 				reject(new SEErrorResponse(402, 'query not valid'));
 				return;
 			}
@@ -33,6 +35,7 @@ export class SEDbQueryBuilder {
 		this.skip = 0;
 		this.sort = {};
 		this.onlyGet = {};
+		this.validParams = [];
 	}
 
 	private createFilter() {
@@ -45,21 +48,52 @@ export class SEDbQueryBuilder {
 
 	}
 
-	private sanitizeQuery(query: any, validFields: string[]): boolean {
-		if (!this.setSearchString(query.s, validFields)) return false;
+	private sanitizeQuery(query: any): boolean {
+		if (!this.setSearchString(query.s)) return false;
 		if (!this.setLimit(query.limit)) return false;
-		if (!this.setOnlyGet(query.og, validFields)) return false;
+		if (!this.setOnlyGet(query.og)) return false;
 		if (!this.setSkip(query.skip)) return false;
-		if (!this.setSort(query.sort, validFields)) return false;
+		if (!this.setSort(query.sort)) return false;
 		return true;
 	}
 
-	setSearchString(s: any, validFields: string[]): boolean {
+	isValidSearchParam(param: string): boolean {
+		for (let validParam of this.validParams) {
+			if (validParam[validParam.length-1] === '*' && validParam.length >= 2) {
+				let vp = validParam.substr(0, validParam.length-1);
+				if (param.indexOf('.') > -1) {
+					let ps = param.split('.');
+					if (vp === ps[0]) return true;
+				} else {
+					if (vp === param) return true;
+				}
+			} else {
+				if (param === validParam) return true;
+			}
+		}
+		return false;
+	}
+
+	getBaseSearchParams(): string[] {
+		let baseParams: string[] = [];
+		for (let validParam of this.validParams) {
+			if (validParam[validParam.length-1] === '*' && validParam.length >= 2) {
+				baseParams.push(validParam.substr(0, validParam.length-2	));
+			} else {
+				baseParams.push(validParam);
+			}
+		}
+		return baseParams;
+
+
+	}
+
+	setSearchString(s: any): boolean {
 		if (s) {
 			if (!this.validateString(s)) return false;
 			if (s.length < 3) return false;
 
-			for (let field of validFields) {
+			for (let field of this.getBaseSearchParams()) {
 				let orObj: any = {};
 				orObj[field] =  { $regex: new RegExp(s), $options: 'imx'};
 
@@ -87,13 +121,13 @@ export class SEDbQueryBuilder {
 		return true;
 	}
 
-	setOnlyGet(og: any, validFields: string[]): boolean {
+	setOnlyGet(og: any): boolean {
 		if (og) {
 			if (!this.validateString(og)) return false;
 			let oglist = og.split(',');
 
 			for (let token of oglist) {
-				if (validFields.indexOf(token) <= -1) return false;
+				if (!this.isValidSearchParam(token)) return false;
 				this.onlyGet[token] = 1;
 			}
 		}
@@ -117,7 +151,7 @@ export class SEDbQueryBuilder {
 		return true
 	}
 
-	setSort(sort: any, validFileds: string[]): boolean {
+	setSort(sort: any): boolean {
 		if (sort) {
 			let direction = 1;
 
@@ -127,7 +161,7 @@ export class SEDbQueryBuilder {
 				sort = sort.substr(1, sort.length - 1);
 			}
 
-			if (validFileds.indexOf(sort) <= -1) return false;
+			if (!this.isValidSearchParam(sort)) return false;
 
 			this.sort[sort] = direction;
 

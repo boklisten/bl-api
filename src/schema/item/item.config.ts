@@ -41,5 +41,11 @@ export class ItemConfig implements EndpointConfig {
                 }
             ]
         }
-    ]
+    ];
+    validSearchParams: string[] = [
+    	'title',
+		'type',
+		'info*',
+		'desc'
+	]
 }

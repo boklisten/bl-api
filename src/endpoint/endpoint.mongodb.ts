@@ -13,7 +13,6 @@ export class EndpointMongodb {
 
     get(dbQuery: SEDbQuery): Promise<SEDocument[]> {
         return new Promise((resolve, reject) => {
-        	console.log('the query', dbQuery);
             this.schema.mongooseModel.find(dbQuery.filter, dbQuery.onlyGet).limit(dbQuery.limit).skip(dbQuery.skip).sort(dbQuery.sort).exec((error, docs) => {
                 if (error) {
                     reject(new SEErrorResponse(403, 'client error', error));

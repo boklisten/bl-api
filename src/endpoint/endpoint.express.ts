@@ -16,7 +16,8 @@ export type EndpointConfig = {
     basePath: string,
     collectionName: string,
     schema: SESchema,
-    paths: Path[]
+    paths: Path[],
+	validSearchParams: string[];
 }
 
 export type Path = {
@@ -74,7 +75,7 @@ export class EndpointExpress {
     createGet(router: express.Router, path: Path) {
 		if (!path.id) {
 			router.get(this.createPath(path.path), (req: express.Request, res: express.Response) => {
-				this.seQuery.getDbQuery(req.query, ['title', 'type', 'info.isbn', 'name', 'desc']).then(
+				this.seQuery.getDbQuery(req.query, this.config.validSearchParams).then(
 					(dbQuery: SEDbQuery) => {
 						this.endpointMongoDb.get(dbQuery).then(
 							(docs: SEDocument[]) => {

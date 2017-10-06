@@ -39,5 +39,11 @@ export class BranchConfig implements EndpointConfig {
                 }
             ]
         }
+	];
+	validSearchParams: string[] = [
+		'name',
+		'type',
+		'desc',
+		'contactInfo*'
 	]
 }

@@ -40,5 +40,15 @@ export class CustomerConfig implements EndpointConfig {
 				}
 			]
 		}
+	];
+	validSearchParams: string[] = [
+		'name',
+		'address',
+		'postCode',
+		'postCity',
+		'country',
+		'email',
+		'guardianName',
+		'guardianEmail'
 	]
 }
