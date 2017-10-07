@@ -8,6 +8,7 @@ import {CustomerConfig} from "./schema/customer/customer.config";
 import {BranchConfig} from "./schema/branch/branch.config";
 import {SEResponseHandler} from "./response/se.response.handler";
 import {CustomerItemConfig} from "./schema/customer-item/customer-item.config";
+import {OrderConfig} from "./schema/order/order.config";
 let bodyParser = require('body-parser');
 
 export class Server {
@@ -29,6 +30,7 @@ export class Server {
         let customerConfig =  new CustomerConfig();
         let branchConfig = new BranchConfig();
         let customerItemConfig = new CustomerItemConfig();
+        let orderConfig = new OrderConfig();
 
 
 
@@ -41,6 +43,7 @@ export class Server {
         let CustomerEndpoint = new EndpointExpress(this.router, customerConfig, responseHandler);
         let BranchEndpoint = new EndpointExpress(this.router, branchConfig, responseHandler);
         let CustomerItemEndpoint = new EndpointExpress(this.router, customerItemConfig, responseHandler);
+        let OrderEndpoint = new EndpointExpress(this.router, orderConfig, responseHandler);
 
         this.app.use(this.router);
 
