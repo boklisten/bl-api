@@ -6,15 +6,14 @@ export class SESchema {
     title: string;
     mongooseSchema: mongoose.Schema;
     mongooseModel: mongoose.Model<mongoose.Document>;
-    schemaConfig: SESchemaConfig;
     schema: any;
 
-    constructor(schemaConfig: SESchemaConfig, schema: any) {
-        this.schemaConfig = schemaConfig;
-        this.schema = schema;
-        this.mongooseSchema = this.createMongooseSchema(this.schema);
-        this.mongooseModel = this.createMongooseModel(this.mongooseSchema);
-        this.title = schemaConfig.name;
+    constructor(title: string, schema: any) {
+		this.title = title;
+		this.schema = schema;
+		this.mongooseSchema = this.createMongooseSchema(this.schema);
+		this.mongooseModel = this.createMongooseModel(this.mongooseSchema);
+
     }
 
     validateSchema(schemaConfig: SESchemaConfig): boolean {
@@ -22,7 +21,7 @@ export class SESchema {
     }
 
     createMongooseModel(mongooseSchema: mongoose.Schema) {
-        return mongoose.model<mongoose.Document>(this.schemaConfig.name, mongooseSchema);
+        return mongoose.model<mongoose.Document>(this.title, mongooseSchema);
     }
 
     createMongooseSchema(mschema: any) {

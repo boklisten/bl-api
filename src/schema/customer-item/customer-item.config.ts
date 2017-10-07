@@ -1,15 +1,16 @@
 
+
 import {EndpointConfig, Path} from "../../endpoint/endpoint.express";
 import {SESchema} from "../../config/schema/se.schema";
-import {BranchSchema} from "./branch.schema";
+import {CustomerItemSchema} from "./customer-item.schema";
 
-export class BranchConfig implements EndpointConfig {
-	basePath = 'api';
-	collectionName = 'branches';
-	schema = new SESchema('branch', BranchSchema);
+export class CustomerItemConfig implements EndpointConfig {
+	basePath: string = 'api';
+	collectionName: string = 'customerItems';
+	schema: SESchema = new SESchema('customerItem', CustomerItemSchema);
 	paths: Path[] = [
 		{
-            path: 'branches',
+            path: this.collectionName,
             id: false,
             methods: [
                 {
@@ -21,7 +22,7 @@ export class BranchConfig implements EndpointConfig {
             ]
         },
         {
-            path: 'branches',
+            path: this.collectionName,
             id: true,
             methods: [
                 {
@@ -39,10 +40,7 @@ export class BranchConfig implements EndpointConfig {
             ]
         }
 	];
-	validSearchParams: string[] = [
-		'name',
-		'type',
-		'desc',
-		'contactInfo*'
-	]
+    validSearchParams: string[] = [
+        'comments*'
+    ]
 }
