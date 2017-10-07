@@ -22,34 +22,46 @@ module.exports = function(grunt) {
                 files: ["src/\*\*/\*.ts"],
                 tasks: ["ts"],
             },
-	    js: {
-		files: ["dist/\*\*/\*.js"],
-		tasks: ["express:dev"],
-		options: {
-			spawn: false
-		}
-	    }
+	    	js: {
+				files: ["dist/\*\*/\*.js"],
+				tasks: ["express:dev"],
+				options: {
+					spawn: false
+				}
+	    	},
+			test: {
+            	files: ["src/**/*.test.ts"],
+				tasks: ["run:test"]
+			}
         },
-	nodemon: {
-		dev: {
-			script: './dist/server.js'
-		}
-	},
-	express: {
-		dev: {
-			options: {
+		nodemon: {
+			dev: {
 				script: './dist/server.js'
 			}
-		}
-	},
-	concurrent: {
-		dev: {
-			tasks: ['ts', 'nodemon', 'watch:ts'],
-			options: {
-				logConcurrentOutput: true
+		},
+		express: {
+			dev: {
+				options: {
+					script: './dist/server.js'
+				}
+			}
+			},
+		concurrent: {
+        	dev: {
+				tasks: ['ts', 'nodemon', 'watch:ts'],
+				options: {
+					logConcurrentOutput: true
+				}
+			}
+		},
+		run: {
+        	test: {
+        		cmd: "npm",
+				args: [
+					"test"
+				]
 			}
 		}
-	}
     });
 
     grunt.loadNpmTasks("grunt-contrib-copy");
@@ -57,7 +69,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-ts");
     grunt.loadNpmTasks("grunt-nodemon"); 
     grunt.loadNpmTasks("grunt-express-server"); 
-	grunt.loadNpmTasks("grunt-concurrent"); 
+	grunt.loadNpmTasks("grunt-concurrent");
+	grunt.loadNpmTasks("grunt-run");
 
     grunt.registerTask("default", [
         "copy",
@@ -69,6 +82,11 @@ module.exports = function(grunt) {
 		'ts',
 		'nodemon',
 		'watch:ts'
+	]);
+
+	grunt.registerTask("test", [
+		"run:test",
+		"watch:test"
 	]);
 
 };

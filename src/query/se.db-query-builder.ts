@@ -18,7 +18,7 @@ export class SEDbQueryBuilder {
 				resolve(dbQuery);
 
 			} catch (error) {
-				console.log('Error in SEDbQueryBuilder: ', error.stack, '\n');
+				//console.log('Error in SEDbQueryBuilder: ', error.stack, '\n');
 
 				reject(new SEErrorResponse(402, 'query not valid'));
 			}
@@ -38,7 +38,7 @@ export class SEDbQueryBuilder {
 		}
 	}
 
-	private createFilter(query: string): any {
+	private createFilter(query: any): any {
 		let filter: any = {};
 		let searchParamList = this.getSearchParamList(query);
 
@@ -53,6 +53,7 @@ export class SEDbQueryBuilder {
 	}
 
 	private isValidSearchParam(param: string): boolean {
+
 		for (let validParam of this.validParams) {
 			if (validParam[validParam.length-1] === '*' && validParam.length >= 2) {
 				let vp = validParam.substr(0, validParam.length-1);
@@ -177,6 +178,8 @@ export class SEDbQueryBuilder {
 			if (query.sort[0] === '-' && query.sort.length > 1) {
 				direction = -1;
 				sortParam = query.sort.substr(1, query.sort.length - 1);
+			} else {
+				sortParam = query.sort;
 			}
 			if (!this.isValidSearchParam(sortParam)) throw new Error('sort parameter "' + sortParam + '" is not a valid search param');
 
