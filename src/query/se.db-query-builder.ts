@@ -1,70 +1,58 @@
 
-import {Request} from 'express';
 import {SEErrorResponse} from "../response/se.error.response";
-import {connect} from "mongodb";
 import {SEDbQuery} from "./se.db-query";
 
 export class SEDbQueryBuilder {
-
-	$or: any[];
-	limit: number;
-	skip: number;
-	sort: any;
-	onlyGet: any;
 	validParams: string[];
-	filterParams: {key: string, val: string}[];
 
 	constructor() {
-		this.clearData();
+
 	}
 
 	public getDbQuery(query: any, validSearchParams: string[]): Promise<SEDbQuery> {
-		this.clearData();
 		this.validParams = validSearchParams;
 		return new Promise((resolve, reject) => {
-			if (!this.sanitizeQuery(query)) {
+			try {
+				let dbQuery = this.makeDbQuery(query);
+
+				resolve(dbQuery);
+
+			} catch (error) {
+				console.log('Error in SEDbQueryBuilder: ', error.stack, '\n');
+
 				reject(new SEErrorResponse(402, 'query not valid'));
-				return;
 			}
-			resolve(new SEDbQuery(this.createFilter(), this.onlyGet, this.skip, this.sort, this.limit));
 		});
 	}
 
-	private clearData() {
-		this.$or = [];
-		this.limit = 0;
-		this.skip = 0;
-		this.sort = {};
-		this.onlyGet = {};
-		this.validParams = [];
-		this.filterParams = [];
+	private makeDbQuery(query: any): SEDbQuery {
+		try {
+			let filter = this.createFilter(query);
+			let limit = this.createLimit(query);
+			let onlyGet = this.createOnlyGet(query);
+			let skip = this.createSkip(query);
+			let sort = this.createSort(query);
+			return new SEDbQuery(filter, onlyGet, skip, sort, limit);
+		} catch (error) {
+			throw new Error('could not create query: ' + '\n\t> ' + error.message);
+		}
 	}
 
-	private createFilter() {
+	private createFilter(query: string): any {
 		let filter: any = {};
-		if (this.$or.length > 0) {
-			filter.$or = this.$or;
+		let searchParamList = this.getSearchParamList(query);
+
+		if (searchParamList.length > 0) {
+			filter.$or = searchParamList;
 		}
 
-		for (let keyval of this.filterParams) {
+		for (let keyval of this.getFilterParams(query)) {
 			filter[keyval.key] = keyval.val;
 		}
-
 		return filter;
-
 	}
 
-	private sanitizeQuery(query: any): boolean {
-		this.setFilterParams(query);
-		if (!this.setSearchString(query.s)) return false;
-		if (!this.setLimit(query.limit)) return false;
-		if (!this.setOnlyGet(query.og)) return false;
-		if (!this.setSkip(query.skip)) return false;
-		if (!this.setSort(query.sort)) return false;
-		return true;
-	}
-
-	isValidSearchParam(param: string): boolean {
+	private isValidSearchParam(param: string): boolean {
 		for (let validParam of this.validParams) {
 			if (validParam[validParam.length-1] === '*' && validParam.length >= 2) {
 				let vp = validParam.substr(0, validParam.length-1);
@@ -81,8 +69,9 @@ export class SEDbQueryBuilder {
 		return false;
 	}
 
-	getBaseSearchParams(): string[] {
+	private getBaseSearchParams(): string[] {
 		let baseParams: string[] = [];
+
 		for (let validParam of this.validParams) {
 			if (validParam[validParam.length-1] === '*' && validParam.length >= 2) {
 				baseParams.push(validParam.substr(0, validParam.length-1	));
@@ -91,105 +80,109 @@ export class SEDbQueryBuilder {
 			}
 		}
 		return baseParams;
-
-
 	}
 
-	setFilterParams(query: any) {
+	private getFilterParams(query: any): {key: string, val: string}[] {
+		let filterParams: {key: string, val: string}[] = [];
+
 		for (let key in query) {
 			if (key.indexOf('.') > -1) {
 				let k = key.substr(0, key.length-1);
 				if (this.getBaseSearchParams().indexOf(k) > -1) {
-					this.filterParams.push({key: key, val: query[key]});
+					filterParams.push({key: key, val: query[key]});
 				}
 			} else {
 				if (this.getBaseSearchParams().indexOf(key) > -1) {
-					this.filterParams.push({key: key, val: query[key]});
+					filterParams.push({key: key, val: query[key]});
 				}
 			}
 		}
+		return filterParams;
 	}
 
-	setSearchString(s: any): boolean {
-		if (s) {
-			if (!this.validateString(s)) return false;
-			if (s.length < 3) return false;
+	private getSearchParamList(query: any): string[] {
+		let searchParamList: string[] = [];
+
+		if (query.s) {
+			if (!this.validateString(query.s)) throw new Error('search string "' + query.s + '" not valid');
+			if (query.s.length < 3) throw new Error('search string "' + query.s + '" to short, must be over or equal to 3 chars')
 
 			for (let field of this.getBaseSearchParams()) {
 				let orObj: any = {};
-				orObj[field] =  { $regex: new RegExp(s), $options: 'imx'};
-
-				this.$or.push(orObj);
+				orObj[field] =  { $regex: new RegExp(query.s), $options: 'imx'};
+				searchParamList.push(orObj);
 			}
 		}
-		return true;
+		return searchParamList;
 	}
 
-	setLimit(limit: any): boolean {
-		if (limit) {
-			if (!this.validateString(limit)) return false;
+	private createLimit(query: any): number {
+		let lim = 0;
 
-			let lim = 0;
+		if (query.limit) {
+			if (!this.validateString(query.limit)) throw new Error('limit string "' + query.limit +'" is not valid');
+
 			try  {
-				lim = parseInt(limit);
+				lim = parseInt(query.limit);
 			} catch(error) {
-				return false;
+				throw new Error('could not create limit, could not parse "' + query.limit + '" to int');
 			}
 
-			if (lim <= 0) return false;
-
-			this.limit = lim;
+			if (lim <= 0) throw new Error('failed to create limit, limit cant be under 0, it was: ' + lim);
 		}
-		return true;
+
+		return lim;
 	}
 
-	setOnlyGet(og: any): boolean {
-		if (og) {
-			if (!this.validateString(og)) return false;
-			let oglist = og.split(',');
+	private createOnlyGet(query: any): any {
+		let onlyGet: any = {};
+
+		if (query.og) {
+			if (!this.validateString(query.og)) throw new Error('the onlyGet sting "'+ query.og +'" is not valid');
+			let oglist = query.og.split(',');
 
 			for (let token of oglist) {
-				if (!this.isValidSearchParam(token)) return false;
-				this.onlyGet[token] = 1;
+				if (!this.isValidSearchParam(token)) throw new Error('the token "' + token + '" in the onlyGet string' +
+					' is not a valid search param');
+				onlyGet[token] = 1;
 			}
 		}
-		return true;
+		return onlyGet;
 	}
 
-	setSkip(skip: any): boolean {
-		if (skip) {
-			if (!this.validateString(skip)) return false;
-			let sk = 0;
+	private createSkip(query: any): number {
+		let skip = 0;
+
+		if (query.skip) {
+			if (!this.validateString(query.skip)) throw new Error('the skip string "' + query.skip + '" is not valid');
 			try {
-				sk = parseInt(skip);
+				skip = parseInt(query.skip);
 			} catch (error) {
-				return false;
+				throw new Error('skip string "' + query.skip +'" could not be parsed to int');
 			}
 
-			if (sk < 0) return false;
-
-			this.skip = sk;
+			if (skip < 0) throw new Error('skip number cant be under 0, here it was: ' + skip);
 		}
-		return true
+		return skip;
 	}
 
-	setSort(sort: any): boolean {
-		if (sort) {
+	private createSort(query: any): any {
+		let sort: any = {};
+
+		if (query.sort) {
 			let direction = 1;
+			let sortParam = '';
 
-			if (!this.validateString(sort)) return false;
-			if (sort[0] === '-' && sort.length > 1) {
+			if (!this.validateString(query.sort)) throw new Error('sort string "' + query.sort + '" is not valid');
+			if (query.sort[0] === '-' && query.sort.length > 1) {
 				direction = -1;
-				sort = sort.substr(1, sort.length - 1);
+				sortParam = query.sort.substr(1, query.sort.length - 1);
 			}
+			if (!this.isValidSearchParam(sortParam)) throw new Error('sort parameter "' + sortParam + '" is not a valid search param');
 
-			if (!this.isValidSearchParam(sort)) return false;
-
-			this.sort[sort] = direction;
-
+			sort[sortParam] = direction;
 		}
-
-		return true;
+		return sort;
 	}
 
 	private validateString(s: any): boolean {
@@ -197,7 +190,5 @@ export class SEDbQueryBuilder {
 		if (!(typeof s === 'string')) return false;
 		if (s.length <= 0) return false;
 		return true;
-
 	}
-
 }

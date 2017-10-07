@@ -25,6 +25,8 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-express-server": "^0.5.3",
     "grunt-nodemon": "^0.4.2",
-    "grunt-ts": "^6.0.0-beta.16"
+    "grunt-ts": "^6.0.0-beta.16",
+    "karma": "^1.7.1",
+    "karma-typescript": "^3.0.7"
   }
 }
