@@ -22,8 +22,16 @@ export class Server {
     constructor() {
 
         this.app = express();
+
         this.app.use(bodyParser.json());
         this.port = 3000;
+
+        let cors = require('cors');
+
+        cors({
+			'Access-Control-Allow-Origin': 'localhost'
+		});
+        this.app.use(cors());
 
         mongoose.connect('mongodb://localhost:27017/bl_test_a', {useMongoClient: true});
 
