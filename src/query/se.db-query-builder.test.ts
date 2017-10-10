@@ -1,12 +1,11 @@
 
-
+import 'mocha';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
+const should = chai.should();
 
 import {SEDbQuery} from "./se.db-query";
-
-let chai = require('chai');
-chai.use(require('chai-as-promised'));
-let should = chai.should();
-
 import {SEDbQueryBuilder} from "./se.db-query-builder";
 
 

@@ -1,11 +1,15 @@
 
 import {SEErrorResponse} from "../response/se.error.response";
 import {SEDbQuery} from "./se.db-query";
+import {DbQueryNumberFilter} from "./number-filter/db-query-number-filter";
 
 export class SEDbQueryBuilder {
 	validParams: string[];
+	private dbQueryNumberFilter: DbQueryNumberFilter;
 
 	constructor() {
+
+		this.dbQueryNumberFilter = new DbQueryNumberFilter();
 
 	}
 
@@ -18,8 +22,6 @@ export class SEDbQueryBuilder {
 				resolve(dbQuery);
 
 			} catch (error) {
-				//console.log('Error in SEDbQueryBuilder: ', error.stack, '\n');
-
 				reject(new SEErrorResponse(402, 'query not valid'));
 			}
 		});
@@ -49,6 +51,9 @@ export class SEDbQueryBuilder {
 		for (let keyval of this.getFilterParams(query)) {
 			filter[keyval.key] = keyval.val;
 		}
+
+		//this.dbQueryNumberFilter.getNumberFilter(query, ['price']);
+
 		return filter;
 	}
 

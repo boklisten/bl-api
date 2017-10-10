@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "mocha bootstrap.js src/**/*.test.ts",
+    "test": "mocha bootstrap.js \"src/**/*.test.ts\"",
     "grunt": "grunt"
   },
   "author": "holskil",

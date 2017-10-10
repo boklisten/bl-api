@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     "use strict";
 
     grunt.initConfig({
@@ -22,71 +22,79 @@ module.exports = function(grunt) {
                 files: ["src/\*\*/\*.ts"],
                 tasks: ["ts"],
             },
-	    	js: {
-				files: ["dist/\*\*/\*.js"],
-				tasks: ["express:dev"],
-				options: {
-					spawn: false
-				}
-	    	},
-			test: {
-            	files: ["src/**/*.test.ts"],
-				tasks: ["run:test"]
-			}
+            js: {
+                files: ["dist/\*\*/\*.js"],
+                tasks: ["express:dev"],
+                options: {
+                    spawn: false
+                }
+            },
+            test: {
+                files: ["src/\*\*/\*.ts"],
+                tasks: ["run:test"]
+            }
         },
-		nodemon: {
-			dev: {
-				script: './dist/server.js'
-			}
-		},
-		express: {
-			dev: {
-				options: {
-					script: './dist/server.js'
-				}
-			}
-			},
-		concurrent: {
-        	dev: {
-				tasks: ['ts', 'nodemon', 'watch:ts'],
-				options: {
-					logConcurrentOutput: true
-				}
-			}
-		},
-		run: {
-        	test: {
-        		cmd: "npm",
-				args: [
-					"test"
-				]
-			}
-		}
+        nodemon: {
+            dev: {
+                script: './dist/server.js'
+            }
+        },
+        express: {
+            dev: {
+                options: {
+                    script: './dist/server.js'
+                }
+            }
+        },
+        concurrent: {
+            dev: {
+                tasks: ['ts', 'nodemon', 'watch:ts'],
+                options: {
+                    logConcurrentOutput: true
+                }
+            },
+            test: {
+                tasks: ['run:test', 'watch:test'],
+                options: {
+                    logConcurrentOutput: true
+                }
+            }
+
+        },
+        run: {
+            test: {
+                cmd: "npm",
+                args: [
+                    "test"
+                ]
+            }
+        }
     });
 
     grunt.loadNpmTasks("grunt-contrib-copy");
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-ts");
-    grunt.loadNpmTasks("grunt-nodemon"); 
-    grunt.loadNpmTasks("grunt-express-server"); 
-	grunt.loadNpmTasks("grunt-concurrent");
-	grunt.loadNpmTasks("grunt-run");
+    grunt.loadNpmTasks("grunt-nodemon");
+    grunt.loadNpmTasks("grunt-express-server");
+    grunt.loadNpmTasks("grunt-concurrent");
+    grunt.loadNpmTasks("grunt-run");
 
     grunt.registerTask("default", [
         "copy",
         "ts"
     ]);
 
-	grunt.registerTask("dev", [
-		'concurrent',
-		'ts',
-		'nodemon',
-		'watch:ts'
-	]);
+    grunt.registerTask("dev", [
+        'concurrent:dev',
+        'ts',
+        'nodemon',
+        'watch:ts'
+    ]);
 
-	grunt.registerTask("test", [
-		"run:test",
-		"watch:test"
-	]);
+    grunt.registerTask("test", [
+        'concurrent:test',
+        "run:test",
+        "watch:test"
+    ]);
 
 };

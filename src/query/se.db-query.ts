@@ -13,29 +13,4 @@ export class SEDbQuery {
 		this.sort = sort;
 		this.limit = limit;
 	}
-
-	hasFilter(): boolean {
-		return (!this.filter);
-	}
-
-	hasOnlyGet(): boolean {
-		return (!this.onlyGet);
-	}
-
-	hasSkip(): boolean {
-		if (!this.skip) return false;
-		if (this.skip <= 0) return false;
-		return true;
-	}
-
-	hasSort(): boolean {
-		return (!this.sort);
-	}
-
-	hasLimit(): boolean {
-		if (!this.limit) return false;
-		if (this.limit <= 0) return false;
-		return true;
-	}
-
 }
