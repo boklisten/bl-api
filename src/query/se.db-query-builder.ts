@@ -52,7 +52,7 @@ export class SEDbQueryBuilder {
 			filter[keyval.key] = keyval.val;
 		}
 
-		//this.dbQueryNumberFilter.getNumberFilter(query, ['price']);
+		let numberFilters = this.dbQueryNumberFilter.getNumberFilters(query, ['price']);
 
 		return filter;
 	}

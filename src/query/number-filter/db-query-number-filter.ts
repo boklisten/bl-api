@@ -1,7 +1,5 @@
 
 
-import {error} from "util";
-
 export class DbQueryNumberFilter {
 
 	private operationIdentifiers = [
@@ -13,7 +11,7 @@ export class DbQueryNumberFilter {
 
 	constructor() {}
 
-	public getNumberFilters(query: any, validNumberParams: string[]) {
+	public getNumberFilters(query: any, validNumberParams: string[]): any[] {
 		let numberFilters = [];
 
 		if (!query || (Object.keys(query).length === 0 && query.constructor === Object)) throw new TypeError('the given query can not be null or undefined');
