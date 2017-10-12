@@ -12,7 +12,7 @@ describe('DbQueryNumberFilter', () => {
 
 	let dbQueryNumberFilter: DbQueryNumberFilter = new DbQueryNumberFilter();
 
-	describe('getNumberFilters() called with empty data', () => {
+	describe('getNumberFilters()', () => {
 
 		it('should throw error when no input is given', () => {
 			expect(() => {
@@ -43,29 +43,24 @@ describe('DbQueryNumberFilter', () => {
 
 			}).to.throw(TypeError);
 		});
-	});
 
-	describe('getNumberFilters() called with valid data', () => {
-		it('should return array containing "age: {$lt: 60}"', () => {
-			let result = [{age: {$lt: 60}}];
+		it('should return array containing "{fieldName: "age", op: {$lt: 60}}"', () => {
+			let result = [{fieldName: 'age', op: {$lt: 60}}];
 
 			expect(dbQueryNumberFilter.getNumberFilters({age: '<60'}, ['age'])).to.eql(result);
 		});
 
-		it('should return array equal to [{age: {$lt: 86, $gt: 12}}]', () => {
-			let result = [{age: {$lt: 86, $gt: 12}}];
+		it('should return array equal to [{filedName: "age", op: {$lt: 86, $gt: 12}}]', () => {
+			let result = [{fieldName: 'age', op: {$lt: 86, $gt: 12}}];
 
 			expect(dbQueryNumberFilter.getNumberFilters({age: ['<86', '>12']}, ['age'])).to.eql(result);
 		});
 
-		it('should return array with {age: 10}', () => {
-			let result = [{age: 10}];
+		it('should return array with {fieldName: "age", op: {$eq: 10}}', () => {
+			let result = [{fieldName: 'age', op: {$eq: 10}}];
 
 			expect(dbQueryNumberFilter.getNumberFilters({age: '10'}, ['age'])).to.eql(result);
 		});
-	});
-
-	describe('getNumberFilters() called with invalid data', () => {
 
 		it('should throw error when number is not valid', () => {
 			expect(() => {

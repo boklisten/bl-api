@@ -2,7 +2,7 @@ import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
-import {DbQueryRegexFilter} from "./db-query-search-filter";
+import {DbQueryRegexFilter} from "./db-query-regex-filter";
 
 chai.use(chaiAsPromised);
 
