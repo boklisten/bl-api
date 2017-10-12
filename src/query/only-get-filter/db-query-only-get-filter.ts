@@ -1,0 +1,47 @@
+
+
+
+export type OnlyGetFilter = {
+	fieldName: string
+}
+
+export class DbQueryOnlyGetFilter {
+
+	constructor() {}
+
+	public getOnlyGetFilters(query: any, validOnlyGetParams: string[]): OnlyGetFilter[] {
+
+		if (!query || Object.keys(query).length === 0 && query.constructor === Object) {
+
+			throw new TypeError('query can not be undefined or empty');
+		}
+
+		if (!query.og) return [];
+		if (validOnlyGetParams.length <= 0) return [];
+
+		return this.generateOnlyGetFilters(query.og, validOnlyGetParams);
+	}
+
+
+	private generateOnlyGetFilters(og: any, validOnlyGetParams: string[]): OnlyGetFilter[] {
+		let onlyGetParamArray = [];
+
+		if (!Array.isArray(og)) {
+			onlyGetParamArray.push(og);
+		} else {
+			onlyGetParamArray = og;
+		}
+
+
+		let onlyGetFilters: OnlyGetFilter[] = [];
+
+
+		for (let onlyGetParam of onlyGetParamArray) {
+			if (validOnlyGetParams.indexOf(onlyGetParam) <= -1) throw RangeError('the parameter "' + onlyGetParam + '" is not in validOnlyGetParams');
+			onlyGetFilters.push({fieldName: onlyGetParam});
+		}
+
+		return onlyGetFilters;
+
+	}
+}
