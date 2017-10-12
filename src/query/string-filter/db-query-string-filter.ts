@@ -1,25 +1,30 @@
 
+export type StringFilter = {
+	fieldName: string,
+	op: {
+		$eq: string
+	}
+}
+
 export class DbQueryStringFilter {
 
 
 	constructor() {}
 
-	getStringFilters(query: any, validStringParams: string[]): any[] {
+	getStringFilters(query: any, validStringParams: string[]): StringFilter[] {
 
 		if (!query || Object.keys(query).length === 0 && query.constructor === Object) {
 			throw new TypeError('query can not be undefined or empty');
 		}
 		if (validStringParams.length <= 0) return [];
 
-		let stringFilters: any[] = [];
+		let stringFilters: StringFilter[] = [];
 
 
 		try {
 			for (let param in query) {
 				if (validStringParams.indexOf(param) > -1 ) {
-					let stringFilter: any = {};
-					stringFilter[param] = this.getStringParamValue(query[param]);
-					stringFilters.push(stringFilter);
+					stringFilters.push({fieldName: param, op: {$eq: this.getStringParamValue(query[param])}});
 				}
 			}
 
