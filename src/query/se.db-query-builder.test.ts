@@ -9,6 +9,8 @@ import {SEDbQuery} from "./se.db-query";
 import {SEDbQueryBuilder} from "./se.db-query-builder";
 
 
+/*
+
 describe('SEDbQueryBuilder', () => {
 	describe('getDBQuery', () => {
 		let seDbQueryBuilder = new SEDbQueryBuilder();
@@ -68,3 +70,5 @@ describe('SEDbQueryBuilder', () => {
 	})
 
 });
+
+*/

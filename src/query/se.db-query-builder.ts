@@ -2,15 +2,16 @@
 import {SEErrorResponse} from "../response/se.error.response";
 import {SEDbQuery} from "./se.db-query";
 import {DbQueryNumberFilter} from "./number-filter/db-query-number-filter";
+import {DbQueryStringFilter} from "./string-filter/db-query-string-filter";
 
 export class SEDbQueryBuilder {
 	validParams: string[];
 	private dbQueryNumberFilter: DbQueryNumberFilter;
+	private dbQueryStringFilter: DbQueryStringFilter;
 
 	constructor() {
-
 		this.dbQueryNumberFilter = new DbQueryNumberFilter();
-
+		this.dbQueryStringFilter = new DbQueryStringFilter();
 	}
 
 	public getDbQuery(query: any, validSearchParams: string[]): Promise<SEDbQuery> {
@@ -34,6 +35,8 @@ export class SEDbQueryBuilder {
 			let onlyGet = this.createOnlyGet(query);
 			let skip = this.createSkip(query);
 			let sort = this.createSort(query);
+			let stringFilters = this.dbQueryStringFilter.getStringFilters(query, []);
+			let numberFilters = this.dbQueryNumberFilter.getNumberFilters(query, ['name']);
 			return new SEDbQuery(filter, onlyGet, skip, sort, limit);
 		} catch (error) {
 			throw new Error('could not create query: ' + '\n\t> ' + error.message);

@@ -56,6 +56,8 @@ export class Server {
         let OrderEndpoint = new EndpointExpress(this.router, orderConfig, responseHandler);
         let OrderItemEndpoint = new EndpointExpress(this.router, orderItemConfig, responseHandler);
 
+        customerConfig.schema.getValidParamsForType('String');
+
         this.app.use(this.router);
 
         this.app.listen(this.port, () => {

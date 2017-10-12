@@ -43,4 +43,17 @@ export class SESchema {
 
         return new mongoose.Schema(mschema);
     }
+
+    getValidParamsForType(type: "String" | "Number" | "Date"): string[] {
+    	let validParamsForType: string[] = [];
+    	for (let value of this.schema) {
+    		console.log(value);
+    		if (value.type.schemaName === type) {
+    			validParamsForType.push(value[0]);
+		    }
+	    }
+	    console.log('valid values', validParamsForType);
+
+	    return [];
+    }
 }
