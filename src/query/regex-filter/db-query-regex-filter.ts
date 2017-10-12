@@ -13,9 +13,14 @@ export class DbQueryRegexFilter {
 
 	}
 
-	getRegexFilters(searchString: string, validRegexParams: string[]): RegexFilter[] {
+	getRegexFilters(query: any, validRegexParams: string[]): RegexFilter[] {
+		if (!query || Object.keys(query).length === 0 && query.constructor === Object) {
+			throw new TypeError('query can not be undefined or empty');
+		}
 
-		if (!searchString) throw new ReferenceError('searchString is not defined');
+		let searchString = query.s;
+
+		if (!searchString) return [];
 		if (searchString.length < 3) throw new TypeError('search string "' + searchString+ '" is under 3 chars long');
 
 		return this.generateRegexFilters(searchString, validRegexParams);

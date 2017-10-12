@@ -37,7 +37,7 @@ export class DbQueryOnlyGetFilter {
 
 
 		for (let onlyGetParam of onlyGetParamArray) {
-			if (validOnlyGetParams.indexOf(onlyGetParam) <= -1) throw RangeError('the parameter "' + onlyGetParam + '" is not in validOnlyGetParams');
+			if (validOnlyGetParams.indexOf(onlyGetParam) <= -1) throw ReferenceError('the parameter "' + onlyGetParam + '" is not in validOnlyGetParams');
 			onlyGetFilters.push({fieldName: onlyGetParam});
 		}
 

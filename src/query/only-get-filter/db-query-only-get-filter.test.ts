@@ -30,10 +30,10 @@ describe('DbQueryOnlyGetFilter', () => {
 			expect(dbQueryOnlyGetFilter.getOnlyGetFilters({og: ['name', 'age']}, ['name', 'age', 'desc'])).to.eql(result);
 		});
 
-		it('should throw RangeError if a parameter in onlyGet is not in validOnlyGetParams', () => {
+		it('should throw ReferenceError if a parameter in onlyGet is not in validOnlyGetParams', () => {
 			expect(() => {
 				dbQueryOnlyGetFilter.getOnlyGetFilters({og: 'age'}, ['name']);
-			}).to.throw(RangeError);
+			}).to.throw(ReferenceError);
 		});
 	});
 });

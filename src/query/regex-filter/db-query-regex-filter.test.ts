@@ -11,26 +11,24 @@ describe('DbQueryRegexFilter', () => {
 
 	describe('getRegexFilters()', () => {
 
-		it('should throw error when searchString is empty', () => {
-			expect(() => {
-				dbQueryRegexFilter.getRegexFilters('', []);
-			}).to.throw(ReferenceError);
+		it('should return empty array when searchString is empty', () => {
+			expect(dbQueryRegexFilter.getRegexFilters({name: 'hello'}, [])).to.eql([]);
 		});
 
 
-		it('should throw TypeError when search param is under 3 characters long', () => {
+		it('should throw TypeError when search fieldName is under 3 characters long', () => {
 			expect(() => {
-				dbQueryRegexFilter.getRegexFilters( 'si', ['name'])
+				dbQueryRegexFilter.getRegexFilters({s: 'si'}, ['name'])
 			}).to.throw(TypeError)
 		});
 
 		it('should return empty array when validSearchParams is empty', () => {
-			expect(dbQueryRegexFilter.getRegexFilters('hello', [])).to.eql([]);
+			expect(dbQueryRegexFilter.getRegexFilters({s: 'hello'}, [])).to.eql([]);
 		});
 
 		it('should return array like [{name: {$regex: "sig", $options: "imx"}}]', () => {
 			let result = [{fieldName: 'name', op: {$regex: 'sig', $options: 'imx'}}];
-			expect(dbQueryRegexFilter.getRegexFilters('sig', ['name'])).to.eql(result);
+			expect(dbQueryRegexFilter.getRegexFilters({s: 'sig'}, ['name'])).to.eql(result);
 		});
 
 		it('should return array containing regexfilter objects for all params in validRegexParams', () => {
@@ -42,9 +40,9 @@ describe('DbQueryRegexFilter', () => {
 			];
 
 			let validRegexParams = ['name', 'message', 'info', 'desc'];
-			let searchParam = 'hello';
+			let query = {s: 'hello'};
 
-			expect(dbQueryRegexFilter.getRegexFilters(searchParam, validRegexParams)).to.eql(result);
+			expect(dbQueryRegexFilter.getRegexFilters(query, validRegexParams)).to.eql(result);
 
 		});
 

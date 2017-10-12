@@ -1,6 +1,6 @@
 
 export type ValidParam = {
-	param: string,
+	fieldName: string,
 	type: 'string' | 'number'
 }
 
@@ -19,18 +19,29 @@ export class DbQueryValidParams {
 		return this.getValidParamsBasedOnType('string');
 	}
 
+	public getAllValidParams(): string[] {
+		let allValidParams: string[] = [];
+
+		for (let validParam of this.validParams) {
+			allValidParams.push(validParam.fieldName);
+		}
+
+		return allValidParams;
+	}
 
 	private getValidParamsBasedOnType(type: string) {
 		let validParamsBasedOnType: string[] = [];
 
 		for (let validParam of this.validParams) {
 			if (validParam.type === type) {
-				validParamsBasedOnType.push(validParam.param);
+				validParamsBasedOnType.push(validParam.fieldName);
 			}
 		}
 
 		return validParamsBasedOnType;
 	}
+
+
 
 
 }

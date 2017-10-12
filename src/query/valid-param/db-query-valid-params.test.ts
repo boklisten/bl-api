@@ -18,8 +18,8 @@ describe('DbQueryValidParams', () => {
 		it('should return array like ["name", "desc"] ', () => {
 
 			let validParams: ValidParam[] = [];
-			validParams.push({param: 'age', type: 'number'});
-			validParams.push({param: 'price', type: 'number'});
+			validParams.push({fieldName: 'age', type: 'number'});
+			validParams.push({fieldName: 'price', type: 'number'});
 			let dbQueryValidParams: DbQueryValidParams = new DbQueryValidParams(validParams);
 			let result = ['age', 'price'];
 
@@ -28,7 +28,7 @@ describe('DbQueryValidParams', () => {
 		});
 
 		it('should return empty array if none of the validParams are of type number', () => {
-			let validParams: ValidParam[] = [{param: 'name', type: 'string'}];
+			let validParams: ValidParam[] = [{fieldName: 'name', type: 'string'}];
 			let dbQueryValidParams: DbQueryValidParams = new DbQueryValidParams(validParams);
 			expect(dbQueryValidParams.getValidNumberParams()).to.eql([]);
 		});
@@ -37,8 +37,8 @@ describe('DbQueryValidParams', () => {
 	describe('getValidStringParams()', () => {
 		it('should return string array with names of all validParams with type string', () => {
 			let validParams: ValidParam[] = [
-				{param: 'name', type: 'string'},
-				{param: 'desc', type: 'string'}
+				{fieldName: 'name', type: 'string'},
+				{fieldName: 'desc', type: 'string'}
 			];
 			let dbQuertyValidParams: DbQueryValidParams = new DbQueryValidParams(validParams);
 			let result = ['name', 'desc'];
@@ -48,7 +48,7 @@ describe('DbQueryValidParams', () => {
 
 		it('should return empty array if no validParams with type "string" is given', () => {
 			let validParams: ValidParam[] = [
-				{param: 'age', type: 'number'}
+				{fieldName: 'age', type: 'number'}
 			];
 
 			let dbQueryValidParams: DbQueryValidParams = new DbQueryValidParams(validParams);
