@@ -8,9 +8,11 @@ import {DbQueryRegexFilter} from "./regex-filter/db-query-regex-filter";
 import {DbQuerySkipFilter} from "./skip-filter/db-query-skip-filter";
 import {DbQuerySortFilter} from "./sort-filter/db-query-sort-filter";
 import {DbQueryValidParams, ValidParam} from "./valid-param/db-query-valid-params";
+import {DbQueryBooleanFilter} from "./boolean-filter/db-query-boolean-filter";
 
 export class SEDbQueryBuilder {
 	validParams: string[];
+	private dbQueryBooleanFilter: DbQueryBooleanFilter;
 	private dbQueryLimitFilter: DbQueryLimitFilter;
 	private dbQueryNumberFilter: DbQueryNumberFilter;
 	private dbQueryOnlyGetFilter: DbQueryOnlyGetFilter;
@@ -21,6 +23,7 @@ export class SEDbQueryBuilder {
 	private dbQueryValidParams: DbQueryValidParams;
 
 	constructor() {
+		this.dbQueryBooleanFilter = new DbQueryBooleanFilter();
 		this.dbQueryLimitFilter = new DbQueryLimitFilter();
 		this.dbQueryNumberFilter = new DbQueryNumberFilter();
 		this.dbQueryOnlyGetFilter = new DbQueryOnlyGetFilter();
@@ -41,6 +44,7 @@ export class SEDbQueryBuilder {
 		let dbQuery: SEDbQuery = new SEDbQuery();
 
 		try {
+			dbQuery.booleanFilters = this.dbQueryBooleanFilter.getBooleanFilters(query, this.dbQueryValidParams.getValidBooleanParams());
 			dbQuery.limitFilter = this.dbQueryLimitFilter.getLimitFilter(query);
 			dbQuery.numberFilters = this.dbQueryNumberFilter.getNumberFilters(query, this.dbQueryValidParams.getValidNumberParams());
 			dbQuery.onlyGetFilters = this.dbQueryOnlyGetFilter.getOnlyGetFilters(query, this.dbQueryValidParams.getAllValidParams());

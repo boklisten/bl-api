@@ -6,8 +6,10 @@ import {SkipFilter} from "./skip-filter/db-query-skip-filter";
 import {SortFilter} from "./sort-filter/db-query-sort-filter";
 import {LimitFilter} from "./limit-filter/db-query-limit-filter";
 import {RegexFilter} from "./regex-filter/db-query-regex-filter";
+import {BooleanFilter} from "./boolean-filter/db-query-boolean-filter";
 
 export class SEDbQuery {
+	booleanFilters: BooleanFilter[];
 	numberFilters: NumberFilter[];
 	stringFilters: StringFilter[];
 	onlyGetFilters: OnlyGetFilter[];
@@ -18,6 +20,7 @@ export class SEDbQuery {
 
 
 	constructor() {
+		this.booleanFilters = [];
 		this.numberFilters = [];
 		this.stringFilters = [];
 		this.onlyGetFilters = [];
