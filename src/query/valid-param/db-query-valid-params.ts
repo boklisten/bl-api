@@ -1,7 +1,7 @@
 
 export type ValidParam = {
 	fieldName: string,
-	type: 'string' | 'number'
+	type: 'string' | 'number' | 'boolean'
 }
 
 export class DbQueryValidParams {
@@ -17,6 +17,10 @@ export class DbQueryValidParams {
 
 	public getValidStringParams(): string[] {
 		return this.getValidParamsBasedOnType('string');
+	}
+
+	public getValidBooleanParams(): string[] {
+		return this.getValidParamsBasedOnType('boolean');
 	}
 
 	public getAllValidParams(): string[] {

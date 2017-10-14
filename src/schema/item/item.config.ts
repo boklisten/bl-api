@@ -4,6 +4,7 @@
 import {EndpointConfig, Path} from "../../endpoint/endpoint.express";
 import {SESchema} from "../../config/schema/se.schema";
 import {ItemSchema} from "./item.schema";
+import {ValidParam} from "../../query/valid-param/db-query-valid-params";
 
 export class ItemConfig implements EndpointConfig {
     basePath: string = 'api';
@@ -41,10 +42,8 @@ export class ItemConfig implements EndpointConfig {
             ]
         }
     ];
-    validSearchParams: string[] = [
-    	'title',
-		'type',
-		'info*',
-		'desc'
+    validSearchParams: ValidParam[] = [
+        {fieldName: 'title', type: 'string'},
+        {fieldName: 'desc', type: 'string'}
 	]
 }

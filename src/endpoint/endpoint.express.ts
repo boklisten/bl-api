@@ -9,6 +9,7 @@ import {SEResponse} from "../response/se.response";
 import {SEErrorResponse} from "../response/se.error.response";
 import {SEDbQueryBuilder} from "../query/se.db-query-builder";
 import {SEDbQuery} from "../query/se.db-query";
+import {ValidParam} from "../query/valid-param/db-query-valid-params";
 
 
 
@@ -17,7 +18,7 @@ export type EndpointConfig = {
     collectionName: string,
     schema: SESchema,
     paths: Path[],
-	validSearchParams: string[];
+	validSearchParams: ValidParam[];
 }
 
 export type Path = {
@@ -75,19 +76,19 @@ export class EndpointExpress {
     createGet(router: express.Router, path: Path) {
 		if (!path.id) {
 			router.get(this.createPath(path.path), (req: express.Request, res: express.Response) => {
-				this.seQuery.getDbQuery(req.query, this.config.validSearchParams).then(
-					(dbQuery: SEDbQuery) => {
-						this.endpointMongoDb.get(dbQuery).then(
+
+				try {
+					let dbQuery = this.seQuery.getDbQuery(req.query, this.config.validSearchParams);
+					this.endpointMongoDb.get(dbQuery).then(
 							(docs: SEDocument[]) => {
 								this.resHandler.sendResponse(res, new SEResponse(docs));
 							},
 							(error: SEErrorResponse) => {
 								this.resHandler.sendErrorResponse(res, error);
 							});
-					},
-					(error: SEErrorResponse) => {
-						this.resHandler.sendErrorResponse(res, error);
-					});
+				} catch (error) {
+					console.log('Endpoint got error from queryBuilder');
+				}
 			});
 		} else {
 			router.get(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {

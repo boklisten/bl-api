@@ -3,6 +3,7 @@
 import {EndpointConfig, Path} from "../../endpoint/endpoint.express";
 import {SESchema} from "../../config/schema/se.schema";
 import {CustomerSchema} from "./customer.schema";
+import {ValidParam} from "../../query/valid-param/db-query-valid-params";
 
 export class CustomerConfig implements EndpointConfig {
 	basePath = 'api';
@@ -40,14 +41,19 @@ export class CustomerConfig implements EndpointConfig {
 			]
 		}
 	];
-	validSearchParams: string[] = [
-		'name',
-		'address',
-		'postCode',
-		'postCity',
-		'country',
-		'email',
-		'guardianName',
-		'guardianEmail'
+	validSearchParams: ValidParam[] = [
+		{fieldName: 'name', type: "string"},
+		{fieldName: 'phone', type: "number"},
+		{fieldName: 'address', type: "string"},
+		{fieldName: 'postCode', type: "string"},
+		{fieldName: 'postCity', type: "string"},
+		{fieldName: 'country', type: "string"},
+		{fieldName: 'email', type: "string"},
+		{fieldName: 'emailConfirmed', type: "boolean"},
+		{fieldName: 'guardianName', type: "string"},
+		{fieldName: 'guardianEmail', type: "string"},
+		{fieldName: 'guardianEmailConfirmed', type: "boolean"},
+		{fieldName: 'guardianPhone', type: "number"},
+		{fieldName: 'guardianConfirmed', type: "boolean"}
 	]
 }
