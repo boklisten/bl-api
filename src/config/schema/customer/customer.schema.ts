@@ -46,21 +46,24 @@ export let CustomerSchema = {
 		type: Schema.Types.Date,
 		default: Date.now()
 	},
-	guardianName: {
-		type: Schema.Types.String
-	},
-	guardianEmail: {
-		type: Schema.Types.String
-	},
-	guardianEmailConfirmed: {
-		type: Schema.Types.Boolean
-	},
-	guardianPhone: {
-		type: Schema.Types.Number
-	},
-	guardianConfirmed: {
-		type: Schema.Types.Boolean
+	guardian: {
+		name: {
+			type: Schema.Types.String
+		},
+		email: {
+			type: Schema.Types.String
+		},
+		emailConfirmed: {
+			type: Schema.Types.Boolean
+		},
+		phone: {
+			type: Schema.Types.Number
+		},
+		confirmed: {
+			type: Schema.Types.Boolean
+		}
 	}
+
 
 
 };

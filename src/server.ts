@@ -4,7 +4,7 @@ import * as mongoose from 'mongoose';
 import {EndpointExpress} from "./endpoint/endpoint.express";
 import {Application, Router} from "express";
 import {ItemConfig} from "./schema/item/item.config";
-import {CustomerConfig} from "./schema/customer/customer.config";
+import {CustomerConfig} from "./config/schema/customer/customer.config";
 import {BranchConfig} from "./schema/branch/branch.config";
 import {SEResponseHandler} from "./response/se.response.handler";
 import {CustomerItemConfig} from "./schema/customer-item/customer-item.config";

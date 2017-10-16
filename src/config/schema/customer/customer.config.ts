@@ -1,9 +1,9 @@
 
 
-import {EndpointConfig, Path} from "../../endpoint/endpoint.express";
-import {SESchema} from "../../config/schema/se.schema";
+import {EndpointConfig, Path} from "../../../endpoint/endpoint.express";
+import {SESchema} from "../se.schema";
 import {CustomerSchema} from "./customer.schema";
-import {ValidParam} from "../../query/valid-param/db-query-valid-params";
+import {ValidParam} from "../../../query/valid-param/db-query-valid-params";
 
 export class CustomerConfig implements EndpointConfig {
 	basePath = 'api';
@@ -50,10 +50,10 @@ export class CustomerConfig implements EndpointConfig {
 		{fieldName: 'country', type: "string"},
 		{fieldName: 'email', type: "string"},
 		{fieldName: 'emailConfirmed', type: "boolean"},
-		{fieldName: 'guardianName', type: "string"},
-		{fieldName: 'guardianEmail', type: "string"},
-		{fieldName: 'guardianEmailConfirmed', type: "boolean"},
-		{fieldName: 'guardianPhone', type: "number"},
-		{fieldName: 'guardianConfirmed', type: "boolean"}
+		{fieldName: 'guardian.name', type: "string"},
+		{fieldName: 'guardian.email', type: "string"},
+		{fieldName: 'guardian.emailConfirmed', type: "boolean"},
+		{fieldName: 'guardian.phone', type: "number"},
+		{fieldName: 'guardian.confirmed', type: "boolean"}
 	]
 }
