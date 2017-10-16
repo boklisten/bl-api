@@ -2,6 +2,7 @@ import {SESchema} from "../config/schema/se.schema";
 import {SEDocument} from "../db/model/se.document";
 import {SEErrorResponse} from "../response/se.error.response";
 import {SEDbQuery} from "../query/se.db-query";
+import {mongo} from "mongoose";
 
 export class EndpointMongodb {
 	schema: SESchema;
@@ -62,7 +63,7 @@ export class EndpointMongodb {
 		return new Promise((resolve, reject) => {
 			this.schema.mongooseModel.findOne({_id: id}, (error, doc) => {
 				if (error) {
-					reject(new SEErrorResponse(500, 'server error', error));
+					reject(this.handleError(error));
 					return;
 				}
 
@@ -123,5 +124,13 @@ export class EndpointMongodb {
 				resolve([new SEDocument(this.schema.title, doc)]);
 			});
 		});
+	}
+
+	private handleError(error: any): SEErrorResponse {
+		if (error.name === 'CastError') {
+			return new SEErrorResponse(404);
+		} else {
+			return new SEErrorResponse(500);
+		}
 	}
 }

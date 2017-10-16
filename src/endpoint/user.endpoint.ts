@@ -78,11 +78,7 @@ export class UserEndpoint {
 				},
 				(error: SEErrorResponse) => {
 					this.resHandler.sendErrorResponse(res, error);
-				}
-
-			)
-			res.send('yes');
-
+				});
 		})
 
 	}
