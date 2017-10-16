@@ -79,15 +79,18 @@ export class EndpointExpress {
 
 				try {
 					let dbQuery = this.seQuery.getDbQuery(req.query, this.config.validSearchParams);
+
 					this.endpointMongoDb.get(dbQuery).then(
-							(docs: SEDocument[]) => {
-								this.resHandler.sendResponse(res, new SEResponse(docs));
+					(docs: SEDocument[]) => {
+						this.resHandler.sendResponse(res, new SEResponse(docs));
 							},
-							(error: SEErrorResponse) => {
+					(error: SEErrorResponse) => {
 								this.resHandler.sendErrorResponse(res, error);
-							});
+					});
+
 				} catch (error) {
-					console.log('Endpoint got error from queryBuilder');
+					this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+					return;
 				}
 			});
 		} else {

@@ -35,7 +35,7 @@ describe('DbQueryStringFilter', () => {
 
 		it('should not change values in query that are not in ValidStringParams', () => {
 			let result = [
-				{fieldName: 'name', op: {$eq: 'albert'}}
+				{fieldName: 'name', value: 'albert'}
 			];
 			expect(dbQueryStringFilter.getStringFilters({name: 'albert', phone: '123'}, ['name'])).to.eql(result);
 		});
@@ -43,8 +43,8 @@ describe('DbQueryStringFilter', () => {
 		it('should return correct array given valid input', () => {
 			let query = {name: 'billy bob', desc: 'hello there this is bob', age: '10'};
 			let result = [
-				{fieldName: 'name', op: {$eq: 'billy bob'}},
-				{fieldName: 'desc', op: {$eq: 'hello there this is bob'}}
+				{fieldName: 'name', value: 'billy bob'},
+				{fieldName: 'desc', value: 'hello there this is bob'}
 			];
 			expect(dbQueryStringFilter.getStringFilters(query, ['name', 'desc', 'title'])).to.eql(result);
 

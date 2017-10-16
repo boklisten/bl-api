@@ -41,7 +41,7 @@ describe('DbQueryBuilder', () => {
 			];
 
 			result.limitFilter = {limit: 3};
-			result.onlyGetFilters = [{fieldName: 'name'}];
+			result.onlyGetFilters = [{fieldName: 'name', value: 1}];
 
 			let validParams: ValidParam[] = [
 				{fieldName: 'name', type: 'string'},

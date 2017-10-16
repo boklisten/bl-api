@@ -2,7 +2,8 @@
 
 
 export type OnlyGetFilter = {
-	fieldName: string
+	fieldName: string,
+	value: number
 }
 
 export class DbQueryOnlyGetFilter {
@@ -38,7 +39,7 @@ export class DbQueryOnlyGetFilter {
 
 		for (let onlyGetParam of onlyGetParamArray) {
 			if (validOnlyGetParams.indexOf(onlyGetParam) <= -1) throw ReferenceError('the parameter "' + onlyGetParam + '" is not in validOnlyGetParams');
-			onlyGetFilters.push({fieldName: onlyGetParam});
+			onlyGetFilters.push({fieldName: onlyGetParam, value: 1});
 		}
 
 		return onlyGetFilters;

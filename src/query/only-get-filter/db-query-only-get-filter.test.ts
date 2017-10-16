@@ -23,8 +23,8 @@ describe('DbQueryOnlyGetFilter', () => {
 
 		it('should return array with correct onlyGet fields', () => {
 			let result = [
-				{fieldName: 'name'},
-				{fieldName: 'age'}
+				{fieldName: 'name', value: 1},
+				{fieldName: 'age', value: 1}
 			];
 
 			expect(dbQueryOnlyGetFilter.getOnlyGetFilters({og: ['name', 'age']}, ['name', 'age', 'desc'])).to.eql(result);

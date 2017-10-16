@@ -1,9 +1,7 @@
 
 export type StringFilter = {
 	fieldName: string,
-	op: {
-		$eq: string
-	}
+	value: string
 }
 
 export class DbQueryStringFilter {
@@ -24,7 +22,7 @@ export class DbQueryStringFilter {
 		try {
 			for (let param in query) {
 				if (validStringParams.indexOf(param) > -1 ) {
-					stringFilters.push({fieldName: param, op: {$eq: this.getStringParamValue(query[param])}});
+					stringFilters.push({fieldName: param, value: this.getStringParamValue(query[param])});
 				}
 			}
 

@@ -29,4 +29,57 @@ export class SEDbQuery {
 		this.limitFilter = {limit: 0};
 		this.regexFilters = [];
 	}
+
+	getFilter(): any {
+		let filterObj: any = {};
+
+		for (let booleanFilter of this.booleanFilters) {
+			filterObj[booleanFilter.fieldName] = booleanFilter.value;
+		}
+
+		for (let numberFilter of this.numberFilters) {
+			filterObj[numberFilter.fieldName] = numberFilter.op;
+		}
+
+		for (let stringFilter of this.stringFilters) {
+			filterObj[stringFilter.fieldName] = stringFilter.value;
+		}
+
+		for (let regexFilter of this.regexFilters) {
+			filterObj[regexFilter.fieldName] = regexFilter.op;
+		}
+
+		return filterObj;
+	}
+
+	getOgFilter(): any {
+
+		let ogFilterObj: any = {};
+
+		for (let ogFilter of this.onlyGetFilters) {
+			ogFilterObj[ogFilter.fieldName] = ogFilter.value;
+		}
+		return ogFilterObj;
+
+	}
+
+	getLimitFilter(): number {
+		return this.limitFilter.limit;
+	}
+
+	getSkipFilter(): number {
+		return this.skipFilter.skip;
+	}
+
+	getSortFilter(): any {
+
+		let sortFilterObj: any = {};
+
+		for (let sortFilter of this.sortFilters) {
+			sortFilterObj[sortFilter.fieldName] = sortFilter.direction;
+		}
+
+		return sortFilterObj;
+
+	}
 }
