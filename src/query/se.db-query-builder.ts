@@ -11,7 +11,6 @@ import {DbQueryValidParams, ValidParam} from "./valid-param/db-query-valid-param
 import {DbQueryBooleanFilter} from "./boolean-filter/db-query-boolean-filter";
 
 export class SEDbQueryBuilder {
-	validParams: string[];
 	private dbQueryBooleanFilter: DbQueryBooleanFilter;
 	private dbQueryLimitFilter: DbQueryLimitFilter;
 	private dbQueryNumberFilter: DbQueryNumberFilter;
@@ -37,11 +36,11 @@ export class SEDbQueryBuilder {
 	public getDbQuery(query: any, validQueryParams: ValidParam[]): SEDbQuery {
 		this.dbQueryValidParams = new DbQueryValidParams(validQueryParams);
 
-		if (!query || Object.keys(query).length === 0 && query.constructor === Object) {
-			throw new TypeError('query can not be undefined or empty');
-		}
-
 		let dbQuery: SEDbQuery = new SEDbQuery();
+
+		if (!query || Object.keys(query).length === 0 && query.constructor === Object) {
+			return dbQuery;
+		}
 
 		try {
 			dbQuery.booleanFilters = this.dbQueryBooleanFilter.getBooleanFilters(query, this.dbQueryValidParams.getValidBooleanParams());

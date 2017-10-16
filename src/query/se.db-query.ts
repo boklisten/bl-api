@@ -45,8 +45,17 @@ export class SEDbQuery {
 			filterObj[stringFilter.fieldName] = stringFilter.value;
 		}
 
+		let orArr: any = [];
+
 		for (let regexFilter of this.regexFilters) {
-			filterObj[regexFilter.fieldName] = regexFilter.op;
+
+			let regexFilterObj: any = {};
+			regexFilterObj[regexFilter.fieldName] = regexFilter.op;
+			orArr.push(regexFilterObj);
+		}
+
+		if (orArr.length > 0) {
+			filterObj['$or'] = orArr;
 		}
 
 		return filterObj;

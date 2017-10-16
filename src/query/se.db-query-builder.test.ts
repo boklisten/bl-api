@@ -13,10 +13,8 @@ describe('DbQueryBuilder', () => {
 	describe('getDbQuery()', () => {
 		let dbQueryBuilder: SEDbQueryBuilder = new SEDbQueryBuilder();
 
-		it('should throw TypeError if query is null or empty', () => {
-			expect(() => {
-				dbQueryBuilder.getDbQuery({}, [{fieldName: 'name', type: 'string'}]);
-			}).to.throw(TypeError);
+		it('should throw return empty SeDbQuery object if no query is given', () => {
+			expect(dbQueryBuilder.getDbQuery({}, [{fieldName: 'name', type: 'string'}])).to.eql(new SEDbQuery());
 		});
 
 		it('should return SedbQuery with skip equal to 5', () => {

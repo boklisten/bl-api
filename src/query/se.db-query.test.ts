@@ -15,10 +15,11 @@ describe('SEDbQuery', () => {
 			dbQuery.booleanFilters = [{fieldName: 'isHungry', value: true}, {fieldName: 'haveCar', value: false}];
 			dbQuery.stringFilters = [{fieldName: 'name', value: 'Bob Marley'}];
 			dbQuery.numberFilters = [
-				{fieldName: 'age', op: {$eq: 20}},
+				{fieldName: 'age', op: {$eq: 20}}
 			];
 			dbQuery.regexFilters = [
-				{fieldName: 'desc', op: {$regex: 'balloon', $options: 'imx'}}
+				{fieldName: 'desc', op: {$regex: 'balloon', $options: 'imx'}},
+				{fieldName: 'title', op: {$regex: 'balloon', $options: 'imx'}}
 			];
 
 			let result = {
@@ -26,7 +27,10 @@ describe('SEDbQuery', () => {
 				haveCar: false,
 				name: 'Bob Marley',
 				age: {$eq: 20},
-				desc: {$regex: 'balloon', $options: 'imx'}
+				$or: [
+					{desc: {$regex: 'balloon', $options: 'imx'}},
+					{title: {$regex: 'balloon', $options: 'imx'}}
+				]
 			};
 
 			expect(dbQuery.getFilter()).to.eql(result);

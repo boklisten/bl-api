@@ -21,6 +21,8 @@ export class EndpointMongodb {
 
 					if (error) {
 
+						console.log('we got error from mongo', error);
+
 						reject(new SEErrorResponse(403, 'client error', error));
 						return
 					}
