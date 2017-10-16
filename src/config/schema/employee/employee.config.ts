@@ -7,7 +7,7 @@ import {ValidParam} from "../../../query/valid-param/db-query-valid-params";
 
 export class EmployeeConfig implements EndpointConfig {
 	basePath: string = 'api';
-	collectionName: string = 'users';
+	collectionName: string = 'employees';
 	schema: SESchema = new SESchema(this.collectionName, EmployeeSchema);
 	paths: Path[] = [
         {
