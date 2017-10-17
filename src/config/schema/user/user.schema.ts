@@ -17,8 +17,18 @@ export let UserSchema = {
 		type: Schema.Types.Date,
 		default: new Date()
 	},
+	lastRequest: {
+		type: Schema.Types.String
+	},
 	active: {
 		type: Schema.Types.Boolean,
 		default: true
+	},
+	token: {
+		type: Schema.Types.String
+	},
+	emailToken: {
+		type: Schema.Types.String,
+		required: true
 	}
 };

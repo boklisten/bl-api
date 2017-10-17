@@ -7,7 +7,7 @@ export let CustomerSchema = {
 		required: true
 	},
 	phone: {
-		type: Schema.Types.Number,
+		type: Schema.Types.String,
 		required: true
 	},
 	address: {

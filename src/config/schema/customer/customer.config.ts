@@ -16,9 +16,6 @@ export class CustomerConfig implements EndpointConfig {
 			methods: [
 				{
 					method: "get"
-				},
-				{
-					method: "post"
 				}
 			]
 		},
@@ -31,12 +28,6 @@ export class CustomerConfig implements EndpointConfig {
 				},
 				{
 					method: "patch"
-				},
-				{
-					method: "delete"
-				},
-				{
-					method: "put"
 				}
 			]
 		}

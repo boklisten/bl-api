@@ -12,31 +12,10 @@ export class UserConfig implements EndpointConfig {
 	paths: Path[] = [
         {
             path: this.collectionName,
-            id: false,
-            methods: [
-                {
-                    method: 'get'
-                },
-                {
-                    method: 'post'
-                }
-            ]
-        },
-        {
-            path: this.collectionName,
             id: true,
             methods: [
                 {
-                    method: 'get'
-                },
-                {
                     method: 'patch'
-                },
-                {
-                    method: 'put'
-                },
-                {
-                    method: 'delete'
                 }
             ]
         }
