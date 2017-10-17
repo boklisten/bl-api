@@ -10,7 +10,8 @@ import {SEResponse} from "../response/se.response";
 import {User} from "../config/schema/user/user";
 import {Customer} from "../config/schema/customer/customer";
 import {SEDbQuery} from "../query/se.db-query";
-const crypto = require('crypto');
+import {SeCrypto} from "../crypto/se.crypto";
+import {Employee} from "../config/schema/employee/employee";
 
 export class UserEndpoint {
 	router: Router;
@@ -25,6 +26,7 @@ export class UserEndpoint {
 
 	resHandler: SEResponseHandler;
 	seQuery: SEDbQueryBuilder;
+	seCrypto: SeCrypto;
 
 	constructor(router: Router, userConfig: EndpointConfig, customerConfig: EndpointConfig,
 	            employeeConfig: EndpointConfig, resHandler: SEResponseHandler) {
@@ -33,6 +35,7 @@ export class UserEndpoint {
 		this.customerConfig = customerConfig;
 		this.employeeConfig = employeeConfig;
 		this.basePath = 'api';
+		this.seCrypto = new SeCrypto();
 
 		this.userEndpointMongoDb = new EndpointMongodb(this.userConfig.schema);
 		this.customerEndpointMongoDb = new EndpointMongodb(this.customerConfig.schema);
@@ -41,33 +44,35 @@ export class UserEndpoint {
 		this.resHandler = resHandler;
 		this.seQuery = new SEDbQueryBuilder();
 
-		this.createGet(router);
-		this.createPost(router);
 		this.createCustomerPost(router);
-
+		this.createEmployeePost(router);
 	}
 
-	createMethods(router: Router) {
+	private createCustomerPost(router: Router) {
+		router.post(this.createPath('customers'), (req: Request, res: Response) => {
+			if (!this.validateBody(req.body)) {
+				this.resHandler.sendErrorResponse(res, new SEErrorResponse(400));
+				return;
+			}
 
-	}
+			let customer = req.body as Customer;
 
-	createGet(router: Router) {
-
-		router.get(this.createPathWithId('users'), (req: Request, res: Response) => {
-			console.log('we have a request to user', req.params.id);
-
-			this.userEndpointMongoDb.getById(req.params.id).then(
-				(docs: SEDocument[]) => {
-
-					let user = docs[0].data;
-
-					if (user.userType === 'customer') {
-						this.getCustomer(res, user.userDetail);
-					} else if (user.userType === 'employee') {
-						this.getEmployee(res, user.userDetail);
-					} else {
-						this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
-					}
+			this.checkIfEmailExistsAndReturnEncryptedEmail(customer.email).then(
+				(encryptedEmail: string) => {
+					this.createCustomer(customer).then(
+						(customerDoc: SEDocument) => {
+							let customerData = customerDoc.data;
+							this.createUser("customer", customerData._id, encryptedEmail).then(
+								(user: User) => {
+									this.resHandler.sendResponse(res, new SEResponse([customerDoc]));
+								},
+								(error) => {
+									this.resHandler.sendErrorResponse(res, error);
+								});
+						},
+						(error: SEErrorResponse) => {
+							this.resHandler.sendErrorResponse(res, error);
+						});
 				},
 				(error: SEErrorResponse) => {
 					this.resHandler.sendErrorResponse(res, error);
@@ -75,106 +80,119 @@ export class UserEndpoint {
 		});
 	}
 
-	createPost(router: Router) {
-		router.post(this.createPath('users'), (req: Request, res: Response) => {
-			console.log(req.body);
-			let user = req.body as User;
-
-			if (user.userType === 'customer') {
-				res.send('is customer');
-			} else if (user.userType === 'employee') {
-				res.send('is employee');
-			} else {
-				this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+	private createEmployeePost(router: Router) {
+		router.post(this.createPath('employees'), (req: Request, res: Response) => {
+			if (!this.validateBody(req.body)) {
+				this.resHandler.sendErrorResponse(res, new SEErrorResponse(400));
+				return;
 			}
-		});
-	}
 
-	private createCustomerPost(router: Router) {
-		router.post(this.createPath('customers'), (req: Request, res: Response) => {
-			let customer = req.body as Customer;
+			let employee = req.body as Employee;
 
-			let emailCipher = crypto.createCipher('aes192', customer.email);
 
-			let encryptedEmail = '';
-			/*
-
-			emailCipher.on('readable', () => {
-				const data = emailCipher.read();
-				if (data) {
-					encryptedEmail += data.toString('hex');
-				}
-			});
-
-			emailCipher.on('end', () => {
-				console.log('encrypted', encryptedEmail);
-				res.send('hello');
-			});
-
-			emailCipher.end();
-*/
-
-			/*
-
-			let emailToken = crypto.createHash('sha256', customer.email);
-
-			console.log('emailToken:::::::::', emailToken);
-
-			let dbQuery = new SEDbQuery();
-			dbQuery.stringFilters = [{fieldName: 'emailToken', value: emailToken}];
-
-			this.userEndpointMongoDb.exists(dbQuery).then(
-				(exists: boolean) => {
-					if (exists) {
-						console.log('email exists!, cant create customer');
-						this.resHandler.sendErrorResponse(res, new SEErrorResponse(400));
-					} else {
-						console.log('email does not exist, creating customer');
-						this.createCustomer(res, customer);
-					}
+			this.checkIfEmailExistsAndReturnEncryptedEmail(employee.email).then(
+				(encryptedEmail: string) => {
+					this.createEmployee(employee).then(
+						(employeeDoc: SEDocument) => {
+							let employeeData = employeeDoc.data;
+							this.createUser('employee', employeeData._id, encryptedEmail).then(
+								(user: User) => {
+									this.resHandler.sendResponse(res, new SEResponse([employeeDoc]));
+								},
+								(error: SEErrorResponse) => {
+									this.resHandler.sendErrorResponse(res, error);
+								}
+							)
+						},
+						(error: SEErrorResponse) => {
+							this.resHandler.sendErrorResponse(res, error);
+						}
+					)
+				},
+				(error: SEErrorResponse) => {
+					this.resHandler.sendErrorResponse(res, error);
 				}
 			)
+		})
+	}
 
+	private checkIfEmailExistsAndReturnEncryptedEmail(email: string): Promise<string> {
+		return new Promise((resolve, reject) => {
+		    this.seCrypto.chiper(email).then(
+				(encryptedEmail: string) => {
 
-			this.createCustomer(res, req.body);
-			*/
+					let dbQuery = new SEDbQuery();
+					dbQuery.stringFilters = [{fieldName: 'emailToken', value: encryptedEmail}];
+
+					this.userEndpointMongoDb.exists(dbQuery).then(
+						(exists: boolean) => {
+							if (exists) {
+								reject(new SEErrorResponse(400, 'email exists'));
+							} else {
+								resolve(encryptedEmail);
+							}
+						},
+						(error: SEErrorResponse) => {
+							reject(error);
+						});
+				},
+			    (error: SEErrorResponse) => {
+					reject(error);
+			    });
 		});
 	}
 
-	private createCustomer(res: Response, customer: Customer) {
-
-
-		this.customerEndpointMongoDb.post(new SEDocument(this.customerConfig.collectionName, customer)).then(
-			(docs: SEDocument[]) => {
-				console.log('the docs are', docs);
-			},
-			(error: SEErrorResponse) => {
-				this.resHandler.sendErrorResponse(res, error);
-			});
+	private createCustomer(customer: Customer): Promise<SEDocument> {
+		return new Promise((resolve, reject) => {
+			this.customerEndpointMongoDb.post(new SEDocument(this.customerConfig.collectionName, customer)).then(
+				(docs: SEDocument[]) => {
+					resolve(docs[0]);
+				},
+				(error: SEErrorResponse) => {
+					reject(error);
+				});
+		});
 	}
 
-	getUser() {
-
+	private createEmployee(employee: Employee): Promise<SEDocument> {
+		return new Promise((resolve, reject) => {
+		    this.employeeEndpointMongoDb.post(new SEDocument(this.employeeConfig.collectionName, employee)).then(
+			    (docs: SEDocument[]) => {
+			    	resolve(docs[0]);
+			    },
+			    (error: SEErrorResponse) => {
+			    	reject(error);
+			    });
+		});
 	}
 
-	private getCustomer(res: Response, customerId: string) {
-		this.customerEndpointMongoDb.getById(customerId).then(
-			(docs: SEDocument[]) => {
-				this.resHandler.sendResponse(res, new SEResponse(docs));
-			},
-			(error: SEErrorResponse) => {
-				this.resHandler.sendErrorResponse(res, error);
-			});
+	private createUser(userType: "customer" | "employee", userDetailId: string, emailToken: string): Promise<User> {
+		return new Promise((resolve, reject) => {
+			let permissionLevel = 1;
+
+			if (userType === 'employee') permissionLevel = 2;
+
+			let user: User = {
+				userType: userType,
+				userDetail: userDetailId,
+				permissionLevel: permissionLevel,
+				emailToken: emailToken
+			};
+
+			this.userEndpointMongoDb.post(new SEDocument('user', user)).then(
+				(docs: SEDocument[]) => {
+					resolve(user);
+				},
+				(error) => {
+					reject(error);
+				});
+		});
 	}
 
-	private getEmployee(res: Response, employeeId: string) {
-		this.customerEndpointMongoDb.getById(employeeId).then(
-			(docs: SEDocument[]) => {
-				this.resHandler.sendResponse(res, new SEResponse(docs));
-			},
-			(error: SEErrorResponse) => {
-				this.resHandler.sendErrorResponse(res, error);
-			});
+	private validateBody(body: any): boolean {
+		if (!body) return false;
+		if (!body.email) return false;
+		return true;
 	}
 
 	private createPath(path: string): string {
@@ -185,6 +203,4 @@ export class UserEndpoint {
     private createPathWithId(path: string): string {
 		return this.createPath(path) + '/:id';
     }
-
-
 }

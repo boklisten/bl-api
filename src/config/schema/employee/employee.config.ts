@@ -12,18 +12,6 @@ export class EmployeeConfig implements EndpointConfig {
 	paths: Path[] = [
         {
             path: this.collectionName,
-            id: false,
-            methods: [
-                {
-                    method: 'get'
-                },
-                {
-                    method: 'post'
-                }
-            ]
-        },
-        {
-            path: this.collectionName,
             id: true,
             methods: [
                 {
@@ -31,12 +19,6 @@ export class EmployeeConfig implements EndpointConfig {
                 },
                 {
                     method: 'patch'
-                },
-                {
-                    method: 'put'
-                },
-                {
-                    method: 'delete'
                 }
             ]
         }

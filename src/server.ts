@@ -56,6 +56,7 @@ export class Server {
 
 		let ItemEndpoint = new EndpointExpress(this.router, itemConfig, responseHandler);
 		let CustomerEndpoint = new EndpointExpress(this.router, customerConfig, responseHandler);
+		let EmployeeEndpoint = new EndpointExpress(this.router, employeeConfig, responseHandler);
 		let BranchEndpoint = new EndpointExpress(this.router, branchConfig, responseHandler);
 		let CustomerItemEndpoint = new EndpointExpress(this.router, customerItemConfig, responseHandler);
 		let OrderEndpoint = new EndpointExpress(this.router, orderConfig, responseHandler);
