@@ -1,28 +1,9 @@
 
+
 import {Schema} from 'mongoose';
 
-export let CustomerSchema = {
+export let UserDetailSchema = {
 	name: {
-		type: Schema.Types.String,
-		required: true
-	},
-	phone: {
-		type: Schema.Types.String,
-		required: true
-	},
-	address: {
-		type: Schema.Types.String,
-		required: true
-	},
-	postCode: {
-		type: Schema.Types.String,
-		required: true
-	},
-	postCity: {
-		type: Schema.Types.String,
-		required: true
-	},
-	country: {
 		type: Schema.Types.String,
 		required: true
 	},
@@ -30,17 +11,30 @@ export let CustomerSchema = {
 		type: Schema.Types.String,
 		required: true
 	},
+	phone: {
+		type: Schema.Types.String,
+	},
+	address: {
+		type: Schema.Types.String,
+	},
+	postCode: {
+		type: Schema.Types.String,
+	},
+	postCity: {
+		type: Schema.Types.String,
+	},
+	country: {
+		type: Schema.Types.String,
+	},
 	emailConfirmed: {
 		type: Schema.Types.Boolean,
 		default: false
 	},
 	dob: {
 		type: Schema.Types.Date,
-		required: true
 	},
 	branch: {
 		type: Schema.Types.ObjectId,
-		required: true
 	},
 	lastActive: {
 		type: Schema.Types.Date,

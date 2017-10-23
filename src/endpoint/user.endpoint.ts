@@ -192,6 +192,7 @@ export class UserEndpoint {
 	private validateBody(body: any): boolean {
 		if (!body) return false;
 		if (!body.email) return false;
+		if (body.email.length <= 0) return false;
 		return true;
 	}
 
