@@ -18,6 +18,11 @@ import {LocalAuth} from "./auth/local/local.auth";
 import * as passport from "passport";
 import {secrets} from "./config/secrets";
 import {FacebookAuth} from "./auth/facebook/facebook.auth";
+import {UserHandler} from "./auth/user/user.handler";
+import {UserSchema} from "./config/schema/user/user.schema";
+import {UserDetail} from "./config/schema/user/user-detail";
+import {UserDetailSchema} from "./config/schema/user/user-detail.schema";
+import {SESchema} from "./config/schema/se.schema";
 let Strategy = require('passport-google-oauth').OAuth2Strategy;
 
 let bodyParser = require('body-parser');
@@ -56,21 +61,16 @@ export class Server {
 		this.app.use(passport.initialize());
 		this.app.use(passport.session());
 
-
-
-
-
-
 		this.router = Router();
 		this.app.use(this.router);
 
 		let responseHandler = new SEResponseHandler();
 		mongoose.connect('mongodb://localhost:27017/bl_test_a', {useMongoClient: true});
-		let userConfig = new UserConfig();
+		//let userConfig = new UserConfig();
 		let customerConfig = new CustomerConfig();
 		let employeeConfig = new EmployeeConfig();
 
-		let userEndpoint: UserEndpoint = new UserEndpoint(this.router, userConfig, customerConfig, employeeConfig,responseHandler);
+		//let userEndpoint: UserEndpoint = new UserEndpoint(this.router, userConfig, customerConfig, employeeConfig,responseHandler);
 		let itemConfig = new ItemConfig();
 		let branchConfig = new BranchConfig();
 
@@ -88,15 +88,49 @@ export class Server {
 
 
 		let OrderItemEndpoint = new EndpointExpress(this.router, orderItemConfig, responseHandler);
-		let googleAuthEndpoint = new GoogleAuth(this.router, this.app);
+
+		let userSchema = new SESchema('users', UserSchema);
+		let userDetailSchema = new SESchema('userDetails', UserDetailSchema);
+		let userHandler = new UserHandler(userSchema, userDetailSchema);
+
+		let googleAuthEndpoint = new GoogleAuth(this.router, userHandler);
 		let facebookAuthEndpoint = new FacebookAuth(this.router, this.app);
 
 		//let localAuthEndpoint = new LocalAuth(this.router);
 
+
+		let jwt = require('jsonwebtoken');
+		let secret = 'a dog';
+		let token = jwt.sign({iss: 'John Doe', aud: 'www.boklisten.co', iat: Date.now(), exp: 1, permissions: ['admin', 'customer']}, secret,(err: any, token: any) => {
+
+			if (err) {
+				console.log('there is an error', err);
+				return;
+			}
+			console.log('the token:: ', token);
+
+			setTimeout( () => {
+					jwt.verify(token, secret, {
+						audience: 'www.boklisten.co',
+						permissions: 'admn'
+					}, (error: any, decoded: any) => {
+						if (error) {
+							console.log('could not decode the token: ', error);
+							return
+						}
+						console.log('decoded: ', decoded);
+					})
+				}, 5000);
+		});
+
+
+		console.log('token ', token);
+
+/*
 		this.app.listen(this.port, () => {
 			console.log('api running on port: ', this.port);
 		});
-
+*/
 
 	}
 

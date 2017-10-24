@@ -167,16 +167,18 @@ export class UserEndpoint {
 	}
 
 	private createUser(userType: "customer" | "employee", userDetailId: string, emailToken: string): Promise<User> {
+
+		/*
 		return new Promise((resolve, reject) => {
 			let permissionLevel = 1;
 
 			if (userType === 'employee') permissionLevel = 2;
 
 			let user: User = {
-				userType: userType,
+				//userType: userType,
 				userDetail: userDetailId,
 				permissionLevel: permissionLevel,
-				emailToken: emailToken
+				//emailToken: emailToken
 			};
 
 			this.userEndpointMongoDb.post(new SEDocument('user', user)).then(
@@ -187,6 +189,9 @@ export class UserEndpoint {
 					reject(error);
 				});
 		});
+	    */
+
+		return Promise.reject('');
 	}
 
 	private validateBody(body: any): boolean {

@@ -17,7 +17,37 @@ export class UserHandler {
 		this.userDetailMongoHandler = new EndpointMongodb(userDetailSchema);
 	}
 
-	public haveUser(provider: string, providerId: string): Promise<boolean> {
+	public getOrCreateUser(provider: string, providerId: string, name: string, email: string): Promise<User> {
+		return new Promise((resolve, reject) => {
+			this.haveUser(provider, providerId).then(
+				(haveUser: boolean) => {
+					if (haveUser) {
+						//get user
+						this.getUser(provider, providerId).then(
+							(user: User) => {
+								resolve(user);
+							},
+							(error) => {
+
+							});
+					} else {
+						//create user
+						this.createUser(name, email, provider, providerId).then(
+							(user: User) => {
+								resolve(user);
+							},
+							(error) => {
+
+							});
+					}
+				},
+				(error) => {
+
+				});
+		});
+	}
+
+	private haveUser(provider: string, providerId: string): Promise<boolean> {
 		return new Promise((resolve, reject) => {
 			this.userMongoHandler.exists(this.getProviderQuery(provider, providerId)).then(
 				(exists: boolean) => {
@@ -29,7 +59,7 @@ export class UserHandler {
 		});
 	}
 
-	public getUser(provider: string, providerId: string): Promise<User> {
+	private getUser(provider: string, providerId: string): Promise<User> {
 		return new Promise((resolve, reject) => {
 			this.userMongoHandler.get(this.getProviderQuery(provider, providerId)).then(
 				(docs: SEDocument[]) => {
@@ -41,7 +71,7 @@ export class UserHandler {
 		});
 	}
 
-	public createUser(name: string, email: string, provider: string, providerId: string): Promise<User> {
+	private createUser(name: string, email: string, provider: string, providerId: string): Promise<User> {
 		return new Promise((resolve, reject) => {
 
 			let userDetail: UserDetail = {
@@ -71,6 +101,7 @@ export class UserHandler {
 
 				},
 				(error: SEErrorResponse) => {
+					console.log('error creating userDetail', error.msg, error.status);
 					reject('could not create userDetail document..' + error);
 				});
 		});
