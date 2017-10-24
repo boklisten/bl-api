@@ -7,12 +7,15 @@ import {OAuth2Strategy} from 'passport-google-oauth';
 import * as passport from "passport";
 import {UserHandler} from "../user/user.handler";
 import {User} from "../../config/schema/user/user";
+import {SEToken} from "../token/se.token";
 
 export class GoogleAuth {
-	userHandler: UserHandler;
+	private userHandler: UserHandler;
+	private seToken: SEToken;
 
 	constructor(router: Router, userHandler: UserHandler) {
 		this.userHandler = userHandler;
+		this.seToken = new SEToken();
 
 		passport.use(new OAuth2Strategy({
 				clientID: secrets.boklistentest.google.clientId,
@@ -27,10 +30,16 @@ export class GoogleAuth {
 
 				this.userHandler.getOrCreateUser(provider, providerId, name, email).then(
 					(user: User) => {
-						return done(null, user);
+						this.seToken.createToken(user.username, user.permissions, user.blid).then(
+							(jwtoken: string) => {
+								return done(null, jwtoken);
+							},
+							(error: any) => {
+								return done(new Error('could not create jw token, reason: ' + error));
+							});
 					},
 					(error) => {
-						console.log('there was an error getting or creation user ', error);
+						return done(new Error('could not get or create user, reason: ' + error));
 					});
 			}
 		));
@@ -48,9 +57,12 @@ export class GoogleAuth {
 		router.get('/api/auth/google/callback',
 			passport.authenticate('google', { failureRedirect: '/login' }),
 			(req: any, res: any) => {
-				console.log('the user', req.user);
-				res.redirect('/api/items');
+				res.redirect('/show/jwt');
 			});
+
+		router.get('/show/jwt', (req: any, res: any) => {
+			res.send(req.user);
+		})
 	}
 
 }

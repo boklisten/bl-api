@@ -35,14 +35,12 @@ export class Server {
 
 
 	constructor() {
-		passport.serializeUser((user: any, done: any) => {
-			console.log('serializing user');
-			done(null, user);
+		passport.serializeUser((jwtoken: any, done: any) => {
+			done(null, jwtoken);
 		});
 
-		passport.deserializeUser((user: any, done: any) => {
-			console.log('desirializing user');
-			done(null, user);
+		passport.deserializeUser((jwtoken: any, done: any) => {
+			done(null, jwtoken);
 		});
 
 		this.app = express();
@@ -98,39 +96,9 @@ export class Server {
 
 		//let localAuthEndpoint = new LocalAuth(this.router);
 
-
-		let jwt = require('jsonwebtoken');
-		let secret = 'a dog';
-		let token = jwt.sign({iss: 'John Doe', aud: 'www.boklisten.co', iat: Date.now(), exp: 1, permissions: ['admin', 'customer']}, secret,(err: any, token: any) => {
-
-			if (err) {
-				console.log('there is an error', err);
-				return;
-			}
-			console.log('the token:: ', token);
-
-			setTimeout( () => {
-					jwt.verify(token, secret, {
-						audience: 'www.boklisten.co',
-						permissions: 'admn'
-					}, (error: any, decoded: any) => {
-						if (error) {
-							console.log('could not decode the token: ', error);
-							return
-						}
-						console.log('decoded: ', decoded);
-					})
-				}, 5000);
-		});
-
-
-		console.log('token ', token);
-
-/*
 		this.app.listen(this.port, () => {
 			console.log('api running on port: ', this.port);
 		});
-*/
 
 	}
 

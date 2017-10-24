@@ -5,18 +5,30 @@ export let UserSchema = {
 	userDetail: {
 		type: Schema.Types.ObjectId
 	},
-	permissionLevel: {
-		type: Schema.Types.Number,
-		default: 1
+	permissions: {
+		type: [Schema.Types.String],
+		required: true
 	},
 	login: {
-		provider: {
-			type: Schema.Types.String,
-			required: true
+		type: {
+			provider: {
+				type: Schema.Types.String,
+				required: true
+			},
+			providerId: {
+				type: Schema.Types.String,
+				required: true
+			},
 		},
-		providerId: {
-			type: Schema.Types.String
-		}
+		required: true
+	},
+	blid: {
+		type: Schema.Types.String,
+		required: true
+	},
+	username: {
+		type: Schema.Types.String,
+		required: true
 	},
 	active: {
 		type: Schema.Types.Boolean,

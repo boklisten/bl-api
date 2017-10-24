@@ -13,8 +13,7 @@ export class SeCrypto {
 
 			if (msg.length <= 0) reject('msg to short');
 
-			let msgCipher = crypto.createCipher('aes192', msg);
-
+			let msgCipher = crypto.createCipher('aes128', msg);
 
 			let encryptedMsg = '';
 

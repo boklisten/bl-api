@@ -39,6 +39,7 @@ export class SEToken  {
 	}
 
 	public createToken(username: string, permissions: string[], blid: string): Promise<string> {
+		console.log('create token is called with: ', username, permissions, blid);
 		if (username.length <= 0) return Promise.reject(TypeError('username "' + username + '" is to short'));
 		if (permissions.length <= 0) return Promise.reject(RangeError('permission array has zero or none values'));
 		if (blid.length <= 0) return Promise.reject(TypeError('blid "' + blid + '" is to short'));
