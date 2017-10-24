@@ -10,14 +10,14 @@ let shuld = chai.should();
 describe('SeCrypto', () => {
 	let seCrypto: SeCrypto = new SeCrypto();
 
-	describe('chiper()', () => {
+	describe('cipher()', () => {
 
 		it('should reject when message is empty', () => {
-			return seCrypto.chiper('').should.be.rejected;
+			return seCrypto.cipher('').should.be.rejected;
 		});
 
 		it('should return chipher when msg is valid', () => {
-			return seCrypto.chiper('hello').should.be.fulfilled;
+			return seCrypto.cipher('hello').should.be.fulfilled;
 		})
 	});
 });

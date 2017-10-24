@@ -8,7 +8,7 @@ export class SeCrypto {
 
 	}
 
-	public chiper(msg: string): Promise<string> {
+	public cipher(msg: string): Promise<string> {
 		return new Promise((resolve, reject) => {
 
 			if (msg.length <= 0) reject('msg to short');

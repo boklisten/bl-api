@@ -118,7 +118,7 @@ export class UserEndpoint {
 
 	private checkIfEmailExistsAndReturnEncryptedEmail(email: string): Promise<string> {
 		return new Promise((resolve, reject) => {
-		    this.seCrypto.chiper(email).then(
+		    this.seCrypto.cipher(email).then(
 				(encryptedEmail: string) => {
 
 					let dbQuery = new SEDbQuery();
