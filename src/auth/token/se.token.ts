@@ -18,7 +18,8 @@ export type ValidCustomJwtPayload = {
 
 type JwtOptions = {
 	exp: number,
-	aud: string
+	aud: string,
+	iss: string
 }
 
 
@@ -33,13 +34,13 @@ export class SEToken  {
 		} else {
 			this.options = {
 				exp: 57600, //16 hours
-				aud: 'www.boklisten.co'
+				aud: 'boklisten.co',
+				iss: 'boklisten.co'
 			}
 		}
 	}
 
 	public createToken(username: string, permissions: string[], blid: string): Promise<string> {
-		console.log('create token is called with: ', username, permissions, blid);
 		if (username.length <= 0) return Promise.reject(TypeError('username "' + username + '" is to short'));
 		if (permissions.length <= 0) return Promise.reject(RangeError('permission array has zero or none values'));
 		if (blid.length <= 0) return Promise.reject(TypeError('blid "' + blid + '" is to short'));
@@ -66,23 +67,46 @@ export class SEToken  {
 					return reject('error verifying token, reason: ' + error);
 				}
 
-				if (validOptions) {
-					if (validOptions.permissions && !this.validatePermissions(decoded.permissions, validOptions.permissions)) {
-						return reject('lacking the given permissions, "' + validOptions.permissions.toString() + '" does not include all the permissions of "' + validOptions.permissions.toString() + '"');
-					}
-
-					if (validOptions.blid && !this.validateBlid(decoded.blid, validOptions.blid)) {
-						return reject('the decoded blid "' + decoded.blid + '" is not like the valid blid "' + validOptions.blid  + '"');
-					}
-
-					if (validOptions.username && !this.validateUsername(decoded.username, validOptions.username)) {
-						return reject('the decoded username "' + decoded.username + '" is not equal the valid username "' + validOptions.username + '"');
-					}
-				}
-
-				resolve(decoded);
+				this.validatePayload(decoded, validOptions).then(
+					(jwtPayload: any) => {
+						resolve(jwtPayload);
+					},
+					(error: any) => {
+						reject(error);
+					});
 			})
 		});
+	}
+
+	public validatePayload(jwtPayload: any, validOptions?: ValidCustomJwtPayload): Promise<JwtPayload> {
+		return new Promise((resolve, reject) => {
+
+			if (validOptions) {
+				if (validOptions.permissions && !this.validatePermissions(jwtPayload.permissions, validOptions.permissions)) {
+					return reject(new Error('lacking the given permissions, "' + jwtPayload.permissions.toString() + '" does not include all the permissions of "' + validOptions.permissions.toString() + '"'));
+				}
+
+				if (validOptions.blid && !this.validateBlid(jwtPayload.blid, validOptions.blid)) {
+					return reject(new Error('the decoded blid "' + jwtPayload.blid + '" is not like the valid blid "' + validOptions.blid + '"'));
+
+				}
+
+				if (validOptions.username && !this.validateUsername(jwtPayload.username, validOptions.username)) {
+					return reject(new Error('the decoded username "' + jwtPayload.username + '" is not equal the valid username "' + validOptions.username + '"'));
+				}
+			}
+
+			resolve(jwtPayload);
+		});
+	}
+
+
+	public getSecret(): string {
+		return 'this is the key';
+	}
+
+	public getOptions(): JwtOptions {
+		return this.options;
 	}
 
 	private validateUsername(decodedUsername: string, validUsername: string): boolean {
@@ -104,7 +128,7 @@ export class SEToken  {
 
 	private createJwtPayload(username: string, permissions: string[], blid: string): JwtPayload {
 		return {
-			iss: username,
+			iss: 'boklisten.co',
 			aud: this.options.aud,
 			iat: Date.now(),
 			exp: Date.now() + this.options.exp,
@@ -112,9 +136,5 @@ export class SEToken  {
 			blid: blid,
 			username: username
 		}
-	}
-
-	private getSecret(): string {
-		return 'this is the key';
 	}
 }

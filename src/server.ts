@@ -23,6 +23,7 @@ import {UserSchema} from "./config/schema/user/user.schema";
 import {UserDetail} from "./config/schema/user/user-detail";
 import {UserDetailSchema} from "./config/schema/user/user-detail.schema";
 import {SESchema} from "./config/schema/se.schema";
+import {JwtAuth} from "./auth/token/jwt.auth";
 let Strategy = require('passport-google-oauth').OAuth2Strategy;
 
 let bodyParser = require('body-parser');
@@ -35,12 +36,12 @@ export class Server {
 
 
 	constructor() {
-		passport.serializeUser((jwtoken: any, done: any) => {
-			done(null, jwtoken);
+		passport.serializeUser((user: any, done: any) => {
+			done(null, user);
 		});
 
-		passport.deserializeUser((jwtoken: any, done: any) => {
-			done(null, jwtoken);
+		passport.deserializeUser((user: any, done: any) => {
+			done(null, user);
 		});
 
 		this.app = express();
@@ -54,7 +55,7 @@ export class Server {
 		//	'Access-Control-Allow-Origin': 'localhost'
 		//});
 		//this.app.use(cors());
-		this.app.use(session({secret: 'hello there'}));
+		//this.app.use(session({secret: 'hello there'}));
 		this.app.use(require('cookie-parser')());
 		this.app.use(passport.initialize());
 		this.app.use(passport.session());
@@ -93,6 +94,9 @@ export class Server {
 
 		let googleAuthEndpoint = new GoogleAuth(this.router, userHandler);
 		let facebookAuthEndpoint = new FacebookAuth(this.router, this.app);
+		let jwtAuth: JwtAuth = new JwtAuth(this.router);
+
+
 
 		//let localAuthEndpoint = new LocalAuth(this.router);
 

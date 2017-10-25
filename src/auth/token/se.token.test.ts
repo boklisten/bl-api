@@ -109,4 +109,5 @@ describe('SeToken', () => {
 			}).should.be.rejectedWith(Error);
 		});
 	});
+
 });

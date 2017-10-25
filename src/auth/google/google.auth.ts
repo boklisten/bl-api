@@ -32,7 +32,9 @@ export class GoogleAuth {
 					(user: User) => {
 						this.seToken.createToken(user.username, user.permissions, user.blid).then(
 							(jwtoken: string) => {
+								console.log('the jwtoken    ', jwtoken);
 								return done(null, jwtoken);
+
 							},
 							(error: any) => {
 								return done(new Error('could not create jw token, reason: ' + error));
@@ -57,11 +59,14 @@ export class GoogleAuth {
 		router.get('/api/auth/google/callback',
 			passport.authenticate('google', { failureRedirect: '/login' }),
 			(req: any, res: any) => {
-				res.redirect('/show/jwt');
+				res.send(req.user);
+				//res.redirect('/show/jwt');
+
 			});
 
+
 		router.get('/show/jwt', (req: any, res: any) => {
-			res.send(req.user);
+			res.send('hello there');
 		})
 	}
 
