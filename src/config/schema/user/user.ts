@@ -11,6 +11,7 @@ export type User = {
 	},
 	blid: string,
 	username: string,
+	valid: boolean,
 	active?: boolean,
 	lastActive?: string,
 	lastRequest?: string,

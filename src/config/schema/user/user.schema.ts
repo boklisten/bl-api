@@ -30,6 +30,10 @@ export let UserSchema = {
 		type: Schema.Types.String,
 		required: true
 	},
+	valid: {
+		type: Schema.Types.Boolean,
+		required: true
+	},
 	active: {
 		type: Schema.Types.Boolean,
 		default: true

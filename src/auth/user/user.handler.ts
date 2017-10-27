@@ -90,6 +90,7 @@ export class UserHandler {
 								permission: "customer",
 								blid: userBlid,
 								username: name,
+								valid: false, //customer needs to register minimal information to rent items
 								login: {
 									provider: provider,
 									providerId: providerId
