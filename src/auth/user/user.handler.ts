@@ -20,7 +20,7 @@ export class UserHandler {
 		this.blid = new Blid();
 	}
 
-	public getOrCreateUser(provider: string, providerId: string, name: string, email: string): Promise<User> {
+	public getOrCreateUser(provider: string, providerId: string, name: string): Promise<User> {
 		return new Promise((resolve, reject) => {
 			this.haveUser(provider, providerId).then(
 				(haveUser: boolean) => {
@@ -34,7 +34,7 @@ export class UserHandler {
 
 							});
 					} else {
-						this.createUser(name, email, provider, providerId).then(
+						this.createUser(name, provider, providerId).then(
 							(user: User) => {
 								resolve(user);
 							},
@@ -73,12 +73,11 @@ export class UserHandler {
 		});
 	}
 
-	private createUser(name: string, email: string, provider: string, providerId: string): Promise<User> {
+	private createUser(name: string, provider: string, providerId: string): Promise<User> {
 		return new Promise((resolve, reject) => {
 
 			let userDetail: UserDetail = {
 				name: name,
-				email: email
 			};
 
 			this.userDetailMongoHandler.post(new SEDocument('userDetail', userDetail)).then(

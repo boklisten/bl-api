@@ -21,19 +21,15 @@ export class GoogleAuth {
 			(accessToken: any, refreshToken: any, profile: any, done: any) => {
 				let provider = 'google';
 				let providerId = profile.id;
-				let name = profile.name.givenName + ' ' + profile.name.familyName;
-				let email = profile.email = profile.emails[0].value;
+				let name = profile.displayName;
 
-				this.jwtAuth.getAutorizationToken(provider, providerId, name, email).then(
+				this.jwtAuth.getAutorizationToken(provider, providerId, name).then(
 					(jwtoken: string) => {
 						done(null, jwtoken);
 					},
 					(error: any) => {
 						done(new Error('error when trying to get auth token, reason: ' + error));
-					}
-				)
-
-
+					});
 			}
 		));
 
@@ -53,5 +49,4 @@ export class GoogleAuth {
 				res.send(req.user);
 			});
 	}
-
 }

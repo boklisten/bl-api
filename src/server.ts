@@ -87,7 +87,7 @@ export class Server {
 
 		let jwtAuth: JwtAuth = new JwtAuth(this.router, userHandler);
 		let googleAuthEndpoint = new GoogleAuth(this.router, jwtAuth);
-		let facebookAuthEndpoint = new FacebookAuth(this.router, this.app);
+		let facebookAuthEndpoint = new FacebookAuth(this.router, jwtAuth);
 
 
 

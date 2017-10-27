@@ -2,7 +2,7 @@
 
 export type UserDetail = {
 	name: string,
-	email: string,
+	email?: string,
 	phone?: string,
 	address?: string,
 	postCode?: string,

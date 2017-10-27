@@ -30,9 +30,9 @@ export class JwtAuth {
 		});
 	}
 
-	public getAutorizationToken(provider: string, providerId: string, name: string, email: string): Promise<string> {
+	public getAutorizationToken(provider: string, providerId: string, name: string): Promise<string> {
 		return new Promise((resolve, reject) => {
-			this.userHandler.getOrCreateUser(provider, providerId, name, email).then(
+			this.userHandler.getOrCreateUser(provider, providerId, name).then(
 				(user: User) => {
 					this.seToken.createToken(user.username, user.permission, user.blid).then(
 						(jwtoken: string) => {
