@@ -88,7 +88,7 @@ export class UserHandler {
 
 							let user: User = {
 								userDetail: docs[0].data._id,
-								permissions: ['customer'],
+								permission: "customer",
 								blid: userBlid,
 								username: name,
 								login: {
@@ -96,6 +96,8 @@ export class UserHandler {
 									providerId: providerId
 								}
 							};
+
+
 
 							this.userMongoHandler.post(new SEDocument('user', user)).then(
 								(docs: SEDocument[]) => {

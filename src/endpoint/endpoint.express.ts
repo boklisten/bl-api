@@ -1,6 +1,6 @@
 
 
-import * as express from 'express';
+import {Router, Response, Request} from 'express';
 import {SESchema} from "../config/schema/se.schema";
 import {EndpointMongodb} from "./endpoint.mongodb";
 import {SEDocument} from "../db/model/se.document";
@@ -8,7 +8,6 @@ import {SEResponseHandler} from "../response/se.response.handler";
 import {SEResponse} from "../response/se.response";
 import {SEErrorResponse} from "../response/se.error.response";
 import {SEDbQueryBuilder} from "../query/se.db-query-builder";
-import {SEDbQuery} from "../query/se.db-query";
 import {ValidParam} from "../query/valid-param/db-query-valid-params";
 
 
@@ -26,19 +25,20 @@ export type Path = {
     id: boolean,
     methods: {
         method: "get" | "post" | "put" | "patch" | "delete",
-        permissionLevel?: number
+	    login: boolean,
+        permissions?: ["customer" | "employee" | "admin"]
     }[];
 }
 
 export class EndpointExpress {
-    router: express.Router;
+    router: Router;
     config: EndpointConfig;
     basePath: string;
     endpointMongoDb: EndpointMongodb;
     resHandler: SEResponseHandler;
     seQuery: SEDbQueryBuilder;
 
-    constructor(router: express.Router, config: EndpointConfig, resHandler: SEResponseHandler) {
+    constructor(router: Router, config: EndpointConfig, resHandler: SEResponseHandler) {
         this.router = router;
         this.config = config;
         this.basePath = config.basePath;
@@ -52,7 +52,7 @@ export class EndpointExpress {
         }
     }
 
-    createEndpoints(router: express.Router, config: EndpointConfig) {
+    createEndpoints(router: Router, config: EndpointConfig) {
         if (!this.validateConfig(config)) return;
 
         for (let path of config.paths) {
@@ -73,9 +73,9 @@ export class EndpointExpress {
         return true;
     }
 
-    createGet(router: express.Router, path: Path) {
+    createGet(router: Router, path: Path) {
 		if (!path.id) {
-			router.get(this.createPath(path.path), (req: express.Request, res: express.Response) => {
+			router.get(this.createPath(path.path), (req: Request, res: Response) => {
 
 				try {
 					let dbQuery = this.seQuery.getDbQuery(req.query, this.config.validSearchParams);
@@ -94,7 +94,7 @@ export class EndpointExpress {
 				}
 			});
 		} else {
-			router.get(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
+			router.get(this.createPath(path.path, true), (req: Request, res: Response) => {
 				this.endpointMongoDb.getById(req.params.id).then(
 					(docs: SEDocument[]) => {
 						this.resHandler.sendResponse(res, new SEResponse(docs));
@@ -108,8 +108,8 @@ export class EndpointExpress {
 
     }
 
-    createDelete(router: express.Router, path: Path) {
-    	router.delete(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
+    createDelete(router: Router, path: Path) {
+    	router.delete(this.createPath(path.path, true), (req: Request, res: Response) => {
     		this.endpointMongoDb.deleteById(req.params.id).then(
 				(doc: SEDocument[]) => {
 					res.send(doc);
@@ -120,8 +120,8 @@ export class EndpointExpress {
 		});
 	}
 
-    createPost(router: express.Router, path: Path) {
-        router.post(this.createPath(path.path), (req: express.Request, res: express.Response) => {
+    createPost(router: Router, path: Path) {
+        router.post(this.createPath(path.path), (req: Request, res: Response) => {
             this.endpointMongoDb.post(new SEDocument(this.config.collectionName, req.body)).then(
                 (docs: SEDocument[]) => {
             		this.resHandler.sendResponse(res, new SEResponse(docs));
@@ -132,8 +132,8 @@ export class EndpointExpress {
         });
     }
 
-    createPatch(router: express.Router, path: Path) {
-    	router.patch(this.createPath(path.path, true), (req: express.Request, res: express.Response) => {
+    createPatch(router: Router, path: Path) {
+    	router.patch(this.createPath(path.path, true), (req: Request, res: Response) => {
     		this.endpointMongoDb.patch(req.params.id, req.body).then(
 				(docs: SEDocument[]) => {
 					this.resHandler.sendResponse(res, new SEResponse(docs));

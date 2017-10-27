@@ -15,7 +15,9 @@ export class UserConfig implements EndpointConfig {
             id: true,
             methods: [
                 {
-                    method: 'patch'
+                    method: 'patch',
+	                login: true,
+	                permissions: ["customer", "employee", "admin"]
                 }
             ]
         }

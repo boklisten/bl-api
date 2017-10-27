@@ -30,7 +30,7 @@ export class GoogleAuth {
 
 				this.userHandler.getOrCreateUser(provider, providerId, name, email).then(
 					(user: User) => {
-						this.seToken.createToken(user.username, user.permissions, user.blid).then(
+						this.seToken.createToken(user.username, user.permission, user.blid).then(
 							(jwtoken: string) => {
 								console.log('the jwtoken    ', jwtoken);
 								return done(null, jwtoken);

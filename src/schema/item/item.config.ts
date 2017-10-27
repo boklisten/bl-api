@@ -13,10 +13,13 @@ export class ItemConfig implements EndpointConfig {
 			id: false,
 			methods: [
 				{
-					method: 'get'
+					method: 'get',
+					login: false
 				},
 				{
-					method: 'post'
+					method: 'post',
+					login: true,
+					permissions: ["admin"]
 				}
 			]
 		},
@@ -25,16 +28,23 @@ export class ItemConfig implements EndpointConfig {
 			id: true,
 			methods: [
 				{
-					method: 'get'
+					method: 'get',
+					login: false
 				},
 				{
-					method: 'patch'
+					method: 'patch',
+					login: true,
+					permissions: ["admin"]
 				},
 				{
-					method: 'put'
+					method: 'put',
+					login: true,
+					permissions: ["admin"]
 				},
 				{
-					method: 'delete'
+					method: 'delete',
+					login: true,
+					permissions: ["admin"]
 				}
 			]
 		}

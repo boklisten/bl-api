@@ -5,8 +5,8 @@ export let UserSchema = {
 	userDetail: {
 		type: Schema.Types.ObjectId
 	},
-	permissions: {
-		type: [Schema.Types.String],
+	permission: {
+		type: Schema.Types.String,
 		required: true
 	},
 	login: {

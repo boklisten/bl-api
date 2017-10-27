@@ -1,11 +1,14 @@
 
 
+import {UserPermission} from "../user/user-permission";
+import {User} from "../../config/schema/user/user";
+
 export type JwtPayload = {
 	iss: string,
 	aud: string,
 	iat: number,
 	exp: number,
-	permissions: string[],
+	permission: UserPermission,
 	blid: string,
 	username: string
 }
@@ -40,14 +43,14 @@ export class SEToken  {
 		}
 	}
 
-	public createToken(username: string, permissions: string[], blid: string): Promise<string> {
+	public createToken(username: string, permission: UserPermission, blid: string): Promise<string> {
 		if (username.length <= 0) return Promise.reject(TypeError('username "' + username + '" is to short'));
-		if (permissions.length <= 0) return Promise.reject(RangeError('permission array has zero or none values'));
+		if (permission.length <= 0) return Promise.reject(RangeError('permission is undefined'));
 		if (blid.length <= 0) return Promise.reject(TypeError('blid "' + blid + '" is to short'));
 
 
 		return new Promise((resolve, reject) => {
-			this.jwt.sign(this.createJwtPayload(username, permissions, blid), this.getSecret(),
+			this.jwt.sign(this.createJwtPayload(username, permission, blid), this.getSecret(),
 				(error:any, token: string) => {
 					if (error) {
 						return reject('error creating jw token, reason: ' + error);
@@ -78,17 +81,16 @@ export class SEToken  {
 		});
 	}
 
-	public validatePayload(jwtPayload: any, validOptions?: ValidCustomJwtPayload): Promise<JwtPayload> {
+	public validatePayload(jwtPayload: JwtPayload, validOptions?: ValidCustomJwtPayload): Promise<JwtPayload> {
 		return new Promise((resolve, reject) => {
 
 			if (validOptions) {
-				if (validOptions.permissions && !this.validatePermissions(jwtPayload.permissions, validOptions.permissions)) {
-					return reject(new Error('lacking the given permissions, "' + jwtPayload.permissions.toString() + '" does not include all the permissions of "' + validOptions.permissions.toString() + '"'));
+				if (validOptions.permissions && !this.validatePermissions(jwtPayload.permission, validOptions.permissions)) {
+					return reject(new Error('lacking the given permissions, "' + jwtPayload.permission.toString() + '" does not include all the permissions of "' + validOptions.permissions.toString() + '"'));
 				}
 
 				if (validOptions.blid && !this.validateBlid(jwtPayload.blid, validOptions.blid)) {
 					return reject(new Error('the decoded blid "' + jwtPayload.blid + '" is not like the valid blid "' + validOptions.blid + '"'));
-
 				}
 
 				if (validOptions.username && !this.validateUsername(jwtPayload.username, validOptions.username)) {
@@ -114,10 +116,8 @@ export class SEToken  {
 		return true;
 	}
 
-	private validatePermissions(decodedPermissions: string[], validPermissions: string[]): boolean {
-		for (let permission of decodedPermissions) {
-			if (validPermissions.indexOf(permission) <= -1) return false;
-		}
+	private validatePermissions(decodedPermission: UserPermission, validPermissions: string[]): boolean {
+		if (validPermissions.indexOf(decodedPermission) <= -1) return false;
 		return true;
 	}
 
@@ -126,13 +126,13 @@ export class SEToken  {
 		return true;
 	}
 
-	private createJwtPayload(username: string, permissions: string[], blid: string): JwtPayload {
+	private createJwtPayload(username: string, permission: UserPermission, blid: string): JwtPayload {
 		return {
-			iss: 'boklisten.co',
+			iss: this.options.iss,
 			aud: this.options.aud,
 			iat: Date.now(),
 			exp: Date.now() + this.options.exp,
-			permissions: permissions,
+			permission: permission,
 			blid: blid,
 			username: username
 		}

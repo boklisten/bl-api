@@ -1,8 +1,10 @@
 
 
+import {UserPermission} from "../../../auth/user/user-permission";
+
 export type User = {
 	userDetail: string,
-	permissions: string[],
+	permission: UserPermission,
 	login: {
 		provider: string,
 		providerId: string

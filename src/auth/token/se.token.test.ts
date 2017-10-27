@@ -11,18 +11,13 @@ describe('SeToken', () => {
 	describe('createToken()', () => {
 		let seToken: SEToken = new SEToken();
 
-		it('should reject with RangeError if permissions array is 0', () => {
-			return seToken.createToken('hello', [], 'something')
-				.should.be.rejectedWith(RangeError);
-		});
-
 		it('should reject TypeError when username is empty', () => {
-			return seToken.createToken( '', ['admin'], 'something')
+			return seToken.createToken( '', 'admin', 'something')
 				.should.be.rejectedWith(TypeError);
 		});
 
 		it('should reject TypeError when blid is empty', () => {
-			return seToken.createToken('hello', ['admin'], '')
+			return seToken.createToken('hello', 'admin', '')
 				.should.be.rejectedWith(TypeError);
 		});
 	});
@@ -38,7 +33,7 @@ describe('SeToken', () => {
 		it('should decode so the username is the same as when signed', () => {
 
 			return new Promise((resolve, reject) => {
-				seToken.createToken('albert', ['admin'], '1').then(
+				seToken.createToken('albert', 'admin', '1').then(
 					(token: string) => {
 						seToken.validateToken(token).then(
 							(decodedToken: JwtPayload) => {
@@ -56,7 +51,7 @@ describe('SeToken', () => {
 
 		it('should reject if the token lacks permission', () => {
 			return new Promise((resolve, reject) => {
-				seToken.createToken('albert', ['customer'], '1').then(
+				seToken.createToken('albert', 'customer', '1').then(
 					(token: string) => {
 						seToken.validateToken(token, {permissions: ['admin']}).then(
 							(decodedToken: JwtPayload) => {
@@ -75,7 +70,7 @@ describe('SeToken', () => {
 
 		it('should reject if the blid is not valid', () => {
 			return new Promise((resolve, reject) => {
-			    seToken.createToken('albert', ['customer'], '1').then(
+			    seToken.createToken('albert', 'customer', '1').then(
 				    (token: string) =>  {
 				    	seToken.validateToken(token, {blid: '2'}).then(
 						    (decodedToken: JwtPayload) => {
@@ -93,7 +88,7 @@ describe('SeToken', () => {
 
 		it('should reject if the name is not valid', () => {
 			return new Promise((resolve, reject) => {
-			    seToken.createToken('albert', ['customer'], '1').then(
+			    seToken.createToken('albert', 'customer', '1').then(
 				    (token: string) =>  {
 				    	seToken.validateToken(token, {username: 'bill'}).then(
 						    (decodedToken: JwtPayload) => {
@@ -109,5 +104,4 @@ describe('SeToken', () => {
 			}).should.be.rejectedWith(Error);
 		});
 	});
-
 });

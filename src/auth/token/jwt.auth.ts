@@ -35,8 +35,4 @@ export class JwtAuth {
 		return opts;
 
 	}
-
-
-
-
 }

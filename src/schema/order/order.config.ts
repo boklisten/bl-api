@@ -13,10 +13,14 @@ export class OrderConfig implements EndpointConfig {
 			id: false,
 			methods: [
 				{
-					method: 'get'
+					method: 'get',
+					login: true,
+					permissions: ["admin"]
 				},
 				{
-					method: 'post'
+					method: 'post',
+					login: true,
+					permissions: ["customer", "employee", "admin"]
 				}
 			]
 		},
@@ -25,16 +29,24 @@ export class OrderConfig implements EndpointConfig {
 			id: true,
 			methods: [
 				{
-					method: 'get'
+					method: 'get',
+					login: true,
+					permissions: ["customer", "employee", "admin"]
 				},
 				{
-					method: 'patch'
+					method: 'patch',
+					login: true,
+					permissions: ["employee", "admin"]
 				},
 				{
-					method: 'put'
+					method: 'put',
+					login: true,
+					permissions: ["admin"]
 				},
 				{
-					method: 'delete'
+					method: 'delete',
+					login: true,
+					permissions: ["admin"]
 				}
 			]
 		}
