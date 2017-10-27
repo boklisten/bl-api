@@ -3,12 +3,17 @@ import {SEToken} from "./se.token";
 import * as passport from 'passport';
 import {Strategy, ExtractJwt} from "passport-jwt";
 import {Router} from "express";
+import {UserHandler} from "../user/user.handler";
+import {User} from "../../config/schema/user/user";
 
 export class JwtAuth {
 	private seToken: SEToken;
+	private userHandler: UserHandler;
 
-	constructor(router: Router) {
+	constructor(router: Router, userHandler: UserHandler) {
 		this.seToken = new SEToken();
+		this.userHandler = userHandler;
+
 
 		passport.use(new Strategy(this.getOptions(), (jwtPayload: any, done: any) => {
 			done(null, {jwtPayload: jwtPayload});
@@ -21,6 +26,24 @@ export class JwtAuth {
 				},
 				(error: any) => {
 					res.send('you are not welcome here, reason: ' + error);
+				});
+		});
+	}
+
+	public getAutorizationToken(provider: string, providerId: string, name: string, email: string): Promise<string> {
+		return new Promise((resolve, reject) => {
+			this.userHandler.getOrCreateUser(provider, providerId, name, email).then(
+				(user: User) => {
+					this.seToken.createToken(user.username, user.permission, user.blid).then(
+						(jwtoken: string) => {
+							resolve(jwtoken);
+						},
+						(error:  any) => {
+							reject('getAuthorizationToken(): error when creating auth token, reason: ' + error);
+						});
+				},
+				(error: any) => {
+					reject('getAutorizationToken(): error when getOrCreateUser, reson: ' + error);
 				});
 		});
 	}

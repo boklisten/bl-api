@@ -5,17 +5,13 @@ import {Router} from 'express';
 
 import {OAuth2Strategy} from 'passport-google-oauth';
 import * as passport from "passport";
-import {UserHandler} from "../user/user.handler";
-import {User} from "../../config/schema/user/user";
-import {SEToken} from "../token/se.token";
+import {JwtAuth} from "../token/jwt.auth";
 
 export class GoogleAuth {
-	private userHandler: UserHandler;
-	private seToken: SEToken;
+	private jwtAuth: JwtAuth;
 
-	constructor(router: Router, userHandler: UserHandler) {
-		this.userHandler = userHandler;
-		this.seToken = new SEToken();
+	constructor(router: Router, jwtAuth: JwtAuth) {
+		this.jwtAuth = jwtAuth;
 
 		passport.use(new OAuth2Strategy({
 				clientID: secrets.boklistentest.google.clientId,
@@ -28,21 +24,16 @@ export class GoogleAuth {
 				let name = profile.name.givenName + ' ' + profile.name.familyName;
 				let email = profile.email = profile.emails[0].value;
 
-				this.userHandler.getOrCreateUser(provider, providerId, name, email).then(
-					(user: User) => {
-						this.seToken.createToken(user.username, user.permission, user.blid).then(
-							(jwtoken: string) => {
-								console.log('the jwtoken    ', jwtoken);
-								return done(null, jwtoken);
-
-							},
-							(error: any) => {
-								return done(new Error('could not create jw token, reason: ' + error));
-							});
+				this.jwtAuth.getAutorizationToken(provider, providerId, name, email).then(
+					(jwtoken: string) => {
+						done(null, jwtoken);
 					},
-					(error) => {
-						return done(new Error('could not get or create user, reason: ' + error));
-					});
+					(error: any) => {
+						done(new Error('error when trying to get auth token, reason: ' + error));
+					}
+				)
+
+
 			}
 		));
 
@@ -60,14 +51,7 @@ export class GoogleAuth {
 			passport.authenticate('google', { failureRedirect: '/login' }),
 			(req: any, res: any) => {
 				res.send(req.user);
-				//res.redirect('/show/jwt');
-
 			});
-
-
-		router.get('/show/jwt', (req: any, res: any) => {
-			res.send('hello there');
-		})
 	}
 
 }

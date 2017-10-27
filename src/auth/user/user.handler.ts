@@ -97,8 +97,6 @@ export class UserHandler {
 								}
 							};
 
-
-
 							this.userMongoHandler.post(new SEDocument('user', user)).then(
 								(docs: SEDocument[]) => {
 									resolve(docs[0].data);

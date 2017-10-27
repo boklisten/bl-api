@@ -5,10 +5,14 @@ import {Router} from 'express';
 import * as passport from "passport";
 import {secrets} from "../../config/secrets";
 import {Strategy} from 'passport-facebook'
+import {UserHandler} from "../user/user.handler";
 
 export class FacebookAuth {
+	private userHandler: UserHandler;
+
 
 	constructor(router: Router, app: any) {
+
 		passport.use(new Strategy({
 				clientID: secrets.boklistentest.facebook.clientId,
 				clientSecret: secrets.boklistentest.facebook.secret,

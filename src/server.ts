@@ -85,9 +85,9 @@ export class Server {
 		let userDetailSchema = new SESchema('userDetails', UserDetailSchema);
 		let userHandler = new UserHandler(userSchema, userDetailSchema);
 
-		let googleAuthEndpoint = new GoogleAuth(this.router, userHandler);
+		let jwtAuth: JwtAuth = new JwtAuth(this.router, userHandler);
+		let googleAuthEndpoint = new GoogleAuth(this.router, jwtAuth);
 		let facebookAuthEndpoint = new FacebookAuth(this.router, this.app);
-		let jwtAuth: JwtAuth = new JwtAuth(this.router);
 
 
 
