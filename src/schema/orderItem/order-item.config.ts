@@ -15,12 +15,16 @@ export class OrderItemConfig implements EndpointConfig {
 				{
 					method: 'get',
 					login: true,
-					permissions: ["customer", "employee", "admin"]
+					loginOptions: {
+						permissions: ["admin"]
+					}
 				},
 				{
 					method: 'post',
                     login: true,
-					permissions: ["customer", "employee", "admin"]
+					loginOptions: {
+						permissions: ["customer", "employee", "admin"]
+					}
 				}
 			]
 		},
@@ -31,22 +35,30 @@ export class OrderItemConfig implements EndpointConfig {
 				{
 					method: 'get',
 					login: true,
-					permissions: ["customer", "employee", "admin"]
+					loginOptions: {
+						permissions: ["customer", "employee", "admin"]
+					}
 				},
 				{
 					method: 'patch',
 					login: true,
-					permissions: ["employee", "admin"]
+					loginOptions: {
+						permissions: ["employee", "admin"]
+					}
 				},
 				{
 					method: 'put',
 					login: true,
-					permissions: ["admin"]
+					loginOptions: {
+						permissions: ["admin"]
+					}
 				},
 				{
 					method: 'delete',
 					login: true,
-					permissions: ["admin"]
+					loginOptions: {
+						permissions: ["admin"]
+					}
 				}
 			]
 		}

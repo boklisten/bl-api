@@ -58,5 +58,13 @@ export let OrderSchema = {
 			}
 		],
 		required: true
+	},
+	user: {
+		type: {
+			blid: {
+				type: Schema.Types.String
+			}
+		},
+		required: true
 	}
 };

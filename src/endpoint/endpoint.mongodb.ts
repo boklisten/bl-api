@@ -144,6 +144,26 @@ export class EndpointMongodb {
 		});
 	}
 
+	public getAndValidateByUserBlid(objId: string, blid: string): Promise<SEDocument[]> {
+		return new Promise((resolve, reject) => {
+			this.getById(objId).then(
+				(docs: SEDocument[]) => {
+					let data = docs[0].data;
+					if (data.user.blid) {
+						if (data.user.blid === blid) {
+							resolve(docs);
+							return;
+						}
+					}
+
+					reject(new SEErrorResponse(403));
+				},
+				(error: SEErrorResponse) => {
+					reject(error);
+				})
+		});
+	}
+
 	private handleError(error: any): SEErrorResponse {
 		if (error.name === 'CastError') {
 			return new SEErrorResponse(404);

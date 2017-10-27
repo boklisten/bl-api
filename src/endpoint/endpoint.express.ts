@@ -9,6 +9,9 @@ import {SEResponse} from "../response/se.response";
 import {SEErrorResponse} from "../response/se.error.response";
 import {SEDbQueryBuilder} from "../query/se.db-query-builder";
 import {ValidParam} from "../query/valid-param/db-query-valid-params";
+import {EndpointGetExpress} from "./endpoint-get.express";
+import {UserPermission} from "../auth/user/user-permission";
+import {User} from "../config/schema/user/user";
 
 
 
@@ -23,11 +26,19 @@ export type EndpointConfig = {
 export type Path = {
     path: string,
     id: boolean,
-    methods: {
-        method: "get" | "post" | "put" | "patch" | "delete",
-	    login: boolean,
-        permissions?: ["customer" | "employee" | "admin"]
-    }[];
+    methods: Method[];
+}
+
+export type Method = {
+	method: "get" | "post" | "put" | "patch" | "delete",
+	login: boolean,
+	loginOptions?: LoginOption
+}
+
+export type LoginOption = {
+	permissions: UserPermission[],
+	restrictedToUserOrAbove?: boolean //for example when request is for a user, only the user itself can update this, or a user with higher permission
+	userPermission?: UserPermission //the permission of the user this endpoint is for, for example "userDetail" or "order"
 }
 
 export class EndpointExpress {
@@ -37,6 +48,7 @@ export class EndpointExpress {
     endpointMongoDb: EndpointMongodb;
     resHandler: SEResponseHandler;
     seQuery: SEDbQueryBuilder;
+    endpointGetExpress: EndpointGetExpress;
 
     constructor(router: Router, config: EndpointConfig, resHandler: SEResponseHandler) {
         this.router = router;
@@ -45,6 +57,7 @@ export class EndpointExpress {
         this.endpointMongoDb = new EndpointMongodb(config.schema);
         this.resHandler = resHandler;
         this.seQuery = new SEDbQueryBuilder();
+        this.endpointGetExpress = new EndpointGetExpress(resHandler, this.endpointMongoDb);
 
         if (!this.createEndpoints(router, config)) {
             console.log('could not create endpoints for ', config.basePath);
@@ -58,8 +71,10 @@ export class EndpointExpress {
         for (let path of config.paths) {
             for (let method of path.methods) {
 
+            	let url = this.createUrl(path);
+
                 switch (method.method) {
-                    case "get": this.createGet(router, path);
+                    case "get": this.endpointGetExpress.createGetEnpoint(router, path, method, url, method.loginOptions, this.config.validSearchParams);
                         break;
                     case "post": this.createPost(router, path);
                         break;
@@ -73,8 +88,16 @@ export class EndpointExpress {
         return true;
     }
 
-    createGet(router: Router, path: Path) {
-		if (!path.id) {
+    private createUrl(path: Path): string {
+    	let thePath = '/' + this.basePath + '/' + path.path;
+    	if (path.id) {
+    		thePath += '/:id';
+	    }
+	    return thePath;
+    }
+
+    createGet(router: Router, path: Path, method: Method) {
+		if (!path.id && !method.login) {
 			router.get(this.createPath(path.path), (req: Request, res: Response) => {
 
 				try {
@@ -94,6 +117,11 @@ export class EndpointExpress {
 				}
 			});
 		} else {
+			let url = this.createPath(path.path);
+
+			if (method.login) {
+				router.get(url,)
+			}
 			router.get(this.createPath(path.path, true), (req: Request, res: Response) => {
 				this.endpointMongoDb.getById(req.params.id).then(
 					(docs: SEDocument[]) => {
@@ -106,6 +134,39 @@ export class EndpointExpress {
 			});
 		}
 
+    }
+
+    createPublicGet(router: Router, path: Path) {
+    	router.get(this.createPath(path.path), (req: Request, res: Response) => {
+			try {
+				let dbQuery = this.seQuery.getDbQuery(req.query, this.config.validSearchParams);
+
+				this.endpointMongoDb.get(dbQuery).then(
+				(docs: SEDocument[]) => {
+					this.resHandler.sendResponse(res, new SEResponse(docs));
+						},
+				(error: SEErrorResponse) => {
+							this.resHandler.sendErrorResponse(res, error);
+				});
+
+			} catch (error) {
+				this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+				return;
+			}
+		});
+    }
+
+    createPublicGetWithId(router: Router, path: Path) {
+    	router.get(this.createPath(path.path, true), (req: Request, res: Response) => {
+			this.endpointMongoDb.getById(req.params.id).then(
+				(docs: SEDocument[]) => {
+					this.resHandler.sendResponse(res, new SEResponse(docs));
+				},
+				(error: SEErrorResponse) => {
+					this.resHandler.sendErrorResponse(res, error);
+				}
+			)
+		});
     }
 
     createDelete(router: Router, path: Path) {

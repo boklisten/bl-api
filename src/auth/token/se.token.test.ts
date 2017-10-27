@@ -53,7 +53,9 @@ describe('SeToken', () => {
 			return new Promise((resolve, reject) => {
 				seToken.createToken('albert', 'customer', '1').then(
 					(token: string) => {
-						seToken.validateToken(token, {permissions: ['admin']}).then(
+						seToken.validateToken(token, {
+							permissions: ['admin']
+						}).then(
 							(decodedToken: JwtPayload) => {
 
 							},
@@ -72,7 +74,11 @@ describe('SeToken', () => {
 			return new Promise((resolve, reject) => {
 			    seToken.createToken('albert', 'customer', '1').then(
 				    (token: string) =>  {
-				    	seToken.validateToken(token, {blid: '2'}).then(
+				    	seToken.validateToken(token, {
+				    		permissions: ["customer"],
+						    restrictedToUserOrAbove: true,
+						    userPermission: 'customer'})
+						    .then(
 						    (decodedToken: JwtPayload) => {
 
 						    },
@@ -86,22 +92,5 @@ describe('SeToken', () => {
 			}).should.be.rejectedWith(Error);
 		});
 
-		it('should reject if the name is not valid', () => {
-			return new Promise((resolve, reject) => {
-			    seToken.createToken('albert', 'customer', '1').then(
-				    (token: string) =>  {
-				    	seToken.validateToken(token, {username: 'bill'}).then(
-						    (decodedToken: JwtPayload) => {
-
-						    },
-						    (error: any) => {
-						    	reject(new Error(error));
-						    })
-				    },
-				    (error: any) => {
-
-				    })
-			}).should.be.rejectedWith(Error);
-		});
 	});
 });

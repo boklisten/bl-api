@@ -2,6 +2,7 @@
 
 import {UserPermission} from "../user/user-permission";
 import {User} from "../../config/schema/user/user";
+import {LoginOption} from "../../endpoint/endpoint.express";
 
 export type JwtPayload = {
 	iss: string,
@@ -60,7 +61,7 @@ export class SEToken  {
 		});
 	}
 
-	public validateToken(token: string, validOptions?: ValidCustomJwtPayload): Promise<JwtPayload> {
+	public validateToken(token: string, validLoginOptions?: LoginOption): Promise<JwtPayload> {
 		if (token.length <= 0) return Promise.reject(TypeError('token is empty'));
 
 		return new Promise((resolve, reject) => {
@@ -70,7 +71,7 @@ export class SEToken  {
 					return reject('error verifying token, reason: ' + error);
 				}
 
-				this.validatePayload(decoded, validOptions).then(
+				this.validatePayload(decoded, validLoginOptions).then(
 					(jwtPayload: any) => {
 						resolve(jwtPayload);
 					},
@@ -81,20 +82,14 @@ export class SEToken  {
 		});
 	}
 
-	public validatePayload(jwtPayload: JwtPayload, validOptions?: ValidCustomJwtPayload): Promise<JwtPayload> {
+	public validatePayload(jwtPayload: JwtPayload, validLoginOptions?: LoginOption): Promise<JwtPayload> {
 		return new Promise((resolve, reject) => {
 
-			if (validOptions) {
-				if (validOptions.permissions && !this.validatePermissions(jwtPayload.permission, validOptions.permissions)) {
-					return reject(new Error('lacking the given permissions, "' + jwtPayload.permission.toString() + '" does not include all the permissions of "' + validOptions.permissions.toString() + '"'));
-				}
-
-				if (validOptions.blid && !this.validateBlid(jwtPayload.blid, validOptions.blid)) {
-					return reject(new Error('the decoded blid "' + jwtPayload.blid + '" is not like the valid blid "' + validOptions.blid + '"'));
-				}
-
-				if (validOptions.username && !this.validateUsername(jwtPayload.username, validOptions.username)) {
-					return reject(new Error('the decoded username "' + jwtPayload.username + '" is not equal the valid username "' + validOptions.username + '"'));
+			if (validLoginOptions) {
+				if (!validLoginOptions.restrictedToUserOrAbove) {
+					if (validLoginOptions.permissions && !this.validatePermissions(jwtPayload.permission, validLoginOptions.permissions)) {
+						return reject(new Error('lacking the given permissions, "' + jwtPayload.permission.toString() + '" does not include all the permissions of "' + validLoginOptions.permissions.toString() + '"'));
+					}
 				}
 			}
 
@@ -136,5 +131,22 @@ export class SEToken  {
 			blid: blid,
 			username: username
 		}
+	}
+
+	public permissionAbove(tokenPermission: UserPermission, permissions: UserPermission[]) {
+		let lowestPermission = permissions[0];
+
+		if (tokenPermission === lowestPermission) return true;
+
+		if (lowestPermission === "customer") {
+			if (tokenPermission === "employee") return true;
+			if (tokenPermission === "admin") return true;
+		}
+
+		if (lowestPermission === "employee") {
+			if (tokenPermission === "admin") return true;
+		}
+
+		return false;
 	}
 }

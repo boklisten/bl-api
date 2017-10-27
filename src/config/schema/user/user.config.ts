@@ -17,7 +17,10 @@ export class UserConfig implements EndpointConfig {
                 {
                     method: 'patch',
 	                login: true,
-	                permissions: ["customer", "employee", "admin"]
+	                loginOptions: {
+                    	permissions: ["customer", "employee", "admin"],
+		                restrictedToUserOrAbove: true
+	                }
                 }
             ]
         }

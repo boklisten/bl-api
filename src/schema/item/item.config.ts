@@ -19,7 +19,9 @@ export class ItemConfig implements EndpointConfig {
 				{
 					method: 'post',
 					login: true,
-					permissions: ["admin"]
+					loginOptions: {
+						permissions: ["admin"]
+					}
 				}
 			]
 		},
@@ -34,17 +36,23 @@ export class ItemConfig implements EndpointConfig {
 				{
 					method: 'patch',
 					login: true,
-					permissions: ["admin"]
+					loginOptions: {
+						permissions: ["admin"]
+					}
 				},
 				{
 					method: 'put',
 					login: true,
-					permissions: ["admin"]
+					loginOptions: {
+						permissions: ["admin"]
+					}
 				},
 				{
 					method: 'delete',
 					login: true,
-					permissions: ["admin"]
+					loginOptions: {
+						permissions: ["admin"]
+					}
 				}
 			]
 		}
