@@ -29,14 +29,36 @@ export class EndpointPatchExpress {
 		router.patch(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
 			this.seToken.validatePayload(req.user.jwtPayload, loginOptions).then(
 				(jwtPayload: JwtPayload) => {
-					this.enpointMongoDb.patch(req.params.id, req.body).then(
-						(docs: SEDocument[]) => {
-							this.resHandler.sendResponse(res, new SEResponse(docs));
-						},
-						(error: SEErrorResponse) => {
-							this.resHandler.sendErrorResponse(res, error);
-						});
+					if (loginOptions.restrictedToUserOrAbove) {
+						this.enpointMongoDb.getAndValidateByUserBlid(req.params.id, jwtPayload.blid).then(
+							(docs: SEDocument[]) => {
+								this.patchDocument(res, req.params.id, req.body);
+							},
+							(error: any) => {
+								if (this.seToken.permissionAbove(jwtPayload.permission, loginOptions.permissions)) {
+									this.patchDocument(res, req.params.id, req.body);
+								} else {
+									this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+								}
+							});
+					} else {
+						this.patchDocument(res, req.params.id, req.body);
+					}
+				},
+				(error: any) => {
+					this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
 				});
 		});
 	}
+
+	private patchDocument(res: Response, id: string, body: any) {
+		this.enpointMongoDb.patch(id, body).then(
+			(docs: SEDocument[]) => {
+				this.resHandler.sendResponse(res, new SEResponse(docs));
+			},
+			(error: SEErrorResponse) => {
+				this.resHandler.sendErrorResponse(res, error);
+			});
+	}
+
 }

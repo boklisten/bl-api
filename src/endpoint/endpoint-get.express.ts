@@ -25,7 +25,7 @@ export class EndpointGetExpress {
 		this.seToken = new SEToken();
 	}
 
-	public createGetEnpoint(router: Router, path: Path, method: Method, url: string, validSearchParams?: ValidParam[]) {
+	public createGetEndpoint(router: Router, path: Path, method: Method, url: string, validSearchParams?: ValidParam[]) {
 		if (path.id) {
 			if (method.login) {
 				this.createLoginGetWithId(router, url, method.loginOptions);

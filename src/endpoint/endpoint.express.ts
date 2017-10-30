@@ -14,6 +14,7 @@ import {UserPermission} from "../auth/user/user-permission";
 import {User} from "../config/schema/user/user";
 import {EndpointPostExpress} from "./endpoint-post.express";
 import {EndpointPatchExpress} from "./endpoint-patch.express";
+import {EndpointDeleteExpress} from "./endpoint-delete.express";
 
 
 
@@ -44,26 +45,24 @@ export type LoginOption = {
 }
 
 export class EndpointExpress {
-    router: Router;
     config: EndpointConfig;
     basePath: string;
     endpointMongoDb: EndpointMongodb;
     resHandler: SEResponseHandler;
-    seQuery: SEDbQueryBuilder;
     endpointGetExpress: EndpointGetExpress;
     endpointPostExpress: EndpointPostExpress;
     endpointPatchExpress: EndpointPatchExpress;
+    endpointDeleteExpress: EndpointDeleteExpress;
 
     constructor(router: Router, config: EndpointConfig, resHandler: SEResponseHandler) {
-        this.router = router;
         this.config = config;
         this.basePath = config.basePath;
         this.endpointMongoDb = new EndpointMongodb(config.schema);
         this.resHandler = resHandler;
-        this.seQuery = new SEDbQueryBuilder();
         this.endpointGetExpress = new EndpointGetExpress(resHandler, this.endpointMongoDb);
         this.endpointPostExpress = new EndpointPostExpress(resHandler, this.endpointMongoDb);
         this.endpointPatchExpress = new EndpointPatchExpress(resHandler, this.endpointMongoDb);
+        this.endpointDeleteExpress = new EndpointDeleteExpress(resHandler, this.endpointMongoDb);
 
         if (!this.createEndpoints(router, config)) {
             console.log('could not create endpoints for ', config.basePath);
@@ -80,13 +79,13 @@ export class EndpointExpress {
             	let url = this.createUrl(path);
 
                 switch (method.method) {
-                    case "get": this.endpointGetExpress.createGetEnpoint(router, path, method, url, this.config.validSearchParams);
+                    case "get": this.endpointGetExpress.createGetEndpoint(router, path, method, url, this.config.validSearchParams);
                         break;
                     case "post": this.endpointPostExpress.createPostEndpoint(router, method, url, this.config.collectionName);
                         break;
-					case "patch": this.endpointPatchExpress.createPatchEndpoint(router, method, url)
+					case "patch": this.endpointPatchExpress.createPatchEndpoint(router, method, url);
 						break;
-					case "delete": this.createDelete(router, path);
+					case "delete": this.endpointDeleteExpress.createDeleteEndpoint(router, method, url);
 						break;
                 }
             }
@@ -102,32 +101,7 @@ export class EndpointExpress {
 	    return thePath;
     }
 
-    createDelete(router: Router, path: Path) {
-    	router.delete(this.createPath(path.path, true), (req: Request, res: Response) => {
-    		this.endpointMongoDb.deleteById(req.params.id).then(
-				(doc: SEDocument[]) => {
-					res.send(doc);
-				},
-				(error) => {
-					res.send(error);
-				});
-		});
-	}
-
-    createPatch(router: Router, path: Path) {
-    	router.patch(this.createPath(path.path, true), (req: Request, res: Response) => {
-    		this.endpointMongoDb.patch(req.params.id, req.body).then(
-				(docs: SEDocument[]) => {
-					this.resHandler.sendResponse(res, new SEResponse(docs));
-				},
-				(error: SEErrorResponse) => {
-					this.resHandler.sendErrorResponse(res, error);
-				}
-			)
-		})
-	}
-
-    validateConfig(config: EndpointConfig): boolean {
+    private validateConfig(config: EndpointConfig): boolean {
         for (let path of config.paths) {
            for (let method of path.methods) {
                if (path.id && method.method === 'post') return false;
@@ -135,11 +109,5 @@ export class EndpointExpress {
            }
         }
         return true;
-    }
-
-    createPath(path: string, id?: boolean): string {
-    	let thePath = '/' + this.basePath + '/' + path;
-    	if (id) thePath += '/:id';
-        return thePath;
     }
 }
