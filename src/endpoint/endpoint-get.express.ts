@@ -25,16 +25,16 @@ export class EndpointGetExpress {
 		this.seToken = new SEToken();
 	}
 
-	public createGetEnpoint(router: Router, path: Path, method: Method, url: string, loginOptions?: LoginOption, validSearchParams?: ValidParam[]) {
+	public createGetEnpoint(router: Router, path: Path, method: Method, url: string, validSearchParams?: ValidParam[]) {
 		if (path.id) {
 			if (method.login) {
-				this.createLoginGetWithId(router, url, loginOptions);
+				this.createLoginGetWithId(router, url, method.loginOptions);
 			} else {
 				this.createGetWithId(router, url);
 			}
 		} else {
 			if (method.login) {
-				this.createLoginGet(router, url, validSearchParams, loginOptions);
+				this.createLoginGet(router, url, validSearchParams, method.loginOptions);
 			} else {
 				this.createGet(router, url, validSearchParams);
 			}
@@ -70,7 +70,6 @@ export class EndpointGetExpress {
 			this.seToken.validatePayload(req.user.jwtPayload, loginOptions).then(
 				(jwtPayload: JwtPayload) => {
 					if (loginOptions && loginOptions.restrictedToUserOrAbove) {
-						console.log('bliiiid:', jwtPayload.blid);
 						this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, jwtPayload.blid).then(
 							(docs: SEDocument[]) => {
 								this.resHandler.sendResponse(res, new SEResponse(docs));
