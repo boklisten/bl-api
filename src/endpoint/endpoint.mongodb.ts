@@ -149,10 +149,13 @@ export class EndpointMongodb {
 			this.getById(objId).then(
 				(docs: SEDocument[]) => {
 					let data = docs[0].data;
-					if (data.user.blid) {
-						if (data.user.blid === blid) {
-							resolve(docs);
-							return;
+
+					if (data.user) {
+						if (data.user.blid) {
+							if (data.user.blid === blid) {
+								resolve(docs);
+								return;
+							}
 						}
 					}
 
