@@ -36,13 +36,13 @@ module.exports = function (grunt) {
         },
         nodemon: {
             dev: {
-                script: './dist/server.js'
+                script: './dist/index.js'
             }
         },
         express: {
             dev: {
                 options: {
-                    script: './dist/server.js'
+                    script: './dist/index.js'
                 }
             }
         },

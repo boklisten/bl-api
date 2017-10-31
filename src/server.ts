@@ -1,50 +1,41 @@
 import * as express from 'express';
-import * as mongoose from 'mongoose';
-import * as session from 'express-session';
-import {EndpointConfig, EndpointExpress} from "./endpoint/endpoint.express";
 import {Application, Router} from "express";
-import {ItemConfig} from "./schema/item/item.config";
-import {BranchConfig} from "./schema/branch/branch.config";
-import {SEResponseHandler} from "./response/se.response.handler";
-import {CustomerItemConfig} from "./schema/customer-item/customer-item.config";
-import {OrderConfig} from "./schema/order/order.config";
-import {OrderItemConfig} from "./schema/orderItem/order-item.config";
-import {UserConfig} from "./config/schema/user/user.config";
-import {GoogleAuth} from "./auth/google/google.auth";
-import {LocalAuth} from "./auth/local/local.auth";
 import * as passport from "passport";
-import {secrets} from "./config/secrets";
-import {FacebookAuth} from "./auth/facebook/facebook.auth";
-import {UserHandler} from "./auth/user/user.handler";
-import {UserSchema} from "./config/schema/user/user.schema";
-import {UserDetail} from "./config/schema/user/user-detail";
-import {UserDetailSchema} from "./config/schema/user/user-detail.schema";
-import {SESchema} from "./config/schema/se.schema";
-import {JwtAuth} from "./auth/token/jwt.auth";
-let Strategy = require('passport-google-oauth').OAuth2Strategy;
-
+import {APP_CONFIG} from "./application-confing";
+import {BlAuth} from "./auth/bl.auth";
+import {BlEndpoint} from "./endpoint/bl.endpoint";
 let bodyParser = require('body-parser');
 
 export class Server {
 
 	public app: Application;
 	private router: Router;
-	private port: number;
+	private blEndpoint: BlEndpoint;
+	private blAuth: BlAuth;
 
 
 	constructor() {
-		passport.serializeUser((user: any, done: any) => {
-			done(null, user);
-		});
 
-		passport.deserializeUser((user: any, done: any) => {
-			done(null, user);
-		});
+		this.initialServerConfig();
+		this.initialPassportConfig();
 
+		this.blEndpoint = new BlEndpoint(this.router);
+		this.blAuth = new BlAuth(this.router);
+
+		this.mongoDbStart();
+		this.serverStart();
+	}
+
+	private mongoDbStart() {
+		let mongoose = require('mongoose');
+		mongoose.Promise = require('bluebird');
+		mongoose.connect(this.getMongoDbPath(), {useMongoClient: true});
+	}
+
+	private initialServerConfig() {
 		this.app = express();
 
 		this.app.use(bodyParser.json());
-		this.port = 3000;
 
 		//let cors = require('cors');
 
@@ -59,47 +50,39 @@ export class Server {
 
 		this.router = Router();
 		this.app.use(this.router);
+	}
 
-		let responseHandler = new SEResponseHandler();
-		mongoose.connect('mongodb://localhost:27017/bl_test_a', {useMongoClient: true});
-		//let userConfig = new UserConfig();
-
-		//let userEndpoint: UserEndpoint = new UserEndpoint(this.router, userConfig, customerConfig, employeeConfig,responseHandler);
-		let itemConfig = new ItemConfig();
-		let branchConfig = new BranchConfig();
-
-		let customerItemConfig = new CustomerItemConfig();
-		let orderConfig = new OrderConfig();
-
-
-		let orderItemConfig = new OrderItemConfig();
-		let ItemEndpoint = new EndpointExpress(this.router, itemConfig, responseHandler);
-		let BranchEndpoint = new EndpointExpress(this.router, branchConfig, responseHandler);
-		let CustomerItemEndpoint = new EndpointExpress(this.router, customerItemConfig, responseHandler);
-		let OrderEndpoint = new EndpointExpress(this.router, orderConfig, responseHandler);
-
-
-		let OrderItemEndpoint = new EndpointExpress(this.router, orderItemConfig, responseHandler);
-
-		let userSchema = new SESchema('users', UserSchema);
-		let userDetailSchema = new SESchema('userDetails', UserDetailSchema);
-		let userHandler = new UserHandler(userSchema, userDetailSchema);
-
-		let jwtAuth: JwtAuth = new JwtAuth(this.router, userHandler);
-		let googleAuthEndpoint = new GoogleAuth(this.router, jwtAuth);
-		let facebookAuthEndpoint = new FacebookAuth(this.router, jwtAuth);
-
-
-
-		//let localAuthEndpoint = new LocalAuth(this.router);
-
-		this.app.listen(this.port, () => {
-			console.log('api running on port: ', this.port);
+	private initialPassportConfig() {
+		passport.serializeUser((user: any, done: any) => {
+			done(null, user);
 		});
+
+		passport.deserializeUser((user: any, done: any) => {
+			done(null, user);
+		});
+	}
+
+	private serverStart() {
+		this.app.listen(APP_CONFIG.server.port, () => {
+			this.printServerStartMessage();
+		});
+	}
+
+	private printServerStartMessage() {
+		console.log('\n\t######');
+		console.log('\t#\tBL_API now running');
+		console.log('\t#\tapi: \t\t' + this.getServerPath());
+		console.log('\t#\tmongoDB: \t' + this.getMongoDbPath());
+		console.log('\t######\n');
 
 	}
 
+	private getMongoDbPath(): string {
+		return APP_CONFIG.mongoDb.basePath + APP_CONFIG.mongoDb.host + ':' + APP_CONFIG.mongoDb.port + '/' + APP_CONFIG.mongoDb.dbName;
+	}
 
+	private getServerPath(): string {
+		return APP_CONFIG.server.path + ':' + APP_CONFIG.server.port
+	}
 }
 
-let srv = new Server();
