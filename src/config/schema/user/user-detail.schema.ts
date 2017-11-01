@@ -55,5 +55,9 @@ export let UserDetailSchema = {
 		confirmed: {
 			type: Schema.Types.Boolean
 		}
+	},
+	customerItems: {
+		type: [Schema.Types.ObjectId],
+		default: []
 	}
 };

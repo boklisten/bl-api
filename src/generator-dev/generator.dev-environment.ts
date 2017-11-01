@@ -1,25 +1,32 @@
 
 
-import {UserGeneratorDevEnvironment} from "./user-generator.dev-environment";
-import {BranchGeneratorDevEnvironment} from "./branch-generator.dev-environment";
+import {UserGeneratorDevEnvironment} from "./user/user-generator.dev-environment";
+import {BranchGeneratorDevEnvironment} from "./branch/branch-generator.dev-environment";
 import {APP_CONFIG} from "../application-config";
+import {CustomerItemGeneratorDevEnvironment} from "./customer-item/customer-item-generator.dev-environment";
 
 export class GeneratorDevEnvironment {
 
 	constructor() {
-		let branchGeneartor = new BranchGeneratorDevEnvironment();
+		let branchGenerator = new BranchGeneratorDevEnvironment();
 		let userGenerator = new UserGeneratorDevEnvironment();
+		let customerItemGenerator = new CustomerItemGeneratorDevEnvironment();
 
 		this.mongoDbStart();
 
 		userGenerator.clearDevData();
-		branchGeneartor.clearDevData();
+		branchGenerator.clearDevData();
+		customerItemGenerator.clearDevData();
 
 		setTimeout(() => {
-			branchGeneartor.createDevData();
+			branchGenerator.createDevData();
 
 			setTimeout(() => {
-				userGenerator.createDevData(branchGeneartor.getBranchIds());
+				userGenerator.createDevData(branchGenerator.getBranchIds());
+
+				setTimeout(() => {
+					customerItemGenerator.createDevData(userGenerator.getUsers(), branchGenerator.getBranchIds(), userGenerator.getUserDetailConfig());
+				}, 500);
 			}, 500);
 		}, 500);
 	}

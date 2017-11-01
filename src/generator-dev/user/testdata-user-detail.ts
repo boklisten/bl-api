@@ -10,7 +10,8 @@ export let testDataUserDetails = [
 		postCity: 'Oslo',
 		country: 'Norway',
 		dob: new Date(1995,1,1),
-		branch: ''
+		branch: '',
+		customerItems: []
 	},
 	{
 		name: 'Polk Salad Annie',
@@ -21,7 +22,8 @@ export let testDataUserDetails = [
 		postCity: 'Oslo',
 		country: 'Norway',
 		dob: new Date(1990,2,10),
-		branch: ''
+		branch: '',
+		customerItems: []
 	}
 ];
 

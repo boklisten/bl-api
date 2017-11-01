@@ -1,9 +1,9 @@
 
-import {UserConfig} from "../config/schema/user/user.config";
-import {UserDetailConfig} from "../config/schema/user/user-detail.config";
-import {Blid} from "../auth/blid/blid";
-import {testDataUsers} from "./user/testdata-user";
-import {testDataUserDetails} from "./user/testdata-user-detail";
+import {UserConfig} from "../../config/schema/user/user.config";
+import {UserDetailConfig} from "../../config/schema/user/user-detail.config";
+import {Blid} from "../../auth/blid/blid";
+import {testDataUsers} from "./testdata-user";
+import {testDataUserDetails} from "./testdata-user-detail";
 
 export class UserGeneratorDevEnvironment {
 	userConfig: UserConfig;
@@ -41,7 +41,16 @@ export class UserGeneratorDevEnvironment {
 			userIds.push(user._id);
 		}
 
+
 		return userIds;
+	}
+
+	public getUsers(): any[] {
+		return this.insertedUsers;
+	}
+
+	public getUserDetailConfig(): UserDetailConfig {
+		return this.userDetailConfig;
 	}
 
 	private createUsers() {
@@ -75,9 +84,9 @@ export class UserGeneratorDevEnvironment {
 
 	private addUser(user: any) {
 		this.userConfig.schema.mongooseModel.insertMany([user]).then(
-			() => {
-				console.log('\t\tadded user', user.username);
-				this.insertedUsers.push(user);
+			(docs: any[]) => {
+				console.log('\t\tadded user', docs[0].username);
+				this.insertedUsers.push(docs[0]);
 			},
 			(error: any) => {
 				console.log('! could not create user');

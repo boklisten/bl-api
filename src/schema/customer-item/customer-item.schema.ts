@@ -7,7 +7,7 @@ export let CustomerItemSchema = {
 		type: Schema.Types.ObjectId,
 		required: true
 	},
-	customer: {
+	user: {
 		type: Schema.Types.ObjectId,
 		required: true
 	},
