@@ -37,6 +37,9 @@ module.exports = function (grunt) {
         nodemon: {
             dev: {
                 script: './dist/index.js'
+            },
+            'insert-testdata': {
+                script: './dist/testdata/testdata-insert.js'
             }
         },
         express: {
@@ -88,7 +91,7 @@ module.exports = function (grunt) {
     grunt.registerTask("dev", [
         'concurrent:dev',
         'ts',
-        'nodemon',
+        'nodemon:dev',
         'watch:ts'
     ]);
 
@@ -97,5 +100,10 @@ module.exports = function (grunt) {
         "run:test",
         "watch:test"
     ]);
+
+    grunt.registerTask('insert-testdata', [
+        'ts',
+        'nodemon:insert-testdata'
+    ])
 
 };

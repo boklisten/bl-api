@@ -5,13 +5,13 @@ import {SEDbQuery} from "../query/se.db-query";
 import {mongo} from "mongoose";
 
 export class EndpointMongodb {
-	schema: SESchema;
+	private schema: SESchema;
 
 	constructor(schema: SESchema) {
 		this.schema = schema;
 	}
 
-	get(dbQuery: SEDbQuery): Promise<SEDocument[]> {
+	public get(dbQuery: SEDbQuery): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
 			this.schema.mongooseModel
 				.find(dbQuery.getFilter(), dbQuery.getOgFilter())
@@ -61,7 +61,7 @@ export class EndpointMongodb {
 		});
 	}
 
-	post(document: SEDocument): Promise<SEDocument[]> {
+	public post(document: SEDocument): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
 			document.data.creationTime = new Date().toISOString();
 			let newDocument = new this.schema.mongooseModel(document.data);
@@ -77,7 +77,7 @@ export class EndpointMongodb {
 		});
 	}
 
-	getById(id: string): Promise<SEDocument[]> {
+	public getById(id: string): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
 			this.schema.mongooseModel.findOne({_id: id}, (error, doc) => {
 				if (error) {
@@ -95,11 +95,11 @@ export class EndpointMongodb {
 		});
 	}
 
-	put(): Promise<SEDocument> {
+	public put(): Promise<SEDocument> {
 		return Promise.reject('')
 	}
 
-	patch(id: string, doc: SEDocument): Promise<SEDocument[]> {
+	public patch(id: string, doc: SEDocument): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
 			this.schema.mongooseModel.findById(id, (error, document) => {
 				if (error) {
@@ -112,12 +112,12 @@ export class EndpointMongodb {
 					return
 				}
 
-				document.set(doc);
+				document.set(doc.data);
 				document.set({lastUpdated: new Date().toISOString()});
 
 				document.save((error, updatedDocument) => {
-					if (error || updatedDocument === null) {
-						reject(new SEErrorResponse(500, 'server error', error));
+					if (error) {
+						reject(this.handleError(error));
 						return;
 					}
 
@@ -127,7 +127,7 @@ export class EndpointMongodb {
 		});
 	}
 
-	deleteById(id: string): Promise<SEDocument[]> {
+	public deleteById(id: string): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
 			this.schema.mongooseModel.findByIdAndRemove(id, (error, doc) => {
 				if (error) {
@@ -173,6 +173,7 @@ export class EndpointMongodb {
 		} else if (error.name == 'ValidationError') {
 			return new SEErrorResponse(400);
 		} else {
+			console.log('the error', error);
 			return new SEErrorResponse(500);
 		}
 	}

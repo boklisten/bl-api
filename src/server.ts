@@ -1,7 +1,7 @@
 import * as express from 'express';
 import {Application, Router} from "express";
 import * as passport from "passport";
-import {APP_CONFIG} from "./application-confing";
+import {APP_CONFIG} from "./application-config";
 import {BlAuth} from "./auth/bl.auth";
 import {BlEndpoint} from "./endpoint/bl.endpoint";
 let bodyParser = require('body-parser');
@@ -63,7 +63,7 @@ export class Server {
 	}
 
 	private serverStart() {
-		this.app.listen(APP_CONFIG.server.port, () => {
+		this.app.listen(APP_CONFIG.dev.server.port, () => {
 			this.printServerStartMessage();
 		});
 	}
@@ -78,11 +78,11 @@ export class Server {
 	}
 
 	private getMongoDbPath(): string {
-		return APP_CONFIG.mongoDb.basePath + APP_CONFIG.mongoDb.host + ':' + APP_CONFIG.mongoDb.port + '/' + APP_CONFIG.mongoDb.dbName;
+		return APP_CONFIG.dev.mongoDb.basePath + APP_CONFIG.dev.mongoDb.host + ':' + APP_CONFIG.dev.mongoDb.port + '/' + APP_CONFIG.dev.mongoDb.dbName;
 	}
 
 	private getServerPath(): string {
-		return APP_CONFIG.server.path + ':' + APP_CONFIG.server.port
+		return APP_CONFIG.dev.server.host + ':' + APP_CONFIG.dev.server.port + '/' + APP_CONFIG.dev.server.path;
 	}
 }
 
