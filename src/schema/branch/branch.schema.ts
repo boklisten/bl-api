@@ -82,5 +82,9 @@ export let BranchSchema = {
 			type: Schema.Types.String,
 			required: true
 		}
+	},
+	openingHours: {
+		type: [Schema.Types.ObjectId],
+		default: []
 	}
 };

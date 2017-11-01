@@ -11,6 +11,7 @@ import {testDataBranches} from "./branch/testdata-branch";
 import {SEErrorResponse} from "../response/se.error.response";
 import {APP_CONFIG} from "../application-config";
 import {testDataItems} from "./item/testdata-item";
+import {OpeningHourConfig} from "../schema/opening-hour/opening-hour.config";
 
 export class TestdataInsert {
 	private insertedItems: any = [];
@@ -18,10 +19,13 @@ export class TestdataInsert {
 	private branchMongoDb: EndpointMongodb;
 	private branchConfig: BranchConfig;
 	private itemConfig: ItemConfig;
+	private openingHourConfig: OpeningHourConfig;
 
 	constructor() {
 		this.branchConfig = new BranchConfig();
 		this.itemConfig = new ItemConfig();
+		this.openingHourConfig = new OpeningHourConfig();
+
 		let customerItemConfig = new CustomerItemConfig();
 		let orderItemConfig = new OrderItemConfig();
 		let orderConfig = new OrderConfig();
@@ -52,6 +56,10 @@ export class TestdataInsert {
 		this.itemConfig.schema.mongooseModel.remove({} , () => {
 			console.log('\t\titem collection removed');
 		});
+
+		this.openingHourConfig.schema.mongooseModel.remove({}, () => {
+			console.log('\t\topeningHour collection removed');
+		})
 	}
 
 	private createDevEnviornment() {
@@ -94,12 +102,57 @@ export class TestdataInsert {
 			});
 	}
 
+	private createOpeningHoursForBranch(branch: any) {
+		this.openingHourConfig.schema.mongooseModel.insertMany(this.getRandomOpeningHours(branch._id)).then(
+			(docs: any[]) => {
+				let ids: string[] = [];
+				for (let doc of docs) {
+					ids.push(doc._id);
+				}
+				this.insertDataToBranch(branch, {openingHours: ids}).then(
+					() => {
+
+					},
+					() => {
+						console.log('! failed to add opening hours array to branch')
+					});
+			},
+			() => {
+				console.log('! failed on adding openingHours to branch');
+			});
+	}
+
+	private getRandomOpeningHours(branchId: string): {from: Date, to: Date, branch: string}[] {
+		let year = 2018;
+
+		let dates: {from: Date, to: Date, branch: string}[] = [];
+		let randomAmount = Math.floor((Math.random( ) * 15) + 1);
+
+		for (let i = 0; i < randomAmount; i++) {
+			let randomDate = this.getRandomDate();
+			let randomHour = Math.floor((Math.random() * 16) + 7);
+			let randomOpeningLenght = Math.floor((Math.random() * 10) + 1);
+			let fromDate = new Date(year, randomDate.month, randomDate.day, randomHour);
+			let toDate = new Date(year, randomDate.month, randomDate.day, randomHour + randomOpeningLenght);
+
+			dates.push({from: fromDate, to: toDate, branch: branchId});
+
+		}
+		return dates;
+	}
+
+	private getRandomDate(): {day: number, month: number} {
+		let day = Math.floor((Math.random() * 30) + 1);
+		let month = Math.floor((Math.random() * 12) + 1);
+		return {day: day, month: month};
+	}
+
 	private insertInitialDataToBranches() {
 		for (let branch of this.insertedBranches) {
 
-			this.insertItemsToBranch(branch, this.getRandomItems(this.insertedItems)).then(
+			this.insertDataToBranch(branch, this.getRandomItems(this.insertedItems)).then(
 				() => {
-
+					this.createOpeningHoursForBranch(branch);
 				},
 				(error: any) => {
 					console.log('! error inserting items to branch', error);
@@ -125,9 +178,9 @@ export class TestdataInsert {
 		return itemIds;
 	}
 
-	private insertItemsToBranch(branch: any, items: string[]) {
+	private insertDataToBranch(branch: any, data: any) {
 		return new Promise((resolve, reject) => {
-			this.branchConfig.schema.mongooseModel.update({_id: branch._id}, {items: items}).then(
+			this.branchConfig.schema.mongooseModel.update({_id: branch._id}, data).then(
 				(docs: SEDocument[]) => {
 					resolve(true);
 				},
