@@ -5,7 +5,6 @@ import {CustomerItemConfig} from "../schema/customer-item/customer-item.config";
 import {ItemConfig} from "../schema/item/item.config";
 import {OrderItemConfig} from "../schema/orderItem/order-item.config";
 import {OrderConfig} from "../schema/order/order.config";
-import {EndpointMongodb} from "../endpoint/endpoint.mongodb";
 import {SEDocument} from "../db/model/se.document";
 import {testDataBranches} from "./branch/testdata-branch";
 import {SEErrorResponse} from "../response/se.error.response";
@@ -16,7 +15,6 @@ import {OpeningHourConfig} from "../schema/opening-hour/opening-hour.config";
 export class TestdataInsert {
 	private insertedItems: any = [];
 	private insertedBranches: any = [];
-	private branchMongoDb: EndpointMongodb;
 	private branchConfig: BranchConfig;
 	private itemConfig: ItemConfig;
 	private openingHourConfig: OpeningHourConfig;
@@ -59,7 +57,7 @@ export class TestdataInsert {
 
 		this.openingHourConfig.schema.mongooseModel.remove({}, () => {
 			console.log('\t\topeningHour collection removed');
-		})
+		});
 	}
 
 	private createDevEnviornment() {
@@ -69,11 +67,9 @@ export class TestdataInsert {
 
 		setTimeout(() => {
 			this.insertInitialDataToBranches();
-			console.log('\t\tinserted initial item ids to branches');
+
 			console.log('done\n');
 		}, 1000);
-
-
 	}
 
 	private createBranchData() {
@@ -150,7 +146,7 @@ export class TestdataInsert {
 	private insertInitialDataToBranches() {
 		for (let branch of this.insertedBranches) {
 
-			this.insertDataToBranch(branch, this.getRandomItems(this.insertedItems)).then(
+			this.insertDataToBranch(branch, {items: this.getRandomItems(this.insertedItems)}).then(
 				() => {
 					this.createOpeningHoursForBranch(branch);
 				},
@@ -158,6 +154,8 @@ export class TestdataInsert {
 					console.log('! error inserting items to branch', error);
 				});
 		}
+		console.log('\t\tinserted initial items to branches');
+		console.log('\t\tinserted initial opening-hours to branches');
 	}
 
 	private getRandomItems(items: any[]): string[] {
@@ -199,8 +197,6 @@ export class TestdataInsert {
 	private getMongoDbPath(): string {
 		return APP_CONFIG.dev.mongoDb.basePath + APP_CONFIG.dev.mongoDb.host + ':' + APP_CONFIG.dev.mongoDb.port + '/' + APP_CONFIG.dev.mongoDb.dbName;
 	}
-
-
 }
 
 let testdataIndert = new TestdataInsert();
