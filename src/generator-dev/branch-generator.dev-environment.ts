@@ -12,7 +12,7 @@ import {APP_CONFIG} from "../application-config";
 import {testDataItems} from "./item/testdata-item";
 import {OpeningHourConfig} from "../schema/opening-hour/opening-hour.config";
 
-export class TestdataInsert {
+export class BranchGeneratorDevEnvironment {
 	private insertedItems: any = [];
 	private insertedBranches: any = [];
 	private branchConfig: BranchConfig;
@@ -28,19 +28,9 @@ export class TestdataInsert {
 		let orderItemConfig = new OrderItemConfig();
 		let orderConfig = new OrderConfig();
 
-
-		console.log('\ncreating dev environment');
-
-		this.mongoDbStart();
-
-		this.clearDevEnviroment();
-
-		setTimeout(() => {
-			this.createDevEnviornment();
-		}, 500);
 	}
 
-	private clearDevEnviroment() {
+	public clearDevData() {
 		console.log('\t* clearing old dev environment');
 
 		this.branchConfig.schema.mongooseModel.remove({}, () => {
@@ -56,7 +46,7 @@ export class TestdataInsert {
 		});
 	}
 
-	private createDevEnviornment() {
+	public createDevData() {
 		console.log('\t* creating new dev environment');
 		this.createBranchData();
 		this.createItemData();
@@ -66,6 +56,16 @@ export class TestdataInsert {
 
 			console.log('done\n');
 		}, 1000);
+	}
+
+	public getBranchIds(): string[] {
+		let branchIds: string[] = [];
+
+		for (let branch of this.insertedBranches) {
+			branchIds.push(branch._id);
+		}
+
+		return branchIds;
 	}
 
 	private createBranchData() {
@@ -184,15 +184,5 @@ export class TestdataInsert {
 		});
 	}
 
-	private mongoDbStart() {
-		let mongoose = require('mongoose');
-		mongoose.Promise = require('bluebird');
-		mongoose.connect(this.getMongoDbPath(), {useMongoClient: true});
-	}
 
-	private getMongoDbPath(): string {
-		return APP_CONFIG.dev.mongoDb.basePath + APP_CONFIG.dev.mongoDb.host + ':' + APP_CONFIG.dev.mongoDb.port + '/' + APP_CONFIG.dev.mongoDb.dbName;
-	}
 }
-
-let testdataIndert = new TestdataInsert();

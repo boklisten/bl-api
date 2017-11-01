@@ -38,8 +38,8 @@ module.exports = function (grunt) {
             dev: {
                 script: './dist/index.js'
             },
-            'insert-testdata': {
-                script: './dist/testdata/testdata-insert.js'
+            'generate-dev': {
+                script: './dist/generator-dev/generator.dev-environment.js'
             }
         },
         express: {
@@ -101,9 +101,9 @@ module.exports = function (grunt) {
         "watch:test"
     ]);
 
-    grunt.registerTask('insert-testdata', [
+    grunt.registerTask('generate-dev', [
         'ts',
-        'nodemon:insert-testdata'
+        'nodemon:generate-dev'
     ])
 
 };
