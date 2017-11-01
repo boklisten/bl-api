@@ -31,7 +31,6 @@ export class TestdataInsert {
 
 		console.log('\ncreating dev environment');
 
-
 		this.mongoDbStart();
 
 		this.clearDevEnviroment();
@@ -39,9 +38,6 @@ export class TestdataInsert {
 		setTimeout(() => {
 			this.createDevEnviornment();
 		}, 500);
-
-
-
 	}
 
 	private clearDevEnviroment() {
