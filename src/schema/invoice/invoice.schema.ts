@@ -6,8 +6,12 @@ export const InvoiceSchema = {
 		type: Schema.Types.Number,
 		required: true
 	},
-	deadline: {
+	fee: {
 		type: Schema.Types.Number,
+		required: true
+	},
+	deadline: {
+		type: Schema.Types.Date,
 		required: true
 	},
 	user: {

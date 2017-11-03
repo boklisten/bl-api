@@ -19,12 +19,12 @@ export const InvoiceItemSchema = {
 		type: Schema.Types.Number,
 		required: true
 	},
-	deadline: {
-		type: Schema.Types.Date,
+	fee: {
+		type: Schema.Types.Number,
 		required: true
 	},
-	invoice: {
-		type: Schema.Types.ObjectId,
+	deadline: {
+		type: Schema.Types.Date,
 		required: true
 	}
 };

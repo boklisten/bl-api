@@ -7,6 +7,8 @@ import {BranchConfig} from "../schema/branch/branch.config";
 import {CustomerItemConfig} from "../schema/customer-item/customer-item.config";
 import {OrderConfig} from "../schema/order/order.config";
 import {OrderItemConfig} from "../schema/orderItem/order-item.config";
+import {InvoiceConfig} from "../schema/invoice/invoice.config";
+import {InvoiceItemConfig} from "../schema/invoice-tem/invoice-item.config";
 
 export class BlEndpoint {
 	private branchEndpoint: EndpointExpress;
@@ -14,6 +16,8 @@ export class BlEndpoint {
 	private itemEndpoint: EndpointExpress;
 	private orderEndpoint: EndpointExpress;
 	private orderItemEndpoint: EndpointExpress;
+	private invoiceEndpoint: EndpointExpress;
+	private invoiceItemEndpoint: EndpointExpress;
 
 	constructor(router: Router) {
 		let resHandler = new SEResponseHandler();
@@ -22,5 +26,8 @@ export class BlEndpoint {
 		this.itemEndpoint = new EndpointExpress(router, new ItemConfig(), resHandler);
 		this.orderEndpoint = new EndpointExpress(router, new OrderConfig(), resHandler);
 		this.orderItemEndpoint = new EndpointExpress(router, new OrderItemConfig(), resHandler);
+		this.invoiceEndpoint = new EndpointExpress(router, new InvoiceConfig(), resHandler);
+		this.invoiceItemEndpoint = new EndpointExpress(router, new InvoiceItemConfig(), resHandler);
+
 	}
 }

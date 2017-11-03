@@ -110,7 +110,7 @@ export class CustomerItemGeneratorDevEnvironment {
 		return {
 			item: this.itemIds[Math.floor(Math.random() * this.itemIds.length)],
 			user: userId,
-			deadline: new Date(2017, 10, 1),
+			deadline: new Date(2017, 1, 1),
 			state: 'customer_have_item',
 			handout: true,
 			handoutTime: new Date(2016, 10, 1),
