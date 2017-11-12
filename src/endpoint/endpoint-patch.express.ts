@@ -4,9 +4,8 @@ import {SEResponseHandler} from "../response/se.response.handler";
 import {Request, Response, Router} from "express";
 import {LoginOption, Method} from "./endpoint.express";
 import * as passport from "passport";
+import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
 import {SEDocument} from "../db/model/se.document";
-import {SEErrorResponse} from "../response/se.error.response";
-import {SEResponse} from "../response/se.response";
 
 export class EndpointPatchExpress {
 	private seToken: SEToken;
@@ -38,7 +37,7 @@ export class EndpointPatchExpress {
 								if (this.seToken.permissionAbove(jwtPayload.permission, loginOptions.permissions)) {
 									this.patchDocument(res, req.params.id, req.body);
 								} else {
-									this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+									this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
 								}
 							});
 					} else {
@@ -46,7 +45,7 @@ export class EndpointPatchExpress {
 					}
 				},
 				(error: any) => {
-					this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+					this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
 				});
 		});
 	}
@@ -54,9 +53,9 @@ export class EndpointPatchExpress {
 	private patchDocument(res: Response, id: string, body: any) {
 		this.enpointMongoDb.patch(id, body).then(
 			(docs: SEDocument[]) => {
-				this.resHandler.sendResponse(res, new SEResponse(docs));
+				this.resHandler.sendResponse(res, new BlapiResponse(docs));
 			},
-			(error: SEErrorResponse) => {
+			(error: BlapiErrorResponse) => {
 				this.resHandler.sendErrorResponse(res, error);
 			});
 	}

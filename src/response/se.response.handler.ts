@@ -1,8 +1,8 @@
 
 
 import {Response} from 'express';
-import {SEResponse} from "./se.response";
-import {SEErrorResponse} from "./se.error.response";
+import {BlapiResponse} from "bl-model";
+import {BlapiErrorResponse} from "bl-model";
 
 export class SEResponseHandler {
 
@@ -10,14 +10,20 @@ export class SEResponseHandler {
 
 	}
 
-	sendResponse(res: Response, seres: SEResponse): void {
+	public sendResponse(res: Response, blapiRes: BlapiResponse) {
 		res.status(200);
-		res.send(seres.docs);
+		this.setHeaders(res);
+		res.send(blapiRes);
 	}
 
-	sendErrorResponse(res: Response, seError: SEErrorResponse): void {
-		console.log('sent error response', seError);
-		res.status(seError.status);
+	public sendErrorResponse(res: Response, blapiErrorRes: BlapiErrorResponse) {
+		res.status(blapiErrorRes.code);
+		this.setHeaders(res);
 		res.end();
+	}
+	
+	private setHeaders(res: Response) {
+		res.setHeader('Access-Control-Allow-Origin', '*');
+		res.setHeader('Content-Type', 'application/json');
 	}
 }

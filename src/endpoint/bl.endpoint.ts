@@ -28,6 +28,5 @@ export class BlEndpoint {
 		this.orderItemEndpoint = new EndpointExpress(router, new OrderItemConfig(), resHandler);
 		this.invoiceEndpoint = new EndpointExpress(router, new InvoiceConfig(), resHandler);
 		this.invoiceItemEndpoint = new EndpointExpress(router, new InvoiceItemConfig(), resHandler);
-
 	}
 }

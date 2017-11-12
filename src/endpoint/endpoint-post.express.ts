@@ -5,9 +5,8 @@ import {EndpointMongodb} from "./endpoint.mongodb";
 import {Request, Response, Router} from "express";
 import {LoginOption, Method, Path} from "./endpoint.express";
 import * as passport from "passport";
-import {SEErrorResponse} from "../response/se.error.response";
+import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
 import {SEDocument} from "../db/model/se.document";
-import {SEResponse} from "../response/se.response";
 
 export class EndpointPostExpress {
 	private resHandler: SEResponseHandler;
@@ -33,14 +32,14 @@ export class EndpointPostExpress {
 				(jwtPayload: JwtPayload) => {
 					this.endpointMongoDb.post(new SEDocument(collectionName, req.body)).then(
 						(docs: SEDocument[]) => {
-							this.resHandler.sendResponse(res, new SEResponse(docs));
+							this.resHandler.sendResponse(res, new BlapiResponse(docs));
 						},
-						(error: any) => {
+						(error: BlapiErrorResponse) => {
 							this.resHandler.sendErrorResponse(res, error);
 						});
 				},
 				(error: any) => {
-					this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+					this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
 				});
 		});
 	}

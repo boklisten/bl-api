@@ -4,13 +4,13 @@ import {Request, Response, Router} from "express";
 import {LoginOption, Method, Path} from "./endpoint.express";
 import {SEDocument} from "../db/model/se.document";
 import {SEResponseHandler} from "../response/se.response.handler";
-import {SEErrorResponse} from "../response/se.error.response";
 import {EndpointMongodb} from "./endpoint.mongodb";
 import {SEDbQueryBuilder} from "../query/se.db-query-builder";
-import {SEResponse} from "../response/se.response";
 import {ValidParam} from "../query/valid-param/db-query-valid-params";
 import * as passport from 'passport';
 import {JwtPayload, SEToken} from "../auth/token/se.token";
+import {BlapiErrorResponse, BlapiResponse} from 'bl-model';
+
 
 export class EndpointGetExpress {
 	private resHandler: SEResponseHandler;
@@ -60,7 +60,7 @@ export class EndpointGetExpress {
 					this.handleGetWithQuery(req, res, validSearchParams);
 				},
 				(error: any) => {
-					this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+					this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
 				});
 		});
 	}
@@ -72,9 +72,9 @@ export class EndpointGetExpress {
 					if (loginOptions && loginOptions.restrictedToUserOrAbove) {
 						this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, jwtPayload.blid).then(
 							(docs: SEDocument[]) => {
-								this.resHandler.sendResponse(res, new SEResponse(docs));
+								this.resHandler.sendResponse(res, new BlapiResponse(docs));
 							},
-							(error: SEErrorResponse) => {
+							(error: BlapiErrorResponse) => {
 								if (this.seToken.permissionAbove(jwtPayload.permission, loginOptions.permissions)) {
 									this.handleGetWithId(req, res);
 								} else {
@@ -86,7 +86,7 @@ export class EndpointGetExpress {
 					}
 				},
 				(error: any) => {
-					this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+					this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
 				})
 		});
 	}
@@ -94,9 +94,9 @@ export class EndpointGetExpress {
 	private handleGetWithId(req: Request, res: Response) {
 		this.endpointMongoDb.getById(req.params.id).then(
 			(docs: SEDocument[]) => {
-				this.resHandler.sendResponse(res, new SEResponse(docs));
+				this.resHandler.sendResponse(res, new BlapiResponse(docs));
 			},
-			(error: SEErrorResponse) => {
+			(error: BlapiErrorResponse) => {
 				this.resHandler.sendErrorResponse(res, error);
 			});
 	}
@@ -108,13 +108,13 @@ export class EndpointGetExpress {
 
 			this.endpointMongoDb.get(dbQuery).then(
 				(docs: SEDocument[]) => {
-					this.resHandler.sendResponse(res, new SEResponse(docs));
+					this.resHandler.sendResponse(res, new BlapiResponse(docs));
 				},
-				(error: SEErrorResponse) => {
+				(error: BlapiErrorResponse) => {
 					this.resHandler.sendErrorResponse(res, error);
 				});
 		} catch (error) {
-			this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+			this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
 		}
 	}
 }

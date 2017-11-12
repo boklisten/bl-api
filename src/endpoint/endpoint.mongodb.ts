@@ -1,8 +1,9 @@
 import {SESchema} from "../config/schema/se.schema";
 import {SEDocument} from "../db/model/se.document";
-import {SEErrorResponse} from "../response/se.error.response";
 import {SEDbQuery} from "../query/se.db-query";
-import {mongo} from "mongoose";
+import {BlapiErrorResponse} from 'bl-model';
+
+
 
 export class EndpointMongodb {
 	private schema: SESchema;
@@ -21,10 +22,7 @@ export class EndpointMongodb {
 				.exec((error, docs) => {
 
 					if (error) {
-
-						console.log('we got error from mongo', error);
-
-						reject(new SEErrorResponse(403, 'client error', error));
+						reject(new BlapiErrorResponse(403, 'client error', error));
 						return
 					}
 
@@ -33,9 +31,10 @@ export class EndpointMongodb {
 					for (let doc of docs) {
 						sdocs.push(new SEDocument(this.schema.title, doc));
 					}
+					
 
 					if (sdocs.length == 0) {
-						reject(new SEErrorResponse(404));
+						reject(new BlapiErrorResponse(404));
 						return
 					}
 
@@ -85,8 +84,9 @@ export class EndpointMongodb {
 					return;
 				}
 
+				
 				if (doc === null) {
-					reject(new SEErrorResponse(404));
+					reject(new BlapiErrorResponse(404));
 					return;
 				}
 
@@ -99,16 +99,21 @@ export class EndpointMongodb {
 		return Promise.reject('')
 	}
 
+	
+	
+	
+	
 	public patch(id: string, doc: SEDocument): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
 			this.schema.mongooseModel.findById(id, (error, document) => {
 				if (error) {
-					reject(new SEErrorResponse(403, 'client error', error));
+					
+					reject(new BlapiErrorResponse(403, 'client error', error));
 					return
 				}
 
 				if (document === null) {
-					reject(new SEErrorResponse(404));
+					reject(new BlapiErrorResponse(404));
 					return
 				}
 
@@ -131,12 +136,12 @@ export class EndpointMongodb {
 		return new Promise((resolve, reject) => {
 			this.schema.mongooseModel.findByIdAndRemove(id, (error, doc) => {
 				if (error) {
-					reject(new SEErrorResponse(500, 'server error', error));
+					reject(new BlapiErrorResponse(500, 'server error', error));
 					return;
 				}
 
 				if (doc === null) {
-					reject(new SEErrorResponse(404));
+					reject(new BlapiErrorResponse(404));
 					return;
 				}
 				resolve([new SEDocument(this.schema.title, doc)]);
@@ -159,22 +164,23 @@ export class EndpointMongodb {
 						}
 					}
 
-					reject(new SEErrorResponse(403));
+					reject(new BlapiErrorResponse(403));
 				},
-				(error: SEErrorResponse) => {
+				(error: BlapiErrorResponse) => {
 					reject(error);
 				})
 		});
 	}
 
-	private handleError(error: any): SEErrorResponse {
+	
+	
+	private handleError(error: any): BlapiErrorResponse {
 		if (error.name === 'CastError') {
-			return new SEErrorResponse(404);
+			return new BlapiErrorResponse(404);
 		} else if (error.name == 'ValidationError') {
-			return new SEErrorResponse(400);
+			return new BlapiErrorResponse(400);
 		} else {
-			console.log('the error', error);
-			return new SEErrorResponse(500);
+			return new BlapiErrorResponse(500);
 		}
 	}
 }

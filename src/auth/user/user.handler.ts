@@ -5,9 +5,10 @@ import {SESchema} from "../../config/schema/se.schema";
 import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
 import {SEDbQuery} from "../../query/se.db-query";
 import {SEDocument} from "../../db/model/se.document";
-import {SEErrorResponse} from "../../response/se.error.response";
+
 import {UserDetail} from "../../config/schema/user/user-detail";
 import {Blid} from "../blid/blid";
+import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
 
 export class UserHandler {
 	private userMongoHandler: EndpointMongodb;
@@ -67,7 +68,7 @@ export class UserHandler {
 				(docs: SEDocument[]) => {
 					resolve(docs[0].data);
 				},
-				(error: SEErrorResponse) => {
+				(error: BlapiErrorResponse) => {
 					reject('there was an error getting the user, reason: ' + error.msg);
 				});
 		});
@@ -101,7 +102,7 @@ export class UserHandler {
 								(docs: SEDocument[]) => {
 									resolve(docs[0].data);
 								},
-								(error: SEErrorResponse) => {
+								(error: BlapiErrorResponse) => {
 									reject('there was an error creating user document, reason: ' + error);
 								});
 							},
@@ -109,7 +110,7 @@ export class UserHandler {
 							reject('there was an error creating the blid, reason: ' + error);
 						});
 				},
-				(error: SEErrorResponse) => {
+				(error: BlapiErrorResponse) => {
 					reject('could not create userDetail document, reason: ' + error);
 				});
 		});

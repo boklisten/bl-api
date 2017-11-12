@@ -1,16 +1,12 @@
 
 
 import {BranchConfig} from "../../schema/branch/branch.config";
-import {CustomerItemConfig} from "../../schema/customer-item/customer-item.config";
 import {ItemConfig} from "../../schema/item/item.config";
-import {OrderItemConfig} from "../../schema/orderItem/order-item.config";
-import {OrderConfig} from "../../schema/order/order.config";
 import {SEDocument} from "../../db/model/se.document";
 import {testDataBranches} from "./testdata-branch";
-import {SEErrorResponse} from "../../response/se.error.response";
-import {APP_CONFIG} from "../../application-config";
 import {testDataItems} from "../item/testdata-item";
 import {OpeningHourConfig} from "../../schema/opening-hour/opening-hour.config";
+import {BlapiErrorResponse} from 'bl-model';
 
 export class BranchGeneratorDevEnvironment {
 	private insertedItems: any = [];
@@ -173,7 +169,7 @@ export class BranchGeneratorDevEnvironment {
 				(docs: SEDocument[]) => {
 					resolve(true);
 				},
-				(error: SEErrorResponse) => {
+				(error: BlapiErrorResponse) => {
 					reject(error);
 				});
 		});

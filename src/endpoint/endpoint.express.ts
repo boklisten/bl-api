@@ -1,20 +1,17 @@
 
 
-import {Router, Response, Request} from 'express';
+import {Router} from 'express';
 import {SESchema} from "../config/schema/se.schema";
 import {EndpointMongodb} from "./endpoint.mongodb";
-import {SEDocument} from "../db/model/se.document";
 import {SEResponseHandler} from "../response/se.response.handler";
-import {SEResponse} from "../response/se.response";
-import {SEErrorResponse} from "../response/se.error.response";
-import {SEDbQueryBuilder} from "../query/se.db-query-builder";
 import {ValidParam} from "../query/valid-param/db-query-valid-params";
+
 import {EndpointGetExpress} from "./endpoint-get.express";
 import {UserPermission} from "../auth/user/user-permission";
-import {User} from "../config/schema/user/user";
 import {EndpointPostExpress} from "./endpoint-post.express";
 import {EndpointPatchExpress} from "./endpoint-patch.express";
 import {EndpointDeleteExpress} from "./endpoint-delete.express";
+import {ApiPath} from "../config/api-path";
 
 
 
@@ -53,6 +50,7 @@ export class EndpointExpress {
     endpointPostExpress: EndpointPostExpress;
     endpointPatchExpress: EndpointPatchExpress;
     endpointDeleteExpress: EndpointDeleteExpress;
+    apiPath: ApiPath;
 
     constructor(router: Router, config: EndpointConfig, resHandler: SEResponseHandler) {
         this.config = config;
@@ -63,6 +61,7 @@ export class EndpointExpress {
         this.endpointPostExpress = new EndpointPostExpress(resHandler, this.endpointMongoDb);
         this.endpointPatchExpress = new EndpointPatchExpress(resHandler, this.endpointMongoDb);
         this.endpointDeleteExpress = new EndpointDeleteExpress(resHandler, this.endpointMongoDb);
+        this.apiPath = new ApiPath();
 
         if (!this.createEndpoints(router, config)) {
             console.log('could not create endpoints for ', config.basePath);
@@ -94,7 +93,7 @@ export class EndpointExpress {
     }
 
     private createUrl(path: Path): string {
-    	let thePath = '/' + this.basePath + '/' + path.path;
+    	let thePath = '/' + this.apiPath.getBasePath() + '/' + path.path;
     	if (path.id) {
     		thePath += '/:id';
 	    }

@@ -7,8 +7,8 @@ import {LoginOption, Method} from "./endpoint.express";
 import * as passport from "passport";
 import {JwtPayload, SEToken} from "../auth/token/se.token";
 import {SEDocument} from "../db/model/se.document";
-import {SEResponse} from "../response/se.response";
-import {SEErrorResponse} from "../response/se.error.response";
+
+import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
 
 export class EndpointDeleteExpress {
 	private resHandler: SEResponseHandler;
@@ -27,6 +27,7 @@ export class EndpointDeleteExpress {
 		}
 	}
 
+	
 	private createLoginDelete(router: Router, url: string, loginOptions: LoginOption) {
 		router.delete(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
 			this.seToken.validatePayload(req.user.jwtPayload, loginOptions).then(
@@ -36,11 +37,11 @@ export class EndpointDeleteExpress {
 							(docs: SEDocument[]) => {//user has access
 								this.deleteDocument(res, req.params.id);
 							},
-							(error: SEErrorResponse) => {
+							(error: BlapiErrorResponse) => {
 								if (this.seToken.permissionAbove(jwtPayload.permission, loginOptions.permissions)) {
 									this.deleteDocument(res, req.params.id);
 								} else {
-									this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+									this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
 								}
 							});
 					} else {
@@ -48,7 +49,7 @@ export class EndpointDeleteExpress {
 					}
 				},
 				(error: any) => {
-					this.resHandler.sendErrorResponse(res, new SEErrorResponse(403));
+					this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
 				});
 		});
 	}
@@ -56,9 +57,9 @@ export class EndpointDeleteExpress {
 	private deleteDocument(res: Response, id: string) {
 		this.endpointMongoDb.deleteById(id).then(
 			(deletedDocs: SEDocument[]) => {
-				this.resHandler.sendResponse(res, new SEResponse(deletedDocs));
+				this.resHandler.sendResponse(res, new BlapiResponse(deletedDocs));
 			},
-			(error: SEErrorResponse) => {
+			(error: BlapiErrorResponse) => {
 				this.resHandler.sendErrorResponse(res, error);
 			});
 	}

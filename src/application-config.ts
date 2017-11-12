@@ -4,7 +4,8 @@ export const APP_CONFIG = {
 		server: {
 			host: 'localhost',
 			port: 1337,
-			path: 'api'
+			path: 'api',
+			version: 'v1'
 		},
 		mongoDb: {
 			basePath: 'mongodb://',
@@ -12,5 +13,20 @@ export const APP_CONFIG = {
 			port: 27017,
 			dbName: 'bl_test_a'
 		}
-	}
+	},
+	prod: {
+		server: {
+			host: '',
+			port: 0,
+			path: '',
+			version: ''
+		},
+		mongoDb: {
+			basePath: '',
+			host: '',
+			port: 0,
+			dbName: ''
+		}
+	},
+	test: true
 };

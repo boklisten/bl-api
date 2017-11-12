@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {Application, Router} from "express";
+import {Application, Request, Response, Router} from "express";
 import * as passport from "passport";
 import {APP_CONFIG} from "./application-config";
 import {BlAuth} from "./auth/bl.auth";
@@ -49,6 +49,17 @@ export class Server {
 		this.app.use(passport.session());
 
 		this.router = Router();
+		
+		
+		let debugLogPath = (req: Request, res: Response, next: any) => {
+			let d = new Date();
+			let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+			console.log('[' + d.toISOString() + '](' + ip + ') ' + req.method + ' ' + req.url);
+			next();
+		};
+		
+		this.app.use(debugLogPath);
+		
 		this.app.use(this.router);
 	}
 
@@ -82,7 +93,7 @@ export class Server {
 	}
 
 	private getServerPath(): string {
-		return APP_CONFIG.dev.server.host + ':' + APP_CONFIG.dev.server.port + '/' + APP_CONFIG.dev.server.path;
+		return APP_CONFIG.dev.server.host + ':' + APP_CONFIG.dev.server.port + '/' + APP_CONFIG.dev.server.path + '/' + APP_CONFIG.dev.server.version;
 	}
 }
 
