@@ -22,29 +22,18 @@ export class BranchGeneratorDevEnvironment {
 	}
 
 	public clearDevData() {
-		console.log('\t* clearing old dev environment');
-		this.branchConfig.schema.mongooseModel.remove({}, () => {
-			console.log('\t\tbranch collection removed');
-		});
-		this.itemConfig.schema.mongooseModel.remove({} , () => {
-			console.log('\t\titem collection removed');
-		});
-
-		this.openingHourConfig.schema.mongooseModel.remove({}, () => {
-			console.log('\t\topeningHour collection removed');
-		});
+		this.branchConfig.schema.mongooseModel.remove({}, () => {});
+		this.itemConfig.schema.mongooseModel.remove({} , () => {});
+		this.openingHourConfig.schema.mongooseModel.remove({}, () => {});
 	}
 
 	public createDevData() {
-		console.log('\t* creating new dev environment');
 		this.createBranchData();
 		this.createItemData();
 
 		setTimeout(() => {
 			this.insertInitialDataToBranches();
-
-			console.log('done\n');
-		}, 1000);
+		}, 500);
 	}
 
 	public getBranchIds(): string[] {
@@ -63,7 +52,6 @@ export class BranchGeneratorDevEnvironment {
 				for (let doc of docs) {
 					this.insertedBranches.push(doc);
 				}
-				console.log('\t\tinserted ' + this.insertedBranches.length + ' branches');
 			},
 			() => {
 				console.log('! failed to insert branch data');
@@ -76,7 +64,6 @@ export class BranchGeneratorDevEnvironment {
 				for (let doc of docs) {
 					this.insertedItems.push(doc);
 				}
-				console.log('\t\tinserted ' + this.insertedItems.length + ' items');
 			},
 			() => {
 				console.log('! failed to insert item data');
@@ -139,8 +126,6 @@ export class BranchGeneratorDevEnvironment {
 					console.log('! error inserting items to branch', error);
 				});
 		}
-		console.log('\t\tinserted initial items to branches');
-		console.log('\t\tinserted initial opening-hours to branches');
 	}
 
 	private getRandomItems(items: any[]): string[] {

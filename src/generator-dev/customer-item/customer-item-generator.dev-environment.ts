@@ -17,9 +17,7 @@ export class CustomerItemGeneratorDevEnvironment {
 	}
 
 	public clearDevData() {
-		this.customerItemConfig.schema.mongooseModel.remove({}, () => {
-			console.log('\t\tremoved customerItem collection');
-		});
+		this.customerItemConfig.schema.mongooseModel.remove({}, () => {});
 	}
 
 	public createDevData(users: any[], itemIds: string[], userDetailConfig: UserDetailConfig) {

@@ -11,21 +11,15 @@ export class InvoiceGeneratorDevEnvironment {
 	}
 
 	public clearDevData() {
-		this.invoiceItemConfig.schema.mongooseModel.remove({}, () => {
-			console.log('\t\tremoved invoiceItem collection');
-		});
+		this.invoiceItemConfig.schema.mongooseModel.remove({}, () => {});
 
-		this.invoiceConfig.schema.mongooseModel.remove({}, () => {
-			console.log('\t\tremoved invoice collection');
-		});
+		this.invoiceConfig.schema.mongooseModel.remove({}, () => {});
 	}
 
 	public createDevData(users: any[], customerItems: any[]) {
 		for (let user of users) {
 			this.generateRandomInvoices(user, customerItems);
 		}
-
-		console.log('added some invoices');
 	}
 
 	private generateRandomInvoices(user: any, customerItems: any[]) {
@@ -86,7 +80,7 @@ export class InvoiceGeneratorDevEnvironment {
 						});
 				},
 				() => {
-					reject('could not create invoice');
+					reject('! could not create invoice');
 				});
 		});
 	}
@@ -105,7 +99,7 @@ export class InvoiceGeneratorDevEnvironment {
 					resolve(docs);
 				},
 				(error: any) => {
-					reject('could not insert invoiceItems');
+					reject('! could not insert invoiceItems');
 				});
 		});
 	}

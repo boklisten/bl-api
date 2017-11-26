@@ -20,13 +20,8 @@ export class UserGeneratorDevEnvironment {
 	}
 
 	public clearDevData() {
-		this.userConfig.schema.mongooseModel.remove({}, () => {
-			console.log('\t\tremoved user collection')
-		});
-
-		this.userDetailConfig.schema.mongooseModel.remove({}, () => {
-			console.log('\t\tremoved userDetail collection');
-		});
+		this.userConfig.schema.mongooseModel.remove({}, () => {});
+		this.userDetailConfig.schema.mongooseModel.remove({}, () => {});
 	}
 
 	public createDevData(branchIds: string[]) {
@@ -41,7 +36,6 @@ export class UserGeneratorDevEnvironment {
 			userIds.push(user._id);
 		}
 
-
 		return userIds;
 	}
 
@@ -54,7 +48,6 @@ export class UserGeneratorDevEnvironment {
 	}
 
 	private createUsers() {
-		console.log('\t* creating users');
 
 		for (let i = 0; i < testDataUsers.length; i++) {
 			let user = testDataUsers[i];
@@ -85,7 +78,6 @@ export class UserGeneratorDevEnvironment {
 	private addUser(user: any) {
 		this.userConfig.schema.mongooseModel.insertMany([user]).then(
 			(docs: any[]) => {
-				console.log('\t\tadded user', docs[0].username);
 				this.insertedUsers.push(docs[0]);
 			},
 			(error: any) => {
