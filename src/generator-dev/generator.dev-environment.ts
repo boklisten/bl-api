@@ -53,5 +53,3 @@ export class GeneratorDevEnvironment {
 		return APP_CONFIG.dev.mongoDb.basePath + APP_CONFIG.dev.mongoDb.host + ':' + APP_CONFIG.dev.mongoDb.port + '/' + APP_CONFIG.dev.mongoDb.dbName;
 	}
 }
-
-let gde = new GeneratorDevEnvironment();
