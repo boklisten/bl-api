@@ -104,6 +104,10 @@ module.exports = function (grunt) {
     grunt.registerTask('generate-dev', [
         'ts',
         'nodemon:generate-dev'
-    ])
+    ]);
+
+    grunt.registerTask('build', [
+        'ts'
+    ]);
 
 };

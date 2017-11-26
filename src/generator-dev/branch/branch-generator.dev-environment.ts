@@ -23,11 +23,9 @@ export class BranchGeneratorDevEnvironment {
 
 	public clearDevData() {
 		console.log('\t* clearing old dev environment');
-
 		this.branchConfig.schema.mongooseModel.remove({}, () => {
 			console.log('\t\tbranch collection removed');
 		});
-
 		this.itemConfig.schema.mongooseModel.remove({} , () => {
 			console.log('\t\titem collection removed');
 		});

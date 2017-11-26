@@ -32,10 +32,15 @@ export class GeneratorDevEnvironment {
 
 					setTimeout(() => {
 						invoiceGenerator.createDevData(userGenerator.getUsers(), customerItemGenerator.getCustomerItems());
+						
+						setTimeout(() => {
+							console.log('done, you can now start the server');
+						}, 500)
 					}, 500);
 				}, 500);
 			}, 500);
 		}, 500);
+		
 	}
 
 	private mongoDbStart() {

@@ -21,7 +21,13 @@ export class SESchema {
     }
 
     createMongooseModel(mongooseSchema: mongoose.Schema) {
-        return mongoose.model<mongoose.Document>(this.title, mongooseSchema);
+    	try {
+    		if (mongoose.model(this.title)) return mongoose.model(this.title);
+		} catch (e) {
+    		if (e.name === 'MissingSchemaError') {
+    			return mongoose.model(this.title, mongooseSchema);
+			}
+		}
     }
 
     createMongooseSchema(mschema: any) {
