@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "bundlerOptions": {
+    "entry": "./src/public_api.ts",
+    "externalModules": {
+      "bl-model": "~/.bl-dist/bl-model"
+    }
+  }
+}

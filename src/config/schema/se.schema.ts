@@ -20,7 +20,7 @@ export class SESchema {
        return true;
     }
 
-    createMongooseModel(mongooseSchema: mongoose.Schema) {
+    createMongooseModel(mongooseSchema: mongoose.Schema): any {
     	try {
     		if (mongoose.model(this.title)) return mongoose.model(this.title);
 		} catch (e) {
@@ -30,7 +30,7 @@ export class SESchema {
 		}
     }
 
-    createMongooseSchema(mschema: any) {
+    createMongooseSchema(mschema: any): any {
 
         mschema['lastUpdated'] = {
         	type: mongoose.Schema.Types.Date,

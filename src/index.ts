@@ -2,14 +2,14 @@
 
 
 
-import {Server} from "./server";
+import {Server} from "./server/server";
 import {GeneratorDevEnvironment} from "./generator-dev/generator.dev-environment";
 
 
 if (process.argv[2]) {
 	switch (process.argv[2]) {
 		case "generate-dev-environment":
-			console.log('generating dev environment');
+			console.log('generating dev environment...');
 			const devEnvironment = new GeneratorDevEnvironment();
 			break;
 	}

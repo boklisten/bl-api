@@ -20,7 +20,7 @@ export type ValidCustomJwtPayload = {
 	username?: string
 }
 
-type JwtOptions = {
+export type JwtOptions = {
 	exp: number,
 	aud: string,
 	iss: string

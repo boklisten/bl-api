@@ -4,7 +4,6 @@ import {SEDbQuery} from "../query/se.db-query";
 import {BlapiErrorResponse} from 'bl-model';
 
 
-
 export class EndpointMongodb {
 	private schema: SESchema;
 
