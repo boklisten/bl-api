@@ -11,8 +11,9 @@
   "author": "holskil",
   "license": "ISC",
   "dependencies": {
-    "bl-model": "/home/monster/.bl-dist/bl-model-0.2.1.tgz",
+    "bl-model": "../bl-model/dist/bl-model-0.2.1.tgz",
     "bluebird": "^3.5.1",
+    "commander": "^2.12.2",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
     "express": "^4.16.1",

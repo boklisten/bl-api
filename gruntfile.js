@@ -11,7 +11,7 @@ module.exports = function (grunt) {
                 }],
                 options: {
                     module: "commonjs",
-                    target: "es5",
+                    target: "ES2016",
                     sourceMap: false,
                     rootDir: "src"
                 }

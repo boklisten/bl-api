@@ -355,9 +355,9 @@ binary-extensions@^1.0.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-1.10.0.tgz#9aeb9a6c5e88638aad171e167f5900abe24835d0"
 
-"bl-model@file:../../.bl-dist/bl-model-0.2.1.tgz":
+bl-model@../bl-model/dist/bl-model-0.2.1.tgz:
   version "0.2.1"
-  resolved "file:../../.bl-dist/bl-model-0.2.1.tgz#489e878bc9883116917597a11b9b6a21049ae069"
+  resolved "../bl-model/dist/bl-model-0.2.1.tgz#9b6ce7a5271e50d37e218884d36796489f7438e3"
   dependencies:
     typescript "^2.6.1"
 
@@ -633,6 +633,10 @@ commander@2.11.0:
 commander@2.12.x, commander@^2.9.0, commander@~2.12.1:
   version "2.12.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.12.1.tgz#468635c4168d06145b9323356d1da84d14ac4a7a"
+
+commander@^2.12.2:
+  version "2.12.2"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.12.2.tgz#0f5946c427ed9ec0d91a46bb9def53e54650e555"
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -3511,9 +3515,13 @@ typescript-library-bundler@^0.1.7:
     rollup-plugin-node-resolve "^3.0.0"
     rollup-plugin-uglify "^2.0.1"
 
-typescript@^2.5.3, typescript@^2.6.1:
+typescript@^2.5.3:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.1.tgz#ef39cdea27abac0b500242d6726ab90e0c846631"
+
+typescript@^2.6.1:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.2.tgz#3c5b6fd7f6de0914269027f03c0946758f7673a4"
 
 uglify-js@3.2.x, uglify-js@^3.0.9:
   version "3.2.0"
