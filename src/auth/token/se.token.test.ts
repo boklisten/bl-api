@@ -69,28 +69,5 @@ describe('SeToken', () => {
 
 			}).should.be.rejectedWith(Error);
 		});
-
-		it('should reject if the blid is not valid', () => {
-			return new Promise((resolve, reject) => {
-			    seToken.createToken('albert', 'customer', '1').then(
-				    (token: string) =>  {
-				    	seToken.validateToken(token, {
-				    		permissions: ["customer"],
-						    restrictedToUserOrAbove: true,
-						    userPermission: 'customer'})
-						    .then(
-						    (decodedToken: JwtPayload) => {
-
-						    },
-						    (error: any) => {
-						    	reject(new Error(error));
-						    })
-				    },
-				    (error: any) => {
-
-				    })
-			}).should.be.rejectedWith(Error);
-		});
-
 	});
 });
