@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha bootstrap.js \"src/**/*.test.ts\"",
     "grunt": "grunt",
-    "pkg": "grunt pkg"
+    "pkg": "grunt pkg",
+    "release": "standard-version && grunt pkg"
   },
   "author": "holskil",
   "license": "ISC",
@@ -56,6 +57,7 @@
     "grunt-ts": "^6.0.0-beta.16",
     "grunt-webpack": "^3.0.2",
     "mocha": "^4.0.1",
+    "standard-version": "^4.2.0",
     "ts-loader": "^3.1.1",
     "ts-node": "^3.3.0",
     "typescript-library-bundler": "^0.1.7",
