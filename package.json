@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha bootstrap.js \"src/**/*.test.ts\"",
     "grunt": "grunt",
-    "pkg": "tsc && cp ./package.json ./dist/package.json && cp ./README.md ./dist/README.md && cd dist && npm pack && cd .."
+    "pkg": "grunt pkg"
   },
   "author": "holskil",
   "license": "ISC",
