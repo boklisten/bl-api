@@ -7,6 +7,7 @@
     "test": "mocha bootstrap.js \"src/**/*.test.ts\"",
     "grunt": "grunt",
     "pkg": "grunt pkg",
+    "dev": "grunt dev",
     "release": "standard-version && grunt pkg"
   },
   "author": "holskil",

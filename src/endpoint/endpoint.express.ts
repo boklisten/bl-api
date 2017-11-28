@@ -93,7 +93,7 @@ export class EndpointExpress {
     }
 
     private createUrl(path: Path): string {
-    	let thePath = '/' + this.apiPath.getBasePath() + '/' + path.path;
+    	let thePath = this.apiPath.createPath(path.path);
     	if (path.id) {
     		thePath += '/:id';
 	    }

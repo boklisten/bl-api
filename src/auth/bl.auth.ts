@@ -8,11 +8,13 @@ import {UserHandler} from "./user/user.handler";
 import {SESchema} from "../config/schema/se.schema";
 import {UserDetailSchema} from "../config/schema/user/user-detail.schema";
 import {UserSchema} from "../config/schema/user/user.schema";
+import {LocalAuth} from "./local/local.auth";
 
 export class BlAuth {
 	private jwtAuth: JwtAuth;
 	private googleAuth: GoogleAuth;
 	private facebookAuth: FacebookAuth;
+	private localAuth: LocalAuth;
 
 	constructor(router: Router) {
 		let userSchema = new SESchema('users', UserSchema);
@@ -22,6 +24,7 @@ export class BlAuth {
 		this.jwtAuth = new JwtAuth(router, userHandler);
 		this.googleAuth = new GoogleAuth(router, this.jwtAuth);
 		this.facebookAuth = new FacebookAuth(router, this.jwtAuth);
+		this.localAuth = new LocalAuth(router, this.jwtAuth);
 	}
 
 

@@ -3,10 +3,14 @@
 import * as passport from 'passport';
 import {Strategy} from 'passport-local';
 import {Request, Response, Router} from "express";
+import {ApiPath} from "../../config/api-path";
 
 export class LocalAuth {
-
+	apiPath: ApiPath;
+	
 	constructor(router: Router) {
+		this.apiPath = new ApiPath();
+		
 		passport.use(new Strategy((username: string, password: string, done: any) => {
 				if (username === 'uname' && password === 'pass') {
 					return done(null, {name: 'albert aaberg'});
@@ -17,11 +21,11 @@ export class LocalAuth {
 		this.createAuthEndpoint(router);
 	}
 
-	createAuthEndpoint(router: Router) {
-		router.post('/api/auth/local',
+	private createAuthEndpoint(router: Router) {
+		router.post(this.apiPath.createPath('auth/local'),
 			passport.authenticate('local', {
-				successRedirect: '/items',
-				failureRedirect: '/login'
+				successRedirect: this.apiPath.createPath('items'),
+				failureRedirect: this.apiPath.createPath('login')
 			})
 		);
 	}
