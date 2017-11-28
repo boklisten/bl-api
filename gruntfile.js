@@ -1,3 +1,6 @@
+const webpackConfig = require("./webpack.config");
+const packageJson = require("./package.json");
+
 module.exports = function (grunt) {
     "use strict";
 
@@ -72,6 +75,46 @@ module.exports = function (grunt) {
                     "test"
                 ]
             }
+        },
+        webpack: {
+            options: {
+                stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+            },
+            prod: webpackConfig,
+            dev: Object.assign({watch: true}, webpackConfig)
+        },
+        copy: {
+            prod: {
+                files: [
+                    {expand: true, src: ['README.md'], dest: 'dist/', filter: 'isFile'}
+                ]
+            },
+            backup: {
+                files: [
+                    {cwd: ".", src: ["dist/" + packageJson.name + '-' + packageJson.version + '.tgz'], dest: "~/.bl-dist/" + packageJson.name + '/', filter: 'isFile'}
+                ]
+            }
+        },
+        compress: {
+            prod: {
+                options: {
+                    archive: 'dist/' + packageJson.name + '-' + packageJson.version + '.tgz'
+                },
+                files: [
+                    {expand: true, cwd: "dist/", src: ['**'], dest: './', filter: 'isFile'}
+                ]
+            }
+        },
+        clean: {
+            dist: {
+
+                src: ['./dist/']
+            }
+        },
+        shell: {
+            backup: {
+                command: 'mkdir --parents ~/.bl-dist/' + packageJson.name + '/; mv ./dist/' + packageJson.name + '-' + packageJson.version + '.tgz ~/.bl-dist/' + packageJson.name + '/'
+            }
         }
     });
 
@@ -82,17 +125,24 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-express-server");
     grunt.loadNpmTasks("grunt-concurrent");
     grunt.loadNpmTasks("grunt-run");
-
-    grunt.registerTask("default", [
-        "copy",
-        "ts"
-    ]);
+    grunt.loadNpmTasks("grunt-webpack");
+    grunt.loadNpmTasks('grunt-contrib-compress');
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-shell');
 
     grunt.registerTask("dev", [
         'concurrent:dev',
         'ts',
         'nodemon:dev',
         'watch:ts'
+    ]);
+
+    grunt.registerTask("pkg", [
+        "clean:dist",
+        "webpack:prod",
+        "copy:prod",
+        "compress:prod",
+        "shell:backup"
     ]);
 
     grunt.registerTask("test", [

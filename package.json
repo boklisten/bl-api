@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha bootstrap.js \"src/**/*.test.ts\"",
     "grunt": "grunt",
-    "pkg": "tsc && cp ./package.json ./dist/package.json && cd dist && npm pack && cd .."
+    "pkg": "tsc && cp ./package.json ./dist/package.json && cp ./README.md ./dist/README.md && cd dist && npm pack && cd .."
   },
   "author": "holskil",
   "license": "ISC",
@@ -45,15 +45,21 @@
     "chai-as-promised": "^7.1.1",
     "grunt": "^1.0.1",
     "grunt-concurrent": "^2.3.1",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-compress": "^1.4.3",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-express-server": "^0.5.3",
     "grunt-nodemon": "^0.4.2",
     "grunt-run": "^0.8.0",
+    "grunt-shell": "^2.1.0",
     "grunt-ts": "^6.0.0-beta.16",
+    "grunt-webpack": "^3.0.2",
     "mocha": "^4.0.1",
+    "ts-loader": "^3.1.1",
     "ts-node": "^3.3.0",
-    "typescript-library-bundler": "^0.1.7"
+    "typescript-library-bundler": "^0.1.7",
+    "webpack": "^3.8.1"
   },
   "repository": "git@github.com:holskil/bl_api.git",
   "private": true

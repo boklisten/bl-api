@@ -2,7 +2,7 @@
 import {Server} from "./server/server";
 import {GeneratorDevEnvironment} from "./generator-dev/generator.dev-environment";
 const program = require('commander');
-const packageJson = require('../package');
+const packageJson = require('../package.json');
 const applicationConfig = require('./application-config');
 
 program.version(packageJson.version)
