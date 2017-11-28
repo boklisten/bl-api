@@ -11,7 +11,7 @@ export const APP_CONFIG = {
 			basePath: 'mongodb://',
 			host: 'localhost',
 			port: 27017,
-			dbName: 'bl_test_a'
+			dbName: 'bl_dev_environment'
 		}
 	},
 	prod: {

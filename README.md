@@ -1,7 +1,15 @@
 ## bl-api
 the backend system for boklisten
 
-## how to use
+## Before you begin
+
+#### This project requires:
+
+```bash
+	node v8
+```
+<br>
+## How to use
 #### To run the server
 > 1. extract the bl-api-X.X.X.tgz file to a directory of your choice
 > 2. cd into the extracted folder
@@ -9,45 +17,14 @@ the backend system for boklisten
 ```bash
 node index.js
 ```
+
+This will start a server on: **localhost:1337**
+ 
 #### To make random test data
-When developing you probably want to test it with some data. This can easily be done by generating random data. To do this simply run this command inside the extracted bl-api folder:
+When developing you probably want to test it with some data. This can easily be done by generating random data. To do this simply run the application with the --generate-dev-environment flag:
 ```bash
-node index.js generate-dev-environemt
+node index.js --generate-dev-environemt
 ```
-<br>
+**Beware** this will delete all previous data on the given database
 
-### Configuration of the server (only if you absolutely need to)
-To change what port and host the server should run on, simply edit the **application-config.ts** file in the *bl-api* folder.
-
-To change port simply change the port field inside the *application-config.ts* file
-```typescript
-dev: {
-	...
-	server: {
-		host: 'localhost',
-		port: 1337, // <- change this line to change port
-		path: 'api', 
-		version: 'v1'
-	},
-	...
-}
-``` 
->**important to now**
-if you change port or/and host name you will also have to change it in the bl-connect library if you use that in your application!
-
-
-### Configuration of MongoDb
-
-To change the mongoDb settings, edit the *application-config.ts* file
-```typescript
-dev: {
-	...
-	mongoDb: {
-		basePath: 'mongodb://',
-		host: 'localhost',
-		port: 27017,
-		dbName: 'bl_api_dev' // <- change this line to change name of mongo db database
-	}
-	...
-}
-```
+This command will generate test data for a various of classes like "branch", "openingHour" and "items". After the process is done you can start the server like normal, and you will now be able to get test data from the api calls.
