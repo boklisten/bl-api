@@ -35,7 +35,8 @@ export class GeneratorDevEnvironment {
 						
 						setTimeout(() => {
 							console.log('done, you can now start the server');
-						}, 500)
+							process.exit();
+						}, 500);
 					}, 500);
 				}, 500);
 			}, 500);
