@@ -4,17 +4,29 @@ import {SeCrypto} from "../../../crypto/se.crypto";
 
 export class LocalLoginPasswordValidator {
 	
-	constructor(private blCrypto: SeCrypto) {
+	constructor(private seCrypto: SeCrypto) {
 	
 	}
 	
-	public validate(password: string, salt: string, hashedPassword: string): boolean {
-		if (!password || password.length <= 0) throw new TypeError('password is empty or undefined');
-		if (!salt || salt.length <= 0) throw new TypeError('salt is empty or undefined');
-		if (!hashedPassword || hashedPassword.length <= 0) throw new TypeError("hashedPassword is empty or undefined");
-		
-		
-		
-		return true;
+	public validate(password: string, salt: string, hashedPassword: string): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			
+			if (!password || password.length <= 0) reject(new TypeError('password is empty or undefined'));
+			if (!salt || salt.length <= 0) reject(new TypeError('salt is empty or undefined'));
+			if (!hashedPassword || hashedPassword.length <= 0) reject(new TypeError("hashedPassword is empty or undefined"));
+			
+			this.seCrypto.hash(password, salt).then(
+				(passwordAndSaltHashed: string) => {
+					if (passwordAndSaltHashed === hashedPassword) {
+						resolve(true);
+					}
+					
+					reject(new Error('password and salt does not hash into the given hashedPassword'));
+					
+				},
+				(error: any) => {
+					reject(error);
+				});
+		});
 	}
 }

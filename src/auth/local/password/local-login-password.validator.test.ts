@@ -8,6 +8,12 @@ import {SeCrypto} from "../../../crypto/se.crypto";
 chai.use(chaiAsPromised);
 
 class SeCryptoMock extends SeCrypto {
+	
+	hash(password: string, salt: string): Promise<string> {
+		return new Promise((resolve, reject) => {
+			resolve(password + salt);
+		});
+	}
 
 }
 
@@ -23,36 +29,39 @@ describe('LocalLoginPasswordValidator', () => {
 		beforeEach(() => {
 			testPassword = 'dog';
 			testSalt = 'salt';
-			testHashedPassword = 'abc';
+			testHashedPassword = testPassword + testSalt;
 		});
 		
-		describe('should throw TypeError when', () => {
+		describe('should reject with TypeError when', () => {
 			it('password is empty', () => {
 				testPassword = '';
-				expect(() => {
-					localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword);
-				}).to.throw(TypeError);
+				
+					return localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword)
+						.should.be.rejectedWith(TypeError);
 			});
 			
 			it('salt is empty', () => {
 				testSalt = '';
-				expect(() => {
-					localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword);
-				}).to.throw(TypeError);
+				return localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword)
+						.should.be.rejectedWith(TypeError);
 			});
 			
 			it('hashedPassword is empty', () => {
 				testHashedPassword = '';
-				expect(() => {
-					localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword);
-				}).to.throw(TypeError);
+				return localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword)
+					.should.be.rejectedWith(TypeError);
 			});
 		});
-		/*
-		it('should return false if password is not correct', () => {
+		
+		it('should reject with Error when password is not correct', () => {
+			testPassword = 'human';
 			return localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword)
-				.should.eventually.be.false;
+				.should.be.rejectedWith(Error);
 		});
-		*/
+		
+		it('should resolve with true when password is correct', () => {
+			return localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword)
+				.should.eventually.be.true;
+		});
 	});
 });
