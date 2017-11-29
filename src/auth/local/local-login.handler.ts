@@ -18,8 +18,31 @@ export class LocalLoginHandler {
 		this.localLoginConfig = new LocalLoginConfig();
 	}
 	
+	public get(username: string): Promise<LocalLogin> {
+		
+		return new Promise((resolve, reject) => {
+			if (!username || !isEmail(username)) return reject(new TypeError('username "' + username + '" is not a valid email'));
+			
+			let dbQuery = new SEDbQuery();
+			dbQuery.stringFilters = [
+				{fieldName: "username", value: username}
+			];
+			
+			this.localLoginMongoHandler.get(dbQuery).then(
+				(docs: SEDocument[]) => {
+					if (docs.length !== 1) {
+						return reject(new Error('could not get LocalLogin by the provided username "' + username + '"'));
+					}
+					
+					return resolve(docs[0].data as LocalLogin);
+				},
+				(error: BlapiErrorResponse) => {
+					return reject(error);
+				});
+		});
+	}
 	
-	public insertLocalLogin(localLogin: LocalLogin): Promise<LocalLogin> {
+	public add(localLogin: LocalLogin): Promise<LocalLogin> {
 		return new Promise((resolve, reject) => {
 			if (!localLogin.username || localLogin.username.length <= 0) return reject(new TypeError('username of LocalLogin needs to be provided'));
 			if (!localLogin.provider || localLogin.provider.length <= 0) return reject(new TypeError('provider of LocalLogin needs to be provided'));
