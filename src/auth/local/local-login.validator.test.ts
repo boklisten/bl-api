@@ -8,6 +8,8 @@ import {LocalLoginValidator} from "./local-login.validator";
 import {SESchema} from "../../config/schema/se.schema";
 import {LocalLoginSchema} from "../../config/schema/login-local/local-login.schema";
 import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
+import {LocalLoginPasswordValidator} from "./password/local-login-password.validator";
+import {SeCrypto} from "../../crypto/se.crypto";
 
 chai.use(chaiAsPromised);
 
@@ -37,11 +39,22 @@ class LocalLoginHandlerMock extends LocalLoginHandler {
 	}
 }
 
+class LocalLoginPasswordValidatorMock extends LocalLoginPasswordValidator {
+	
+	validate(password: string, salt: string, hashedPassword): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			resolve(true);
+		
+		});
+	}
+}
+
 
 describe('LocalLoginValidator', () => {
 	let localLoginEndpointMongoDb = new EndpointMongodb(new SESchema('localLogins', LocalLoginSchema));
 	let localLoginHandler = new LocalLoginHandlerMock(localLoginEndpointMongoDb);
-	let localLoginValidator = new LocalLoginValidator(localLoginHandler);
+	let localLoginPasswordValidatorMock = new LocalLoginPasswordValidatorMock(new SeCrypto());
+	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidatorMock);
 	
 	describe('validate()', () => {
 		let testUserName = '';
@@ -66,14 +79,20 @@ describe('LocalLoginValidator', () => {
 			});
 		});
 		
-		/*
 		
 		it('should resolve with correct provider and providerId when username and password is correct', () => {
-			return localLoginValidator.validate(testUserName, testPassword)
-				.should.eventually.be.eq({provider: testLocalLogin.provider, providerId: testLocalLogin.providerId});
+			let expectedProvider = {provider: testLocalLogin.provider, providerId: testLocalLogin.providerId};
+			return new Promise((resolve, reject) => {
+				localLoginValidator.validate(testUserName, testPassword).then(
+					(returnedProvider: {provider: string, providerId: string}) => {
+						if (returnedProvider.providerId === expectedProvider.providerId) resolve(true);
+						reject(new Error('provider is not equal to expectedProvider'));
+					},
+					(error: any) => {
+						reject(error);
+					});
+			}).should.eventually.be.true;
 		});
-		
-		*/
 		
 	});
 });

@@ -4,10 +4,11 @@ import {LocalLoginHandler} from "./local-login.handler";
 import {isEmail} from "validator";
 import {LocalLogin} from "../../config/schema/login-local/local-login";
 import {BlapiErrorResponse} from "bl-model";
+import {LocalLoginPasswordValidator} from "./password/local-login-password.validator";
 
 export class LocalLoginValidator {
 	
-	constructor(private localLoginHandler: LocalLoginHandler) {
+	constructor(private localLoginHandler: LocalLoginHandler, private localLoginPasswordValidator: LocalLoginPasswordValidator) {
 	
 	}
 	
@@ -18,7 +19,15 @@ export class LocalLoginValidator {
 			
 			this.localLoginHandler.get(username).then(
 				(localLogin: LocalLogin) => {
-					console.log('hello there maaan', localLogin);
+					
+					this.localLoginPasswordValidator.validate(password, localLogin.salt, localLogin.hashedPassword).then(
+						(validPassword: boolean) => {
+							resolve({provider: localLogin.provider, providerId: localLogin.providerId});
+						},
+						(error: any) => {
+							reject(error);
+						});
+					
 				},
 				(error: BlapiErrorResponse) => {
 					reject(error);
