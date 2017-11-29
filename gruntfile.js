@@ -115,7 +115,20 @@ module.exports = function (grunt) {
             backup: {
                 command: 'mkdir --parents ~/.bl-dist/' + packageJson.name + '/; mv ./dist/' + packageJson.name + '-' + packageJson.version + '.tgz ~/.bl-dist/' + packageJson.name + '/'
             }
+        },
+        mochaTest: {
+            test: {
+                options: {
+                    reporter: 'spec',
+                    captureFile: 'results.txt', // Optionally capture the reporter output to a file
+                    quiet: false, // Optionally suppress output to standard out (defaults to false)
+                    clearRequireCache: true, // Optionally clear the require cache before running tests (defaults to false)
+                    // clearCacheFilter: (key) => {return true}, // Optionally defines which files should keep in cache
+                noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
+            },
+            src: ['test/**/*.js']
         }
+    }
     });
 
     grunt.loadNpmTasks("grunt-contrib-copy");
@@ -129,6 +142,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-shell');
+    grunt.loadNpmTasks('grunt-mocha-test');
 
     grunt.registerTask("dev", [
         'concurrent:dev',

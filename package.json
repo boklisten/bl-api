@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "mocha bootstrap.js \"src/**/*.test.ts\"",
+    "test": "mocha --reporter min bootstrap.js \"src/**/*.test.ts\"",
     "grunt": "grunt",
     "pkg": "grunt pkg",
     "dev": "grunt dev",
@@ -13,7 +13,10 @@
   "author": "holskil",
   "license": "ISC",
   "dependencies": {
-    "bl-model": "../bl-model/dist/bl-model-0.2.1.tgz",
+    "@types/sinon": "^4.0.0",
+    "@types/sinon-chai": "^2.7.29",
+    "@types/validator": "^6.3.0",
+    "bl-model": "../bl-dist/bl-model-0.2.1.tgz",
     "bluebird": "^3.5.1",
     "commander": "^2.12.2",
     "cookie-parser": "^1.4.3",
@@ -28,7 +31,10 @@
     "passport-google-oauth": "^1.0.0",
     "passport-jwt": "^3.0.0",
     "passport-local": "^1.0.0",
-    "typescript": "^2.5.3"
+    "sinon": "^4.1.2",
+    "sinon-chai": "^2.14.0",
+    "typescript": "^2.5.3",
+    "validator": "^9.1.2"
   },
   "devDependencies": {
     "@types/chai": "^4.0.4",
@@ -52,6 +58,7 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-express-server": "^0.5.3",
+    "grunt-mocha-test": "^0.13.3",
     "grunt-nodemon": "^0.4.2",
     "grunt-run": "^0.8.0",
     "grunt-shell": "^2.1.0",

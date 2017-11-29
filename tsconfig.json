@@ -42,7 +42,7 @@
     "typeRoots": [
       "./node_modules/@types"
     ],                    /* List of folders to include type definitions from. */
-    //"types": ["./node_modules/bl-model/bl-model.d.ts"],                           /* Type declaration files to be included in compilation. */
+   // "types": ["./node_modules/@types"],                           /* Type declaration files to be included in compilation. */
     // "allowSyntheticDefaultImports": true,  /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
 
     /* Source Map Options */

@@ -1,0 +1,27 @@
+
+
+
+import {Schema} from "mongoose";
+
+export let LocalLoginSchema = {
+	username: {
+		type: Schema.Types.String,
+		required: true
+	},
+	provider: {
+		type: Schema.Types.String,
+		required: true
+	},
+	providerId: {
+		type: Schema.Types.String,
+		required: true
+	},
+	hashedPassword: {
+		type: Schema.Types.String,
+		required: true
+	},
+	salt: {
+		type: Schema.Types.String,
+		required: true
+	}
+};

@@ -5,11 +5,16 @@ import {BlapiErrorResponse} from 'bl-model';
 
 
 export class EndpointMongodb {
-	private schema: SESchema;
+	schema: SESchema;
+	
 
 	constructor(schema: SESchema) {
 		this.schema = schema;
+		let mongoose = require('mongoose');
+		mongoose.Promise = require('bluebird');
+		
 	}
+	
 
 	public get(dbQuery: SEDbQuery): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
@@ -63,6 +68,7 @@ export class EndpointMongodb {
 		return new Promise((resolve, reject) => {
 			document.data.creationTime = new Date().toISOString();
 			let newDocument = new this.schema.mongooseModel(document.data);
+			
 
 			newDocument.save((error, doc) => {
 				if (error) {
@@ -174,6 +180,7 @@ export class EndpointMongodb {
 	
 	
 	private handleError(error: any): BlapiErrorResponse {
+		console.log('there was an error......', error);
 		if (error.name === 'CastError') {
 			return new BlapiErrorResponse(404);
 		} else if (error.name == 'ValidationError') {
