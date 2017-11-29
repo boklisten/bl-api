@@ -52,10 +52,8 @@ describe('LocalLoginHandler', () => {
 	
 	let localLoginSchema = new SESchema('localLogins', LocalLoginSchema);
 	let localLoginMongoHandlerMock = new LocalLoginMongoHandlerMock(localLoginSchema);
-	let userSchema = new SESchema('users', UserSchema);
-	let userDetailSchema = new SESchema('userDetails', UserDetailSchema);
-	let userHandler: UserHandler = new UserHandler(userSchema, userDetailSchema);
-	let localLoginHandler = new LocalLoginHandler(localLoginSchema, userHandler, localLoginMongoHandlerMock);
+	
+	let localLoginHandler = new LocalLoginHandler(localLoginMongoHandlerMock);
 	
 	describe('add()', () => {
 		let baseLocalLogin = {username: 'a', providerId: '1', hashedPassword: 'b', provider: 'c', salt: 'h'};

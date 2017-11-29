@@ -14,7 +14,7 @@ import {LocalLoginConfig} from "../../config/schema/login-local/local-login.conf
 export class LocalLoginHandler {
 	private localLoginConfig: LocalLoginConfig;
 	
-	constructor(private localLoginSchema: SESchema, userHandler: UserHandler, private localLoginMongoHandler: EndpointMongodb) {
+	constructor(private localLoginMongoHandler: EndpointMongodb) {
 		this.localLoginConfig = new LocalLoginConfig();
 	}
 	

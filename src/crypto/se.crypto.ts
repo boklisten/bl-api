@@ -31,4 +31,26 @@ export class SeCrypto {
 			msgCipher.end();
 		});
 	}
+	
+	public hash(msg: string, salt: string): Promise<string> {
+		return new Promise((resolve, reject) => {
+			if (!msg || msg.length <= 0) return reject(new TypeError('msg is empty or undefined'));
+			if (!salt || salt.length <= 0) return reject(new TypeError('salt is empty or undefined'));
+			
+			const cryptoHash = crypto.createHash('sha256');
+			
+			cryptoHash.on('readable', () => {
+				const data = cryptoHash.read();
+				if (data) {
+					let hashedPassword = data.toString('hex');
+					return resolve(hashedPassword);
+				}
+				return reject(new Error('could not hash the provided message'));
+			});
+			
+			cryptoHash.write(msg + salt);
+			
+			cryptoHash.end();
+		});
+	}
 }
