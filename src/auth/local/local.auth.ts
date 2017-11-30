@@ -2,31 +2,54 @@
 
 import * as passport from 'passport';
 import {Strategy} from 'passport-local';
-import {Request, Response, Router} from "express";
+import {Router} from "express";
 import {ApiPath} from "../../config/api-path";
+import {JwtAuth} from "../token/jwt.auth";
+import {LocalLoginValidator} from "./local-login.validator";
 
 export class LocalAuth {
 	apiPath: ApiPath;
 	
-	constructor(router: Router) {
+	constructor(router: Router, private jwtAuth: JwtAuth, private localLoginValidator: LocalLoginValidator) {
 		this.apiPath = new ApiPath();
 		
 		passport.use(new Strategy((username: string, password: string, done: any) => {
-				if (username === 'uname' && password === 'pass') {
-					return done(null, {name: 'albert aaberg'});
-				}
-				return done(null, false, {message: 'Username or password wrong'});
-			}));
+			localLoginValidator.validate(username, password).then(
+				(localLoginProvider: {provider: string, providerId: string}) => {
+					jwtAuth.getAutorizationToken(localLoginProvider.provider, localLoginProvider.providerId, username).then(
+						(jwtToken: string) => {
+							done(null, jwtToken);
+						},
+						(error: any) => {
+							done(new Error('error when trying to get auth tokken'));
+						});
+				},
+				(error: any) => {
+					return done(new Error('username or password is incorrect'));
+				});
+		}));
 
-		this.createAuthEndpoint(router);
-	}
+		this.createAuthGet(router);
+		this.createAuthCallback(router);
+	};
+	
+	
 
-	private createAuthEndpoint(router: Router) {
+	private createAuthGet(router: Router) {
 		router.post(this.apiPath.createPath('auth/local'),
 			passport.authenticate('local', {
-				successRedirect: this.apiPath.createPath('items'),
-				failureRedirect: this.apiPath.createPath('login')
-			})
+				failureRedirect: this.apiPath.createPath('login'),
+			}),
+			(req: any, res: any) => {
+				res.send(req.user);
+			}
 		);
+	}
+	
+	private createAuthCallback(router: Router) {
+		router.get(this.apiPath.createPath('auth/local/callback'),
+			(req: any, res: any) => {
+				res.send(req.user);
+			});
 	}
 }

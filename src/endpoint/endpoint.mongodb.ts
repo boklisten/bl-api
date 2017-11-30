@@ -6,15 +6,12 @@ import {BlapiErrorResponse} from 'bl-model';
 
 export class EndpointMongodb {
 	schema: SESchema;
-	
 
 	constructor(schema: SESchema) {
 		this.schema = schema;
 		let mongoose = require('mongoose');
 		mongoose.Promise = require('bluebird');
-		
 	}
-	
 
 	public get(dbQuery: SEDbQuery): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
@@ -26,7 +23,7 @@ export class EndpointMongodb {
 				.exec((error, docs) => {
 
 					if (error) {
-						reject(new BlapiErrorResponse(403, 'client error', error));
+						reject(this.handleError(error));
 						return
 					}
 
@@ -35,13 +32,12 @@ export class EndpointMongodb {
 					for (let doc of docs) {
 						sdocs.push(new SEDocument(this.schema.title, doc));
 					}
-					
 
 					if (sdocs.length == 0) {
 						reject(new BlapiErrorResponse(404));
 						return
 					}
-
+					
 					resolve(sdocs);
 				})
 		});
@@ -53,13 +49,11 @@ export class EndpointMongodb {
 			    .find(dbQuery.getFilter(), dbQuery.getOgFilter())
 			    .exec((error, docs) => {
 		    	    if (error) {
-		    	    	console.log('error', error);
 		    	    	reject(error);
 			        }
 
 			        if (docs.length > 0) resolve(true);
 		    	    resolve(false);
-
 			    })
 		});
 	}
@@ -88,7 +82,6 @@ export class EndpointMongodb {
 					reject(this.handleError(error));
 					return;
 				}
-
 				
 				if (doc === null) {
 					reject(new BlapiErrorResponse(404));
@@ -103,16 +96,11 @@ export class EndpointMongodb {
 	public put(): Promise<SEDocument> {
 		return Promise.reject('')
 	}
-
-	
-	
-	
 	
 	public patch(id: string, doc: SEDocument): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
 			this.schema.mongooseModel.findById(id, (error, document) => {
 				if (error) {
-					
 					reject(new BlapiErrorResponse(403, 'client error', error));
 					return
 				}
@@ -180,7 +168,6 @@ export class EndpointMongodb {
 	
 	
 	private handleError(error: any): BlapiErrorResponse {
-		console.log('there was an error......', error);
 		if (error.name === 'CastError') {
 			return new BlapiErrorResponse(404);
 		} else if (error.name == 'ValidationError') {

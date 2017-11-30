@@ -34,6 +34,7 @@ export class LocalLoginHandler {
 						return reject(new Error('could not get LocalLogin by the provided username "' + username + '"'));
 					}
 					
+					
 					return resolve(docs[0].data as LocalLogin);
 				},
 				(error: BlapiErrorResponse) => {

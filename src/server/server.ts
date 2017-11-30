@@ -4,6 +4,7 @@ import * as passport from "passport";
 import {APP_CONFIG} from "../application-config";
 import {BlAuth} from "../auth/bl.auth";
 import {BlEndpoint} from "../endpoint/bl.endpoint";
+
 let bodyParser = require('body-parser');
 
 export class Server {
