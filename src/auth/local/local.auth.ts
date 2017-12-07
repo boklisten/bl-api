@@ -17,11 +17,11 @@ export class LocalAuth {
 			localLoginValidator.validate(username, password).then(
 				(localLoginProvider: {provider: string, providerId: string}) => {
 					jwtAuth.getAutorizationToken(localLoginProvider.provider, localLoginProvider.providerId, username).then(
-						(jwtToken: string) => {
-							done(null, jwtToken);
+						(jwToken: string) => {
+							done(null, jwToken);
 						},
 						(error: any) => {
-							done(new Error('error when trying to get auth tokken'));
+							done(new Error('error when trying to get auth token'));
 						});
 				},
 				(error: any) => {
@@ -32,8 +32,6 @@ export class LocalAuth {
 		this.createAuthGet(router);
 		this.createAuthCallback(router);
 	};
-	
-	
 
 	private createAuthGet(router: Router) {
 		router.post(this.apiPath.createPath('auth/local'),
@@ -42,8 +40,7 @@ export class LocalAuth {
 			}),
 			(req: any, res: any) => {
 				res.send(req.user);
-			}
-		);
+			});
 	}
 	
 	private createAuthCallback(router: Router) {
