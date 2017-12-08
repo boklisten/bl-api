@@ -12,6 +12,8 @@ import {LocalLoginPasswordValidator} from "./password/local-login-password.valid
 import {SeCrypto} from "../../crypto/se.crypto";
 import {Promise} from "es6-promise";
 import {BlError} from "../../bl-error/bl-error";
+import {HashedPasswordGenerator} from "./password/hashed-password-generator";
+import {SaltGenerator} from "./salt/salt-generator";
 
 chai.use(chaiAsPromised);
 
@@ -55,7 +57,10 @@ describe('LocalLoginValidator', () => {
 	let localLoginEndpointMongoDb = new EndpointMongodb(new SESchema('localLogins', LocalLoginSchema));
 	let localLoginHandler = new LocalLoginHandlerMock(localLoginEndpointMongoDb);
 	let localLoginPasswordValidatorMock = new LocalLoginPasswordValidatorMock(new SeCrypto());
-	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidatorMock);
+	let saltGenerator = new SaltGenerator();
+	let seCrypto = new SeCrypto();
+	let hashedPasswordGenerator = new HashedPasswordGenerator(saltGenerator, seCrypto);
+	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidatorMock, hashedPasswordGenerator);
 	
 	describe('validate()', () => {
 		let testUserName = '';

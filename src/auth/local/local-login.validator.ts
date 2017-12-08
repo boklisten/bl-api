@@ -6,10 +6,13 @@ import {LocalLogin} from "../../config/schema/login-local/local-login";
 import {BlapiErrorResponse} from "bl-model";
 import {LocalLoginPasswordValidator} from "./password/local-login-password.validator";
 import {BlError} from "../../bl-error/bl-error";
+import {HashedPasswordGenerator} from "./password/hashed-password-generator";
 
 export class LocalLoginValidator {
 	
-	constructor(private localLoginHandler: LocalLoginHandler, private localLoginPasswordValidator: LocalLoginPasswordValidator) {
+	constructor(private localLoginHandler: LocalLoginHandler,
+				private localLoginPasswordValidator: LocalLoginPasswordValidator,
+				private hashedPasswordGenerator: HashedPasswordGenerator) {
 	
 	}
 	

@@ -16,6 +16,8 @@ import {LocalLoginSchema} from "../config/schema/login-local/local-login.schema"
 import {LocalLoginPasswordValidator} from "./local/password/local-login-password.validator";
 import {SeCrypto} from "../crypto/se.crypto";
 import {SEDocument} from "../db/model/se.document";
+import {HashedPasswordGenerator} from "./local/password/hashed-password-generator";
+import {SaltGenerator} from "./local/salt/salt-generator";
 
 export class BlAuth {
 	private jwtAuth: JwtAuth;
@@ -32,7 +34,10 @@ export class BlAuth {
 		let localLoginMongoHandler = new EndpointMongodb(new SESchema('localLogins', LocalLoginSchema));
 		let localLoginPasswordValidator = new LocalLoginPasswordValidator(new SeCrypto())
 		let localLoginHandler = new LocalLoginHandler(localLoginMongoHandler);
-		let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidator);
+		let seCrypto = new SeCrypto();
+		let saltGenerator = new SaltGenerator();
+		let hashedPasswordGenerator = new HashedPasswordGenerator(saltGenerator,seCrypto);
+		let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidator, hashedPasswordGenerator);
 
 		this.jwtAuth = new JwtAuth(router, userHandler);
 		
