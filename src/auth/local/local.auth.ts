@@ -13,6 +13,13 @@ export class LocalAuth {
 	constructor(router: Router, private jwtAuth: JwtAuth, private localLoginValidator: LocalLoginValidator) {
 		this.apiPath = new ApiPath();
 		
+		
+		this.createPassportStrategy(jwtAuth, localLoginValidator);
+		this.createAuthGet(router);
+		this.createAuthCallback(router);
+	};
+	
+	private createPassportStrategy(jwtAuth: JwtAuth, localLoginValidator: LocalLoginValidator) {
 		passport.use(new Strategy((username: string, password: string, done: any) => {
 			localLoginValidator.validate(username, password).then(
 				(localLoginProvider: {provider: string, providerId: string}) => {
@@ -28,10 +35,7 @@ export class LocalAuth {
 					return done(new Error('username or password is incorrect'));
 				});
 		}));
-
-		this.createAuthGet(router);
-		this.createAuthCallback(router);
-	};
+	}
 
 	private createAuthGet(router: Router) {
 		router.post(this.apiPath.createPath('auth/local'),

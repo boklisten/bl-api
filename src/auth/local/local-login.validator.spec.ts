@@ -10,6 +10,8 @@ import {LocalLoginSchema} from "../../config/schema/login-local/local-login.sche
 import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
 import {LocalLoginPasswordValidator} from "./password/local-login-password.validator";
 import {SeCrypto} from "../../crypto/se.crypto";
+import {Promise} from "es6-promise";
+import {BlError} from "../../bl-error/bl-error";
 
 chai.use(chaiAsPromised);
 
@@ -33,8 +35,7 @@ class LocalLoginHandlerMock extends LocalLoginHandler {
 	
 	add(localLogin: LocalLogin): Promise<LocalLogin> {
 		return new Promise((resolve, reject) => {
-			
-			reject('');
+			resolve(localLogin);
 		});
 	}
 }
@@ -94,5 +95,48 @@ describe('LocalLoginValidator', () => {
 			}).should.eventually.be.true;
 		});
 		
+	});
+	
+	describe('createNewLocalLogin()', () => {
+		
+		describe('should reject with BlError when', () => {
+			it('username is not an email', () => {
+				let username = 'abc';
+				let password = 'test';
+				return localLoginValidator.createNewLocalLogin(username, password)
+					.should.be.rejectedWith(BlError);
+			});
+			
+			it('password is undefined', () => {
+				let username = 'bill@bill.com';
+				let password = undefined;
+				return localLoginValidator.createNewLocalLogin(username, password)
+					.should.be.rejectedWith(BlError);
+			});
+			
+			it('password is empty', () => {
+				let username = 'bill@bill.com';
+				let password = '';
+				return localLoginValidator.createNewLocalLogin(username, password)
+					.should.be.rejectedWith(BlError);
+			});
+			
+			it('password is under 6 chars', () => {
+				let username = 'bill@bill.com';
+				let password = 'abc';
+				return localLoginValidator.createNewLocalLogin(username, password)
+					.should.be.rejectedWith(BlError);
+			});
+		});
+		
+		describe('should resolve with provider and providerId when', () => {
+			it('username and password is valid', () => {
+				let username = 'bill@bill.com';
+				let password = 'thisIsThePassword';
+				
+				//return localLoginValidator.createNewLocalLogin(username, password)
+				//	.should.be.fulfilled;
+			});
+		});
 	});
 });
