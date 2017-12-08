@@ -12,7 +12,7 @@ export class HashedPasswordGenerator {
 	
 	public generate(password): Promise<{hashedPassword: string, salt: string}> {
 		return new Promise((resolve, reject) => {
-			if (!password || password.length <= 6) reject(new BlError('password is empty or to short'));
+			if (!password || password.length < 6) reject(new BlError('password is empty or to short'));
 			
 			this.saltGenerator.generate().then(
 				(generatedSalt: string) => {

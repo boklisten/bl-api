@@ -17,6 +17,10 @@ import {SaltGenerator} from "./salt/salt-generator";
 import {LocalLoginCreator} from "./local-login-creator/local-login-creator";
 import {ProviderIdGenerator} from "./provider-id/provider-id-generator";
 import {BlapiErrorResponse} from "bl-model";
+import {UserHandler} from "../user/user.handler";
+import {User} from "../../config/schema/user/user";
+import {UserSchema} from "../../config/schema/user/user.schema";
+import {UserDetailSchema} from "../../config/schema/user/user-detail.schema";
 
 chai.use(chaiAsPromised);
 
@@ -56,6 +60,29 @@ class LocalLoginPasswordValidatorMock extends LocalLoginPasswordValidator {
 	}
 }
 
+class UserHandlerMock extends UserHandler {
+	getOrCreateUser(provider: string, providerId: string, username: string) {
+		return new Promise((resolve, reject) => {
+			let user: User = {
+				userDetail: '',
+				permission: 'customer',
+				login: {
+					provider: provider,
+					providerId: providerId
+				},
+				blid: '',
+				username: username,
+				valid: true,
+				active: true,
+				lastActive: '',
+				lastRequest: ''
+				
+			};
+		    resolve(user);
+		});
+	}
+}
+
 
 describe('LocalLoginValidator', () => {
 	let localLoginEndpointMongoDb = new EndpointMongodb(new SESchema('localLogins', LocalLoginSchema));
@@ -66,7 +93,8 @@ describe('LocalLoginValidator', () => {
 	let hashedPasswordGenerator = new HashedPasswordGenerator(saltGenerator, seCrypto);
 	let providerIdGenerator = new ProviderIdGenerator(seCrypto);
 	let localLoginCreator = new LocalLoginCreator(hashedPasswordGenerator, providerIdGenerator);
-	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidatorMock, localLoginCreator);
+	let userHandlerMock = new UserHandlerMock(new SESchema('user', UserSchema), new SESchema('userDetail', UserDetailSchema));
+	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidatorMock, localLoginCreator, userHandlerMock);
 	
 	describe('validateOrCreate()', () => {
 		let testUserName = '';

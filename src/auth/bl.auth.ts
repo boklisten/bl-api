@@ -41,7 +41,7 @@ export class BlAuth {
 		let hashedPasswordGenerator = new HashedPasswordGenerator(saltGenerator,seCrypto);
 		let providerIdGenerator = new ProviderIdGenerator(seCrypto);
 		let localLoginCreator = new LocalLoginCreator(hashedPasswordGenerator, providerIdGenerator);
-		let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidator, localLoginCreator);
+		let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidator, localLoginCreator, userHandler);
 
 		this.jwtAuth = new JwtAuth(router, userHandler);
 		

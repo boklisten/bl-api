@@ -6,6 +6,7 @@ import {Router} from "express";
 import {ApiPath} from "../../config/api-path";
 import {JwtAuth} from "../token/jwt.auth";
 import {LocalLoginValidator} from "./local-login.validator";
+import {BlError} from "../../bl-error/bl-error";
 
 export class LocalAuth {
 	apiPath: ApiPath;
@@ -31,7 +32,7 @@ export class LocalAuth {
 							done(new Error('error when trying to get auth token'));
 						});
 				},
-				(error: any) => {
+				(error: BlError) => {
 					return done(new Error('username or password is incorrect'));
 				});
 		}));
