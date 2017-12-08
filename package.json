@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "start": "grunt dev",
     "test": "mocha -r ts-node/register \"src/**/*.spec.ts\"",
     "grunt": "grunt",
     "pkg": "grunt pkg",
