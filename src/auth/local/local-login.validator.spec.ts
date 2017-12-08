@@ -14,6 +14,9 @@ import {Promise} from "es6-promise";
 import {BlError} from "../../bl-error/bl-error";
 import {HashedPasswordGenerator} from "./password/hashed-password-generator";
 import {SaltGenerator} from "./salt/salt-generator";
+import {LocalLoginCreator} from "./local-login-creator/local-login-creator";
+import {ProviderIdGenerator} from "./provider-id/provider-id-generator";
+import {BlapiErrorResponse} from "bl-model";
 
 chai.use(chaiAsPromised);
 
@@ -30,7 +33,8 @@ class LocalLoginHandlerMock extends LocalLoginHandler {
 	
 	get(username: string): Promise<LocalLogin> {
 		return new Promise((resolve, reject) => {
-		    resolve(testLocalLogin);
+			if (username === testLocalLogin.username) resolve(testLocalLogin);
+			reject(new BlapiErrorResponse(404));
 		});
 	}
 	
@@ -60,9 +64,11 @@ describe('LocalLoginValidator', () => {
 	let saltGenerator = new SaltGenerator();
 	let seCrypto = new SeCrypto();
 	let hashedPasswordGenerator = new HashedPasswordGenerator(saltGenerator, seCrypto);
-	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidatorMock, hashedPasswordGenerator);
+	let providerIdGenerator = new ProviderIdGenerator(seCrypto);
+	let localLoginCreator = new LocalLoginCreator(hashedPasswordGenerator, providerIdGenerator);
+	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidatorMock, localLoginCreator);
 	
-	describe('validate()', () => {
+	describe('validateOrCreate()', () => {
 		let testUserName = '';
 		let testPassword = '';
 		
@@ -74,13 +80,13 @@ describe('LocalLoginValidator', () => {
 		describe('should reject with TypeError when', () => {
 			it('username is not an email', () => {
 				testUserName = 'bill';
-				return localLoginValidator.validate(testUserName, testPassword)
+				return localLoginValidator.validateOrCreate(testUserName, testPassword)
 					.should.be.rejectedWith(TypeError);
 			});
 			
 			it('password is empty', () => {
 				testPassword = '';
-				return localLoginValidator.validate(testUserName, testPassword)
+				return localLoginValidator.validateOrCreate(testUserName, testPassword)
 					.should.be.rejectedWith(TypeError);
 			});
 		});
@@ -89,7 +95,7 @@ describe('LocalLoginValidator', () => {
 		it('should resolve with correct provider and providerId when username and password is correct', () => {
 			let expectedProvider = {provider: testLocalLogin.provider, providerId: testLocalLogin.providerId};
 			return new Promise((resolve, reject) => {
-				localLoginValidator.validate(testUserName, testPassword).then(
+				localLoginValidator.validateOrCreate(testUserName, testPassword).then(
 					(returnedProvider: {provider: string, providerId: string}) => {
 						if (returnedProvider.providerId === expectedProvider.providerId) resolve(true);
 						reject(new Error('provider is not equal to expectedProvider'));
@@ -100,48 +106,24 @@ describe('LocalLoginValidator', () => {
 			}).should.eventually.be.true;
 		});
 		
-	});
-	
-	describe('createNewLocalLogin()', () => {
-		
-		describe('should reject with BlError when', () => {
-			it('username is not an email', () => {
-				let username = 'abc';
-				let password = 'test';
-				return localLoginValidator.createNewLocalLogin(username, password)
-					.should.be.rejectedWith(BlError);
-			});
-			
-			it('password is undefined', () => {
-				let username = 'bill@bill.com';
-				let password = undefined;
-				return localLoginValidator.createNewLocalLogin(username, password)
-					.should.be.rejectedWith(BlError);
-			});
-			
-			it('password is empty', () => {
-				let username = 'bill@bill.com';
-				let password = '';
-				return localLoginValidator.createNewLocalLogin(username, password)
-					.should.be.rejectedWith(BlError);
-			});
-			
-			it('password is under 6 chars', () => {
-				let username = 'bill@bill.com';
-				let password = 'abc';
-				return localLoginValidator.createNewLocalLogin(username, password)
-					.should.be.rejectedWith(BlError);
-			});
-		});
-		
-		describe('should resolve with provider and providerId when', () => {
-			it('username and password is valid', () => {
-				let username = 'bill@bill.com';
-				let password = 'thisIsThePassword';
-				
-				//return localLoginValidator.createNewLocalLogin(username, password)
-				//	.should.be.fulfilled;
-			});
+		it('should resolve with correct provider and providerId when username does not exists', () => {
+			let username = 'bill@gmail.com';
+			let password = 'thisIsAValidPassword';
+			return localLoginValidator.validateOrCreate(username, password).then(
+				(providerAndProviderId: {provider: string, providerId: string}) => {
+					providerAndProviderId
+						.should.have.property('provider')
+						.and.be.eq('local');
+					
+					providerAndProviderId
+						.should.have.property('providerId')
+						.and.have.length.gte(64)
+						.and.be.a('string');
+				},
+				(error: any) => {
+					error.should.not.be.fulfilled;
+				}
+			).should.eventually.be.fulfilled;
 		});
 	});
 });

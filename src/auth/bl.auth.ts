@@ -18,6 +18,8 @@ import {SeCrypto} from "../crypto/se.crypto";
 import {SEDocument} from "../db/model/se.document";
 import {HashedPasswordGenerator} from "./local/password/hashed-password-generator";
 import {SaltGenerator} from "./local/salt/salt-generator";
+import {LocalLoginCreator} from "./local/local-login-creator/local-login-creator";
+import {ProviderIdGenerator} from "./local/provider-id/provider-id-generator";
 
 export class BlAuth {
 	private jwtAuth: JwtAuth;
@@ -37,7 +39,9 @@ export class BlAuth {
 		let seCrypto = new SeCrypto();
 		let saltGenerator = new SaltGenerator();
 		let hashedPasswordGenerator = new HashedPasswordGenerator(saltGenerator,seCrypto);
-		let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidator, hashedPasswordGenerator);
+		let providerIdGenerator = new ProviderIdGenerator(seCrypto);
+		let localLoginCreator = new LocalLoginCreator(hashedPasswordGenerator, providerIdGenerator);
+		let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidator, localLoginCreator);
 
 		this.jwtAuth = new JwtAuth(router, userHandler);
 		

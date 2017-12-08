@@ -7,16 +7,17 @@ import {BlapiErrorResponse} from "bl-model";
 import {LocalLoginPasswordValidator} from "./password/local-login-password.validator";
 import {BlError} from "../../bl-error/bl-error";
 import {HashedPasswordGenerator} from "./password/hashed-password-generator";
+import {LocalLoginCreator} from "./local-login-creator/local-login-creator";
 
 export class LocalLoginValidator {
 	
 	constructor(private localLoginHandler: LocalLoginHandler,
 				private localLoginPasswordValidator: LocalLoginPasswordValidator,
-				private hashedPasswordGenerator: HashedPasswordGenerator) {
+				private localLoginCreator: LocalLoginCreator) {
 	
 	}
 	
-	public validate(username: string, password: string): Promise<{provider: string, providerId: string}> {
+	public validateOrCreate(username: string, password: string): Promise<{provider: string, providerId: string}> {
 		return new Promise((resolve, reject) => {
 			if (!username || !isEmail(username)) return reject(new TypeError('username "' + username + '" is not an email'));
 			if (!password || password.length <= 0) return reject(new TypeError('password is empty or undefined'));
@@ -34,17 +35,26 @@ export class LocalLoginValidator {
 					
 				},
 				(error: BlapiErrorResponse) => {
-					reject(error);
+					//the username does not exist
+					if (error.code === 404) {
+						
+						this.localLoginCreator.create(username, password).then(
+							(localLogin: LocalLogin) => {
+								this.localLoginHandler.add(localLogin).then(
+									(addedLocalLogin: LocalLogin) => {
+										resolve({provider: addedLocalLogin.provider, providerId: addedLocalLogin.providerId});
+									},
+									(error: BlapiErrorResponse) => {
+										reject(new BlError('could not insert the localLogin object'));
+									});
+							},
+							(error: any) => {
+								reject(new BlError('could not create LocalLogin object by the provided username and password'));
+							});
+					} else {
+						reject(new BlError('there was a problem with finding the  user by the username "'+ username +'"', 500));
+					}
 				});
-		});
-	}
-	
-	public createNewLocalLogin(username: string, password: string): Promise<{provider: string, providerId: string}> {
-		return new Promise((resolve, reject) => {
-			if (!username || !isEmail(username)) return reject(new BlError('username "'+ username + '"is undefined or is not an Email'));
-			if (!password || password.length < 6) return reject(new BlError('password is to short or empty'));
-			
-			
 		});
 	}
 }

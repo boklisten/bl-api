@@ -21,7 +21,7 @@ export class LocalAuth {
 	
 	private createPassportStrategy(jwtAuth: JwtAuth, localLoginValidator: LocalLoginValidator) {
 		passport.use(new Strategy((username: string, password: string, done: any) => {
-			localLoginValidator.validate(username, password).then(
+			localLoginValidator.validateOrCreate(username, password).then(
 				(localLoginProvider: {provider: string, providerId: string}) => {
 					jwtAuth.getAutorizationToken(localLoginProvider.provider, localLoginProvider.providerId, username).then(
 						(jwToken: string) => {
