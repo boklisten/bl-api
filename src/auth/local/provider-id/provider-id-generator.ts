@@ -12,19 +12,20 @@ export class ProviderIdGenerator {
 	
 	generate(username: string): Promise<string> {
 		return new Promise((resolve, reject) => {
-			if (!username || username.length <= 0) reject(new BlError('username is empty or undefined'));
+			let blError = new BlError('').className('ProviderIdGenerator').methodName('generate');
+			if (!username || username.length <= 0) reject(blError.msg('username is empty or undefined'));
 			
 			crypto.randomBytes(32, (error, buffer) => {
-				if (error) reject(new BlError('could not generate random bytes'));
+				if (error) reject(blError.msg('could not generate random bytes').data(error));
 				
 				this.seCrypto.hash(username, buffer.toString('hex')).then(
 					(hashedMsg: string) => {
 						resolve(hashedMsg);
 					},
-					(error: any) => {
-						reject(new BlError('could not hash the provided username and salt'));
+					(error: BlError) => {
+						reject(error.add(blError.msg('could not hash the provided username and salt')));
 					});
-			})
+			});
 		});
 	}
 }
