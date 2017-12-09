@@ -3,6 +3,8 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {SeCrypto} from "./se.crypto";
+import {Promise} from 'es6-promise';
+import {BlError} from "../bl-error/bl-error";
 
 chai.use(chaiAsPromised);
 let shuld = chai.should();
@@ -12,8 +14,8 @@ describe('SeCrypto', () => {
 
 	describe('cipher()', () => {
 
-		it('should reject when message is empty', () => {
-			return seCrypto.cipher('').should.be.rejected;
+		it('should reject with BlError when message is empty', () => {
+			return seCrypto.cipher('').should.be.rejectedWith(BlError);
 		});
 
 		it('should return chipher when msg is valid', () => {
@@ -30,18 +32,18 @@ describe('SeCrypto', () => {
 			testSalt = 'dog';
 		});
 		
-		describe('should reject with TypeError when', () => {
+		describe('should reject with BlError when', () => {
 			
 			it('msg is empty', () => {
 				testMsg = '';
 				return seCrypto.hash(testMsg, testSalt)
-					.should.be.rejectedWith(TypeError);
+					.should.be.rejectedWith(BlError);
 			});
 			
 			it('salt is empty', () => {
 				testSalt = '';
 				return seCrypto.hash(testMsg, testSalt)
-					.should.be.rejectedWith(TypeError);
+					.should.be.rejectedWith(BlError);
 			});
 		});
 		
