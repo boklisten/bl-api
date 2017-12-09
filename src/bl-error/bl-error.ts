@@ -13,8 +13,9 @@ export class BlError extends Error {
 		this.code(code);
 	}
 	
-	add(blError: BlError) {
+	add(blError: BlError): BlError {
 		this._errorStack.push(blError);
+		return this;
 	}
 	
 	data(data: any): BlError {
@@ -65,5 +66,18 @@ export class BlError extends Error {
 	getCode(): number {
 		if (!this._code) return 0;
 		return this._code;
+	}
+	
+	public printStack() {
+		console.log('');
+		console.log('> BlError(' + this.getCode() + '): ' + this.getClassName() + '.' + this.getMethodName() + ': ');
+		console.log('\t' + this.getMsg());
+		let indent = '\t';
+		for (let i = this.errorStack.length; i > 0; i--) {
+			console.log(indent + '> BlError(' + this.errorStack[i].getCode() + '): ' + this.errorStack[i].getClassName() + '.' + this.errorStack[i].getMethodName() + ': ');
+			console.log(indent + '\t' + this.errorStack[i].getMsg());
+			indent += '\t';
+		}
+		console.log('');
 	}
 }

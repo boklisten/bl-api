@@ -8,6 +8,7 @@ import {Strategy} from 'passport-facebook'
 import {UserHandler} from "../user/user.handler";
 import {JwtAuth} from "../token/jwt.auth";
 import {ApiPath} from "../../config/api-path";
+import {BlError} from "../../bl-error/bl-error";
 
 export class FacebookAuth {
 	private userHandler: UserHandler;
@@ -28,14 +29,17 @@ export class FacebookAuth {
 			(accessToken: any, refreshToken: any, profile: any, done: any) => {
 				let provider = 'facebook';
 				let providerId = profile.id;
-				let name = profile.displayName;
+				let username = profile.displayName;
 
-				this.jwtAuth.getAutorizationToken(provider, providerId, name).then(
+				this.jwtAuth.getAutorizationToken(provider, providerId, username).then(
 					(jwtoken: string) => {
 						done(null, jwtoken);
 					},
-					(error: any) => {
-						done(new Error('could not create auth token, reason: ' + error));
+					(error: BlError) => {
+						done(error.add(new BlError('failed to get auth token for user "' + username + '"')
+							.data(error)
+							.className('FacebookAuth')
+							.methodName('strategy')).code(400));
 					});
 			}
 		));
