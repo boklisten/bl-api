@@ -6,7 +6,7 @@ import {ValidParam} from "../../query/valid-param/db-query-valid-params";
 export class ItemConfig implements EndpointConfig {
 	basePath: string = 'api';
 	collectionName: string = 'items';
-	schema: SESchema = new SESchema(this.collectionName, ItemSchema);
+	schema: SESchema = new SESchema('item', ItemSchema);
 	paths: Path[] = [
 		{
 			path: 'items',

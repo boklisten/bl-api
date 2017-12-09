@@ -6,7 +6,7 @@ import {ValidParam} from "../../query/valid-param/db-query-valid-params";
 export class OrderConfig implements EndpointConfig {
 	basePath: string = 'api';
 	collectionName: string = 'orders';
-	schema: SESchema = new SESchema(this.collectionName, OrderSchema);
+	schema: SESchema = new SESchema('order', OrderSchema);
 	paths: Path[] = [
 		{
 			path: this.collectionName,
