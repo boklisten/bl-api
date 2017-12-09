@@ -24,9 +24,10 @@ export class JwtAuth {
 
 	public getAutorizationToken(provider: string, providerId: string, username: string): Promise<string> {
 		return new Promise((resolve, reject) => {
-			if (!provider || provider.length <= 0) reject(new BlError('provider is empty or undefined'));
-			if (!providerId || providerId.length <= 0) reject(new BlError('providerId is empty or undefined'));
-			if (!username || !isEmail(username) || username.length <= 0) reject(new BlError('username is empty, undefined or not an email'));
+			let blError = new BlError('').className('JwtAuth').methodName('getAuthorizationToken');
+			if (!provider || provider.length <= 0) reject(blError.msg('provider is empty or undefined'));
+			if (!providerId || providerId.length <= 0) reject(blError.msg('providerId is empty or undefined'));
+			if (!username || !isEmail(username) || username.length <= 0) reject(blError.msg('username is empty, undefined or not an email'));
 			
 			this.userHandler.getOrCreateUser(provider, providerId, username).then(
 				(user: User) => {
@@ -34,12 +35,12 @@ export class JwtAuth {
 						(jwtoken: string) => {
 							resolve(jwtoken);
 						},
-						(error:  any) => {
-							reject('getAuthorizationToken(): error when creating auth token, reason: ' + error);
+						(error:  BlError) => {
+							reject(error.add(blError.msg('could not create token')));
 						});
 				},
-				(error: any) => {
-					reject('getAutorizationToken(): error when getOrCreateUser, reason: ' + error);
+				(error: BlError) => {
+					reject(error.add(blError.msg('could not getOrCreate user')));
 				});
 		});
 	}
