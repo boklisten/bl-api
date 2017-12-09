@@ -7,19 +7,22 @@ import {secrets} from "../../config/secrets";
 import {Strategy} from 'passport-facebook'
 import {UserHandler} from "../user/user.handler";
 import {JwtAuth} from "../token/jwt.auth";
+import {ApiPath} from "../../config/api-path";
 
 export class FacebookAuth {
 	private userHandler: UserHandler;
 	private jwtAuth: JwtAuth;
+	private apiPath: ApiPath;
 
 
 	constructor(router: Router, jwtAuth: JwtAuth) {
 		this.jwtAuth = jwtAuth;
+		this.apiPath = new ApiPath;
 
 		passport.use(new Strategy({
 				clientID: secrets.boklistentest.facebook.clientId,
 				clientSecret: secrets.boklistentest.facebook.secret,
-				callbackURL: "/api/auth/facebook/callback"
+				callbackURL: this.apiPath.createPath('auth/facebook/callback')
 
 			},
 			(accessToken: any, refreshToken: any, profile: any, done: any) => {
@@ -42,12 +45,12 @@ export class FacebookAuth {
 	}
 
 	private createAuthGet(router: Router) {
-		router.get('/api/auth/facebook',
+		router.get(this.apiPath.createPath('auth/facebook'),
 			passport.authenticate('facebook', {scope: ['public_profile']}));
 	}
 
 	private createCallbackGet(router: Router) {
-		router.get('/api/auth/facebook/callback',
+		router.get(this.apiPath.createPath('auth/facebook/callback'),
 			passport.authenticate('facebook', { failureRedirect: '/login' }),
 			(req: any, res: any) => {
 				res.send(req.user);

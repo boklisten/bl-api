@@ -43,7 +43,7 @@ export class BlAuth {
 		let localLoginCreator = new LocalLoginCreator(hashedPasswordGenerator, providerIdGenerator);
 		let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidator, localLoginCreator, userHandler);
 
-		this.jwtAuth = new JwtAuth(router, userHandler);
+		this.jwtAuth = new JwtAuth(userHandler);
 		
 		this.googleAuth = new GoogleAuth(router, this.jwtAuth);
 		this.facebookAuth = new FacebookAuth(router, this.jwtAuth);

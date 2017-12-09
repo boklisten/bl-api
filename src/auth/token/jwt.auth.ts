@@ -5,12 +5,14 @@ import {Strategy, ExtractJwt} from "passport-jwt";
 import {Router} from "express";
 import {UserHandler} from "../user/user.handler";
 import {User} from "../../config/schema/user/user";
+import {BlError} from "../../bl-error/bl-error";
+import isEmail = require("validator/lib/isEmail");
 
 export class JwtAuth {
 	private seToken: SEToken;
 	private userHandler: UserHandler;
 
-	constructor(router: Router, userHandler: UserHandler) {
+	constructor(userHandler: UserHandler) {
 		this.seToken = new SEToken();
 		this.userHandler = userHandler;
 
@@ -18,21 +20,15 @@ export class JwtAuth {
 		passport.use(new Strategy(this.getOptions(), (jwtPayload: any, done: any) => {
 			done(null, {jwtPayload: jwtPayload});
 		}));
-
-		router.get('/test', passport.authenticate('jwt'), (req: any, res: any) => {
-			this.seToken.validatePayload(req.user.jwtPayload, {permissions: ['customer','admin']}).then(
-				(payload: any) => {
-					res.send('hello, ' + payload.username);
-				},
-				(error: any) => {
-					res.send('you are not welcome here, reason: ' + error);
-				});
-		});
 	}
 
-	public getAutorizationToken(provider: string, providerId: string, name: string): Promise<string> {
+	public getAutorizationToken(provider: string, providerId: string, username: string): Promise<string> {
 		return new Promise((resolve, reject) => {
-			this.userHandler.getOrCreateUser(provider, providerId, name).then(
+			if (!provider || provider.length <= 0) reject(new BlError('provider is empty or undefined'));
+			if (!providerId || providerId.length <= 0) reject(new BlError('providerId is empty or undefined'));
+			if (!username || !isEmail(username) || username.length <= 0) reject(new BlError('username is empty, undefined or not an email'));
+			
+			this.userHandler.getOrCreateUser(provider, providerId, username).then(
 				(user: User) => {
 					this.seToken.createToken(user.username, user.permission, user.blid).then(
 						(jwtoken: string) => {
@@ -43,7 +39,7 @@ export class JwtAuth {
 						});
 				},
 				(error: any) => {
-					reject('getAutorizationToken(): error when getOrCreateUser, reson: ' + error);
+					reject('getAutorizationToken(): error when getOrCreateUser, reason: ' + error);
 				});
 		});
 	}
