@@ -22,8 +22,9 @@ export class LocalLoginValidator {
 	
 	public validate(username: string, password: string): Promise<{provider: string, providerId: string}> {
 		return new Promise((resolve, reject) => {
-			if (!username || !isEmail(username)) return reject(new TypeError('username "' + username + '" is not an email'));
-			if (!password || password.length <= 0) return reject(new TypeError('password is empty or undefined'));
+			let blError = new BlError('').className('LocalLoginValidator').methodName('validate');
+			if (!username || !isEmail(username)) return reject(blError.msg('username "' + username + '" is not an email'));
+			if (!password || password.length <= 0) return reject(blError.msg('password is empty or undefined'));
 			
 			this.localLoginHandler.get(username).then(
 				(localLogin: LocalLogin) => {
@@ -32,24 +33,26 @@ export class LocalLoginValidator {
 						(validPassword: boolean) => {
 							resolve({provider: localLogin.provider, providerId: localLogin.providerId});
 						},
-						(error: any) => {
-							reject(new BlError('username or password is not correct'));
+						(error: BlError) => {
+							reject(error.add(blError.msg('username or password is not correct')));
 						});
 					
 				},
-				(error: BlapiErrorResponse) => {
-					reject(new BlError('could not find the user with username "'+ username +'"', 404));
+				(error: BlError) => {
+					reject(error.add(blError.msg('could not find the user with username "'+ username +'"')));
 				});
 		});
 	}
 	
 	public create(username: string, password: string): Promise<{provider: string, providerId: string}> {
 		return new Promise((resolve, reject) => {
+			let blError = new BlError('').className('LocalLoginValidator').methodName('create');
 			this.localLoginHandler.get(username).then(
 				(localLogin: LocalLogin) => {
-					reject(new BlError('username already exists'));
+					reject(blError.msg('username already exists'));
 				},
-				(error: BlapiErrorResponse) => {
+				(error: BlError) => {
+					
 					this.localLoginCreator.create(username, password).then(
 						(localLogin: LocalLogin) => {
 							this.localLoginHandler.add(localLogin).then(
@@ -58,19 +61,18 @@ export class LocalLoginValidator {
 										(user: User) => {
 											resolve({provider: user.login.provider, providerId: user.login.providerId});
 										},
-										(error: any) => {
-											reject(new BlError('could not create user based on the provider,providerId and username provided'));
+										(error: BlError) => {
+											reject(error.add(blError.msg('could not create user based on the provider,providerId and username provided')));
 										});
 								},
-								(error: BlapiErrorResponse) => {
-									reject(new BlError('could not insert the localLogin object'));
+								(error: BlError) => {
+									reject(error.add(blError.msg('could not insert the localLogin object')));
 								});
 						},
-						(error: any) => {
-							reject(new BlError('could not create LocalLogin object by the provided username and password: ' + error.message));
+						(error: BlError) => {
+							reject(error.add(blError.msg('could not create LocalLogin object by the provided username and password')));
 						});
 				});
-		
 		});
 	}
 }

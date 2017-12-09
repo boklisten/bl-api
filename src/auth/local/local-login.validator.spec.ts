@@ -38,7 +38,7 @@ class LocalLoginHandlerMock extends LocalLoginHandler {
 	get(username: string): Promise<LocalLogin> {
 		return new Promise((resolve, reject) => {
 			if (username === testLocalLogin.username) resolve(testLocalLogin);
-			reject(new BlapiErrorResponse(404));
+			reject(new BlError('').code(404));
 		});
 	}
 	
@@ -105,17 +105,17 @@ describe('LocalLoginValidator', () => {
 			testPassword = 'hello';
 		});
 		
-		describe('should reject with TypeError when', () => {
+		describe('should reject with BlError when', () => {
 			it('username is not an email', () => {
 				testUserName = 'bill';
 				return localLoginValidator.validate(testUserName, testPassword)
-					.should.be.rejectedWith(TypeError);
+					.should.be.rejectedWith(BlError);
 			});
 			
 			it('password is empty', () => {
 				testPassword = '';
 				return localLoginValidator.validate(testUserName, testPassword)
-					.should.be.rejectedWith(TypeError);
+					.should.be.rejectedWith(BlError);
 			});
 		});
 		
@@ -160,7 +160,7 @@ describe('LocalLoginValidator', () => {
 					value.should.not.be.fulfilled;
 				},
 				(error: BlError) => {
-					error.should.have.property('msg');
+					error.getMsg().should.contain('already exists');
 				});
 		});
 		
