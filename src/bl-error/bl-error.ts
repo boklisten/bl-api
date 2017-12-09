@@ -6,16 +6,28 @@ export class BlError extends Error {
 	private _methodName: string;
 	private _errorStack: BlError[];
 	private _data: any;
+	private _store: {key: string, value: any}[];
 	
 	constructor(msg: string, code?: number) {
 		super(msg);
 		this._errorStack = [];
+		this._store = [];
 		this.code(code);
+		
 	}
 	
 	add(blError: BlError): BlError {
 		this._errorStack.push(blError);
 		return this;
+	}
+	
+	store(key: string, value: string) {
+		this._store.push({key: key, value: value});
+		return this;
+	}
+	
+	getStore(): {key: string, value: any}[] {
+		return this._store;
 	}
 	
 	data(data: any): BlError {
