@@ -7,6 +7,7 @@ import {OAuth2Strategy} from 'passport-google-oauth';
 import * as passport from "passport";
 import {JwtAuth} from "../token/jwt.auth";
 import {ApiPath} from "../../config/api-path";
+import {BlError} from "../../bl-error/bl-error";
 
 export class GoogleAuth {
 	private jwtAuth: JwtAuth;
@@ -27,20 +28,20 @@ export class GoogleAuth {
 				let username = '';
 				
 				for (let profileEmail of profile.emails) {
-					console.log('profileEmail', profileEmail);
 					if (profileEmail.type === 'account') {
 						username = profileEmail.value;
 					}
 				}
-				
-				console.log('the username!!', username);
 
 				this.jwtAuth.getAutorizationToken(provider, providerId, username).then(
 					(jwtoken: string) => {
 						done(null, jwtoken);
 					},
-					(error: any) => {
-						done(new Error('error when trying to get auth token, reason: ' + error));
+					(error: BlError) => {
+						done(error.add(
+							new BlError('failed to make auth token')
+								.className('GoogleAuth')
+								.methodName('strategy').code(400)));
 					});
 			}
 		));

@@ -37,9 +37,8 @@ export class FacebookAuth {
 					},
 					(error: BlError) => {
 						done(error.add(new BlError('failed to get auth token for user "' + username + '"')
-							.data(error)
 							.className('FacebookAuth')
-							.methodName('strategy')).code(400));
+							.methodName('strategy').code(400)));
 					});
 			}
 		));
