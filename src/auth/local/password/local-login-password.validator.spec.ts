@@ -5,6 +5,7 @@ import {expect} from 'chai';
 import {LocalLoginPasswordValidator} from "./local-login-password.validator";
 import {SeCrypto} from "../../../crypto/se.crypto";
 import {Promise} from 'es6-promise';
+import {BlError} from "../../../bl-error/bl-error";
 
 chai.use(chaiAsPromised);
 
@@ -33,31 +34,31 @@ describe('LocalLoginPasswordValidator', () => {
 			testHashedPassword = testPassword + testSalt;
 		});
 		
-		describe('should reject with TypeError when', () => {
+		describe('should reject with BlError when', () => {
 			it('password is empty', () => {
 				testPassword = '';
 				
 					return localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword)
-						.should.be.rejectedWith(TypeError);
+						.should.be.rejectedWith(BlError);
 			});
 			
 			it('salt is empty', () => {
 				testSalt = '';
 				return localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword)
-						.should.be.rejectedWith(TypeError);
+						.should.be.rejectedWith(BlError);
 			});
 			
 			it('hashedPassword is empty', () => {
 				testHashedPassword = '';
 				return localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword)
-					.should.be.rejectedWith(TypeError);
+					.should.be.rejectedWith(BlError);
 			});
 		});
 		
 		it('should reject with Error when password is not correct', () => {
 			testPassword = 'human';
 			return localLoginPasswordValidator.validate(testPassword, testSalt, testHashedPassword)
-				.should.be.rejectedWith(Error);
+				.should.be.rejectedWith(BlError);
 		});
 		
 		it('should resolve with true when password is correct', () => {
