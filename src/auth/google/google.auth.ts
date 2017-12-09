@@ -33,7 +33,7 @@ export class GoogleAuth {
 					}
 				}
 
-				this.jwtAuth.getAutorizationToken(provider, providerId, username).then(
+				this.jwtAuth.getAuthorizationToken(provider, providerId, username).then(
 					(jwtoken: string) => {
 						done(null, jwtoken);
 					},

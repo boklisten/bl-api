@@ -61,7 +61,7 @@ class LocalLoginPasswordValidatorMock extends LocalLoginPasswordValidator {
 }
 
 class UserHandlerMock extends UserHandler {
-	getOrCreateUser(provider: string, providerId: string, username: string) {
+	create(username: string, provider: string, providerId: string) {
 		return new Promise((resolve, reject) => {
 			let user: User = {
 				userDetail: '',
@@ -93,7 +93,7 @@ describe('LocalLoginValidator', () => {
 	let hashedPasswordGenerator = new HashedPasswordGenerator(saltGenerator, seCrypto);
 	let providerIdGenerator = new ProviderIdGenerator(seCrypto);
 	let localLoginCreator = new LocalLoginCreator(hashedPasswordGenerator, providerIdGenerator);
-	let userHandlerMock = new UserHandlerMock(new SESchema('user', UserSchema), new SESchema('userDetail', UserDetailSchema));
+	let userHandlerMock = new UserHandlerMock(new EndpointMongodb(new SESchema('user', UserSchema)),new EndpointMongodb(new SESchema('userDetail', UserDetailSchema)));
 	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidatorMock, localLoginCreator, userHandlerMock);
 	
 	describe('validate()', () => {
@@ -165,10 +165,11 @@ describe('LocalLoginValidator', () => {
 		});
 		
 		it('should resolve with provider and providerId if username and password is valid', () => {
-			let username = 'avalid@username.com';
+			let username = 'amail@address.com';
 			let password = 'thisIsAValidPassword';
 			
 			return localLoginValidator.create(username, password).then(
+				
 				(providerAndProviderId: {provider: string, providerId: string}) => {
 					providerAndProviderId
 						.should.have.property('provider')

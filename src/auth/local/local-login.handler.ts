@@ -51,7 +51,7 @@ export class LocalLoginHandler {
 			this.localLoginMongoHandler.post(new SEDocument(this.localLoginConfig.collectionName, localLogin)).then(
 				(docs: SEDocument[]) => {
 					if (docs.length !== 1) {
-						return reject(new Error('could not add LocalLogin into database'));
+						return reject(new Error('could not create LocalLogin into database'));
 					}
 					return resolve(docs[0].data as LocalLogin);
 				},

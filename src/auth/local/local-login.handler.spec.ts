@@ -53,7 +53,7 @@ describe('LocalLoginHandler', () => {
 	
 	let localLoginHandler = new LocalLoginHandler(localLoginMongoHandlerMock);
 	
-	describe('add()', () => {
+	describe('create()', () => {
 		let baseLocalLogin = {username: 'a', providerId: '1', hashedPassword: 'b', provider: 'c', salt: 'h'};
 		let testLocalLogin: LocalLogin = baseLocalLogin;
 		

@@ -11,14 +11,14 @@ describe('BlError', () => {
 	
 	describe('className() and methodName()', () => {
 		
-		it('should be able to add className on creation', () => {
+		it('should be able to create className on creation', () => {
 			let className = 'aClass';
 			let blerror = new BlError('the message').className(className);
 			
 			blerror.getClassName().should.be.eql(className);
 		});
 		
-		it('should be able to add className and methodName on creation', () => {
+		it('should be able to create className and methodName on creation', () => {
 			let className = 'aClass';
 			let methodName = 'aMethod';
 			let blerror = new BlError('a message').className(className).methodName(methodName);
@@ -28,8 +28,8 @@ describe('BlError', () => {
 		});
 	});
 	
-	describe('add()', () => {
-		it('should be able to add a BlError onto another to make a stack', () => {
+	describe('create()', () => {
+		it('should be able to create a BlError onto another to make a stack', () => {
 			let blerror = new BlError('the first error');
 			let msg = 'the second error';
 			blerror.add(new BlError(msg));

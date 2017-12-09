@@ -10,18 +10,22 @@ import {SESchema} from "../../config/schema/se.schema";
 import {UserSchema} from "../../config/schema/user/user.schema";
 import {UserDetailSchema} from "../../config/schema/user/user-detail.schema";
 import {BlError} from "../../bl-error/bl-error";
+import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
 chai.use(chaiAsPromised);
+
+let testUsername = 'bill@thesite.com';
 
 class UserHandlerMock extends UserHandler {
 	
 	constructor() {
-		super(new SESchema('', UserSchema), new SESchema('', UserDetailSchema));
+		super(new EndpointMongodb(new SESchema('', UserSchema)),
+			new EndpointMongodb(new SESchema('', UserDetailSchema)));
 	}
 	
-	getOrCreateUser(provider: string, providerId: string, username: string): Promise<User> {
+	get(provider: string, providerId: string): Promise<User> {
 		return new Promise((resolve, reject) => {
 			let user: User = {
-				username: username,
+				username: testUsername,
 				permission: 'customer',
 				login: {
 					provider: provider,
@@ -47,71 +51,61 @@ describe('JwtAuth', () => {
 		beforeEach(() => {
 			testProvider = 'local';
 			testProviderId = '124';
-			testUserName = 'bill@thesite.com';
+			testUserName = testUsername;
 		});
 		
 		describe('should reject with BlError when', () => {
 			
 			it('provider is empty', () => {
 				let provider = '';
-				return jwtAuth.getAutorizationToken(provider, testProviderId, testUserName)
+				return jwtAuth.getAuthorizationToken(provider, testProviderId, testUserName)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('provider is null', () => {
 				let provider = null;
-				return jwtAuth.getAutorizationToken(provider, testProviderId, testUserName)
+				return jwtAuth.getAuthorizationToken(provider, testProviderId, testUserName)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('providerId is empty', () => {
 				let providerId = '';
-				return jwtAuth.getAutorizationToken(testProvider, providerId, testUserName)
+				return jwtAuth.getAuthorizationToken(testProvider, providerId, testUserName)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('providerId is undefined', () => {
 				let providerId = undefined;
-				return jwtAuth.getAutorizationToken(testProvider, providerId, testUserName)
+				return jwtAuth.getAuthorizationToken(testProvider, providerId, testUserName)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('username is empty', () => {
 				let username = '';
-				return jwtAuth.getAutorizationToken(testProvider, testProviderId, username)
+				return jwtAuth.getAuthorizationToken(testProvider, testProviderId, username)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('username is undefined', () => {
 				let username = undefined;
-				return jwtAuth.getAutorizationToken(testProvider, testProviderId, username)
+				return jwtAuth.getAuthorizationToken(testProvider, testProviderId, username)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('username is not an email', () => {
 				let username = 'thisisnotanemail';
-				return jwtAuth.getAutorizationToken(testProvider, testProviderId, username)
+				return jwtAuth.getAuthorizationToken(testProvider, testProviderId, username)
 					.should.be.rejectedWith(BlError);
 			});
 		});
 		
 		describe('should resolve with an jwt when', () => {
-			it('username is "bill@gmail.com"', () => {
-				let username = 'bill@gmail.com';
-				return jwtAuth.getAutorizationToken(testProvider, testProviderId, username)
+			it('username is ' + testUsername, () => {
+				return jwtAuth.getAuthorizationToken(testProvider, testProviderId, testUsername)
 					.should.eventually.be.fulfilled
 					.and.be.a('string')
 					.and.have.length.gte(30)
 			});
-			
-			it('username is "hello@kitty.com"', () => {
-				let username = 'hello@kitty.com';
-				return jwtAuth.getAutorizationToken(testProvider, testProviderId, username)
-					.should.eventually.be.fulfilled
-					.and.be.a('string')
-					.and.have.length.gte(30)
-			});
-			
 		});
 	});
 });

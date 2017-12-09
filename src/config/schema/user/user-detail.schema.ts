@@ -4,11 +4,11 @@ import {Schema} from 'mongoose';
 
 export let UserDetailSchema = {
 	name: {
-		type: Schema.Types.String,
-		required: true
+		type: Schema.Types.String
 	},
 	email: {
-		type: Schema.Types.String
+		type: Schema.Types.String,
+		required: true
 	},
 	phone: {
 		type: Schema.Types.String

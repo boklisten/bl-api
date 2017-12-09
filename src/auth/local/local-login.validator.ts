@@ -17,7 +17,6 @@ export class LocalLoginValidator {
 				private localLoginPasswordValidator: LocalLoginPasswordValidator,
 				private localLoginCreator: LocalLoginCreator,
 				private userHandler: UserHandler) {
-	
 	}
 	
 	public validate(username: string, password: string): Promise<{provider: string, providerId: string}> {
@@ -47,9 +46,10 @@ export class LocalLoginValidator {
 	public create(username: string, password: string): Promise<{provider: string, providerId: string}> {
 		return new Promise((resolve, reject) => {
 			let blError = new BlError('').className('LocalLoginValidator').methodName('create');
+			
 			this.localLoginHandler.get(username).then(
 				(localLogin: LocalLogin) => {
-					reject(blError.msg('username already exists'));
+					reject(blError.msg('username already exists').store('username', username));
 				},
 				(error: BlError) => {
 					
@@ -57,20 +57,20 @@ export class LocalLoginValidator {
 						(localLogin: LocalLogin) => {
 							this.localLoginHandler.add(localLogin).then(
 								(addedLocalLogin: LocalLogin) => {
-									this.userHandler.getOrCreateUser(addedLocalLogin.provider, addedLocalLogin.providerId, username).then(
+									this.userHandler.create(username, addedLocalLogin.provider, addedLocalLogin.providerId).then(
 										(user: User) => {
 											resolve({provider: user.login.provider, providerId: user.login.providerId});
 										},
-										(error: BlError) => {
-											reject(error.add(blError.msg('could not create user based on the provider,providerId and username provided')));
+										(createError: BlError) => {
+											reject(createError.add(blError.msg('could not create user based on the provider,providerId and username provided')));
 										});
 								},
-								(error: BlError) => {
-									reject(error.add(blError.msg('could not insert the localLogin object')));
+								(addError: BlError) => {
+									reject(addError.add(blError.msg('could not insert the localLogin object')));
 								});
 						},
-						(error: BlError) => {
-							reject(error.add(blError.msg('could not create LocalLogin object by the provided username and password')));
+						(localLoginCreateError: BlError) => {
+							reject(localLoginCreateError.add(blError.msg('could not create LocalLogin object by the provided username and password')));
 						});
 				});
 		});

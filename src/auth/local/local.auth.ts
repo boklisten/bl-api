@@ -26,7 +26,7 @@ export class LocalAuth {
 		passport.use(new Strategy((username: string, password: string, done: any) => {
 			localLoginValidator.validate(username, password).then(
 				(localLoginProvider: {provider: string, providerId: string}) => {
-					jwtAuth.getAutorizationToken(localLoginProvider.provider, localLoginProvider.providerId, username).then(
+					jwtAuth.getAuthorizationToken(localLoginProvider.provider, localLoginProvider.providerId, username).then(
 						(jwToken: string) => {
 							done(null, jwToken);
 						},
@@ -55,7 +55,7 @@ export class LocalAuth {
 			(req: any, res: any) => {
 				localLoginValidator.create(req.body.username, req.body.password).then(
 					(localLoginProvider: {provider: string, providerId: string}) => {
-						jwtAuth.getAutorizationToken(localLoginProvider.provider, localLoginProvider.providerId, req.body.username).then(
+						jwtAuth.getAuthorizationToken(localLoginProvider.provider, localLoginProvider.providerId, req.body.username).then(
 							(jwToken: string) => {
 								res.send(jwToken);
 							},

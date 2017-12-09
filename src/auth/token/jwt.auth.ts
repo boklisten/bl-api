@@ -22,14 +22,14 @@ export class JwtAuth {
 		}));
 	}
 
-	public getAutorizationToken(provider: string, providerId: string, username: string): Promise<string> {
+	public getAuthorizationToken(provider: string, providerId: string, username: string): Promise<string> {
 		return new Promise((resolve, reject) => {
 			let blError = new BlError('').className('JwtAuth').methodName('getAuthorizationToken');
 			if (!provider || provider.length <= 0) reject(blError.msg('provider is empty or undefined'));
 			if (!providerId || providerId.length <= 0) reject(blError.msg('providerId is empty or undefined'));
 			if (!username || !isEmail(username) || username.length <= 0) reject(blError.msg('username is empty, undefined or not an email'));
 			
-			this.userHandler.getOrCreateUser(provider, providerId, username).then(
+			this.userHandler.get(provider, providerId).then(
 				(user: User) => {
 					this.seToken.createToken(user.username, user.permission, user.blid).then(
 						(jwtoken: string) => {
@@ -40,7 +40,7 @@ export class JwtAuth {
 						});
 				},
 				(error: BlError) => {
-					reject(error.add(blError.msg('could not getOrCreate user')));
+					reject(error.add(blError.msg('could not get user')));
 				});
 		});
 	}

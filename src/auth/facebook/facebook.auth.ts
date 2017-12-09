@@ -31,7 +31,7 @@ export class FacebookAuth {
 				let providerId = profile.id;
 				let username = profile.displayName;
 
-				this.jwtAuth.getAutorizationToken(provider, providerId, username).then(
+				this.jwtAuth.getAuthorizationToken(provider, providerId, username).then(
 					(jwtoken: string) => {
 						done(null, jwtoken);
 					},

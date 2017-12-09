@@ -21,7 +21,7 @@ export class BlError extends Error {
 		return this;
 	}
 	
-	store(key: string, value: string) {
+	store(key: string, value: any) {
 		this._store.push({key: key, value: value});
 		return this;
 	}

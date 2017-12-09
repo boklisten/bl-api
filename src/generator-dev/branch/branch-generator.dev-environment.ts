@@ -82,7 +82,7 @@ export class BranchGeneratorDevEnvironment {
 
 					},
 					() => {
-						console.log('! failed to add opening hours array to branch')
+						console.log('! failed to create opening hours array to branch')
 					});
 			},
 			() => {
