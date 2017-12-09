@@ -2,7 +2,7 @@
 
 import * as passport from 'passport';
 import {Strategy} from 'passport-local';
-import {Router} from "express";
+import {Request, Response, Router} from "express";
 import {ApiPath} from "../../config/api-path";
 import {JwtAuth} from "../token/jwt.auth";
 import {LocalLoginValidator} from "./local-login.validator";
@@ -16,13 +16,14 @@ export class LocalAuth {
 		
 		
 		this.createPassportStrategy(jwtAuth, localLoginValidator);
-		this.createAuthGet(router);
+		this.createAuthRegister(router, localLoginValidator, jwtAuth);
+		this.createAuthLogin(router);
 		this.createAuthCallback(router);
 	};
 	
 	private createPassportStrategy(jwtAuth: JwtAuth, localLoginValidator: LocalLoginValidator) {
 		passport.use(new Strategy((username: string, password: string, done: any) => {
-			localLoginValidator.validateOrCreate(username, password).then(
+			localLoginValidator.validate(username, password).then(
 				(localLoginProvider: {provider: string, providerId: string}) => {
 					jwtAuth.getAutorizationToken(localLoginProvider.provider, localLoginProvider.providerId, username).then(
 						(jwToken: string) => {
@@ -37,14 +38,35 @@ export class LocalAuth {
 				});
 		}));
 	}
-
-	private createAuthGet(router: Router) {
-		router.post(this.apiPath.createPath('auth/local'),
+	
+	private createAuthLogin(router: Router) {
+		router.post(this.apiPath.createPath('auth/local/login'),
 			passport.authenticate('local', {
 				failureRedirect: this.apiPath.createPath('login'),
 			}),
 			(req: any, res: any) => {
 				res.send(req.user);
+			});
+	}
+
+	private createAuthRegister(router: Router, localLoginValidator: LocalLoginValidator, jwtAuth: JwtAuth) {
+		router.post(this.apiPath.createPath('auth/local/register'),
+			(req: any, res: any) => {
+				localLoginValidator.create(req.body.username, req.body.password).then(
+					(localLoginProvider: {provider: string, providerId: string}) => {
+						jwtAuth.getAutorizationToken(localLoginProvider.provider, localLoginProvider.providerId, req.body.username).then(
+							(jwToken: string) => {
+								res.send(jwToken);
+							},
+							(error: any) => {
+								res.status(500);
+								res.send(error);
+								res.end();
+							});
+					},
+					(error: BlError) => {
+						res.send('username is already registered');
+					});
 			});
 	}
 	

@@ -96,7 +96,7 @@ describe('LocalLoginValidator', () => {
 	let userHandlerMock = new UserHandlerMock(new SESchema('user', UserSchema), new SESchema('userDetail', UserDetailSchema));
 	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidatorMock, localLoginCreator, userHandlerMock);
 	
-	describe('validateOrCreate()', () => {
+	describe('validate()', () => {
 		let testUserName = '';
 		let testPassword = '';
 		
@@ -108,14 +108,30 @@ describe('LocalLoginValidator', () => {
 		describe('should reject with TypeError when', () => {
 			it('username is not an email', () => {
 				testUserName = 'bill';
-				return localLoginValidator.validateOrCreate(testUserName, testPassword)
+				return localLoginValidator.validate(testUserName, testPassword)
 					.should.be.rejectedWith(TypeError);
 			});
 			
 			it('password is empty', () => {
 				testPassword = '';
-				return localLoginValidator.validateOrCreate(testUserName, testPassword)
+				return localLoginValidator.validate(testUserName, testPassword)
 					.should.be.rejectedWith(TypeError);
+			});
+		});
+		
+		describe('should reject with BlError when', () => {
+			it('username does not exist', () => {
+				testUserName = 'billy@user.com';
+				testPassword = 'thePassword';
+				return localLoginValidator.validate(testUserName, testPassword).then(
+					(value: any) => {
+						value.should.not.be.fulfilled;
+					
+					},
+					(error: BlError) => {
+						error.should.have.property('code')
+							.and.be.eq(404);
+					});
 			});
 		});
 		
@@ -123,7 +139,7 @@ describe('LocalLoginValidator', () => {
 		it('should resolve with correct provider and providerId when username and password is correct', () => {
 			let expectedProvider = {provider: testLocalLogin.provider, providerId: testLocalLogin.providerId};
 			return new Promise((resolve, reject) => {
-				localLoginValidator.validateOrCreate(testUserName, testPassword).then(
+				localLoginValidator.validate(testUserName, testPassword).then(
 					(returnedProvider: {provider: string, providerId: string}) => {
 						if (returnedProvider.providerId === expectedProvider.providerId) resolve(true);
 						reject(new Error('provider is not equal to expectedProvider'));
@@ -133,25 +149,40 @@ describe('LocalLoginValidator', () => {
 					});
 			}).should.eventually.be.true;
 		});
+	});
+	
+	describe('create()', () => {
+		it('should reject with BlError if username does exist', () => {
+			let username = testLocalLogin.username;
+			let password = 'something';
+			
+			return localLoginValidator.create(username, password).then(
+				(value: any) => {
+					value.should.not.be.fulfilled;
+				},
+				(error: BlError) => {
+					error.should.have.property('msg')
+						.and.contain('already exists');
+				});
+		});
 		
-		it('should resolve with correct provider and providerId when username does not exists', () => {
-			let username = 'bill@gmail.com';
+		it('should resolve with provider and providerId if username and password is valid', () => {
+			let username = 'avalid@username.com';
 			let password = 'thisIsAValidPassword';
-			return localLoginValidator.validateOrCreate(username, password).then(
+			
+			return localLoginValidator.create(username, password).then(
 				(providerAndProviderId: {provider: string, providerId: string}) => {
 					providerAndProviderId
 						.should.have.property('provider')
-						.and.be.eq('local');
+						.and.eq('local');
 					
 					providerAndProviderId
 						.should.have.property('providerId')
-						.and.have.length.gte(64)
-						.and.be.a('string');
+						.and.have.length.gte(64);
 				},
-				(error: any) => {
+				(error: BlError) => {
 					error.should.not.be.fulfilled;
-				}
-			).should.eventually.be.fulfilled;
+				});
 		});
 	});
 });
