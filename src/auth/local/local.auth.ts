@@ -22,6 +22,7 @@ export class LocalAuth {
 	};
 	
 	private createPassportStrategy(jwtAuth: JwtAuth, localLoginValidator: LocalLoginValidator) {
+		let blError = new BlError('').className('LocalAuth').methodName('strategy');
 		passport.use(new Strategy((username: string, password: string, done: any) => {
 			localLoginValidator.validate(username, password).then(
 				(localLoginProvider: {provider: string, providerId: string}) => {
@@ -29,12 +30,12 @@ export class LocalAuth {
 						(jwToken: string) => {
 							done(null, jwToken);
 						},
-						(error: any) => {
-							done(new Error('error when trying to get auth token'));
+						(error: BlError) => {
+							done(error.add(blError.msg('error when trying to create auth token').code(400)));
 						});
 				},
 				(error: BlError) => {
-					return done(new Error('username or password is incorrect'));
+					return done(error.add(blError.msg('username or password is incorrect').code(400)));
 				});
 		}));
 	}
@@ -58,13 +59,15 @@ export class LocalAuth {
 							(jwToken: string) => {
 								res.send(jwToken);
 							},
-							(error: any) => {
+							(error: BlError) => {
+								console.log('localAuth', 'a logger must go here');
 								res.status(500);
 								res.send(error);
 								res.end();
 							});
 					},
 					(error: BlError) => {
+						console.log('localAuth', 'a logger must go here')
 						res.send('username is already registered');
 					});
 			});

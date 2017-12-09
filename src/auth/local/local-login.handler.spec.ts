@@ -5,15 +5,13 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {LocalLoginHandler} from "./local-login.handler";
 import {SESchema} from "../../config/schema/se.schema";
-import {UserHandler} from "../user/user.handler";
-import {UserSchema} from "../../config/schema/user/user.schema";
-import {UserDetailSchema} from "../../config/schema/user/user-detail.schema";
 import {LocalLoginSchema} from "../../config/schema/login-local/local-login.schema";
 import {LocalLogin} from "../../config/schema/login-local/local-login";
 import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
 import {SEDocument} from "../../db/model/se.document";
-import {BlapiErrorResponse} from "bl-model";
 import {SEDbQuery} from "../../query/se.db-query";
+import {Promise} from 'es6-promise';
+import {BlError} from "../../bl-error/bl-error";
 
 chai.use(chaiAsPromised);
 
@@ -44,7 +42,7 @@ class LocalLoginMongoHandlerMock extends EndpointMongodb {
 			}
 		}
 	
-		return Promise.reject(new BlapiErrorResponse(404));
+		return Promise.reject(new BlError('').code(404));
 	}
 }
 
@@ -69,27 +67,32 @@ describe('LocalLoginHandler', () => {
 			
 			it('username is empty or undefined', () => {
 				testLocalLogin.username = '';
-				return localLoginHandler.add(testLocalLogin).should.be.rejectedWith(TypeError);
+				return localLoginHandler.add(testLocalLogin)
+					.should.be.rejectedWith(BlError);
 			});
 			
 			it('provider is empty or undefiend', () => {
 				testLocalLogin.provider = '';
-				return localLoginHandler.add(testLocalLogin).should.be.rejectedWith(TypeError);
+				return localLoginHandler.add(testLocalLogin)
+					.should.be.rejectedWith(BlError);
 			});
 			
 			it('providerId is empty or undefined', () => {
 				testLocalLogin.providerId = '';
-				return localLoginHandler.add(testLocalLogin).should.be.rejectedWith(TypeError);
+				return localLoginHandler.add(testLocalLogin)
+					.should.be.rejectedWith(BlError);
 			});
 			
 			it('hashedPassword is empty or undefined', () => {
 				testLocalLogin.hashedPassword = '';
-				return localLoginHandler.add(testLocalLogin).should.be.rejectedWith(TypeError);
+				return localLoginHandler.add(testLocalLogin)
+					.should.be.rejectedWith(BlError);
 			});
 			
 			it('salt is empty or undefined', () => {
 				testLocalLogin.salt = '';
-				return localLoginHandler.add(testLocalLogin).should.be.rejectedWith(TypeError);
+				return localLoginHandler.add(testLocalLogin)
+					.should.be.rejectedWith(BlError);
 			});
 		});
 		
@@ -97,24 +100,28 @@ describe('LocalLoginHandler', () => {
 			
 			it('username is "alb@"', () => {
 				testLocalLogin.username = 'alb@';
-				return localLoginHandler.add(testLocalLogin).should.be.rejectedWith(TypeError);
+				return localLoginHandler.add(testLocalLogin)
+					.should.be.rejectedWith(BlError);
 			});
 			
 			it('username is "bill@mail."', () => {
 				testLocalLogin.username = 'bill@mail.';
-				return localLoginHandler.add(testLocalLogin).should.be.rejectedWith(TypeError);
+				return localLoginHandler.add(testLocalLogin)
+					.should.be.rejectedWith(BlError);
 			});
 			
 			it('username is "alli @mail.com"', () => {
 				testLocalLogin.username = 'alli @mail.com';
-				return localLoginHandler.add(testLocalLogin).should.be.rejectedWith(TypeError);
+				return localLoginHandler.add(testLocalLogin)
+					.should.be.rejectedWith(BlError);
 			});
 		});
 		
 		
 		
 		it('should resolve when LocalLogin is valid', () => {
-			return localLoginHandler.add(testLocalLogin).should.eventually.eq(testLocalLogin);
+			return localLoginHandler.add(testLocalLogin)
+				.should.eventually.eq(testLocalLogin);
 		});
 		
 	});
@@ -132,29 +139,30 @@ describe('LocalLoginHandler', () => {
 			
 			it('username is not a valid Email', () => {
 				testUsername = "al";
-				return localLoginHandler.get(testUsername).should.be.rejectedWith(TypeError);
+				return localLoginHandler.get(testUsername)
+					.should.be.rejectedWith(BlError);
 			});
 			
 			it('username is not empty', () => {
 				testUsername = "";
-				return localLoginHandler.get(testUsername).should.be.rejectedWith(TypeError);
+				return localLoginHandler.get(testUsername)
+					.should.be.rejectedWith(BlError);
 			});
 			
 			it('username is null', () => {
 				testUsername = null;
-				return localLoginHandler.get(testUsername).should.be.rejectedWith(TypeError);
+				return localLoginHandler.get(testUsername)
+					.should.be.rejectedWith(BlError);
 			});
 			
 		});
 		
-		it('should reject with BlapiErrorResponse.code 404 when username is not found in db', () => {
+		it('should reject with blError.code 404 when username is not found in db', () => {
 			testUsername = 'bill@mail.com';
 			return expect(localLoginHandler.get(testUsername))
 				.to.be.rejected
 				.then((error) => {
-					expect(error)
-						.to.be.instanceof(BlapiErrorResponse)
-						.and.to.have.property('code', 404)
+					expect(error.getCode()).to.eq(404);
 				});
 		});
 		
