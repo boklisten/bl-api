@@ -9,16 +9,20 @@ import {JwtPayload, SEToken} from "../auth/token/se.token";
 import {SEDocument} from "../db/model/se.document";
 
 import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
+import {BlError} from "../bl-error/bl-error";
+import {BlErrorHandler} from "../bl-error/bl-error-handler";
 
 export class EndpointDeleteExpress {
 	private resHandler: SEResponseHandler;
 	private endpointMongoDb: EndpointMongodb;
 	private seToken: SEToken;
+	private blErrorHandler: BlErrorHandler;
 
 	constructor(resHandler: SEResponseHandler, endpointMongoDb: EndpointMongodb) {
 		this.resHandler = resHandler;
 		this.endpointMongoDb = endpointMongoDb;
 		this.seToken = new SEToken();
+		this.blErrorHandler = new BlErrorHandler();
 	}
 
 	public createDeleteEndpoint(router: Router, method: Method, url: string) {
@@ -29,6 +33,8 @@ export class EndpointDeleteExpress {
 
 	
 	private createLoginDelete(router: Router, url: string, loginOptions: LoginOption) {
+		let blError = new BlError('').className('EndpointDeleteExpress').methodName('loginDelete');
+		
 		router.delete(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
 			this.seToken.validatePayload(req.user.jwtPayload, loginOptions).then(
 				(jwtPayload: JwtPayload) => {
@@ -37,30 +43,40 @@ export class EndpointDeleteExpress {
 							(docs: SEDocument[]) => {//user has access
 								this.deleteDocument(res, req.params.id);
 							},
-							(error: BlapiErrorResponse) => {
+							(error: BlError) => {
+								
 								if (this.seToken.permissionAbove(jwtPayload.permission, loginOptions.permissions)) {
 									this.deleteDocument(res, req.params.id);
 								} else {
-									this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
+									this.resHandler.sendErrorResponse(res, this.blErrorHandler.createBlapiErrorResponse(
+										error.add(blError.msg('user does not have the right permission')
+											.store('jwtPayload', jwtPayload)
+											.store('url', url)).code(401)));
 								}
+								
 							});
 					} else {
 						this.deleteDocument(res, req.params.id);
 					}
 				},
-				(error: any) => {
-					this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
+				(validatePayloadError: BlError) => {
+					this.resHandler.sendErrorResponse(res, this.blErrorHandler.createBlapiErrorResponse(
+						validatePayloadError.add(blError.msg('could not validate payload of jwt')
+							.store('url', url)
+							.store('jwtPayload', req.user.jwtPayload)).code(401)));
 				});
 		});
 	}
 
 	private deleteDocument(res: Response, id: string) {
+		
 		this.endpointMongoDb.deleteById(id).then(
 			(deletedDocs: SEDocument[]) => {
 				this.resHandler.sendResponse(res, new BlapiResponse(deletedDocs));
 			},
-			(error: BlapiErrorResponse) => {
-				this.resHandler.sendErrorResponse(res, error);
+			(error: BlError) => {
+				this.resHandler.sendErrorResponse(res, this.blErrorHandler.createBlapiErrorResponse(
+					error.add(new BlError('could not delete document by id').store('documentId', id))));
 			});
 	}
 }
