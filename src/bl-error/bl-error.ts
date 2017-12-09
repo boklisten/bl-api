@@ -38,7 +38,12 @@ export class BlError extends Error {
 		return this._methodName;
 	}
 	
-	get msg(): string {
+	msg(msg: string): BlError {
+		this.message = msg;
+		return this;
+	}
+	
+	getMsg(): string {
 		return this.message;
 	}
 	

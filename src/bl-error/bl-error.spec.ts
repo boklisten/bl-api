@@ -34,7 +34,7 @@ describe('BlError', () => {
 			let msg = 'the second error';
 			blerror.add(new BlError(msg));
 			
-			blerror.errorStack[0].msg.should.be.eql(msg);
+			blerror.errorStack[0].getMsg().should.be.eql(msg);
 		});
 	});
 });

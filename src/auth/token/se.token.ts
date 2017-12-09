@@ -3,6 +3,7 @@
 import {UserPermission} from "../user/user-permission";
 import {User} from "../../config/schema/user/user";
 import {LoginOption} from "../../endpoint/endpoint.express";
+import {BlError} from "../../bl-error/bl-error";
 
 export type JwtPayload = {
 	iss: string,
@@ -45,16 +46,17 @@ export class SEToken  {
 	}
 
 	public createToken(username: string, permission: UserPermission, blid: string): Promise<string> {
-		if (username.length <= 0) return Promise.reject(TypeError('username "' + username + '" is to short'));
-		if (permission.length <= 0) return Promise.reject(RangeError('permission is undefined'));
-		if (blid.length <= 0) return Promise.reject(TypeError('blid "' + blid + '" is to short'));
+		let blError = new BlError('').className('SeToken').methodName('createToken');
+		if (username.length <= 0) return Promise.reject(blError.msg('username "' + username + '" is to short'));
+		if (permission.length <= 0) return Promise.reject(blError.msg('permission is undefined'));
+		if (blid.length <= 0) return Promise.reject(blError.msg('blid "' + blid + '" is to short'));
 
 
 		return new Promise((resolve, reject) => {
 			this.jwt.sign(this.createJwtPayload(username, permission, blid), this.getSecret(),
 				(error:any, token: string) => {
 					if (error) {
-						return reject('error creating jw token, reason: ' + error);
+						return reject(blError.msg('error creating jw token, reason: ' + error));
 					}
 					resolve(token);
 				});
@@ -62,13 +64,14 @@ export class SEToken  {
 	}
 
 	public validateToken(token: string, validLoginOptions?: LoginOption): Promise<JwtPayload> {
-		if (token.length <= 0) return Promise.reject(TypeError('token is empty'));
+		let blError = new BlError('').className('SeToken').methodName('validateToken');
+		if (token.length <= 0) return Promise.reject(blError.msg('token is empty'));
 
 		return new Promise((resolve, reject) => {
 
 			this.jwt.verify(token, this.getSecret(), (error: any, decoded: any) => {
 				if (error) {
-					return reject('error verifying token, reason: ' + error);
+					return reject(blError.msg('error verifying token, reason: ' + error));
 				}
 
 				this.validatePayload(decoded, validLoginOptions).then(
@@ -88,7 +91,7 @@ export class SEToken  {
 			if (validLoginOptions) {
 				if (!validLoginOptions.restrictedToUserOrAbove) {
 					if (validLoginOptions.permissions && !this.validatePermissions(jwtPayload.permission, validLoginOptions.permissions)) {
-						return reject(new Error('lacking the given permissions, "' + jwtPayload.permission.toString() + '" does not include all the permissions of "' + validLoginOptions.permissions.toString() + '"'));
+						return reject(new BlError('lacking the given permissions, "' + jwtPayload.permission.toString() + '" does not include all the permissions of "' + validLoginOptions.permissions.toString() + '"').className('SeToken').methodName('validateToken'));
 					}
 				}
 			}

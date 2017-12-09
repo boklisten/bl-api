@@ -3,6 +3,8 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {JwtPayload, SEToken} from "./se.token";
+import {Promise} from 'es6-promise';
+import {BlError} from "../../bl-error/bl-error";
 
 chai.use(chaiAsPromised);
 
@@ -11,23 +13,23 @@ describe('SeToken', () => {
 	describe('createToken()', () => {
 		let seToken: SEToken = new SEToken();
 
-		it('should reject TypeError when username is empty', () => {
+		it('should reject BlError when username is empty', () => {
 			return seToken.createToken( '', 'admin', 'something')
-				.should.be.rejectedWith(TypeError);
+				.should.be.rejectedWith(BlError);
 		});
 
-		it('should reject TypeError when blid is empty', () => {
+		it('should reject BlError when blid is empty', () => {
 			return seToken.createToken('hello', 'admin', '')
-				.should.be.rejectedWith(TypeError);
+				.should.be.rejectedWith(BlError);
 		});
 	});
 
 	describe('validateToken()', () => {
 		let seToken: SEToken = new SEToken();
 
-		it('should reject with TypeError if token is empty', () => {
+		it('should reject with BlError if token is empty', () => {
 			return seToken.validateToken('')
-				.should.be.rejectedWith(TypeError);
+				.should.be.rejectedWith(BlError);
 		});
 
 		it('should decode so the username is the same as when signed', () => {

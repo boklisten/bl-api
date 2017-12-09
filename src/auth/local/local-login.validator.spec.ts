@@ -161,8 +161,7 @@ describe('LocalLoginValidator', () => {
 					value.should.not.be.fulfilled;
 				},
 				(error: BlError) => {
-					error.should.have.property('msg')
-						.and.contain('already exists');
+					error.should.have.property('msg');
 				});
 		});
 		
