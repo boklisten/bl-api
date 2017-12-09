@@ -129,8 +129,7 @@ describe('LocalLoginValidator', () => {
 					
 					},
 					(error: BlError) => {
-						error.should.have.property('code')
-							.and.be.eq(404);
+						error.getCode().should.be.eq(404);
 					});
 			});
 		});

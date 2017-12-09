@@ -1,5 +1,6 @@
 
 import {SeCrypto} from "../../crypto/se.crypto";
+import {BlError} from "../../bl-error/bl-error";
 
 export class Blid {
 	private seCrypto: SeCrypto;
@@ -11,7 +12,12 @@ export class Blid {
 	}
 
 	public createUserBlid(provider: string, providerId: string): Promise<string> {
-		if (provider.length <= 0 || providerId.length <= 0) return Promise.reject(new TypeError('provider or providerId can not be empty'));
+		if (provider.length <= 0 || providerId.length <= 0) {
+			return Promise.reject(
+				new BlError('provider or providerId can not be empty')
+					.className('Blid')
+					.methodName('createUserBlid'));
+		}
 
 		return new Promise((resolve, reject) => {
 			this.seCrypto.cipher(provider + providerId).then(
@@ -19,9 +25,12 @@ export class Blid {
 					resolve('u#' + cipher);
 				},
 				(error: any) => {
-					reject('error creating cipher for user_blid, reason ' + error);
-				}
-			);
+					reject(
+						new BlError('error creating cipher for user_blid')
+							.data(error)
+							.className('Blid')
+							.methodName('createUserBlid'));
+				});
 		});
 	}
 }
