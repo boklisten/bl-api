@@ -1,7 +1,7 @@
 import {SESchema} from "../config/schema/se.schema";
 import {SEDocument} from "../db/model/se.document";
 import {SEDbQuery} from "../query/se.db-query";
-import {BlapiErrorResponse} from 'bl-model';
+import {BlError} from "../bl-error/bl-error";
 
 
 export class EndpointMongodb {
@@ -23,8 +23,9 @@ export class EndpointMongodb {
 				.exec((error, docs) => {
 
 					if (error) {
-						reject(this.handleError(error));
-						return
+						return reject(this.handleError(new BlError('error when trying to get schema')
+							.className('EndpointMongoDb')
+							.methodName('get'), error));
 					}
 
 					let sdocs: SEDocument[] = [];
@@ -34,7 +35,7 @@ export class EndpointMongodb {
 					}
 
 					if (sdocs.length == 0) {
-						reject(new BlapiErrorResponse(404));
+						reject(new BlError('not found').code(404).className('EndpointMonoDb').methodName('get'));
 						return
 					}
 					
@@ -48,13 +49,12 @@ export class EndpointMongodb {
 		    this.schema.mongooseModel
 			    .find(dbQuery.getFilter(), dbQuery.getOgFilter())
 			    .exec((error, docs) => {
-		    	    if (error) {
-		    	    	reject(error);
+		    		let blError = new BlError('').className('EndpointMongoDb').methodName('exists');
+		    	    if (error || docs.length <= 0) {
+		    	    	reject(blError.msg('error when trying to find schema or object not found').data(error).code(404));
 			        }
-
-			        if (docs.length > 0) resolve(true);
-		    	    resolve(false);
-			    })
+		    	    resolve(true);
+			    });
 		});
 	}
 
@@ -66,7 +66,10 @@ export class EndpointMongodb {
 
 			newDocument.save((error, doc) => {
 				if (error) {
-					reject(this.handleError(error));
+					reject(this.handleError(new BlError('error when trying to save document')
+						.data(document)
+						.methodName('post')
+						.className('EndpointMongoDb'), error));
 					return
 				}
 
@@ -78,13 +81,15 @@ export class EndpointMongodb {
 	public getById(id: string): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
 			this.schema.mongooseModel.findOne({_id: id}, (error, doc) => {
+				let blError = new BlError('').className('EndpointMongoDb').methodName('getById');
 				if (error) {
-					reject(this.handleError(error));
+					
+					reject(this.handleError(blError.msg('error when trying to find document wit id "' + id + '"'), error));
 					return;
 				}
 				
 				if (doc === null) {
-					reject(new BlapiErrorResponse(404));
+					reject(blError.msg('not found').code(404));
 					return;
 				}
 
@@ -100,14 +105,13 @@ export class EndpointMongodb {
 	public patch(id: string, doc: SEDocument): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
 			this.schema.mongooseModel.findById(id, (error, document) => {
+				let blError = new BlError('').className('EndpointMongoDb').methodName('patch');
 				if (error) {
-					reject(new BlapiErrorResponse(403, 'client error', error));
-					return
+					return reject(this.handleError(blError.msg('failed to find document by id "' + id + '"'), error));
 				}
 
 				if (document === null) {
-					reject(new BlapiErrorResponse(404));
-					return
+					return reject(blError.msg('could not find document with id "' + id +'"').code(404));
 				}
 
 				document.set(doc.data);
@@ -115,7 +119,7 @@ export class EndpointMongodb {
 
 				document.save((error, updatedDocument) => {
 					if (error) {
-						reject(this.handleError(error));
+						reject(this.handleError(blError.msg('failed to save the document').data(doc), error));
 						return;
 					}
 
@@ -128,14 +132,13 @@ export class EndpointMongodb {
 	public deleteById(id: string): Promise<SEDocument[]> {
 		return new Promise((resolve, reject) => {
 			this.schema.mongooseModel.findByIdAndRemove(id, (error, doc) => {
+				let blError = new BlError('').className('EndpointMongoDb').methodName('deleteById');
 				if (error) {
-					reject(new BlapiErrorResponse(500, 'server error', error));
-					return;
+					return reject(this.handleError(blError.msg('could not findByIdAndRemove, the id was "' + id + '"'), error));
 				}
 
 				if (doc === null) {
-					reject(new BlapiErrorResponse(404));
-					return;
+					return reject(blError.msg('not found').code(404).data(id));
 				}
 				resolve([new SEDocument(this.schema.title, doc)]);
 			});
@@ -143,7 +146,9 @@ export class EndpointMongodb {
 	}
 
 	public getAndValidateByUserBlid(objId: string, blid: string): Promise<SEDocument[]> {
+		
 		return new Promise((resolve, reject) => {
+			let blError = new BlError('').className('EndpointMongoDb').methodName('getAndValidateByUserBlid');
 			this.getById(objId).then(
 				(docs: SEDocument[]) => {
 					let data = docs[0].data;
@@ -151,29 +156,28 @@ export class EndpointMongodb {
 					if (data.user) {
 						if (data.user.blid) {
 							if (data.user.blid === blid) {
-								resolve(docs);
-								return;
+								return resolve(docs);
 							}
 						}
 					}
 
-					reject(new BlapiErrorResponse(403));
+					reject(blError.msg('the user is not valid, the objId was "' + objId + '"').data(blid));
 				},
-				(error: BlapiErrorResponse) => {
-					reject(error);
-				})
+				(error: BlError) => {
+					reject(error.add(blError.msg('failed to getById')));
+				});
 		});
 	}
 
 	
 	
-	private handleError(error: any): BlapiErrorResponse {
+	private handleError(blError: BlError, error: any): BlError {
 		if (error.name === 'CastError') {
-			return new BlapiErrorResponse(404);
+			return blError.code(404);
 		} else if (error.name == 'ValidationError') {
-			return new BlapiErrorResponse(400);
+			return blError.code(400);
 		} else {
-			return new BlapiErrorResponse(500);
+			return blError.code(500);
 		}
 	}
 }

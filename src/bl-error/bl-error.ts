@@ -5,15 +5,25 @@ export class BlError extends Error {
 	private _className: string;
 	private _methodName: string;
 	private _errorStack: BlError[];
+	private _data: any;
 	
 	constructor(msg: string, code?: number) {
 		super(msg);
 		this._errorStack = [];
-		this.code = code;
+		this.code(code);
 	}
 	
 	add(blError: BlError) {
 		this._errorStack.push(blError);
+	}
+	
+	data(data: any): BlError {
+		this.data = data;
+		return this;
+	}
+	
+	getData(): any {
+		return this._data;
 	}
 	
 	get errorStack(): BlError[] {
@@ -47,11 +57,12 @@ export class BlError extends Error {
 		return this.message;
 	}
 	
-	set code(code) {
+	code(code: number) {
 		this._code = code;
+		return this;
 	}
 	
-	get code(): number {
+	getCode(): number {
 		if (!this._code) return 0;
 		return this._code;
 	}

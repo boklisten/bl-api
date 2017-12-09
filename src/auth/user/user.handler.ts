@@ -9,6 +9,7 @@ import {SEDocument} from "../../db/model/se.document";
 import {UserDetail} from "../../config/schema/user/user-detail";
 import {Blid} from "../blid/blid";
 import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
+import {BlError} from "../../bl-error/bl-error";
 
 export class UserHandler {
 	private userMongoHandler: EndpointMongodb;
@@ -76,10 +77,12 @@ export class UserHandler {
 
 	private createUser(name: string, provider: string, providerId: string): Promise<User> {
 		return new Promise((resolve, reject) => {
-
+			let blError =  new BlError('').className('UserHandler').methodName('createUser');
+	
 			let userDetail: UserDetail = {
 				name: name,
 			};
+			
 
 			this.userDetailMongoHandler.post(new SEDocument('userDetail', userDetail)).then(
 				(docs: SEDocument[]) => {
