@@ -4,8 +4,9 @@ import {SEResponseHandler} from "../response/se.response.handler";
 import {Request, Response, Router} from "express";
 import {LoginOption, Method} from "./endpoint.express";
 import * as passport from "passport";
-import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
+import {BlapiResponse} from 'bl-model';
 import {SEDocument} from "../db/model/se.document";
+import {BlError} from "../bl-error/bl-error";
 
 export class EndpointPatchExpress {
 	private seToken: SEToken;
@@ -21,11 +22,11 @@ export class EndpointPatchExpress {
 		if (method.login && method.loginOptions) {
 			this.createLoginPatch(router, url, method.loginOptions);
 		}
-
 	}
 
 	private createLoginPatch(router: Router, url: string, loginOptions: LoginOption) {
 		router.patch(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
+			let blError = new BlError('').className('EndpointPatchExpress').methodName('createLoginPatch');
 			this.seToken.validatePayload(req.user.jwtPayload, loginOptions).then(
 				(jwtPayload: JwtPayload) => {
 					if (loginOptions.restrictedToUserOrAbove) {
@@ -33,19 +34,28 @@ export class EndpointPatchExpress {
 							(docs: SEDocument[]) => {
 								this.patchDocument(res, req.params.id, req.body);
 							},
-							(error: any) => {
+							(validateByBlidError: BlError) => {
 								if (this.seToken.permissionAbove(jwtPayload.permission, loginOptions.permissions)) {
 									this.patchDocument(res, req.params.id, req.body);
 								} else {
-									this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
+									this.resHandler.sendErrorResponse(res, validateByBlidError.add(
+										blError
+											.msg('could not validate blid')
+											.store('jwtPayload', jwtPayload)
+											.store('url', url)).code(401));
 								}
 							});
 					} else {
 						this.patchDocument(res, req.params.id, req.body);
 					}
 				},
-				(error: any) => {
-					this.resHandler.sendErrorResponse(res, new BlapiErrorResponse(403));
+				(validatePayloadError: BlError) => {
+					this.resHandler.sendErrorResponse(res, validatePayloadError.add(
+						blError
+							.msg('could not validate jwt payload')
+							.store('jwtPayload', req.user.jwtPayload)
+							.store('url', url)
+					));
 				});
 		});
 	}
@@ -55,8 +65,10 @@ export class EndpointPatchExpress {
 			(docs: SEDocument[]) => {
 				this.resHandler.sendResponse(res, new BlapiResponse(docs));
 			},
-			(error: BlapiErrorResponse) => {
-				this.resHandler.sendErrorResponse(res, error);
+			(error: BlError) => {
+				this.resHandler.sendErrorResponse(res, error.add(new BlError('could not patch document')
+					.className('EndpointPatchExpress')
+					.methodName('patchDocument')));
 			});
 	}
 

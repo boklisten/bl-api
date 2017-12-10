@@ -47,10 +47,10 @@ export class EndpointDeleteExpress {
 								if (this.seToken.permissionAbove(jwtPayload.permission, loginOptions.permissions)) {
 									this.deleteDocument(res, req.params.id);
 								} else {
-									this.resHandler.sendErrorResponse(res, this.blErrorHandler.createBlapiErrorResponse(
-										error.add(blError.msg('user does not have the right permission')
+									this.resHandler.sendErrorResponse(res, error.add(
+										blError.msg('user does not have the right permission')
 											.store('jwtPayload', jwtPayload)
-											.store('url', url)).code(401)));
+											.store('url', url)).code(401));
 								}
 								
 							});
@@ -59,10 +59,10 @@ export class EndpointDeleteExpress {
 					}
 				},
 				(validatePayloadError: BlError) => {
-					this.resHandler.sendErrorResponse(res, this.blErrorHandler.createBlapiErrorResponse(
-						validatePayloadError.add(blError.msg('could not validate payload of jwt')
+					this.resHandler.sendErrorResponse(res, validatePayloadError.add(
+						blError.msg('could not validate payload of jwt')
 							.store('url', url)
-							.store('jwtPayload', req.user.jwtPayload)).code(401)));
+							.store('jwtPayload', req.user.jwtPayload)).code(401));
 				});
 		});
 	}
@@ -74,8 +74,7 @@ export class EndpointDeleteExpress {
 				this.resHandler.sendResponse(res, new BlapiResponse(deletedDocs));
 			},
 			(error: BlError) => {
-				this.resHandler.sendErrorResponse(res, this.blErrorHandler.createBlapiErrorResponse(
-					error.add(new BlError('could not delete document by id').store('documentId', id))));
+				this.resHandler.sendErrorResponse(res, error.add(new BlError('could not delete document by id').store('documentId', id)));
 			});
 	}
 }

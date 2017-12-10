@@ -71,15 +71,15 @@ export class SEToken  {
 
 			this.jwt.verify(token, this.getSecret(), (error: any, decoded: any) => {
 				if (error) {
-					return reject(blError.msg('error verifying token, reason: ' + error));
+					return reject(blError.msg('error verifying token').store('jwtError', error));
 				}
 
 				this.validatePayload(decoded, validLoginOptions).then(
 					(jwtPayload: any) => {
 						resolve(jwtPayload);
 					},
-					(error: any) => {
-						reject(error);
+					(validatePayloadError: BlError) => {
+						reject(validatePayloadError.add(blError.msg('could not validate payload').store('decodedPayload', decoded)));
 					});
 			})
 		});

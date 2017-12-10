@@ -3,11 +3,14 @@
 import {Response} from 'express';
 import {BlapiResponse} from "bl-model";
 import {BlapiErrorResponse} from "bl-model";
+import {BlError} from "../bl-error/bl-error";
+import {BlErrorHandler} from "../bl-error/bl-error-handler";
 
 export class SEResponseHandler {
+	errorHandler: BlErrorHandler;
 
 	constructor() {
-
+		this.errorHandler = new BlErrorHandler();
 	}
 
 	public sendResponse(res: Response, blapiRes: BlapiResponse) {
@@ -16,7 +19,9 @@ export class SEResponseHandler {
 		res.send(blapiRes);
 	}
 
-	public sendErrorResponse(res: Response, blapiErrorRes: BlapiErrorResponse) {
+	public sendErrorResponse(res: Response, blError: BlError) {
+		console.log('sending error response');
+		let blapiErrorRes = this.errorHandler.createBlapiErrorResponse(blError);
 		res.status(blapiErrorRes.code);
 		this.setHeaders(res);
 		res.end();

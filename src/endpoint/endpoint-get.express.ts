@@ -64,12 +64,12 @@ export class EndpointGetExpress {
 					this.handleGetWithQuery(req, res, validSearchParams);
 				},
 				(jwtPayloadError: BlError) => {
-					this.resHandler.sendErrorResponse(res, this.errorHandler.createBlapiErrorResponse(jwtPayloadError.add(
+					this.resHandler.sendErrorResponse(res, jwtPayloadError.add(
 						new BlError('could not validate the jwt payload')
 							.className('EndpointGetExpress')
 							.methodName('loginGet')
 							.store('url', url)
-							.store('jwtPayload', req.user.jwtPayload))));
+							.store('jwtPayload', req.user.jwtPayload)));
 				});
 		});
 	}
@@ -88,10 +88,10 @@ export class EndpointGetExpress {
 								if (this.seToken.permissionAbove(jwtPayload.permission, loginOptions.permissions)) {
 									this.handleGetWithId(req, res);
 								} else {
-									this.resHandler.sendErrorResponse(res, this.errorHandler.createBlapiErrorResponse(validateByBlidError.add(
+									this.resHandler.sendErrorResponse(res, validateByBlidError.add(
 										blError.msg('could not validate by blid')
 											.store('url', url)
-											.store('jwtPayload', jwtPayload))));
+											.store('jwtPayload', jwtPayload)));
 									
 								}
 							});
@@ -100,10 +100,10 @@ export class EndpointGetExpress {
 					}
 				},
 				(validatePayloadError: BlError) => {
-					this.resHandler.sendErrorResponse(res, this.errorHandler.createBlapiErrorResponse(validatePayloadError.add(
+					this.resHandler.sendErrorResponse(res, validatePayloadError.add(
 						blError.msg('could not validate jwt payload')
 							.store('url', url)
-							.store('jwtPayload', req.user.payload)).code(403)));
+							.store('jwtPayload', req.user.payload)).code(403));
 				})
 		});
 	}
@@ -114,11 +114,11 @@ export class EndpointGetExpress {
 				this.resHandler.sendResponse(res, new BlapiResponse(docs));
 			},
 			(error: BlError) => {
-				this.resHandler.sendErrorResponse(res, this.errorHandler.createBlapiErrorResponse(error.add(
+				this.resHandler.sendErrorResponse(res, error.add(
 					new BlError('could not get document with id')
 						.className('EndpointGetExpress')
 						.methodName('handleGetWithId')
-						.store('id', req.params.id))));
+						.store('id', req.params.id)));
 			});
 	}
 
@@ -133,13 +133,12 @@ export class EndpointGetExpress {
 					this.resHandler.sendResponse(res, new BlapiResponse(docs));
 				},
 				(getDocError: BlError) => {
-					this.resHandler.sendErrorResponse(res, this.errorHandler.createBlapiErrorResponse(getDocError.add(
+					this.resHandler.sendErrorResponse(res, getDocError.add(
 						blError.msg('could not get documents')
-							.store('dbQuery', dbQuery))));
+							.store('dbQuery', dbQuery)));
 				});
 		} catch (error) {
-			this.resHandler.sendErrorResponse(res, this.errorHandler.createBlapiErrorResponse(
-				blError.store('unknown error', error)));
+			this.resHandler.sendErrorResponse(res, blError.store('unknown error', error));
 		}
 	}
 }
