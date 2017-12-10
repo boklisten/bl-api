@@ -35,8 +35,11 @@ export class EndpointMongodb {
 					}
 
 					if (sdocs.length == 0) {
-						reject(new BlError('not found').code(404).className('EndpointMonoDb').methodName('get'));
-						return
+						return reject(new BlError('not found')
+							.code(404)
+							.className('EndpointMongoDb')
+							.methodName('get')
+							.store('dbQuery', dbQuery));
 					}
 					
 					resolve(sdocs);
@@ -51,7 +54,11 @@ export class EndpointMongodb {
 			    .exec((error, docs) => {
 		    		let blError = new BlError('').className('EndpointMongoDb').methodName('exists');
 		    	    if (error || docs.length <= 0) {
-		    	    	reject(blError.msg('error when trying to find schema or object not found').data(error).code(404));
+		    	    	reject(blError
+							.msg('error when trying to find schema or object not found')
+							.data(error)
+							.store('dbQuery', dbQuery)
+							.code(404));
 			        }
 		    	    resolve(true);
 			    });
@@ -83,9 +90,7 @@ export class EndpointMongodb {
 			this.schema.mongooseModel.findOne({_id: id}, (error, doc) => {
 				let blError = new BlError('').className('EndpointMongoDb').methodName('getById');
 				if (error) {
-					
-					reject(this.handleError(blError.msg('error when trying to find document wit id "' + id + '"'), error));
-					return;
+					reject(this.handleError(blError.msg('error when trying to find document with id "' + id + '"'), error));
 				}
 				
 				if (doc === null) {

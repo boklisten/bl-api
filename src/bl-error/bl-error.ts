@@ -8,11 +8,11 @@ export class BlError extends Error {
 	private _data: any;
 	private _store: {key: string, value: any}[];
 	
-	constructor(msg: string, code?: number) {
+	constructor(msg: string) {
 		super(msg);
 		this._errorStack = [];
 		this._store = [];
-		this.code(code);
+		this.code(0);
 		
 	}
 	
@@ -82,14 +82,16 @@ export class BlError extends Error {
 	
 	public printStack() {
 		console.log('');
-		console.log('> BlError(' + this.getCode() + '): ' + this.getClassName() + '.' + this.getMethodName() + ': ');
-		console.log('\t' + this.getMsg());
-		let indent = '\t';
-		for (let i = this.errorStack.length; i > 0; i--) {
-			console.log(indent + '> BlError(' + this.errorStack[i].getCode() + '): ' + this.errorStack[i].getClassName() + '.' + this.errorStack[i].getMethodName() + ': ');
+		let errorNum = 1;
+		let indent = '';
+		for (let i = this.errorStack.length - 1; i >= 0; i--) {
+			console.log(indent + '>BlError[' + this.errorStack[i].getCode() + ']: ' + this.errorStack[i].getClassName() + '.' + this.errorStack[i].getMethodName() + '(): ');
 			console.log(indent + '\t' + this.errorStack[i].getMsg());
-			indent += '\t';
+			indent += ' ';
+			errorNum++;
 		}
+		console.log(indent + '>BlError[' + this.getCode() + ']: ' + this.getClassName() + '.' + this.getMethodName() + '(): ');
+		console.log(indent + '\t' + this.getMsg());
 		console.log('');
 	}
 }

@@ -33,9 +33,8 @@ export class EndpointDeleteExpress {
 
 	
 	private createLoginDelete(router: Router, url: string, loginOptions: LoginOption) {
-		let blError = new BlError('').className('EndpointDeleteExpress').methodName('loginDelete');
-		
 		router.delete(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
+			let blError = new BlError('').className('EndpointDeleteExpress').methodName('loginDelete');
 			this.seToken.validatePayload(req.user.jwtPayload, loginOptions).then(
 				(jwtPayload: JwtPayload) => {
 					if (loginOptions.restrictedToUserOrAbove) {
