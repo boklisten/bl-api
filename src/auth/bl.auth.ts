@@ -20,6 +20,7 @@ import {HashedPasswordGenerator} from "./local/password/hashed-password-generato
 import {SaltGenerator} from "./local/salt/salt-generator";
 import {LocalLoginCreator} from "./local/local-login-creator/local-login-creator";
 import {ProviderIdGenerator} from "./local/provider-id/provider-id-generator";
+import {SEResponseHandler} from "../response/se.response.handler";
 
 export class BlAuth {
 	private jwtAuth: JwtAuth;
@@ -43,12 +44,13 @@ export class BlAuth {
 		let providerIdGenerator = new ProviderIdGenerator(seCrypto);
 		let localLoginCreator = new LocalLoginCreator(hashedPasswordGenerator, providerIdGenerator);
 		let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidator, localLoginCreator, userHandler);
+		let resHandler = new SEResponseHandler();
 
 		this.jwtAuth = new JwtAuth(userHandler);
 		
 		this.googleAuth = new GoogleAuth(router, this.jwtAuth);
 		this.facebookAuth = new FacebookAuth(router, this.jwtAuth);
-		this.localAuth = new LocalAuth(router, this.jwtAuth, localLoginValidator);
+		this.localAuth = new LocalAuth(router, resHandler, this.jwtAuth, localLoginValidator);
 	}
 
 

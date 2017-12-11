@@ -56,7 +56,7 @@ export class SEToken  {
 			this.jwt.sign(this.createJwtPayload(username, permission, blid), this.getSecret(),
 				(error:any, token: string) => {
 					if (error) {
-						return reject(blError.msg('error creating jw token, reason: ' + error));
+						return reject(blError.msg('error creating jw token').store('signError', error).code(906));
 					}
 					resolve(token);
 				});
@@ -71,7 +71,10 @@ export class SEToken  {
 
 			this.jwt.verify(token, this.getSecret(), (error: any, decoded: any) => {
 				if (error) {
-					return reject(blError.msg('error verifying token').store('jwtError', error));
+					return reject(blError
+						.msg('error verifying token')
+						.store('jwtError', error)
+						.code(905));
 				}
 
 				this.validatePayload(decoded, validLoginOptions).then(
@@ -79,7 +82,11 @@ export class SEToken  {
 						resolve(jwtPayload);
 					},
 					(validatePayloadError: BlError) => {
-						reject(validatePayloadError.add(blError.msg('could not validate payload').store('decodedPayload', decoded)));
+						reject(blError
+							.msg('could not validate payload')
+							.store('decodedPayload', decoded)
+							.add(validatePayloadError)
+							.code(905));
 					});
 			})
 		});
@@ -91,7 +98,10 @@ export class SEToken  {
 			if (validLoginOptions) {
 				if (!validLoginOptions.restrictedToUserOrAbove) {
 					if (validLoginOptions.permissions && !this.validatePermissions(jwtPayload.permission, validLoginOptions.permissions)) {
-						return reject(new BlError('lacking the given permissions, "' + jwtPayload.permission.toString() + '" does not include all the permissions of "' + validLoginOptions.permissions.toString() + '"').className('SeToken').methodName('validateToken'));
+						return reject(new BlError('lacking the given permissions, "' + jwtPayload.permission.toString() + '" does not include all the permissions of "' + validLoginOptions.permissions.toString() + '"')
+							.className('SeToken')
+							.methodName('validateToken')
+							.code(905));
 					}
 				}
 			}
