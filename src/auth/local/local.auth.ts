@@ -22,9 +22,8 @@ export class LocalAuth {
 	};
 	
 	private createPassportStrategy(jwtAuth: JwtAuth, localLoginValidator: LocalLoginValidator) {
-		let blError = new BlError('').className('LocalAuth').methodName('strategy');
-		
 		passport.use(new Strategy((username: string, password: string, done: any) => {
+			let blError = new BlError('').className('LocalAuth').methodName('strategy');
 			localLoginValidator.validate(username, password).then(
 				(localLoginProvider: {provider: string, providerId: string}) => {
 					jwtAuth.getAuthorizationToken(localLoginProvider.provider, localLoginProvider.providerId, username).then(
@@ -32,7 +31,8 @@ export class LocalAuth {
 							done(null, jwToken);
 						},
 						(error: BlError) => {
-							done(null, false, blError
+							done(null, false,
+								blError
 									.msg('error when trying to create auth token')
 									.code(906)
 									.add(error)
@@ -40,11 +40,11 @@ export class LocalAuth {
 						});
 				},
 				(validateError: BlError) => {
-					blError.msg('username or password is incorrect')
-						.code(900)
-						.add(validateError);
-					
-					return done(null, false, blError);
+					return done(null, false,
+						blError
+							.msg('username or password is incorrect')
+							.code(908)
+							.add(validateError));
 				});
 		}));
 	}

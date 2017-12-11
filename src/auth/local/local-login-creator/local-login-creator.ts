@@ -14,8 +14,8 @@ export class LocalLoginCreator {
 	public create(username: string, password: string): Promise<LocalLogin> {
 		return new Promise((resolve, reject) => {
 			let blError = new BlError('').className('LocalLoginCreator').methodName('create');
-			if (!username || !isEmail(username)) return reject(blError.msg('username "'+ username + '"is undefined or is not an Email'));
-			if (!password || password.length < 6) return reject(blError.msg('password is to short or empty'));
+			if (!username || !isEmail(username)) return reject(blError.msg('username "'+ username + '" is undefined or not an Email').code(103));
+			if (!password || password.length < 6) return reject(blError.msg('password is to short or empty').code(103));
 			
 			this.hashedPasswordGenerator.generate(password).then(
 				(hashedPasswordAndSalt: {hashedPassword: string, salt: string}) => {
@@ -30,12 +30,16 @@ export class LocalLoginCreator {
 							
 							resolve(newLocalLogin);
 						},
-						(error: BlError) => {
-							reject(error.add(blError.msg('could not create providerId')));
+						(providerIdGeneratorError: BlError) => {
+							reject(blError
+								.msg('could not create providerId')
+								.add(providerIdGeneratorError));
 						});
 				},
-				(error: BlError) => {
-					reject(error.add(blError.msg('could not create hashedPassword and salt')));
+				(hashedPasswordGeneratorError: BlError) => {
+					reject(blError
+						.msg('could not create hashedPassword and salt')
+						.add(hashedPasswordGeneratorError));
 				});
 		});
 	}

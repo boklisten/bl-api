@@ -8,14 +8,19 @@ import * as passport from "passport";
 import {JwtAuth} from "../token/jwt.auth";
 import {ApiPath} from "../../config/api-path";
 import {BlError} from "../../bl-error/bl-error";
+import {SEResponseHandler} from "../../response/se.response.handler";
+import {BlapiResponse} from "bl-model";
+import {SEDocument} from "../../db/model/se.document";
 
 export class GoogleAuth {
 	private jwtAuth: JwtAuth;
 	private apiPath: ApiPath;
+	private resHandler: SEResponseHandler;
 
 	constructor(router: Router, jwtAuth: JwtAuth) {
 		this.jwtAuth = jwtAuth;
 		this.apiPath = new ApiPath();
+		this.resHandler = new SEResponseHandler();
 
 		passport.use(new OAuth2Strategy({
 				clientID: secrets.boklistentest.google.clientId,
@@ -37,11 +42,13 @@ export class GoogleAuth {
 					(jwtoken: string) => {
 						done(null, jwtoken);
 					},
-					(error: BlError) => {
-						done(error.add(
+					(authTokenError: BlError) => {
+						done(null, false,
 							new BlError('failed to make auth token')
 								.className('GoogleAuth')
-								.methodName('strategy').code(400)));
+								.methodName('strategy')
+								.add(authTokenError)
+								.code(906));
 					});
 			}
 		));
@@ -51,8 +58,20 @@ export class GoogleAuth {
 	}
 
 	private createAuthGet(router: Router) {
-		router.get(this.apiPath.createPath('auth/google'),
-			passport.authenticate('google', {scope: ['profile', 'email'] }));
+		router.get(this.apiPath.createPath('auth/google'), (req, res, next) => {
+			passport.authenticate('google', {scope: ['profile', 'email'] }, (error, jwToken: string, blError: BlError) => {
+				if (error) {
+					return next(error);
+				}
+				if (!jwToken) {
+					return this.resHandler.sendErrorResponse(res, blError);
+				}
+				req.login(jwToken, (error) => {
+					if (error) return next(error);
+					return this.resHandler.sendResponse(res, new BlapiResponse([new SEDocument('jwToken', jwToken)]));
+				})
+			})(req, res, next);
+		})
 	}
 
 	private createCallbackGet(router: Router) {

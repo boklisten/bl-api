@@ -20,10 +20,10 @@ export class SEResponseHandler {
 	}
 
 	public sendErrorResponse(res: Response, blError: BlError) {
-		console.log('sending error response');
 		let blapiErrorRes = this.errorHandler.createBlapiErrorResponse(blError);
 		res.status(blapiErrorRes.code);
 		this.setHeaders(res);
+		res.send(blapiErrorRes.data);
 		res.end();
 	}
 	

@@ -27,11 +27,12 @@ describe('LocalLoginCreator', () => {
 				let username = '';
 				let password = 'thisIsAValidPassword';
 				return localLoginCreator.create(username, password)
-					.should.be.rejectedWith(BlError);
+					.should.be.rejectedWith(BlError)
 			});
 			
 			it('username is undefined', () => {
-				let username = undefined; let password = 'thisisavalidpassword';
+				let username = undefined;
+				let password = 'thisisavalidpassword';
 				return localLoginCreator.create(username, password)
 					.should.be.rejectedWith(BlError);
 			});
