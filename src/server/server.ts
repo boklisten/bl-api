@@ -4,6 +4,8 @@ import * as passport from "passport";
 import {APP_CONFIG} from "../application-config";
 import {BlAuth} from "../auth/bl.auth";
 import {BlEndpoint} from "../endpoint/bl.endpoint";
+import {RedisHandler} from "../db/redis/redis.handler";
+import {BlError} from "../bl-error/bl-error";
 
 let bodyParser = require('body-parser');
 
@@ -34,6 +36,66 @@ export class Server {
 	}
 
 	private initialServerConfig() {
+		let redisHandler = new RedisHandler();
+		redisHandler.add('a', 'hello there').then(
+			() => {
+				console.log('inserted value');
+			},
+			(error: BlError) => {
+				error.printStack();
+			});
+		
+	
+		redisHandler.addWithExpire('albert', 'hello this is dog', 1000).then(
+			() => {
+				console.log('inserted the value');
+			},
+			(error: BlError) => {
+				error.printStack();
+			});
+		
+		redisHandler.get('albert').then(
+				(value: any) => {
+					console.log('got the value!!', value);
+				},
+				(error: BlError) => {
+					error.printStack();
+				});
+	
+					redisHandler.get('albert').then(
+				(value: any) => {
+					console.log('got the value!!', value);
+				},
+				(error: BlError) => {
+					error.printStack();
+				});
+			
+		setTimeout(() => {
+			redisHandler.get('albert').then(
+				(value: any) => {
+					console.log('got the value!!', value);
+				},
+				(error: BlError) => {
+					error.printStack();
+				});
+		}, 1200);
+		
+		redisHandler.get('b').then(
+			(value: any) => {
+				console.log('got the value: ', value);
+			},
+			(error: BlError) => {
+				error.printStack();
+			});
+		
+		redisHandler.remove('a').then(
+			() => {
+				console.log('successfully deleted value');
+			},
+			(error: BlError) => {
+				error.printStack();
+			});
+		
 		this.app = express();
 
 		this.app.use(bodyParser.json());
