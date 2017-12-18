@@ -8,14 +8,37 @@ import {UserPermission} from "../../user/user-permission";
 import {RefreshTokenCreator} from "../refresh/refresh-token.creator";
 import {AccessTokenCreator} from "./access-token.creator";
 import {Promise} from 'es6-promise';
+import {AccessToken} from "./access-token";
+import {RefreshToken} from "../refresh/refresh-token";
+import {TokenConfig} from "../token.config";
 
 chai.use(chaiAsPromised);
 
 describe('', () => {
 	
+	let refreshTokenConfig: RefreshToken = {
+		iss: '',
+		aud: '',
+		exp: 100,
+		iat: 0,
+		sub: '',
+		username: ''
+	};
+	
+	let accessTokenConfig: AccessToken = {
+		iss: '',
+		aud: '',
+		exp: 100,
+		iat: 0,
+		sub: '',
+		username: '',
+		permission: 'customer'
+	};
+	
+	let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
 	let accessTokenValidator = new AccessTokenValidator();
-	let refreshTokenCreator = new RefreshTokenCreator();
-	let accessTokenCreator = new AccessTokenCreator();
+	let refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
+	let accessTokenCreator = new AccessTokenCreator(tokenConfig);
 	
 	describe('validateAccessToken()', () => {
 		context('when accessToken is empty or undefined', () => {

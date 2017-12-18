@@ -4,6 +4,8 @@ import {RefreshTokenValidator} from "../refresh/refresh-token.validator";
 import {UserPermission} from "../../user/user-permission";
 import {BlError} from "../../../bl-error/bl-error";
 import {AccessTokenSecret} from "./access-token.secret";
+import {TokenConfig} from "../token.config";
+import {AccessToken} from "./access-token";
 
 export class AccessTokenCreator {
 	
@@ -11,7 +13,7 @@ export class AccessTokenCreator {
 	private accessTokenSecret: AccessTokenSecret;
 	private jwt = require('jsonwebtoken');
 	
-	constructor() {
+	constructor(private tokenConfig: TokenConfig) {
 		this.refreshTokenValidator = new RefreshTokenValidator();
 		this.accessTokenSecret = new AccessTokenSecret();
 	}
@@ -35,14 +37,14 @@ export class AccessTokenCreator {
 		});
 	}
 	
-	private createPayload(username: string, userid: string, permission: string) {
+	private createPayload(username: string, userid: string, permission: UserPermission): AccessToken {
 		return {
-			iss: '',
-			aut: '',
+			iss: this.tokenConfig.accessToken.iss,
+			aud: this.tokenConfig.accessToken.aud,
 			iat: Date.now(),
-			exp: Date.now() + 100,
+			exp: Math.floor(Date.now()/1000) + this.tokenConfig.accessToken.exp,
+			sub: userid,
 			username: username,
-			userid: userid,
 			permission: permission
 		}
 	}

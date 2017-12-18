@@ -11,15 +11,15 @@ export class RefreshTokenValidator {
 		this.refreshTokenSecret = new RefreshTokenSecret();
 	}
 	
-	public validate(refreshToken: string): Promise<boolean> {
+	public validate(refreshToken: string): Promise<any> {
 		return new Promise((resolve, reject) => {
 			if (!refreshToken || refreshToken.length <= 0) reject(new BlError('refreshToken is empty or undefined'));
 			
 			try {
-				this.jwt.verify(refreshToken, this.refreshTokenSecret.get(), (error: any, decoded: any) => {
+				this.jwt.verify(refreshToken, this.refreshTokenSecret.get(), (error: any, payload: any) => {
 					if (error) return reject(new BlError('could not validate token')
 						.code(905));
-					resolve(true);
+					resolve(payload);
 				});
 			} catch (error) {
 				reject(new BlError('could not validate token')

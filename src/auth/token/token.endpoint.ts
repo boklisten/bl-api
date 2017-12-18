@@ -14,6 +14,7 @@ export class TokenEndpoint {
 		this.apiPath = new ApiPath();
 		this.createPostEndpoint();
 		this.refreshTokenValidator = new RefreshTokenValidator();
+		
 	
 	}
 	

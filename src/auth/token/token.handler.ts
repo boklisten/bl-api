@@ -6,15 +6,16 @@ import {RefreshTokenCreator} from "./refresh/refresh-token.creator";
 import {AccessTokenCreator} from "./access-token/access-token.creator";
 import {UserHandler} from "../user/user.handler";
 import {User} from "../../config/schema/user/user";
+import {TokenConfig} from "./token.config";
 
 export class TokenHandler {
 	private jwt = require('jsonwebtoken');
 	private refreshTokenCreator: RefreshTokenCreator;
 	private accessTokenCreator: AccessTokenCreator;
 	
-	constructor(private userHandler: UserHandler) {
-		this.refreshTokenCreator = new RefreshTokenCreator();
-		this.accessTokenCreator = new AccessTokenCreator();
+	constructor(private userHandler: UserHandler, tokenConfig: TokenConfig) {
+		this.refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
+		this.accessTokenCreator = new AccessTokenCreator(tokenConfig);
 	}
 	
 	public createTokens(username: string): Promise<{accessToken: string, refreshToken: string}> {

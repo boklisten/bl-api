@@ -6,12 +6,34 @@ import {AccessTokenCreator} from "./access-token.creator";
 import {UserPermission} from "../../user/user-permission";
 import {BlError} from "../../../bl-error/bl-error";
 import {RefreshTokenCreator} from "../refresh/refresh-token.creator";
+import {RefreshToken} from "../refresh/refresh-token";
+import {AccessToken} from "./access-token";
+import {TokenConfig} from "../token.config";
 
 chai.use(chaiAsPromised);
 
 describe('AccessTokenCreator', () => {
-	let accessTokenCreator = new AccessTokenCreator();
-	let refreshTokenCreator = new RefreshTokenCreator();
+	let refreshTokenConfig: RefreshToken = {
+		iss: '',
+		aud: '',
+		exp: 100,
+		iat: 0,
+		sub: '',
+		username: ''
+	};
+	
+	let accessTokenConfig: AccessToken = {
+		iss: '',
+		aud: '',
+		exp: 100,
+		iat: 0,
+		sub: '',
+		username: '',
+		permission: 'customer'
+	}
+	let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
+	let accessTokenCreator = new AccessTokenCreator(tokenConfig);
+	let refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
 	
 	describe('createAccessToken()', () => {
 		let testUsername = '';

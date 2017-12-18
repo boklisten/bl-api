@@ -3,13 +3,13 @@
 import {BlError} from "../../../bl-error/bl-error";
 import isEmail = require("validator/lib/isEmail");
 import {RefreshTokenSecret} from "./refresh-token.secret";
+import {TokenConfig} from "../token.config";
 
 export class RefreshTokenCreator {
 	private jwt = require('jsonwebtoken');
 	private refreshTokenSecret: RefreshTokenSecret;
-	private applicationConfig = require('../../../application-config').APP_CONFIG;
 	
-	constructor() {
+	constructor(private tokenConfig: TokenConfig) {
 		this.refreshTokenSecret = new RefreshTokenSecret();
 	}
 	
@@ -34,10 +34,10 @@ export class RefreshTokenCreator {
 	
 	private createPayload(username: string, userid: string) {
 		return {
-			iss: this.applicationConfig.token.refresh.iss,
-			aud: this.applicationConfig.token.refresh.aud,
+			iss: this.tokenConfig.refreshToken.iss,
+			aud: this.tokenConfig.refreshToken.aud,
 			iat: Date.now(),
-			exp: Math.floor(Date.now()/1000) + this.applicationConfig.token.refresh.exp,
+			exp: Math.floor(Date.now()/1000) + this.tokenConfig.refreshToken.exp,
 			sub: userid,
 			username: username
 		}

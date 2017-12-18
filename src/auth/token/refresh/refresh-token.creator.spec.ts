@@ -4,14 +4,35 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {RefreshTokenCreator} from "./refresh-token.creator";
 import {BlError} from "../../../bl-error/bl-error";
+import {RefreshToken} from "./refresh-token";
+import {TokenConfig} from "../token.config";
+import {AccessToken} from "../access-token/access-token";
 
 chai.use(chaiAsPromised);
 
 describe('RefreshTokenCreator', () => {
-	let refreshTokenCreator = new RefreshTokenCreator();
-	describe('', () => {
-		
-	});
+	let refreshTokenConfig: RefreshToken = {
+		iss: '',
+		aud: '',
+		exp: 100,
+		iat: 0,
+		sub: '',
+		username: ''
+	};
+	
+	let accessTokenConfig: AccessToken = {
+		iss: '',
+		aud: '',
+		exp: 100,
+		iat: 0,
+		sub: '',
+		username: '',
+		permission: 'customer'
+	};
+	
+	let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
+	
+	let refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
 	
 	describe('createRefreshToken()', () => {
 		
