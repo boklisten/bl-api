@@ -26,7 +26,7 @@ describe('RefreshTokenCreator', () => {
 		describe('should reject with BlError when', () => {
 			it('username is undefined', (done) => {
 				let username = undefined;
-				refreshTokenCreator.createRefreshToken(username, testUserid)
+				refreshTokenCreator.create(username, testUserid)
 					.catch((blError: BlError) => {
 						blError.getCode().should.be.eq(103);
 						done();
@@ -35,7 +35,7 @@ describe('RefreshTokenCreator', () => {
 			
 			it('userid is null', (done) => {
 				let userid = null;
-				refreshTokenCreator.createRefreshToken(testUserid, userid)
+				refreshTokenCreator.create(testUserid, userid)
 					.catch((blError: BlError) => {
 						blError.getCode().should.be.eq(103);
 						done();
@@ -46,7 +46,7 @@ describe('RefreshTokenCreator', () => {
 		describe('should resolve with a RefreshToken when', () => {
 			it('username is bill@meathome.se and userid is valid', (done) => {
 				let username = 'bill@meathome.se';
-				refreshTokenCreator.createRefreshToken(username, testUserid)
+				refreshTokenCreator.create(username, testUserid)
 					.then((refreshToken) => {
 						refreshToken.should.be.a('string')
 							.and.have.length.gte(50);

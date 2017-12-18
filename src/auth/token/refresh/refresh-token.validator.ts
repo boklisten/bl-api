@@ -11,7 +11,7 @@ export class RefreshTokenValidator {
 		this.refreshTokenSecret = new RefreshTokenSecret();
 	}
 	
-	public validateRefreshToken(refreshToken: string): Promise<boolean> {
+	public validate(refreshToken: string): Promise<boolean> {
 		return new Promise((resolve, reject) => {
 			if (!refreshToken || refreshToken.length <= 0) reject(new BlError('refreshToken is empty or undefined').className('TokenHandler').methodName('validateRefreshToken'));
 			

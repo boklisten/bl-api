@@ -20,7 +20,7 @@ export class AccessTokenCreator {
 		return new Promise((resolve, reject) => {
 			if (!username || !userid || !refreshToken) return reject(new BlError('parameter is empty or undefined').className('TokenHandler').methodName('createAccessToken'));
 			
-			this.refreshTokenValidator.validateRefreshToken(refreshToken).then(
+			this.refreshTokenValidator.validate(refreshToken).then(
 				(valid: boolean) => {
 					this.jwt.sign(this.createPayload(username, userid, permission), this.accessTokenSecret.get(), (error: any, accessToken: string) => {
 						if (error) return reject(new BlError('could not sign jwt').store('usename', username).store('permission', permission).code(905));

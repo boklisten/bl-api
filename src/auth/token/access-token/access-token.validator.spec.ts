@@ -42,7 +42,7 @@ describe('', () => {
 				let userid = '123';
 				let permission: UserPermission = 'admin';
 				return new Promise((resolve, reject) => {
-					refreshTokenCreator.createRefreshToken(username, userid).then(
+					refreshTokenCreator.create(username, userid).then(
 						(refreshToken: string) => {
 							accessTokenCreator.create(username, userid, permission, refreshToken).then(
 								(accessToken: string) => {

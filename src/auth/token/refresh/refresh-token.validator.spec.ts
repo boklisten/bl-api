@@ -18,13 +18,13 @@ describe('RefreshTokenValidator', () => {
 	describe('validateRefreshToken()', () => {
 		it('should reject with BlError when refreshToken is empty', () => {
 			let refreshToken = '';
-			return refreshTokenValidator.validateRefreshToken(refreshToken)
+			return refreshTokenValidator.validate(refreshToken)
 				.should.be.rejectedWith(BlError);
 		});
 		
 		it('should reject with BlError when refreshToken is not valid', (done) => {
 			let refreshToken = 'this is not a valid token';
-			refreshTokenValidator.validateRefreshToken(refreshToken).then(
+			refreshTokenValidator.validate(refreshToken).then(
 				(valid: boolean) => {
 					valid.should.not.be.fulfilled;
 					done();
@@ -38,9 +38,9 @@ describe('RefreshTokenValidator', () => {
 		it('should resolve with true when refreshToken is valid', (done) => {
 			let username = 'bill@hicks.com';
 			let userid = 'abc';
-			refreshTokenCreator.createRefreshToken(username, userid).then(
+			refreshTokenCreator.create(username, userid).then(
 				(refreshToken: string) => {
-					refreshTokenValidator.validateRefreshToken(refreshToken).then(
+					refreshTokenValidator.validate(refreshToken).then(
 						(valid: boolean) => {
 							valid.should.be.true;
 							done();

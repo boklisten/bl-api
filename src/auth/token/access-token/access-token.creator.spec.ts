@@ -23,7 +23,7 @@ describe('AccessTokenCreator', () => {
 			testUsername = 'bill@clintonisapedo.com';
 			testUserid = '124';
 			testPermission = 'customer';
-			refreshTokenCreator.createRefreshToken(testUsername, testUserid).then(
+			refreshTokenCreator.create(testUsername, testUserid).then(
 				(refreshToken: string) => {
 					testRefreshToken = refreshToken;
 					done();

@@ -12,7 +12,7 @@ export class RefreshTokenCreator {
 		this.refreshTokenSecret = new RefreshTokenSecret();
 	}
 	
-	public createRefreshToken(username: string, userid: string): Promise<string> {
+	public create(username: string, userid: string): Promise<string> {
 		return new Promise((resolve, reject) => {
 			let blError = new BlError('')
 				.className('TokenHandler')
@@ -23,7 +23,7 @@ export class RefreshTokenCreator {
 			if (!username || !isEmail(username)) return reject(blError.msg('username is undefined or not an email').code(103));
 			if (!userid || userid.length <= 0) return reject(blError.msg('userid is empty or undefined').code(103));
 			
-			this.jwt.sign(this.createRefreshTokenPayload(username, userid), this.refreshTokenSecret.get(),
+			this.jwt.sign(this.createPayload(username, userid), this.refreshTokenSecret.get(),
 				(error: any, refreshToken: string) => {
 					if (error) return reject(blError.msg('could not create refreshToken').code(906));
 					resolve(refreshToken);
@@ -31,7 +31,7 @@ export class RefreshTokenCreator {
 		});
 	}
 	
-	private createRefreshTokenPayload(username: string, userid: string) {
+	private createPayload(username: string, userid: string) {
 		return {
 			iss: '',
 			aut: '',
