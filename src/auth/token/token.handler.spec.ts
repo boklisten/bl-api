@@ -19,7 +19,5 @@ class RedisHandlerMock extends RedisHandler {
 }
 
 describe('TokenHandler', () => {
-	let redisHandlerMock = new RedisHandlerMock();
-	let tokenHandler = new TokenHandler(redisHandlerMock);
-	
+
 });

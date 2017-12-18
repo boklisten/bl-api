@@ -40,5 +40,17 @@ export const APP_CONFIG = {
 			dbName: ''
 		}
 	},
-	test: true
+	test: true,
+	token: {
+		refresh: {
+			iss: 'boklisten.co',
+			aud: 'boklisten.co',
+			exp: 43200 //12 hours in seconds
+		},
+		access: {
+			iss: 'boklisten.co',
+			aud: 'boklisten.co',
+			exp: 30 //30sec
+		}
+	}
 };

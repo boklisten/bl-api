@@ -13,17 +13,16 @@ export class RefreshTokenValidator {
 	
 	public validate(refreshToken: string): Promise<boolean> {
 		return new Promise((resolve, reject) => {
-			if (!refreshToken || refreshToken.length <= 0) reject(new BlError('refreshToken is empty or undefined').className('TokenHandler').methodName('validateRefreshToken'));
+			if (!refreshToken || refreshToken.length <= 0) reject(new BlError('refreshToken is empty or undefined'));
 			
 			try {
 				this.jwt.verify(refreshToken, this.refreshTokenSecret.get(), (error: any, decoded: any) => {
-					if (error) return reject(new BlError('could not validate token').className('TokenHandler').className('TokenHandler').methodName('validateRefreshToken').code(905));
+					if (error) return reject(new BlError('could not validate token')
+						.code(905));
 					resolve(true);
 				});
 			} catch (error) {
 				reject(new BlError('could not validate token')
-					.className('TokenHandler')
-					.methodName('validateRefreshToken')
 					.store('jwt error', error)
 					.code(905));
 			}

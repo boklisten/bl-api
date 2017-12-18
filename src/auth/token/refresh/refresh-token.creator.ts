@@ -7,6 +7,7 @@ import {RefreshTokenSecret} from "./refresh-token.secret";
 export class RefreshTokenCreator {
 	private jwt = require('jsonwebtoken');
 	private refreshTokenSecret: RefreshTokenSecret;
+	private applicationConfig = require('../../../application-config').APP_CONFIG;
 	
 	constructor() {
 		this.refreshTokenSecret = new RefreshTokenSecret();
@@ -33,12 +34,12 @@ export class RefreshTokenCreator {
 	
 	private createPayload(username: string, userid: string) {
 		return {
-			iss: '',
-			aut: '',
+			iss: this.applicationConfig.token.refresh.iss,
+			aud: this.applicationConfig.token.refresh.aud,
 			iat: Date.now(),
-			exp: Date.now() + 16000,
-			username: username,
-			userid: userid
+			exp: Math.floor(Date.now()/1000) + this.applicationConfig.token.refresh.exp,
+			sub: userid,
+			username: username
 		}
 	}
 }
