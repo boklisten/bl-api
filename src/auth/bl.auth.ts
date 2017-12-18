@@ -23,6 +23,7 @@ import {ProviderIdGenerator} from "./local/provider-id/provider-id-generator";
 import {SEResponseHandler} from "../response/se.response.handler";
 import {TokenEndpoint} from "./token/token.endpoint";
 import {TokenHandler} from "./token/token.handler";
+import {TokenConfig} from "./token/token.config";
 
 export class BlAuth {
 	private jwtAuth: JwtAuth;
@@ -48,7 +49,10 @@ export class BlAuth {
 		let localLoginCreator = new LocalLoginCreator(hashedPasswordGenerator, providerIdGenerator);
 		let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidator, localLoginCreator, userHandler);
 		let resHandler = new SEResponseHandler();
-		let tokenHandler = new TokenHandler(userHandler);
+		let appConfig = require('../application-config').APP_CONFIG;
+		
+		let tokenConfig = new TokenConfig(appConfig.token.access, appConfig.token.refresh);
+		let tokenHandler = new TokenHandler(userHandler,tokenConfig);
 
 		this.jwtAuth = new JwtAuth(userHandler);
 		
