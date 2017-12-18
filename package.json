@@ -10,7 +10,7 @@
     "dev": "grunt dev",
     "release": "standard-version && grunt pkg",
     "pretest": "tsc",
-    "test": "nyc mocha -r ts-node/register \"src/**/*.spec.ts\" --watch --reporter min --watch-extensions ts"
+    "test": "mocha -r ts-node/register \"src/**/*.spec.ts\" --reporter min --exit"
   },
   "author": "holskil",
   "license": "ISC",
