@@ -25,7 +25,10 @@ export class RefreshTokenCreator {
 			if (!username || !isEmail(username)) return reject(blError.msg('username is undefined or not an email').code(103));
 			if (!userid || userid.length <= 0) return reject(blError.msg('userid is empty or undefined').code(103));
 			
-			this.jwt.sign(this.createPayload(username, userid), this.refreshTokenSecret.get(),
+			this.jwt.sign(
+				this.createPayload(username, userid),
+				this.refreshTokenSecret.get(),
+				{expiresIn: this.tokenConfig.refreshToken.expiresIn},
 				(error: any, refreshToken: string) => {
 					if (error) return reject(blError.msg('could not create refreshToken').code(906));
 					resolve(refreshToken);
@@ -33,12 +36,11 @@ export class RefreshTokenCreator {
 		});
 	}
 	
-	private createPayload(username: string, userid: string): RefreshToken {
+	private createPayload(username: string, userid: string) {
 		return {
 			iss: this.tokenConfig.refreshToken.iss,
 			aud: this.tokenConfig.refreshToken.aud,
 			iat: Date.now(),
-			expiresIn: this.tokenConfig.refreshToken.expiresIn,
 			sub: userid,
 			username: username
 		}

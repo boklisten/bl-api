@@ -15,7 +15,7 @@ describe('RefreshTokenValidator', () => {
 	let refreshTokenConfig: RefreshToken = {
 		iss: '',
 		aud: '',
-		exp: 100,
+		expiresIn: "12h",
 		iat: 0,
 		sub: '',
 		username: ''
@@ -24,7 +24,7 @@ describe('RefreshTokenValidator', () => {
 	let accessTokenConfig: AccessToken = {
 		iss: '',
 		aud: '',
-		exp: 100,
+		expiresIn: "30s",
 		iat: 0,
 		sub: '',
 		username: '',
@@ -51,9 +51,27 @@ describe('RefreshTokenValidator', () => {
 					done();
 				},
 				(error: BlError) => {
-					error.getCode().should.be.eq(905);
+					error.getCode().should.be.eq(909);
 					done();
 				});
+		});
+		
+		context('when refreshToken is expired', () => {
+			it('should reject with BlCode 909', (done) => {
+				let jwt = require('jsonwebtoken');
+				
+				jwt.sign({username: 'test',
+						iat: Math.floor(Date.now()/1000) - 10000},
+					'test',
+					{ expiresIn: '1s'},
+					(error, refreshToken) => {
+						refreshTokenValidator.validate(refreshToken).catch(
+							(rtokenError: BlError) => {
+								rtokenError.getCode().should.be.eql(909);
+								done();
+							});
+					});
+			});
 		});
 		
 		context('when refreshToken is valid', () => {

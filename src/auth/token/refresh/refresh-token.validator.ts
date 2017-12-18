@@ -18,13 +18,13 @@ export class RefreshTokenValidator {
 			try {
 				this.jwt.verify(refreshToken, this.refreshTokenSecret.get(), (error: any, payload: any) => {
 					if (error) return reject(new BlError('could not validate token')
-						.code(905));
+						.code(909));
 					resolve(payload);
 				});
 			} catch (error) {
 				reject(new BlError('could not validate token')
 					.store('jwt error', error)
-					.code(905));
+					.code(909));
 			}
 		});
 	}
