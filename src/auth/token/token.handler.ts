@@ -11,13 +11,39 @@ export class TokenHandler {
 	
 	}
 	
-	public createAccessToken(username: string, userid: string, permission: UserPermission, refreshToken: string) {
-	
+	public createAccessToken(username: string, userid: string, permission: UserPermission, refreshToken: string): Promise<string> {
+		return new Promise((resolve, reject) => {
+			if (!username || !userid || !refreshToken) return reject(new BlError('parameter is empty or undefined').className('TokenHandler').methodName('createAccessToken'));
+			
+			this.validateRefreshToken(refreshToken).then(
+				(valid: boolean) => {
+					this.jwt.sign(this.createAccessTokenPayload(username, userid, permission), this.getAccessTokenSecret(), (error: any, accessToken: string) => {
+						if (error) return reject(new BlError('could not sign jwt').store('usename', username).store('permission', permission).code(905));
+						return resolve(accessToken);
+					});
+				},
+				(refreshTokenError: BlError) => {
+					reject(new BlError('refreshToken is not valid')
+						.add(refreshTokenError)
+						.code(905));
+				});
+		});
 	}
 	
 	public validateAccessToken(accessToken: string): Promise<boolean> {
 		return new Promise((resolve, reject) => {
-		
+			if (!accessToken) reject(new BlError('accessToken is empty or undefined'));
+			
+			try {
+				this.jwt.verify(accessToken, this.getAccessTokenSecret(), (error, decoded) => {
+					if (error) return reject(new BlError('could not verify jwt').store('accessToken', accessToken).code(905));
+				});
+				resolve(true);
+			} catch (error) {
+				
+				return reject(new BlError('could not verify accessToken')
+					.code(905));
+			}
 		});
 	}
 	
@@ -67,11 +93,14 @@ export class TokenHandler {
 			if (!permission || permission.length <= 0) reject(blError.msg('permission is empty or undefined').code(103));
 			
 		});
-		
 	}
 	
 	private getRefreshTokenSecret(): string {
 		return 'secret';
+	}
+	
+	private getAccessTokenSecret(): string {
+		return 'anotherSecret';
 	}
 	
 	private createRefreshTokenPayload(username: string, userid: string) {
@@ -85,17 +114,16 @@ export class TokenHandler {
 		}
 	}
 	
-	private createJwtPayload(username: string, userid: string, permission: UserPermission) {
+	private createAccessTokenPayload(username: string, userid: string, permission: string) {
 		return {
-			//iss: this.options.iss,
-			//aud: this.options.aud,
+			iss: '',
+			aut: '',
 			iat: Date.now(),
-			//exp: Date.now() + this.options.exp,
-			permission: permission,
-			//blid: blid,
-			username: username
+			exp: Date.now() + 100,
+			username: username,
+			userid: userid,
+			permission: permission
 		}
 	}
-	
 	
 }

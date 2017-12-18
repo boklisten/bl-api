@@ -36,65 +36,6 @@ export class Server {
 	}
 
 	private initialServerConfig() {
-		let redisHandler = new RedisHandler();
-		redisHandler.add('a', 'hello there').then(
-			() => {
-				console.log('inserted value');
-			},
-			(error: BlError) => {
-				error.printStack();
-			});
-		
-	
-		redisHandler.addWithExpire('albert', 'hello this is dog', 1000).then(
-			() => {
-				console.log('inserted the value');
-			},
-			(error: BlError) => {
-				error.printStack();
-			});
-		
-		redisHandler.get('albert').then(
-				(value: any) => {
-					console.log('got the value!!', value);
-				},
-				(error: BlError) => {
-					error.printStack();
-				});
-	
-					redisHandler.get('albert').then(
-				(value: any) => {
-					console.log('got the value!!', value);
-				},
-				(error: BlError) => {
-					error.printStack();
-				});
-			
-		setTimeout(() => {
-			redisHandler.get('albert').then(
-				(value: any) => {
-					console.log('got the value!!', value);
-				},
-				(error: BlError) => {
-					error.printStack();
-				});
-		}, 1200);
-		
-		redisHandler.get('b').then(
-			(value: any) => {
-				console.log('got the value: ', value);
-			},
-			(error: BlError) => {
-				error.printStack();
-			});
-		
-		redisHandler.remove('a').then(
-			() => {
-				console.log('successfully deleted value');
-			},
-			(error: BlError) => {
-				error.printStack();
-			});
 		
 		this.app = express();
 
