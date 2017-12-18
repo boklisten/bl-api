@@ -41,6 +41,8 @@ class EndpointMongoDbMock extends EndpointMongodb {
 		return new Promise((resolve, reject) => {
 		    if (dbQuery.stringFilters[0].value === testUser.login.provider && dbQuery.stringFilters[1].value === testUser.login.providerId) {
 				resolve([new SEDocument('user', testUser)])
+			} else if (dbQuery.stringFilters[0].fieldName === 'username' && dbQuery.stringFilters[0].value === testUser.username) {
+				resolve([new SEDocument('user', testUser)]);
 			} else {
 		    	reject(new BlError('could not find user').code(404));
 			}
@@ -97,6 +99,37 @@ describe('UserHandler', () => {
 					.should.rejectedWith(BlError);
 			});
 			
+		});
+	});
+	
+	describe('getByUsername()', () => {
+		context('when username is undefined', () => {
+			it('should reject with BlError', () => {
+				let username = undefined;
+				return userHandler.getByUsername(username)
+					.should.be.rejectedWith(BlError);
+			});
+		});
+		
+		context('when username is not found', () => {
+			it('should reject with BlError code 702 not found', (done) => {
+				let username = 'thisis@notfound.com';
+				userHandler.getByUsername(username).catch(
+					(error: BlError) => {
+						error.getCode().should.be.eq(702);
+						done();
+				});
+			});
+		});
+		
+		context('when username is found', () => {
+			it('should resolve with a User object', (done) => {
+				userHandler.getByUsername(testUser.username).then(
+					(user: User) => {
+						user.username.should.be.eq(testUser.username);
+						done();
+					});
+			});
 		});
 	});
 	

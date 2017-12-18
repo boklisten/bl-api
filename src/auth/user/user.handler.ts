@@ -43,6 +43,26 @@ export class UserHandler {
 				});
 		});
 	}
+	
+	public getByUsername(username: string): Promise<User> {
+		return new Promise((resolve, reject) => {
+			if (!username) return reject(new BlError('username is empty or undefined'));
+			
+			let dbQuery = new SEDbQuery();
+			dbQuery.stringFilters = [{fieldName: 'username', value: username}];
+			
+			this.userMongoHandler.get(dbQuery).then(
+				(docs: SEDocument[]) => {
+					resolve(docs[0].data as User);
+				},
+				(error: BlError) => {
+					reject(new BlError('could not find user with username "' + username + '"')
+						.add(error)
+						.code(702));
+				});
+		});
+	
+	}
 
 	public get(provider: string, providerId: string): Promise<User> {
 		let blError = new BlError('').className('userHandler').methodName('exists')
