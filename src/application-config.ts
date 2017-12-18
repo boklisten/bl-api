@@ -12,6 +12,12 @@ export const APP_CONFIG = {
 			host: 'localhost',
 			port: 27017,
 			dbName: 'bl_dev_environment'
+		},
+		redis: {
+			basePath: '',
+			host: '',
+			port: 0,
+			dbName: ''
 		}
 	},
 	prod: {
@@ -22,6 +28,12 @@ export const APP_CONFIG = {
 			version: ''
 		},
 		mongoDb: {
+			basePath: '',
+			host: '',
+			port: 0,
+			dbName: ''
+		},
+		redis: {
 			basePath: '',
 			host: '',
 			port: 0,

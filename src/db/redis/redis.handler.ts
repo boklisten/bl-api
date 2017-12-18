@@ -4,12 +4,13 @@ import {BlError} from "../../bl-error/bl-error";
 
 const redis = require('redis');
 const bluebird = require('bluebird');
+const appConfing = require('../../application-config').APP_CONFIG;
 
 export class RedisHandler {
 	private redisClient: RedisClient;
 	
 	constructor() {
-		this.redisClient = redis.createClient();
+		if (!appConfing.test) this.redisClient = redis.createClient();
 		bluebird.promisifyAll(redis.RedisClient.prototype);
 		bluebird.promisifyAll(redis.Multi.prototype);
 	}
