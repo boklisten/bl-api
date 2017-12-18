@@ -2,7 +2,7 @@
 export type RefreshToken = {
 	iss: string,
 	aud: string,
-	exp: number,
+	expiresIn: string,
 	iat: number,
 	sub: string,
 	username: string

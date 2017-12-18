@@ -4,6 +4,7 @@ import {BlError} from "../../../bl-error/bl-error";
 import isEmail = require("validator/lib/isEmail");
 import {RefreshTokenSecret} from "./refresh-token.secret";
 import {TokenConfig} from "../token.config";
+import {RefreshToken} from "./refresh-token";
 
 export class RefreshTokenCreator {
 	private jwt = require('jsonwebtoken');
@@ -32,12 +33,12 @@ export class RefreshTokenCreator {
 		});
 	}
 	
-	private createPayload(username: string, userid: string) {
+	private createPayload(username: string, userid: string): RefreshToken {
 		return {
 			iss: this.tokenConfig.refreshToken.iss,
 			aud: this.tokenConfig.refreshToken.aud,
 			iat: Date.now(),
-			exp: Math.floor(Date.now()/1000) + this.tokenConfig.refreshToken.exp,
+			expiresIn: this.tokenConfig.refreshToken.expiresIn,
 			sub: userid,
 			username: username
 		}

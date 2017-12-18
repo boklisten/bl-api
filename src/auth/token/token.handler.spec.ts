@@ -47,7 +47,7 @@ describe('TokenHandler', () => {
 		let refreshTokenConfig: RefreshToken = {
 		iss: '',
 		aud: '',
-		exp: 100,
+		expiresIn: "12h",
 		iat: 0,
 		sub: '',
 		username: ''
@@ -56,7 +56,7 @@ describe('TokenHandler', () => {
 	let accessTokenConfig: AccessToken = {
 		iss: '',
 		aud: '',
-		exp: 100,
+		expiresIn: "30s",
 		iat: 0,
 		sub: '',
 		username: '',

@@ -4,7 +4,7 @@ import {UserPermission} from "../../user/user-permission";
 export type AccessToken = {
 	iss: string,
 	aud: string,
-	exp: number,
+	expiresIn: string,
 	iat: number,
 	sub: string,
 	username: string,

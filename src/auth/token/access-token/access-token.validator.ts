@@ -2,6 +2,7 @@
 
 import {BlError} from "../../../bl-error/bl-error";
 import {AccessTokenSecret} from "./access-token.secret";
+import {AccessToken} from "./access-token";
 
 export class AccessTokenValidator {
 	private accessTokenSecret: AccessTokenSecret;
@@ -11,19 +12,21 @@ export class AccessTokenValidator {
 		this.accessTokenSecret = new AccessTokenSecret();
 	}
 	
-	public validate(accessToken: string): Promise<boolean> {
+	public validate(accessToken: string): Promise<AccessToken> {
 		return new Promise((resolve, reject) => {
-			if (!accessToken) reject(new BlError('accessToken is empty or undefined'));
+			if (!accessToken) return reject(new BlError('accessToken is empty or undefined'));
 			
 			try {
-				this.jwt.verify(accessToken, this.accessTokenSecret.get(), (error, decoded) => {
-					if (error) return reject(new BlError('could not verify jwt').store('accessToken', accessToken).code(905));
+				this.jwt.verify(accessToken, this.accessTokenSecret.get(), (error, payload: AccessToken) => {
+					if (error) return reject(new BlError('could not verify jwt')
+						.store('accessToken', accessToken)
+						.code(910));
+					
+					resolve(payload);
 				});
-				resolve(true);
 			} catch (error) {
-				
 				return reject(new BlError('could not verify accessToken')
-					.code(905));
+					.code(910));
 			}
 		});
 	}

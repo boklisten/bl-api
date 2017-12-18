@@ -24,9 +24,16 @@ export class AccessTokenCreator {
 			
 			this.refreshTokenValidator.validate(refreshToken).then(
 				(valid: boolean) => {
-					this.jwt.sign(this.createPayload(username, userid, permission), this.accessTokenSecret.get(), (error: any, accessToken: string) => {
-						if (error) return reject(new BlError('could not sign jwt').store('usename', username).store('permission', permission).code(905));
-						return resolve(accessToken);
+					this.jwt.sign(
+						this.createPayload(username, userid, permission),
+						this.accessTokenSecret.get(),
+						{expiresIn: this.tokenConfig.accessToken.expiresIn},
+						(error: any, accessToken: any) => {
+							if (error) return reject(new BlError('could not sign jwt')
+								.store('usename', username)
+								.store('permission', permission).code(905));
+							
+							return resolve(accessToken);
 					});
 				},
 				(refreshTokenError: BlError) => {
@@ -37,15 +44,15 @@ export class AccessTokenCreator {
 		});
 	}
 	
-	private createPayload(username: string, userid: string, permission: UserPermission): AccessToken {
+	private createPayload(username: string, userid: string, permission: UserPermission) {
 		return {
 			iss: this.tokenConfig.accessToken.iss,
 			aud: this.tokenConfig.accessToken.aud,
 			iat: Date.now(),
-			exp: Math.floor(Date.now()/1000) + this.tokenConfig.accessToken.exp,
 			sub: userid,
 			username: username,
 			permission: permission
 		}
 	}
+	
 }

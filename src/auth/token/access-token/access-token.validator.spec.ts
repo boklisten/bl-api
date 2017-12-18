@@ -17,18 +17,18 @@ chai.use(chaiAsPromised);
 describe('', () => {
 	
 	let refreshTokenConfig: RefreshToken = {
-		iss: '',
-		aud: '',
-		exp: 100,
+		iss: 'boklisten.co',
+		aud: 'boklisten.co',
+		expiresIn: "12h",
 		iat: 0,
 		sub: '',
 		username: ''
 	};
 	
 	let accessTokenConfig: AccessToken = {
-		iss: '',
-		aud: '',
-		exp: 100,
+		iss: 'boklisten.co',
+		aud: 'boklisten.co',
+		expiresIn: "30s",
 		iat: 0,
 		sub: '',
 		username: '',
@@ -40,7 +40,7 @@ describe('', () => {
 	let refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
 	let accessTokenCreator = new AccessTokenCreator(tokenConfig);
 	
-	describe('validateAccessToken()', () => {
+	describe('validate()', () => {
 		context('when accessToken is empty or undefined', () => {
 			it('should reject with BlError', () => {
 				return accessTokenValidator.validate('')
@@ -50,41 +50,50 @@ describe('', () => {
 		
 		context('when accessToken is not valid', () => {
 			it('should reject with BlError code 905', (done) => {
-				accessTokenValidator.validate('this is not valid').then(
-					(accessToken) => {},
+				accessTokenValidator.validate('this is not valid').catch(
 					(error: BlError) => {
-						error.getCode().should.be.eq(905);
+						error.getCode().should.be.eq(910);
 						done();
 					});
 			});
 		});
 		
+		context('when accessToken is expired', () => {
+			it('should reject with BlError code 910', (done) => {
+				let username = 'bill@butt.com';
+				let jwt = require('jsonwebtoken');
+				 
+				jwt.sign({
+					username: username,
+					iat: Math.floor(Date.now()/1000) - 10000},
+					'test',
+					{expiresIn: '1s'}, (error, accessToken) => {
+							accessTokenValidator.validate(accessToken).catch(
+								(error: BlError) => {
+									error.getCode().should.be.eq(910);
+									done();
+								});
+					});
+			});
+		});
+		
 		context('when accessToken is valid', () => {
-			it('should should resolve with true', () => {
+			it('should resolve with a payload', (done) => {
 				let username = 'bill@anderson.com';
 				let userid = '123';
 				let permission: UserPermission = 'admin';
-				return new Promise((resolve, reject) => {
-					refreshTokenCreator.create(username, userid).then(
-						(refreshToken: string) => {
-							accessTokenCreator.create(username, userid, permission, refreshToken).then(
-								(accessToken: string) => {
-									accessTokenValidator.validate(accessToken).then(
-										(valid: boolean) => {
-											resolve(valid);
-										},
-										(error) => {
-											reject(true);
-										});
-								},
-								(error) => {
-									reject(true);
-								});
-						},
-						(error) => {
-							reject(true);
-						});
-				}).should.eventually.be.fulfilled;
+				refreshTokenCreator.create(username, userid).then(
+					(refreshToken: string) => {
+						accessTokenCreator.create(username, userid, permission, refreshToken).then(
+							(accessToken: string) => {
+								accessTokenValidator.validate(accessToken).then(
+									(payload: AccessToken) => {
+										expect(payload.username).to.eq(username);
+										expect(payload.aud).to.eq(accessTokenConfig.aud);
+										done();
+									});
+							});
+					});
 			});
 		});
 	});

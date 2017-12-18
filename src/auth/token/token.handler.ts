@@ -1,7 +1,5 @@
 
-import {RedisHandler} from "../../db/redis/redis.handler";
 import {BlError} from "../../bl-error/bl-error";
-import {UserPermission} from "../user/user-permission";
 import {RefreshTokenCreator} from "./refresh/refresh-token.creator";
 import {AccessTokenCreator} from "./access-token/access-token.creator";
 import {UserHandler} from "../user/user.handler";
@@ -9,7 +7,6 @@ import {User} from "../../config/schema/user/user";
 import {TokenConfig} from "./token.config";
 
 export class TokenHandler {
-	private jwt = require('jsonwebtoken');
 	private refreshTokenCreator: RefreshTokenCreator;
 	private accessTokenCreator: AccessTokenCreator;
 	
@@ -47,9 +44,4 @@ export class TokenHandler {
 				});
 		});
 	}
-	
-	
-	
-	
-	
 }
