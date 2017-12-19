@@ -82,16 +82,15 @@ export class BlError extends Error {
 	
 	public printStack() {
 		console.log('');
-		let errorNum = 1;
-		let indent = '';
-		for (let i = this.errorStack.length - 1; i >= 0; i--) {
-			console.log(indent + '>BlError[' + this.errorStack[i].getCode() + ']: ' + this.errorStack[i].getClassName() + '.' + this.errorStack[i].getMethodName() + '(): ');
-			console.log(indent + '\t' + this.errorStack[i].getMsg());
+		console.log('>BlError[' + this.getCode() + ']: ' + this.getMsg());
+		let indent = ' ';
+		for (let i = 0; i < this.errorStack.length; i++) {
+			console.log(indent + '>BlError[' + this.errorStack[i].getCode() + ']: ' + this.errorStack[i].getMsg());
 			indent += ' ';
-			errorNum++;
+			if (i === this.errorStack.length - 1) {
+				console.log(indent + this.errorStack[i].stack);
+			}
 		}
-		console.log(indent + '>BlError[' + this.getCode() + ']: ' + this.getClassName() + '.' + this.getMethodName() + '(): ');
-		console.log(indent + '\t' + this.getMsg());
 		console.log('');
 	}
 }

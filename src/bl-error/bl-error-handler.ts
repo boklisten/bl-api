@@ -23,9 +23,24 @@ export class BlErrorHandler {
 		
 		if (!blError.getCode() || blError.getCode() === 0) blErrorResponse;
 		
+		if (blError.getCode() > 699 && blError.getCode() < 800) {
+			return this.documentErrorResponse(blError.getCode());
+		}
+		
 		if (blError.getCode() >= 900 && blError.getCode() <= 999) {
 			return this.authErrorResponse(blError.getCode());
 		}
+	}
+	
+	private documentErrorResponse(code: number) {
+		let blErrorResponse = {httpStatus: 400, code: code, message: 'bad format'};
+		
+		switch (code) {
+			case 701:
+				blErrorResponse.message = 'bad format';
+				break;
+		}
+		return blErrorResponse;
 	}
 	
 	private authErrorResponse(code: number): BlErrorResponse {
