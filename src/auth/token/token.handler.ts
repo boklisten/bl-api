@@ -21,7 +21,7 @@ export class TokenHandler {
 				(user: User) => {
 					this.refreshTokenCreator.create(user.username, user.blid).then(
 						(refreshToken: string) => {
-							this.accessTokenCreator.create(user.username, user.blid, user.permission, refreshToken).then(
+							this.accessTokenCreator.create(user.username, user.blid, user.permission, user.userDetail, refreshToken).then(
 								(accessToken: string) => {
 									resolve({accessToken: accessToken, refreshToken: refreshToken});
 								},

@@ -60,7 +60,8 @@ describe('TokenHandler', () => {
 		iat: 0,
 		sub: '',
 		username: '',
-		permission: 'customer'
+		permission: 'customer',
+		details: ''
 	};
 	
 	let userHandlerMock = new UserHandlerMock(new EndpointMongodb(new SESchema('user', UserSchema)),

@@ -32,7 +32,8 @@ describe('', () => {
 		iat: 0,
 		sub: '',
 		username: '',
-		permission: 'customer'
+		permission: 'customer',
+		details: ''
 	};
 	
 	let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
@@ -82,9 +83,10 @@ describe('', () => {
 				let username = 'bill@anderson.com';
 				let userid = '123';
 				let permission: UserPermission = 'admin';
+				let userDetailId = 'abc';
 				refreshTokenCreator.create(username, userid).then(
 					(refreshToken: string) => {
-						accessTokenCreator.create(username, userid, permission, refreshToken).then(
+						accessTokenCreator.create(username, userid, permission, userDetailId, refreshToken).then(
 							(accessToken: string) => {
 								accessTokenValidator.validate(accessToken).then(
 									(payload: AccessToken) => {

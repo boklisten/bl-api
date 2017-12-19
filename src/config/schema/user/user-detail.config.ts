@@ -21,7 +21,15 @@ export class UserDetailConfig implements EndpointConfig {
                     	permissions: ["customer", "employee", "admin"],
 		                restrictedToUserOrAbove: true
 	                }
-                }
+                },
+				{
+					method: 'get',
+					login: true,
+					loginOptions: {
+						permissions: ["customer", "employee", "admin"],
+						restrictedToUserOrAbove: true
+					}
+				}
             ]
         }
     ];

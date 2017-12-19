@@ -8,5 +8,6 @@ export type AccessToken = {
 	iat: number,
 	sub: string,
 	username: string,
-	permission: UserPermission
+	permission: UserPermission,
+	details: string
 }
