@@ -38,10 +38,10 @@ export class EndpointDeleteExpress {
 			let blError = new BlError('').className('EndpointDeleteExpress').methodName('loginDelete');
 			const accessToken: AccessToken = req.user.accessToken;
 			
-			if (!accessToken) this.resHandler.sendErrorResponse(res, new BlError('no access token found').store('url', url).code(905));
+			if (!accessToken) return this.resHandler.sendErrorResponse(res, new BlError('no access token found').store('url', url).code(905));
 			
 			if (loginOptions.restrictedToUserOrAbove) {
-				this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, jwtPayload.blid).then(
+				this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
 					(docs: SEDocument[]) => {//user has access
 						this.deleteDocument(res, req.params.id);
 					},

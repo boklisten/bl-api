@@ -37,6 +37,7 @@ export class GoogleAuth {
 						username = profileEmail.value;
 					}
 				}
+				/*
 
 				this.jwtAuth.getAuthorizationToken(provider, providerId, username).then(
 					(jwtoken: string) => {
@@ -50,6 +51,7 @@ export class GoogleAuth {
 								.add(authTokenError)
 								.code(906));
 					});
+					*/
 			}
 		));
 

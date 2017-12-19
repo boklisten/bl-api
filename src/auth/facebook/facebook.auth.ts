@@ -9,16 +9,19 @@ import {UserHandler} from "../user/user.handler";
 import {AccessTokenAuth} from "../token/access-token/access-token.auth";
 import {ApiPath} from "../../config/api-path";
 import {BlError} from "../../bl-error/bl-error";
+import {TokenHandler} from "../token/token.handler";
+import {SEResponseHandler} from "../../response/se.response.handler";
+import {BlapiResponse} from "bl-model";
+import {SEDocument} from "../../db/model/se.document";
 
 export class FacebookAuth {
 	private userHandler: UserHandler;
-	private jwtAuth: AccessTokenAuth;
 	private apiPath: ApiPath;
 
 
-	constructor(router: Router, jwtAuth: AccessTokenAuth) {
-		this.jwtAuth = jwtAuth;
+	constructor(router: Router, private tokenHandler: TokenHandler, private resHandler: SEResponseHandler) {
 		this.apiPath = new ApiPath;
+		
 
 		passport.use(new Strategy({
 				clientID: secrets.boklistentest.facebook.clientId,
@@ -30,15 +33,15 @@ export class FacebookAuth {
 				let provider = 'facebook';
 				let providerId = profile.id;
 				let username = profile.displayName;
-
-				this.jwtAuth.getAuthorizationToken(provider, providerId, username).then(
-					(jwtoken: string) => {
-						done(null, jwtoken);
+				
+				tokenHandler.createTokens(username).then(
+					(tokens: {accessToken: string, refreshToken: string}) => {
+						done(null, tokens);
 					},
-					(error: BlError) => {
-						done(error.add(new BlError('failed to get auth token for user "' + username + '"')
-							.className('FacebookAuth')
-							.methodName('strategy').code(400)));
+					(createTokenError: BlError) => {
+						done(new BlError('could not create tokens')
+							.add(createTokenError)
+							.store('username', username));
 					});
 			}
 		));
@@ -56,7 +59,10 @@ export class FacebookAuth {
 		router.get(this.apiPath.createPath('auth/facebook/callback'),
 			passport.authenticate('facebook', { failureRedirect: '/login' }),
 			(req: any, res: any) => {
-				res.send(req.user);
+				this.resHandler.sendResponse(res, new BlapiResponse([
+					new SEDocument('accessToken', req.user.accessToken),
+					new SEDocument('refreshToken', req.user.refreshToken)
+				]));
 			});
 	}
 
