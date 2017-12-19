@@ -12,6 +12,7 @@ import {JwtPayload, SEToken} from "../auth/token/se.token";
 import {BlapiErrorResponse, BlapiResponse} from 'bl-model';
 import {BlError} from "../bl-error/bl-error";
 import {BlErrorHandler} from "../bl-error/bl-error-handler";
+import {AccessToken} from "../auth/token/access-token/access-token";
 
 
 export class EndpointGetExpress {
@@ -59,52 +60,35 @@ export class EndpointGetExpress {
 
 	private createLoginGet(router: Router, url: string, validSearchParams?: ValidParam[], loginOptions?: LoginOption) {
 		router.get(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
-			this.seToken.validatePayload(req.user.jwtPayload, loginOptions).then(
-				(jwtPayload: JwtPayload) => {
-					this.handleGetWithQuery(req, res, validSearchParams);
-				},
-				(jwtPayloadError: BlError) => {
-					this.resHandler.sendErrorResponse(res, jwtPayloadError.add(
-						new BlError('could not validate the jwt payload')
-							.className('EndpointGetExpress')
-							.methodName('loginGet')
-							.store('url', url)
-							.store('jwtPayload', req.user.jwtPayload)));
-				});
+			this.handleGetWithQuery(req, res, validSearchParams);
 		});
 	}
 
 	private createLoginGetWithId(router: Router, url: string, loginOptions?: LoginOption) {
 		router.get(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
 			let blError = new BlError('').className('EndpointGetExpress').methodName('loginGetWithId');
-			this.seToken.validatePayload(req.user.jwtPayload, loginOptions).then(
-				(jwtPayload: JwtPayload) => {
-					if (loginOptions && loginOptions.restrictedToUserOrAbove) {
-						this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, jwtPayload.blid).then(
-							(docs: SEDocument[]) => {
-								this.resHandler.sendResponse(res, new BlapiResponse(docs));
-							},
-							(validateByBlidError: BlError) => {
-								if (this.seToken.permissionAbove(jwtPayload.permission, loginOptions.permissions)) {
-									this.handleGetWithId(req, res);
-								} else {
-									this.resHandler.sendErrorResponse(res, validateByBlidError.add(
-										blError.msg('could not validate by blid')
-											.store('url', url)
-											.store('jwtPayload', jwtPayload)));
-									
-								}
-							});
-					} else {
-						this.handleGetWithId(req, res);
-					}
-				},
-				(validatePayloadError: BlError) => {
-					this.resHandler.sendErrorResponse(res, validatePayloadError.add(
-						blError.msg('could not validate jwt payload')
-							.store('url', url)
-							.store('jwtPayload', req.user.payload)).code(403));
-				})
+			let accessToken: AccessToken = req.user.jwtPayload;
+			
+			if (loginOptions && loginOptions.restrictedToUserOrAbove) {
+				this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
+					(docs: SEDocument[]) => {
+						this.resHandler.sendResponse(res, new BlapiResponse(docs));
+					},
+					(validateByBlidError: BlError) => {
+						if (this.seToken.permissionAbove(accessToken.permission, loginOptions.permissions)) {
+							this.handleGetWithId(req, res);
+						} else {
+							this.resHandler.sendErrorResponse(res, validateByBlidError.add(
+								blError.msg('could not validate by blid')
+									.store('url', url)
+									.store('accessToken', accessToken)
+									.code(904)));
+							
+						}
+					});
+			} else {
+				this.handleGetWithId(req, res);
+			}
 		});
 	}
 
@@ -118,7 +102,8 @@ export class EndpointGetExpress {
 					new BlError('could not get document with id')
 						.className('EndpointGetExpress')
 						.methodName('handleGetWithId')
-						.store('id', req.params.id)));
+						.store('id', req.params.id)
+						.code(702)));
 			});
 	}
 

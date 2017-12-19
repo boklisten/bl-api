@@ -7,14 +7,21 @@ import {UserHandler} from "../user/user.handler";
 import {User} from "../../config/schema/user/user";
 import {BlError} from "../../bl-error/bl-error";
 import isEmail = require("validator/lib/isEmail");
+import {AccessTokenSecret} from "./access-token/access-token.secret";
+import {TokenConfig} from "./token.config";
 
 export class JwtAuth {
 	private seToken: SEToken;
 	private userHandler: UserHandler;
+	private accessTokenSecret: AccessTokenSecret;
+	private tokenConfig: TokenConfig;
 
 	constructor(userHandler: UserHandler) {
 		this.seToken = new SEToken();
 		this.userHandler = userHandler;
+		this.accessTokenSecret = new AccessTokenSecret();
+		const appTokenConfig = require('../../application-config').APP_CONFIG.token;
+		this.tokenConfig = new TokenConfig(appTokenConfig.access, appTokenConfig.refresh);
 
 
 		passport.use(new Strategy(this.getOptions(), (jwtPayload: any, done: any) => {
@@ -48,9 +55,9 @@ export class JwtAuth {
 	private getOptions(): any {
 		let opts: any = {};
 		opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-		opts.secretOrKey = this.seToken.getSecret();
-		opts.issuer = this.seToken.getOptions().iss;
-		opts.audience = this.seToken.getOptions().aud;
+		opts.secretOrKey = this.accessTokenSecret.get();
+		opts.issuer = this.tokenConfig.accessToken.iss;
+		opts.audience = this.tokenConfig.accessToken.aud;
 
 		return opts;
 

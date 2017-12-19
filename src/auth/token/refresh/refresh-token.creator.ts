@@ -40,7 +40,7 @@ export class RefreshTokenCreator {
 		return {
 			iss: this.tokenConfig.refreshToken.iss,
 			aud: this.tokenConfig.refreshToken.aud,
-			iat: Date.now(),
+			iat: Math.floor(Date.now()/1000),
 			sub: userid,
 			username: username
 		}

@@ -10,6 +10,7 @@ import {OrderItemConfig} from "../schema/orderItem/order-item.config";
 import {InvoiceConfig} from "../schema/invoice/invoice.config";
 import {InvoiceItemConfig} from "../schema/invoice-tem/invoice-item.config";
 import {OpeningHourConfig} from "../schema/opening-hour/opening-hour.config";
+import {UserDetailConfig} from "../config/schema/user/user-detail.config";
 
 export class BlEndpoint {
 	private branchEndpoint: EndpointExpress;
@@ -20,6 +21,7 @@ export class BlEndpoint {
 	private invoiceEndpoint: EndpointExpress;
 	private invoiceItemEndpoint: EndpointExpress;
 	private openingHourEndpoint: EndpointExpress;
+	private userDetailEndpoint: EndpointExpress;
 
 	constructor(router: Router) {
 		let resHandler = new SEResponseHandler();
@@ -31,5 +33,6 @@ export class BlEndpoint {
 		this.invoiceEndpoint = new EndpointExpress(router, new InvoiceConfig(), resHandler);
 		this.invoiceItemEndpoint = new EndpointExpress(router, new InvoiceItemConfig(), resHandler);
 		this.openingHourEndpoint = new EndpointExpress(router, new OpeningHourConfig(), resHandler);
+		this.userDetailEndpoint = new EndpointExpress(router, new UserDetailConfig(), resHandler);
 	}
 }

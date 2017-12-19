@@ -48,7 +48,7 @@ export class AccessTokenCreator {
 		return {
 			iss: this.tokenConfig.accessToken.iss,
 			aud: this.tokenConfig.accessToken.aud,
-			iat: Date.now(),
+			iat: Math.floor(Date.now()/1000),
 			sub: userid,
 			username: username,
 			permission: permission,

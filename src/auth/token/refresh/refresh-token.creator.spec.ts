@@ -27,8 +27,9 @@ describe('RefreshTokenCreator', () => {
 		iat: 0,
 		sub: '',
 		username: '',
-		permission: 'customer'
-	}
+		permission: 'customer',
+		details: ''
+	};
 	
 	let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
 	
