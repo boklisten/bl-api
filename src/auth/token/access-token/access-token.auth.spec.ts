@@ -2,15 +2,15 @@ import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
-import {UserHandler} from "../user/user.handler";
-import {User} from "../../config/schema/user/user";
+import {UserHandler} from "../../user/user.handler";
+import {User} from "../../../config/schema/user/user";
 import {Promise} from 'es6-promise';
-import {JwtAuth} from "./jwt.auth";
-import {SESchema} from "../../config/schema/se.schema";
-import {UserSchema} from "../../config/schema/user/user.schema";
-import {UserDetailSchema} from "../../config/schema/user/user-detail.schema";
-import {BlError} from "../../bl-error/bl-error";
-import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
+import {AccessTokenAuth} from "./access-token.auth";
+import {SESchema} from "../../../config/schema/se.schema";
+import {UserSchema} from "../../../config/schema/user/user.schema";
+import {UserDetailSchema} from "../../../config/schema/user/user-detail.schema";
+import {BlError} from "../../../bl-error/bl-error";
+import {EndpointMongodb} from "../../../endpoint/endpoint.mongodb";
 chai.use(chaiAsPromised);
 
 let testUsername = 'bill@thesite.com';
@@ -40,9 +40,9 @@ class UserHandlerMock extends UserHandler {
 	}
 }
 
-describe('JwtAuth', () => {
+describe('AccessTokenAuth', () => {
 	let userHandlerMock = new UserHandlerMock();
-	let jwtAuth: JwtAuth = new JwtAuth(userHandlerMock);
+	let accessTokenAuth: AccessTokenAuth = new AccessTokenAuth(userHandlerMock);
 	let testProvider = '';
 	let testProviderId = '';
 	let testUserName = '';
@@ -58,50 +58,50 @@ describe('JwtAuth', () => {
 			
 			it('provider is empty', () => {
 				let provider = '';
-				return jwtAuth.getAuthorizationToken(provider, testProviderId, testUserName)
+				return accessTokenAuth.getAuthorizationToken(provider, testProviderId, testUserName)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('provider is null', () => {
 				let provider = null;
-				return jwtAuth.getAuthorizationToken(provider, testProviderId, testUserName)
+				return accessTokenAuth.getAuthorizationToken(provider, testProviderId, testUserName)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('providerId is empty', () => {
 				let providerId = '';
-				return jwtAuth.getAuthorizationToken(testProvider, providerId, testUserName)
+				return accessTokenAuth.getAuthorizationToken(testProvider, providerId, testUserName)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('providerId is undefined', () => {
 				let providerId = undefined;
-				return jwtAuth.getAuthorizationToken(testProvider, providerId, testUserName)
+				return accessTokenAuth.getAuthorizationToken(testProvider, providerId, testUserName)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('username is empty', () => {
 				let username = '';
-				return jwtAuth.getAuthorizationToken(testProvider, testProviderId, username)
+				return accessTokenAuth.getAuthorizationToken(testProvider, testProviderId, username)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('username is undefined', () => {
 				let username = undefined;
-				return jwtAuth.getAuthorizationToken(testProvider, testProviderId, username)
+				return accessTokenAuth.getAuthorizationToken(testProvider, testProviderId, username)
 					.should.be.rejectedWith(BlError);
 			});
 			
 			it('username is not an email', () => {
 				let username = 'thisisnotanemail';
-				return jwtAuth.getAuthorizationToken(testProvider, testProviderId, username)
+				return accessTokenAuth.getAuthorizationToken(testProvider, testProviderId, username)
 					.should.be.rejectedWith(BlError);
 			});
 		});
 		
 		describe('should resolve with an jwt when', () => {
 			it('username is ' + testUsername, () => {
-				return jwtAuth.getAuthorizationToken(testProvider, testProviderId, testUsername)
+				return accessTokenAuth.getAuthorizationToken(testProvider, testProviderId, testUsername)
 					.should.eventually.be.fulfilled
 					.and.be.a('string')
 					.and.have.length.gte(30)

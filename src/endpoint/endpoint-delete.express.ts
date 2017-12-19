@@ -11,6 +11,7 @@ import {SEDocument} from "../db/model/se.document";
 import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
 import {BlError} from "../bl-error/bl-error";
 import {BlErrorHandler} from "../bl-error/bl-error-handler";
+import {AccessToken} from "../auth/token/access-token/access-token";
 
 export class EndpointDeleteExpress {
 	private resHandler: SEResponseHandler;
@@ -35,35 +36,30 @@ export class EndpointDeleteExpress {
 	private createLoginDelete(router: Router, url: string, loginOptions: LoginOption) {
 		router.delete(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
 			let blError = new BlError('').className('EndpointDeleteExpress').methodName('loginDelete');
-			this.seToken.validatePayload(req.user.jwtPayload, loginOptions).then(
-				(jwtPayload: JwtPayload) => {
-					if (loginOptions.restrictedToUserOrAbove) {
-						this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, jwtPayload.blid).then(
-							(docs: SEDocument[]) => {//user has access
-								this.deleteDocument(res, req.params.id);
-							},
-							(error: BlError) => {
-								
-								if (this.seToken.permissionAbove(jwtPayload.permission, loginOptions.permissions)) {
-									this.deleteDocument(res, req.params.id);
-								} else {
-									this.resHandler.sendErrorResponse(res, error.add(
-										blError.msg('user does not have the right permission')
-											.store('jwtPayload', jwtPayload)
-											.store('url', url)).code(401));
-								}
-								
-							});
-					} else {
+			const accessToken: AccessToken = req.user.accessToken;
+			
+			if (!accessToken) this.resHandler.sendErrorResponse(res, new BlError('no access token found').store('url', url).code(905));
+			
+			if (loginOptions.restrictedToUserOrAbove) {
+				this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, jwtPayload.blid).then(
+					(docs: SEDocument[]) => {//user has access
 						this.deleteDocument(res, req.params.id);
-					}
-				},
-				(validatePayloadError: BlError) => {
-					this.resHandler.sendErrorResponse(res, validatePayloadError.add(
-						blError.msg('could not validate payload of jwt')
-							.store('url', url)
-							.store('jwtPayload', req.user.jwtPayload)).code(401));
-				});
+					},
+					(error: BlError) => {
+						
+						if (this.seToken.permissionAbove(accessToken.permission, loginOptions.permissions)) {
+							this.deleteDocument(res, req.params.id);
+						} else {
+							this.resHandler.sendErrorResponse(res, error.add(
+								blError.msg('user does not have the right permission')
+									.store('accessTokenPayload', accessToken)
+									.store('url', url)).code(401));
+						}
+						
+					});
+			} else {
+				this.deleteDocument(res, req.params.id);
+			}
 		});
 	}
 

@@ -6,17 +6,17 @@ import * as passport from "passport";
 import {secrets} from "../../config/secrets";
 import {Strategy} from 'passport-facebook'
 import {UserHandler} from "../user/user.handler";
-import {JwtAuth} from "../token/jwt.auth";
+import {AccessTokenAuth} from "../token/access-token/access-token.auth";
 import {ApiPath} from "../../config/api-path";
 import {BlError} from "../../bl-error/bl-error";
 
 export class FacebookAuth {
 	private userHandler: UserHandler;
-	private jwtAuth: JwtAuth;
+	private jwtAuth: AccessTokenAuth;
 	private apiPath: ApiPath;
 
 
-	constructor(router: Router, jwtAuth: JwtAuth) {
+	constructor(router: Router, jwtAuth: AccessTokenAuth) {
 		this.jwtAuth = jwtAuth;
 		this.apiPath = new ApiPath;
 

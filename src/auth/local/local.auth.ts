@@ -4,7 +4,7 @@ import * as passport from 'passport';
 import {Strategy} from 'passport-local';
 import {Request, Response, Router} from "express";
 import {ApiPath} from "../../config/api-path";
-import {JwtAuth} from "../token/jwt.auth";
+import {AccessTokenAuth} from "../token/access-token/access-token.auth";
 import {LocalLoginValidator} from "./local-login.validator";
 import {BlError} from "../../bl-error/bl-error";
 import {SEResponseHandler} from "../../response/se.response.handler";

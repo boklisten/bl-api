@@ -67,7 +67,8 @@ export class EndpointGetExpress {
 	private createLoginGetWithId(router: Router, url: string, loginOptions?: LoginOption) {
 		router.get(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
 			let blError = new BlError('').className('EndpointGetExpress').methodName('loginGetWithId');
-			let accessToken: AccessToken = req.user.jwtPayload;
+			let accessToken: AccessToken = req.user.accessToken;
+			if (!accessToken) this.resHandler.sendErrorResponse(res, new BlError('accessToken not found').code(905));
 			
 			if (loginOptions && loginOptions.restrictedToUserOrAbove) {
 				this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(

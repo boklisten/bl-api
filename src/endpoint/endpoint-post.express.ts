@@ -8,6 +8,7 @@ import * as passport from "passport";
 import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
 import {SEDocument} from "../db/model/se.document";
 import {BlError} from "../bl-error/bl-error";
+import {AccessToken} from "../auth/token/access-token/access-token";
 
 export class EndpointPostExpress {
 	private resHandler: SEResponseHandler;
@@ -30,25 +31,20 @@ export class EndpointPostExpress {
 	private createLoginPost(router: Router, url: string, collectionName: string,  loginOptions: LoginOption) {
 		router.post(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
 			let blError = new BlError('').className('EndpointPostExpress').methodName('loginPost');
-			this.seToken.validatePayload(req.user.jwtPayload, loginOptions).then(
-				(jwtPayload: JwtPayload) => {
-					this.endpointMongoDb.post(new SEDocument(collectionName, req.body)).then(
-						(docs: SEDocument[]) => {
-							this.resHandler.sendResponse(res, new BlapiResponse(docs));
-						},
-						(error: BlError) => {
-							this.resHandler.sendErrorResponse(res, error.add(blError.msg('could not post document')
-								.store('url', url)
-								.store('body', req.body)));
-						});
+			const accessToken: AccessToken = req.user.accessToken;
+			
+			if (!accessToken) return this.resHandler.sendErrorResponse(res, new BlError('accessToken not found')
+				.code(905)
+				.store('url', url));
+			
+			this.endpointMongoDb.post(new SEDocument(collectionName, req.body)).then(
+				(docs: SEDocument[]) => {
+					this.resHandler.sendResponse(res, new BlapiResponse(docs));
 				},
-				(validatePayloadError: BlError) => {
-					this.resHandler.sendErrorResponse(res, validatePayloadError.add(
-						blError
-							.msg('could not validate jwt payload')
-							.store('jwtPayload', req.user.jwtPayload)
-							.store('url', url)
-					));
+				(error: BlError) => {
+					this.resHandler.sendErrorResponse(res, error.add(blError.msg('could not post document')
+						.store('url', url)
+						.store('body', req.body)));
 				});
 		});
 	}

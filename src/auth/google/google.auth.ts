@@ -5,7 +5,7 @@ import {Router} from 'express';
 
 import {OAuth2Strategy} from 'passport-google-oauth';
 import * as passport from "passport";
-import {JwtAuth} from "../token/jwt.auth";
+import {AccessTokenAuth} from "../token/access-token/access-token.auth";
 import {ApiPath} from "../../config/api-path";
 import {BlError} from "../../bl-error/bl-error";
 import {SEResponseHandler} from "../../response/se.response.handler";
@@ -13,11 +13,11 @@ import {BlapiResponse} from "bl-model";
 import {SEDocument} from "../../db/model/se.document";
 
 export class GoogleAuth {
-	private jwtAuth: JwtAuth;
+	private jwtAuth: AccessTokenAuth;
 	private apiPath: ApiPath;
 	private resHandler: SEResponseHandler;
 
-	constructor(router: Router, jwtAuth: JwtAuth) {
+	constructor(router: Router, jwtAuth: AccessTokenAuth) {
 		this.jwtAuth = jwtAuth;
 		this.apiPath = new ApiPath();
 		this.resHandler = new SEResponseHandler();

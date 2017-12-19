@@ -7,6 +7,7 @@ import * as passport from "passport";
 import {BlapiResponse} from 'bl-model';
 import {SEDocument} from "../db/model/se.document";
 import {BlError} from "../bl-error/bl-error";
+import {AccessToken} from "../auth/token/access-token/access-token";
 
 export class EndpointPatchExpress {
 	private seToken: SEToken;
@@ -27,36 +28,31 @@ export class EndpointPatchExpress {
 	private createLoginPatch(router: Router, url: string, loginOptions: LoginOption) {
 		router.patch(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
 			let blError = new BlError('').className('EndpointPatchExpress').methodName('createLoginPatch');
-			this.seToken.validatePayload(req.user.jwtPayload, loginOptions).then(
-				(jwtPayload: JwtPayload) => {
-					if (loginOptions.restrictedToUserOrAbove) {
-						this.enpointMongoDb.getAndValidateByUserBlid(req.params.id, jwtPayload.blid).then(
-							(docs: SEDocument[]) => {
-								this.patchDocument(res, req.params.id, req.body);
-							},
-							(validateByBlidError: BlError) => {
-								if (this.seToken.permissionAbove(jwtPayload.permission, loginOptions.permissions)) {
-									this.patchDocument(res, req.params.id, req.body);
-								} else {
-									this.resHandler.sendErrorResponse(res, validateByBlidError.add(
-										blError
-											.msg('could not validate blid')
-											.store('jwtPayload', jwtPayload)
-											.store('url', url)).code(401));
-								}
-							});
-					} else {
+			const accessToken: AccessToken = req.user.accessToken;
+			if (!accessToken) return this.resHandler.sendErrorResponse(res,
+				new BlError('accessToken not found')
+					.store('url', url)
+					.code(905));
+			
+			if (loginOptions.restrictedToUserOrAbove) {
+				this.enpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
+					(docs: SEDocument[]) => {
 						this.patchDocument(res, req.params.id, req.body);
-					}
-				},
-				(validatePayloadError: BlError) => {
-					this.resHandler.sendErrorResponse(res, validatePayloadError.add(
-						blError
-							.msg('could not validate jwt payload')
-							.store('jwtPayload', req.user.jwtPayload)
-							.store('url', url)
-					));
-				});
+					},
+					(validateByBlidError: BlError) => {
+						if (this.seToken.permissionAbove(accessToken.permission, loginOptions.permissions)) {
+							this.patchDocument(res, req.params.id, req.body);
+						} else {
+							this.resHandler.sendErrorResponse(res, validateByBlidError.add(
+								blError
+									.msg('could not validate blid')
+									.store('accessTokenPayload', accessToken)
+									.store('url', url)).code(905));
+						}
+					});
+			} else {
+				this.patchDocument(res, req.params.id, req.body);
+			}
 		});
 	}
 

@@ -4,7 +4,6 @@ import {BlError} from "../../../bl-error/bl-error";
 import isEmail = require("validator/lib/isEmail");
 import {RefreshTokenSecret} from "./refresh-token.secret";
 import {TokenConfig} from "../token.config";
-import {RefreshToken} from "./refresh-token";
 
 export class RefreshTokenCreator {
 	private jwt = require('jsonwebtoken');

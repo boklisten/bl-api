@@ -1,6 +1,6 @@
 
 
-import {JwtAuth} from "./token/jwt.auth";
+import {AccessTokenAuth} from "./token/access-token/access-token.auth";
 import {GoogleAuth} from "./google/google.auth";
 import {FacebookAuth} from "./facebook/facebook.auth";
 import {Router} from "express";
@@ -26,7 +26,7 @@ import {TokenHandler} from "./token/token.handler";
 import {TokenConfig} from "./token/token.config";
 
 export class BlAuth {
-	private jwtAuth: JwtAuth;
+	private jwtAuth: AccessTokenAuth;
 	private googleAuth: GoogleAuth;
 	private facebookAuth: FacebookAuth;
 	private localAuth: LocalAuth;
@@ -54,7 +54,7 @@ export class BlAuth {
 		let tokenConfig = new TokenConfig(appConfig.token.access, appConfig.token.refresh);
 		let tokenHandler = new TokenHandler(userHandler,tokenConfig);
 
-		this.jwtAuth = new JwtAuth(userHandler);
+		this.jwtAuth = new AccessTokenAuth(userHandler);
 		
 		this.googleAuth = new GoogleAuth(router, this.jwtAuth);
 		this.facebookAuth = new FacebookAuth(router, this.jwtAuth);
