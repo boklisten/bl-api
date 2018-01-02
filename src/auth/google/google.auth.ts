@@ -12,11 +12,13 @@ import {BlapiResponse} from "bl-model";
 import {SEDocument} from "../../db/model/se.document";
 import {TokenHandler} from "../token/token.handler";
 import * as blConfig from '../../application-config';
+import {UserHandler} from "../user/user.handler";
+import {User} from "../../config/schema/user/user";
 
 export class GoogleAuth {
 	private apiPath: ApiPath;
 
-	constructor(router: Router, private resHandler: SEResponseHandler, private tokenHandler: TokenHandler) {
+	constructor(router: Router, private resHandler: SEResponseHandler, private tokenHandler: TokenHandler, private userHandler: UserHandler) {
 		this.apiPath = new ApiPath();
 
 		passport.use(new OAuth2Strategy({
@@ -28,7 +30,6 @@ export class GoogleAuth {
 				let provider = blConfig.APP_CONFIG.login.google.name;
 				let providerId = profile.id;
 				let username = '';
-				console.log('hello there, wtf');
 				
 				for (let profileEmail of profile.emails) {
 					if (profileEmail.type === 'account') {
@@ -36,24 +37,30 @@ export class GoogleAuth {
 					}
 				}
 				
-				if (!username || !providerId) {
+				if (!username || username.length <= 0 || !providerId) {
 					return done(null, false, new BlError('username not found by google')
 						.code(902)
 						.store('provider', provider)
 						.store('providerId', providerId));
 				}
 				
-				console.log('trying to create tokens');
-				
-				tokenHandler.createTokens(username).then(
-					(tokens: {accessToken: string, refreshToken: string}) => {
-						console.log('we are logged in!');
-						done(null, tokens);
+				userHandler.exists(provider, providerId).then(
+					(exists: boolean) => {
+						this.createTokens(username, done);
 					},
-					(createTokenErrors: BlError) => {
-						return done(null, false, new BlError('could not create tokens')
-							.code(906)
-							.add(createTokenErrors));
+					(existsError: BlError) => {
+						userHandler.create(username, provider, providerId).then(
+							(user: User) => {
+								this.createTokens(user.username, done);
+							},
+							(createError: BlError) => {
+								createError.printStack();
+								done(new BlError('could not create user')
+									.store('username', username)
+									.store('provider', provider)
+									.store('providerId', providerId)
+									.add(createError));
+							});
 					});
 			}
 		));
@@ -61,34 +68,29 @@ export class GoogleAuth {
 		this.createAuthGet(router);
 		this.createCallbackGet(router);
 	}
+	
+	private createTokens(username, done) {
+		this.tokenHandler.createTokens(username).then(
+			(tokens: {accessToken: string, refreshToken: string}) => {
+				done(null, tokens);
+			},
+			(createTokenErrors: BlError) => {
+				createTokenErrors.printStack();
+				return done(new BlError('could not create tokens')
+					.code(906)
+					.store('username', username)
+					.add(createTokenErrors));
+			});
+		}
 
 	private createAuthGet(router: Router) {
-		router.get(this.apiPath.createPath('auth/google'), (req, res, next) => {
-			console.log('we are here now!');
-			passport.authenticate('google', {scope: ['profile', 'email'] }, (error, tokens: {accessToken: string, refreshToken: string}, blError: BlError) => {
-				console.log('hello there..');
-				if (error) {
-					console.log('there was an error...', error);
-					return next(error);
-				}
-				if (!tokens) {
-					console.log('no tokens...');
-					return this.resHandler.sendErrorResponse(res, blError);
-				}
-				req.login(tokens, (error) => {
-					if (error) {
-						console.log('there is an error here..', error);
-						return next(error);
-					}
-					console.log('hello there!!');
-					
-				})
-			})(req, res, next);
-		})
+		router.get(this.apiPath.createPath('auth/google'),
+			passport.authenticate('google', {scope: ['profile', 'email'] }));
 	}
 
 	private createCallbackGet(router: Router) {
-		router.get(this.apiPath.createPath(this.apiPath.createPath('auth/google/callback')),
+		router.get(this.apiPath.createPath('auth/google/callback'),
+			passport.authenticate(blConfig.APP_CONFIG.login.google.name, {failureRedirect: this.apiPath.createPath('login') }),
 			(req: any, res: any) => {
 				this.resHandler.sendResponse(res, new BlapiResponse([
 					new SEDocument('accessToken', req.user.accessToken),

@@ -33,13 +33,11 @@ export class UserHandler {
 				(exists: boolean) => {
 					resolve(exists);
 				},
-				(error: BlError) => {
-					reject(error.add(
-						new BlError('there was an error when searching for user')
-							.className('UserHandler')
-							.methodName('exists')
-							.store('provider', provider)
-							.store('providerId', providerId)));
+				(existsError: BlError) => {
+					reject(new BlError('there was an error when searching for user')
+						.store('provider', provider)
+						.store('providerId', providerId)
+						.add(existsError));
 				});
 		});
 	}

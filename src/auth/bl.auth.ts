@@ -56,7 +56,7 @@ export class BlAuth {
 
 		this.jwtAuth = new AccessTokenAuth(userHandler);
 		
-		this.googleAuth = new GoogleAuth(router, resHandler, tokenHandler);
+		this.googleAuth = new GoogleAuth(router, resHandler, tokenHandler, userHandler);
 		this.facebookAuth = new FacebookAuth(router, resHandler, tokenHandler, userHandler);
 		this.localAuth = new LocalAuth(router, resHandler, localLoginValidator, tokenHandler);
 		this.tokenEndpoint = new TokenEndpoint(router, resHandler, tokenHandler);
