@@ -13,46 +13,78 @@ import {TokenHandler} from "../token/token.handler";
 import {SEResponseHandler} from "../../response/se.response.handler";
 import {BlapiResponse} from "bl-model";
 import {SEDocument} from "../../db/model/se.document";
+import {User} from "../../config/schema/user/user";
 
 export class FacebookAuth {
-	private userHandler: UserHandler;
 	private apiPath: ApiPath;
 
 
-	constructor(router: Router, private tokenHandler: TokenHandler, private resHandler: SEResponseHandler) {
+	constructor(router: Router, private resHandler: SEResponseHandler, private tokenHandler: TokenHandler, private userHandler: UserHandler) {
 		this.apiPath = new ApiPath;
 		
 
 		passport.use(new Strategy({
 				clientID: secrets.boklistentest.facebook.clientId,
 				clientSecret: secrets.boklistentest.facebook.secret,
-				callbackURL: this.apiPath.createPath('auth/facebook/callback')
+				callbackURL: this.apiPath.createPath('auth/facebook/callback'),
+				profileFields: ['id', 'email', 'name']
 
 			},
 			(accessToken: any, refreshToken: any, profile: any, done: any) => {
 				let provider = 'facebook';
 				let providerId = profile.id;
-				let username = profile.displayName;
 				
-				tokenHandler.createTokens(username).then(
-					(tokens: {accessToken: string, refreshToken: string}) => {
-						done(null, tokens);
+				let username = '';
+				
+				if (profile.emails && profile.emails[0] && profile.emails[0].value) {
+					username = profile.emails[0].value;
+				}
+				
+				if (!username) {
+					return done(new BlError('username not found from facebook')
+						.code(902)
+						.store('provider', provider)
+						.store('providerId', providerId));
+				}
+				
+				userHandler.exists(provider, providerId).then(
+					(exists: boolean) => {
+						this.createTokens(username, done);
 					},
-					(createTokenError: BlError) => {
-						done(new BlError('could not create tokens')
-							.add(createTokenError)
-							.store('username', username));
+					(existsError: BlError) => {
+						userHandler.create(username, provider, providerId).then(
+							(user: User) => {
+								this.createTokens(user.username, done);
+							},
+							(createError: BlError) => {
+								done(new BlError('could not create user')
+									.store('username', username)
+									.store('provider', provider)
+									.store('providerId', providerId)
+									.add(createError));
+							});
 					});
-			}
-		));
+			}));
 
 		this.createAuthGet(router);
 		this.createCallbackGet(router);
+	};
+	
+	private createTokens(username, done) {
+		this.tokenHandler.createTokens(username).then(
+			(tokens: {accessToken: string, refreshToken: string}) => {
+				done(null, tokens);
+			},
+			(createTokenError: BlError) => {
+				done(new BlError('could not create tokens')
+					.add(createTokenError)
+					.store('username', username));
+			});
 	}
 
 	private createAuthGet(router: Router) {
 		router.get(this.apiPath.createPath('auth/facebook'),
-			passport.authenticate('facebook', {scope: ['public_profile']}));
+			passport.authenticate('facebook', {scope: ['public_profile', 'email']}));
 	}
 
 	private createCallbackGet(router: Router) {

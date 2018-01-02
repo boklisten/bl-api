@@ -41,6 +41,17 @@ export const APP_CONFIG = {
 		}
 	},
 	test: true,
+	login: {
+		google: {
+			name: 'google'
+		},
+		facebook: {
+			name: 'facebook'
+		},
+		local: {
+			name: 'local'
+		}
+	},
 	token: {
 		refresh: {
 			iss: 'boklisten.co',
