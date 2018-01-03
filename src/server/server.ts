@@ -6,6 +6,7 @@ import {BlAuth} from "../auth/bl.auth";
 import {BlEndpoint} from "../endpoint/bl.endpoint";
 import {RedisHandler} from "../db/redis/redis.handler";
 import {BlError} from "../bl-error/bl-error";
+import {SendgridWrapper} from "../email/sendgrid.wrapper";
 
 let bodyParser = require('body-parser');
 
@@ -27,6 +28,11 @@ export class Server {
 
 		this.mongoDbStart();
 		this.serverStart();
+		
+		let sendGridConfig = require('../config/secrets').secrets.email.sendgrid;
+		let testMail = new SendgridWrapper(sendGridConfig);
+		
+		//testMail.send('aholskil@gmail.com', 'hello@boklisten.co', 'test mail', '<b>hello there </b>');
 	}
 
 	private mongoDbStart() {
