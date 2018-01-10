@@ -1,5 +1,5 @@
 
-import {secrets} from "../../config/secrets";
+import {SECRETS} from "../../config/secrets";
 
 import {Router} from 'express';
 
@@ -22,8 +22,8 @@ export class GoogleAuth {
 		this.apiPath = new ApiPath();
 
 		passport.use(new OAuth2Strategy({
-				clientID: secrets.boklistentest.google.clientId,
-				clientSecret: secrets.boklistentest.google.secret,
+				clientID: SECRETS.boklistentest.google.clientId,
+				clientSecret: SECRETS.boklistentest.google.secret,
 				callbackURL: this.apiPath.createPath('auth/google/callback')
 			},
 			(accessToken: any, refreshToken: any, profile: any, done: any) => {

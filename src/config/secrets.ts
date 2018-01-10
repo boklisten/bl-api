@@ -1,6 +1,6 @@
 
 
-export const secrets = {
+export const SECRETS = {
 	boklistentest: {
 		google: {
 			clientId: '726094728786-56vffoqudidqsnmr1nojloh29kgoudg3.apps.googleusercontent.com',

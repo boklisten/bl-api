@@ -4,10 +4,6 @@ import * as passport from "passport";
 import {APP_CONFIG} from "../application-config";
 import {BlAuth} from "../auth/bl.auth";
 import {BlEndpoint} from "../endpoint/bl.endpoint";
-import {RedisHandler} from "../db/redis/redis.handler";
-import {BlError} from "../bl-error/bl-error";
-import {SendgridWrapper} from "../email/sendgrid.wrapper";
-
 let bodyParser = require('body-parser');
 
 export class Server {
@@ -17,7 +13,6 @@ export class Server {
 	private blEndpoint: BlEndpoint;
 	private blAuth: BlAuth;
 
-
 	constructor() {
 
 		this.initialServerConfig();
@@ -25,14 +20,9 @@ export class Server {
 
 		this.blEndpoint = new BlEndpoint(this.router);
 		this.blAuth = new BlAuth(this.router);
-
+		
 		this.mongoDbStart();
 		this.serverStart();
-		
-		let sendGridConfig = require('../config/secrets').secrets.email.sendgrid;
-		let testMail = new SendgridWrapper(sendGridConfig);
-		
-		//testMail.send('aholskil@gmail.com', 'hello@boklisten.co', 'test mail', '<b>hello there </b>');
 	}
 
 	private mongoDbStart() {

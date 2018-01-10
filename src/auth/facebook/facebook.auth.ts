@@ -3,7 +3,7 @@
 import {Router} from 'express';
 
 import * as passport from "passport";
-import {secrets} from "../../config/secrets";
+import {SECRETS} from "../../config/secrets";
 import {Strategy} from 'passport-facebook'
 import {UserHandler} from "../user/user.handler";
 import {AccessTokenAuth} from "../token/access-token/access-token.auth";
@@ -24,8 +24,8 @@ export class FacebookAuth {
 		
 
 		passport.use(new Strategy({
-				clientID: secrets.boklistentest.facebook.clientId,
-				clientSecret: secrets.boklistentest.facebook.secret,
+				clientID: SECRETS.boklistentest.facebook.clientId,
+				clientSecret: SECRETS.boklistentest.facebook.secret,
 				callbackURL: this.apiPath.createPath('auth/facebook/callback'),
 				profileFields: ['id', 'email', 'name']
 
