@@ -8,8 +8,8 @@ import * as passport from "passport";
 import {JwtPayload, SEToken} from "../auth/token/se.token";
 import {SEDocument} from "../db/model/se.document";
 
-import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
-import {BlError} from "../bl-error/bl-error";
+import {BlapiResponse, BlError} from 'bl-model';
+
 import {BlErrorHandler} from "../bl-error/bl-error-handler";
 import {AccessToken} from "../auth/token/access-token/access-token";
 import {Hook} from "../hook/hook";
@@ -35,7 +35,6 @@ export class EndpointDeleteExpress {
 	
 	private createLoginDelete(router: Router, url: string, method: Method) {
 		router.delete(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
-			let blError = new BlError('').className('EndpointDeleteExpress').methodName('loginDelete');
 			const accessToken: AccessToken = req.user.accessToken;
 			
 			if (!accessToken) return this.resHandler.sendErrorResponse(res, new BlError('no access token found').store('url', url).code(905));
@@ -45,15 +44,17 @@ export class EndpointDeleteExpress {
 					(docs: SEDocument[]) => {//user has access
 						this.handleDeleteDocument(res, req.params.id, method.hook);
 					},
-					(error: BlError) => {
+					(validateByUserBlidError: BlError) => {
 						
 						if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
 							this.handleDeleteDocument(res, req.params.id, method.hook)
 						} else {
-							this.resHandler.sendErrorResponse(res, error.add(
-								blError.msg('user does not have the right permission')
+							this.resHandler.sendErrorResponse(res,
+								new BlError('user does not have the right permission')
 									.store('accessTokenPayload', accessToken)
-									.store('url', url)).code(401));
+									.store('url', url)
+									.code(401)
+									.add(validateByUserBlidError));
 						}
 					});
 			} else {

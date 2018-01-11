@@ -11,7 +11,7 @@ import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
 import {SEDocument} from "../../db/model/se.document";
 import {SEDbQuery} from "../../query/se.db-query";
 import {Promise} from 'es6-promise';
-import {BlError} from "../../bl-error/bl-error";
+import {BlError} from "bl-model";
 
 chai.use(chaiAsPromised);
 

@@ -3,7 +3,7 @@
 import {UserPermission} from "../user/user-permission";
 import {User} from "../../config/schema/user/user";
 import {LoginOption} from "../../endpoint/endpoint.express";
-import {BlError} from "../../bl-error/bl-error";
+import {BlError} from "bl-model";
 
 export type JwtPayload = {
 	iss: string,

@@ -1,7 +1,7 @@
 
 
 import {SeCrypto} from "../../../crypto/se.crypto";
-import {BlError} from "../../../bl-error/bl-error";
+import {BlError} from "bl-model";
 
 export class LocalLoginPasswordValidator {
 	

@@ -1,7 +1,7 @@
 import {SESchema} from "../config/schema/se.schema";
 import {SEDocument} from "../db/model/se.document";
 import {SEDbQuery} from "../query/se.db-query";
-import {BlError} from "../bl-error/bl-error";
+import {BlError} from "bl-model";
 
 
 export class EndpointMongodb {

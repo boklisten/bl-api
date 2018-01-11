@@ -4,10 +4,9 @@ import {Router} from "express";
 import {ApiPath} from "../../config/api-path";
 import {SEResponseHandler} from "../../response/se.response.handler";
 import {RefreshTokenValidator} from "./refresh/refresh-token.validator";
-import {BlError} from "../../bl-error/bl-error";
 import {TokenHandler} from "./token.handler";
 import {RefreshToken} from "./refresh/refresh-token";
-import {BlapiResponse} from "bl-model";
+import {BlapiResponse, BlError} from "bl-model";
 import {SEDocument} from "../../db/model/se.document";
 
 export class TokenEndpoint {

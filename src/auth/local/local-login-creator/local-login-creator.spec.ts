@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {LocalLoginCreator} from "./local-login-creator";
-import {BlError} from "../../../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {HashedPasswordGenerator} from "../password/hashed-password-generator";
 import {SaltGenerator} from "../salt/salt-generator";
 import {SeCrypto} from "../../../crypto/se.crypto";

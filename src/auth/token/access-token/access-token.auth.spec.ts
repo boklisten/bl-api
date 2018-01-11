@@ -9,7 +9,6 @@ import {AccessTokenAuth} from "./access-token.auth";
 import {SESchema} from "../../../config/schema/se.schema";
 import {UserSchema} from "../../../config/schema/user/user.schema";
 import {UserDetailSchema} from "../../../config/schema/user/user-detail.schema";
-import {BlError} from "../../../bl-error/bl-error";
 import {EndpointMongodb} from "../../../endpoint/endpoint.mongodb";
 chai.use(chaiAsPromised);
 

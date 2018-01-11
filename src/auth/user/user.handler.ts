@@ -9,7 +9,7 @@ import {SEDocument} from "../../db/model/se.document";
 import {UserDetail} from "../../config/schema/user/user-detail";
 import {Blid} from "../blid/blid";
 import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
-import {BlError} from "../../bl-error/bl-error";
+import {BlError} from "bl-model";
 
 export class UserHandler {
 	private userMongoHandler: EndpointMongodb;

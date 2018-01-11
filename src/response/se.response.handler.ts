@@ -3,7 +3,7 @@
 import {Response} from 'express';
 import {BlapiResponse} from "bl-model";
 import {BlapiErrorResponse} from "bl-model";
-import {BlError} from "../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {BlErrorHandler} from "../bl-error/bl-error-handler";
 
 export class SEResponseHandler {

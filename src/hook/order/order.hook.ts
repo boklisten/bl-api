@@ -2,7 +2,7 @@
 
 import {Hook} from "../hook";
 import {HookConfig} from "../hook.config";
-import {BlError} from "../../bl-error/bl-error";
+import {BlError} from "bl-model";
 
 export class OrderHook extends Hook {
 	

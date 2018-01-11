@@ -7,7 +7,7 @@ import {SESchema} from "../../config/schema/se.schema";
 import {UserSchema} from "../../config/schema/user/user.schema";
 import {UserDetailSchema} from "../../config/schema/user/user-detail.schema";
 import {UserHandler} from "./user.handler";
-import {BlError} from "../../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {SEDbQuery} from "../../query/se.db-query";
 import {Promise} from 'es6-promise';
 import {SEDocument} from "../../db/model/se.document";

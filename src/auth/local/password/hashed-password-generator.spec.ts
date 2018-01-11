@@ -4,7 +4,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {HashedPasswordGenerator} from "./hashed-password-generator";
 import {SaltGenerator} from "../salt/salt-generator";
-import {BlError} from "../../../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {isNullOrUndefined} from "util";
 import {SeCrypto} from "../../../crypto/se.crypto";
 import {Promise} from 'es6-promise';

@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {RefreshTokenValidator} from "./refresh-token.validator";
-import {BlError} from "../../../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {RefreshTokenCreator} from "./refresh-token.creator";
 import {RefreshToken} from "./refresh-token";
 import {TokenConfig} from "../token.config";

@@ -4,7 +4,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {AccessTokenCreator} from "./access-token.creator";
 import {UserPermission} from "../../user/user-permission";
-import {BlError} from "../../../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {RefreshTokenCreator} from "../refresh/refresh-token.creator";
 import {RefreshToken} from "../refresh/refresh-token";
 import {AccessToken} from "./access-token";

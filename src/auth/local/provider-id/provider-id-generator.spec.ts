@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {ProviderIdGenerator} from "./provider-id-generator";
-import {BlError} from "../../../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {SeCrypto} from "../../../crypto/se.crypto";
 
 chai.use(chaiAsPromised);

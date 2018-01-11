@@ -2,10 +2,9 @@ import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
 import {LocalLogin} from "../../config/schema/login-local/local-login";
 import {SEDbQuery} from "../../query/se.db-query";
 import {SEDocument} from "../../db/model/se.document";
-import {BlapiErrorResponse} from "bl-model";
+import {BlapiErrorResponse, BlError} from "bl-model";
 import {isEmail} from 'validator';
 import {LocalLoginConfig} from "../../config/schema/login-local/local-login.config";
-import {BlError} from "../../bl-error/bl-error";
 
 export class LocalLoginHandler {
 	private localLoginConfig: LocalLoginConfig;

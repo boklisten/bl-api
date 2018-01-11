@@ -4,9 +4,8 @@ import {SEResponseHandler} from "../response/se.response.handler";
 import {Request, Response, Router} from "express";
 import {LoginOption, Method} from "./endpoint.express";
 import * as passport from "passport";
-import {BlapiResponse} from 'bl-model';
+import {BlapiResponse, BlError} from 'bl-model';
 import {SEDocument} from "../db/model/se.document";
-import {BlError} from "../bl-error/bl-error";
 import {AccessToken} from "../auth/token/access-token/access-token";
 import {Hook} from "../hook/hook";
 

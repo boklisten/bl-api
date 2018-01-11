@@ -4,7 +4,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {RedisHandler} from "../../db/redis/redis.handler";
 import {TokenHandler} from "./token.handler";
-import {BlError} from "../../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {UserPermission} from "../user/user-permission";
 import {Promise} from 'es6-promise';
 import {UserHandler} from "../user/user.handler";

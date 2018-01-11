@@ -1,6 +1,6 @@
 
 
-import {BlError} from "./bl-error";
+import {BlError} from "bl-model";
 import {BlapiErrorResponse} from "bl-model";
 import {SEDocument} from "../db/model/se.document";
 
