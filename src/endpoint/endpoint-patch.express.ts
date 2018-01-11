@@ -8,6 +8,7 @@ import {BlapiResponse} from 'bl-model';
 import {SEDocument} from "../db/model/se.document";
 import {BlError} from "../bl-error/bl-error";
 import {AccessToken} from "../auth/token/access-token/access-token";
+import {Hook} from "../hook/hook";
 
 export class EndpointPatchExpress {
 	private seToken: SEToken;
@@ -21,51 +22,61 @@ export class EndpointPatchExpress {
 
 	public createPatchEndpoint(router: Router, method: Method, url: string) {
 		if (method.login && method.loginOptions) {
-			this.createLoginPatch(router, url, method.loginOptions);
+			this.createLoginPatch(router, url, method);
 		}
 	}
 
-	private createLoginPatch(router: Router, url: string, loginOptions: LoginOption) {
+	private createLoginPatch(router: Router, url: string, method: Method) {
 		router.patch(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
-			let blError = new BlError('').className('EndpointPatchExpress').methodName('createLoginPatch');
 			const accessToken: AccessToken = req.user.accessToken;
 			if (!accessToken) return this.resHandler.sendErrorResponse(res,
 				new BlError('accessToken not found')
 					.store('url', url)
 					.code(905));
 			
-			if (loginOptions.restrictedToUserOrAbove) {
+			if (method.loginOptions.restrictedToUserOrAbove) {
 				this.enpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
 					(docs: SEDocument[]) => {
-						this.patchDocument(res, req.params.id, req.body);
+						this.patchDocument(res, req.params.id, req.body, method.hook);
 					},
 					(validateByBlidError: BlError) => {
-						if (this.seToken.permissionAbove(accessToken.permission, loginOptions.permissions)) {
-							this.patchDocument(res, req.params.id, req.body);
+						if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
+							this.patchDocument(res, req.params.id, req.body, method.hook);
 						} else {
-							this.resHandler.sendErrorResponse(res, validateByBlidError.add(
-								blError
-									.msg('could not validate blid')
-									.store('accessTokenPayload', accessToken)
-									.store('url', url)).code(905));
+							this.resHandler.sendErrorResponse(res, new BlError('could not validate blid')
+								.store('accessTokenPayload', accessToken)
+								.store('url', url)
+								.code(905)
+								.add(validateByBlidError));
 						}
 					});
 			} else {
-				this.patchDocument(res, req.params.id, req.body);
+				this.patchDocument(res, req.params.id, req.body, method.hook);
 			}
 		});
 	}
 
-	private patchDocument(res: Response, id: string, body: any) {
+	private patchDocument(res: Response, id: string, body: any, hook?: Hook) {
 		this.enpointMongoDb.patch(id, body).then(
 			(docs: SEDocument[]) => {
-				this.resHandler.sendResponse(res, new BlapiResponse(docs));
+				this.handleResponse(res, docs, hook);
 			},
-			(error: BlError) => {
-				this.resHandler.sendErrorResponse(res, error.add(new BlError('could not patch document')
+			(patchError: BlError) => {
+				this.resHandler.sendErrorResponse(res, new BlError('could not patch document')
 					.className('EndpointPatchExpress')
-					.methodName('patchDocument')));
+					.methodName('patchDocument')
+					.add(patchError));
 			});
+	}
+	
+	private handleResponse(res: any, docs: SEDocument[], hook?: Hook) {
+		if (hook) {
+			hook.run(docs).then(() => {
+				this.resHandler.sendResponse(res, new BlapiResponse(docs));
+			}).catch((hookError: BlError) => {
+				this.resHandler.sendErrorResponse(res, new BlError('hook failed').add(hookError).code(800));
+			});
+		}
 	}
 
 }
