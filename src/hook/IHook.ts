@@ -1,4 +1,4 @@
 
 export interface IHook {
-	run(err: any, next?: IHook, req?: any, res?: any): void;
+	run(docs?: any[], req?: any, res?: any): Promise<boolean>;
 }

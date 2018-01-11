@@ -10,7 +10,12 @@ export class Hook implements IHook {
 		this._hookConfig = hookConfig;
 	}
 	
-	run(err: any, next?: IHook, req?: any, res?: any) {
-		throw new Error('Hook: Run method needs to be implemented');
+	public run(docs?: any[], req?: any): Promise<boolean> {
+		return Promise.reject(new Error('method is not implemented'));
+	}
+	
+	public handleRequest(): boolean {
+		if (this._hookConfig.handleRequest) return true;
+		return false;
 	}
 }

@@ -12,6 +12,7 @@ import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
 import {BlError} from "../bl-error/bl-error";
 import {BlErrorHandler} from "../bl-error/bl-error-handler";
 import {AccessToken} from "../auth/token/access-token/access-token";
+import {Hook} from "../hook/hook";
 
 export class EndpointDeleteExpress {
 	private resHandler: SEResponseHandler;
@@ -28,49 +29,57 @@ export class EndpointDeleteExpress {
 
 	public createDeleteEndpoint(router: Router, method: Method, url: string) {
 		if (method.login && method.loginOptions) {
-			this.createLoginDelete(router, url, method.loginOptions);
+			this.createLoginDelete(router, url, method);
 		}
 	}
-
 	
-	private createLoginDelete(router: Router, url: string, loginOptions: LoginOption) {
+	private createLoginDelete(router: Router, url: string, method: Method) {
 		router.delete(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
 			let blError = new BlError('').className('EndpointDeleteExpress').methodName('loginDelete');
 			const accessToken: AccessToken = req.user.accessToken;
 			
 			if (!accessToken) return this.resHandler.sendErrorResponse(res, new BlError('no access token found').store('url', url).code(905));
 			
-			if (loginOptions.restrictedToUserOrAbove) {
+			if (method.loginOptions.restrictedToUserOrAbove) {
 				this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
 					(docs: SEDocument[]) => {//user has access
-						this.deleteDocument(res, req.params.id);
+						this.handleDeleteDocument(req, res, req.params.id, method.hook);
 					},
 					(error: BlError) => {
 						
-						if (this.seToken.permissionAbove(accessToken.permission, loginOptions.permissions)) {
-							this.deleteDocument(res, req.params.id);
+						if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
+							this.handleDeleteDocument(req, res, req.params.id, method.hook)
 						} else {
 							this.resHandler.sendErrorResponse(res, error.add(
 								blError.msg('user does not have the right permission')
 									.store('accessTokenPayload', accessToken)
 									.store('url', url)).code(401));
 						}
-						
 					});
 			} else {
-				this.deleteDocument(res, req.params.id);
+				this.handleDeleteDocument(req, res, req.params.id, method.hook);
 			}
 		});
 	}
-
-	private deleteDocument(res: Response, id: string) {
-		
+	
+	private handleDeleteDocument(req: any, res: any, id: string, hook?: Hook) {
 		this.endpointMongoDb.deleteById(id).then(
 			(deletedDocs: SEDocument[]) => {
+				if (hook) {
+					hook.run(deletedDocs, req).then(() => {
+						return this.resHandler.sendResponse(res, new BlapiResponse(deletedDocs));
+					}).catch((hookError: BlError) => {
+						return this.resHandler.sendErrorResponse(res, new BlError('the hook failed')
+							.className('deleteExpress')
+							.methodName('handleDeleteDocument')
+							.code(800)
+							.add(hookError));
+					});
+				}
 				this.resHandler.sendResponse(res, new BlapiResponse(deletedDocs));
 			},
 			(error: BlError) => {
-				this.resHandler.sendErrorResponse(res, error.add(new BlError('could not delete document by id').store('documentId', id)));
+				return Promise.reject(new BlError('could not delete document by id').store('documentId', id));
 			});
 	}
 }
