@@ -1,4 +1,6 @@
 
+import {SEDocument} from "../db/model/se.document";
+
 export interface IHook {
-	run(docs?: any[]): Promise<boolean>;
+	run(docs?: SEDocument[]): Promise<boolean>;
 }

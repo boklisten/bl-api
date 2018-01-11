@@ -22,14 +22,21 @@ export class BlErrorHandler {
 		let blErrorResponse = {httpStatus: 500, code: blError.getCode(), message: 'server error'};
 		
 		if (!blError.getCode() || blError.getCode() === 0) blErrorResponse;
+		if (blError.getCode() > 699 && blError.getCode() < 800) return this.documentErrorResponse(blError.getCode());
+		if (blError.getCode() >= 800 && blError.getCode() <= 899) return this.serverErrorResponse(blError.getCode());
+		if (blError.getCode() >= 900 && blError.getCode() <= 999) return this.authErrorResponse(blError.getCode());
+	}
+	
+	private serverErrorResponse(code: number) {
+		let blErrorResponse = {httpStatus: 500, code: code, message: 'server error'};
 		
-		if (blError.getCode() > 699 && blError.getCode() < 800) {
-			return this.documentErrorResponse(blError.getCode());
+		switch (code) {
+			case 800:
+				blErrorResponse.message = 'server error';
+				break
 		}
 		
-		if (blError.getCode() >= 900 && blError.getCode() <= 999) {
-			return this.authErrorResponse(blError.getCode());
-		}
+		return blErrorResponse;
 	}
 	
 	private documentErrorResponse(code: number) {

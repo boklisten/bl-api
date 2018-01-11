@@ -2,6 +2,7 @@
 
 import {IHook} from "./IHook";
 import {HookConfig} from "./hook.config";
+import {SEDocument} from "../db/model/se.document";
 
 export class Hook implements IHook {
 	private _hookConfig: HookConfig;
@@ -10,7 +11,7 @@ export class Hook implements IHook {
 		this._hookConfig = hookConfig;
 	}
 	
-	public run(docs?: any[]): Promise<boolean> {
+	public run(docs?: SEDocument[]): Promise<boolean> {
 		return Promise.reject(new Error('method is not implemented'));
 	}
 }

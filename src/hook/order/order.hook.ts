@@ -2,6 +2,7 @@
 
 import {Hook} from "../hook";
 import {HookConfig} from "../hook.config";
+import {BlError} from "../../bl-error/bl-error";
 
 export class OrderHook extends Hook {
 	
@@ -10,7 +11,8 @@ export class OrderHook extends Hook {
 	}
 	
 	public run(docs: any[]): Promise<boolean> {
-		console.log('hello from OrderHook!');
-		return Promise.resolve(true);
+		console.log('hello from OrderHook!', docs);
+		//return Promise.resolve(true);
+		return Promise.reject(new BlError('dont work...'));
 	}
 }
