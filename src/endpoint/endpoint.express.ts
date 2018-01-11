@@ -12,6 +12,7 @@ import {EndpointPostExpress} from "./endpoint-post.express";
 import {EndpointPatchExpress} from "./endpoint-patch.express";
 import {EndpointDeleteExpress} from "./endpoint-delete.express";
 import {ApiPath} from "../config/api-path";
+import {Hook} from "../hook/hook";
 
 
 
@@ -32,7 +33,8 @@ export type Path = {
 export type Method = {
 	method: "get" | "post" | "put" | "patch" | "delete",
 	login: boolean,
-	loginOptions?: LoginOption
+	loginOptions?: LoginOption,
+	hook?: Hook
 }
 
 export type LoginOption = {

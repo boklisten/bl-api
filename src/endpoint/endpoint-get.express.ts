@@ -13,6 +13,7 @@ import {BlapiErrorResponse, BlapiResponse} from 'bl-model';
 import {BlError} from "../bl-error/bl-error";
 import {BlErrorHandler} from "../bl-error/bl-error-handler";
 import {AccessToken} from "../auth/token/access-token/access-token";
+import {Hook} from "../hook/hook";
 
 
 export class EndpointGetExpress {
@@ -41,13 +42,18 @@ export class EndpointGetExpress {
 			if (method.login) {
 				this.createLoginGet(router, url, validSearchParams, method.loginOptions);
 			} else {
-				this.createGet(router, url, validSearchParams);
+				this.createGet(router, url, validSearchParams, method.hook);
 			}
 		}
 	}
 
-	private createGet(router: Router, url: string, validSearchParams?: ValidParam[]) {
+	private createGet(router: Router, url: string, validSearchParams?: ValidParam[], hook?: Hook) {
 		router.get(url, (req: Request, res: Response) => {
+			if (hook) {
+				hook.run(() => {
+					console.log('the hook is done')
+				});
+			}
 			this.handleGetWithQuery(req, res, validSearchParams);
 		});
 	}
