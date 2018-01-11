@@ -10,12 +10,7 @@ export class Hook implements IHook {
 		this._hookConfig = hookConfig;
 	}
 	
-	public run(docs?: any[], req?: any): Promise<boolean> {
+	public run(docs?: any[]): Promise<boolean> {
 		return Promise.reject(new Error('method is not implemented'));
-	}
-	
-	public handleRequest(): boolean {
-		if (this._hookConfig.handleRequest) return true;
-		return false;
 	}
 }

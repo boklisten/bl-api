@@ -9,8 +9,8 @@ export class OrderHook extends Hook {
 		super(hookConfig);
 	}
 	
-	public run(next: any) {
+	public run(docs: any[]): Promise<boolean> {
 		console.log('hello from OrderHook!');
-		next();
+		return Promise.resolve(true);
 	}
 }

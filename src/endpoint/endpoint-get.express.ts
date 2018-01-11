@@ -34,55 +34,56 @@ export class EndpointGetExpress {
 	public createGetEndpoint(router: Router, path: Path, method: Method, url: string, validSearchParams?: ValidParam[]) {
 		if (path.id) {
 			if (method.login) {
-				this.createLoginGetWithId(router, url, method.loginOptions);
+				this.createLoginGetWithId(router, url, method);
 			} else {
 				this.createGetWithId(router, url);
 			}
 		} else {
 			if (method.login) {
-				this.createLoginGet(router, url, validSearchParams, method.loginOptions);
+				this.createLoginGet(router, url, method, validSearchParams);
 			} else {
-				this.createGet(router, url, validSearchParams, method.hook);
+				this.createGet(router, url, method, validSearchParams);
 			}
 		}
 	}
 
-	private createGet(router: Router, url: string, validSearchParams?: ValidParam[], hook?: Hook) {
+	private createGet(router: Router, url: string, method: Method, validSearchParams?: ValidParam[]) {
 		router.get(url, (req: Request, res: Response) => {
-			if (hook) {
-				hook.run(() => {
-					console.log('the hook is done')
-				});
+			if (method.hook) {
+				method.hook.run().then(() => {
+					console.log('hook are done!');
+				})
 			}
 			this.handleGetWithQuery(req, res, validSearchParams);
 		});
 	}
 
-	private createGetWithId(router: Router, url: string) {
+	private createGetWithId(router: Router, url: string, method: Method) {
 		router.get(url, (req: Request, res: Response) => {
 			this.handleGetWithId(req, res);
 		});
 	}
 
-	private createLoginGet(router: Router, url: string, validSearchParams?: ValidParam[], loginOptions?: LoginOption) {
+	private createLoginGet(router: Router, url: string, method: Method, validSearchParams?: ValidParam[]) {
 		router.get(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
 			this.handleGetWithQuery(req, res, validSearchParams);
 		});
 	}
 
-	private createLoginGetWithId(router: Router, url: string, loginOptions?: LoginOption) {
+	private createLoginGetWithId(router: Router, url: string, method: Method) {
 		router.get(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
 			let blError = new BlError('').className('EndpointGetExpress').methodName('loginGetWithId');
 			let accessToken: AccessToken = req.user.accessToken;
 			if (!accessToken) this.resHandler.sendErrorResponse(res, new BlError('accessToken not found').code(905));
 			
-			if (loginOptions && loginOptions.restrictedToUserOrAbove) {
+			if (method.loginOptions && method.loginOptions.restrictedToUserOrAbove) {
 				this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
 					(docs: SEDocument[]) => {
+						this.handleHook(method.hook)
 						this.resHandler.sendResponse(res, new BlapiResponse(docs));
 					},
 					(validateByBlidError: BlError) => {
-						if (this.seToken.permissionAbove(accessToken.permission, loginOptions.permissions)) {
+						if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
 							this.handleGetWithId(req, res);
 						} else {
 							this.resHandler.sendErrorResponse(res, validateByBlidError.add(
@@ -132,5 +133,13 @@ export class EndpointGetExpress {
 		} catch (error) {
 			this.resHandler.sendErrorResponse(res, blError.store('unknown error', error));
 		}
+	}
+	
+	private handleResponse(req: any, res: any, docs: SEDocument[], hook?: any) {
+		this.handleHook(hook, docs, req)
+	}
+	
+	private handleHook(hook: Hook, docs?: any[], req?: any) {
+	
 	}
 }

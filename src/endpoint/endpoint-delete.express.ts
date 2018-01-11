@@ -43,12 +43,12 @@ export class EndpointDeleteExpress {
 			if (method.loginOptions.restrictedToUserOrAbove) {
 				this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
 					(docs: SEDocument[]) => {//user has access
-						this.handleDeleteDocument(req, res, req.params.id, method.hook);
+						this.handleDeleteDocument(res, req.params.id, method.hook);
 					},
 					(error: BlError) => {
 						
 						if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
-							this.handleDeleteDocument(req, res, req.params.id, method.hook)
+							this.handleDeleteDocument(res, req.params.id, method.hook)
 						} else {
 							this.resHandler.sendErrorResponse(res, error.add(
 								blError.msg('user does not have the right permission')
@@ -57,16 +57,16 @@ export class EndpointDeleteExpress {
 						}
 					});
 			} else {
-				this.handleDeleteDocument(req, res, req.params.id, method.hook);
+				this.handleDeleteDocument(res, req.params.id, method.hook);
 			}
 		});
 	}
 	
-	private handleDeleteDocument(req: any, res: any, id: string, hook?: Hook) {
+	private handleDeleteDocument(res: any, id: string, hook?: Hook) {
 		this.endpointMongoDb.deleteById(id).then(
 			(deletedDocs: SEDocument[]) => {
 				if (hook) {
-					hook.run(deletedDocs, req).then(() => {
+					hook.run(deletedDocs).then(() => {
 						return this.resHandler.sendResponse(res, new BlapiResponse(deletedDocs));
 					}).catch((hookError: BlError) => {
 						return this.resHandler.sendErrorResponse(res, new BlError('the hook failed')
