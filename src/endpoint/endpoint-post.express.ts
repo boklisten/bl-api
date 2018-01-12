@@ -40,7 +40,8 @@ export class EndpointPostExpress {
 					this.resHandler.sendErrorResponse(res, new BlError('could not post document')
 						.store('url', url)
 						.store('body', req.body)
-						.add(postError));
+						.add(postError)
+						.code(700));
 				});
 		});
 	}

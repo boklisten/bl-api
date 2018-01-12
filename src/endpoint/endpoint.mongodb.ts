@@ -36,7 +36,7 @@ export class EndpointMongodb {
 
 					if (sdocs.length == 0) {
 						return reject(new BlError('not found')
-							.code(404)
+							.code(702)
 							.className('EndpointMongoDb')
 							.methodName('get')
 							.store('dbQuery', dbQuery));
@@ -58,7 +58,7 @@ export class EndpointMongodb {
 							.msg('error when trying to find schema or object not found')
 							.data(error)
 							.store('dbQuery', dbQuery)
-							.code(404));
+							.code(702));
 			        }
 		    	    resolve(true);
 			    });
@@ -73,11 +73,10 @@ export class EndpointMongodb {
 
 			newDocument.save((error, doc) => {
 				if (error) {
-					reject(this.handleError(new BlError('error when trying to save document')
+					return reject(this.handleError(new BlError('error when trying to save document')
 						.data(document)
 						.methodName('post')
 						.className('EndpointMongoDb'), error));
-					return
 				}
 
 				resolve([new SEDocument(this.schema.title, doc)]);
@@ -94,7 +93,7 @@ export class EndpointMongodb {
 				}
 				
 				if (doc === null) {
-					reject(blError.msg('not found').code(404));
+					reject(blError.msg('not found').code(702));
 					return;
 				}
 
@@ -116,7 +115,7 @@ export class EndpointMongodb {
 				}
 
 				if (document === null) {
-					return reject(blError.msg('could not find document with id "' + id +'"').code(404));
+					return reject(blError.msg('could not find document with id "' + id +'"').code(702));
 				}
 
 				document.set(doc.data);
@@ -143,7 +142,7 @@ export class EndpointMongodb {
 				}
 
 				if (doc === null) {
-					return reject(blError.msg('not found').code(404).data(id));
+					return reject(blError.msg('not found').code(702).data(id));
 				}
 				resolve([new SEDocument(this.schema.title, doc)]);
 			});
@@ -178,11 +177,11 @@ export class EndpointMongodb {
 	
 	private handleError(blError: BlError, error: any): BlError {
 		if (error.name === 'CastError') {
-			return blError.code(404);
+			return blError.code(702);
 		} else if (error.name == 'ValidationError') {
-			return blError.code(400);
+			return blError.code(701);
 		} else {
-			return blError.code(500);
+			return blError.code(200);
 		}
 	}
 }

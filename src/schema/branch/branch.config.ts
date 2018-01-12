@@ -2,7 +2,7 @@ import {EndpointConfig, Path} from "../../endpoint/endpoint.express";
 import {SESchema} from "../../config/schema/se.schema";
 import {BranchSchema} from "./branch.schema";
 import {ValidParam} from "../../query/valid-param/db-query-valid-params";
-import {OrderHook} from "../../hook/order/order.hook";
+import {OrderHook} from "../order/order.hook";
 import {Branch} from "bl-model";
 
 export class BranchConfig implements EndpointConfig {
@@ -16,8 +16,7 @@ export class BranchConfig implements EndpointConfig {
 			methods: [
 				{
 					method: 'get',
-					login: false,
-					hook: new OrderHook({type: Branch})
+					login: false
 				},
 				{
 					method: 'post',

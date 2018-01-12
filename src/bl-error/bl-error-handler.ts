@@ -21,13 +21,27 @@ export class BlErrorHandler {
 	private getErrorResponse(blError: BlError): BlErrorResponse {
 		let blErrorResponse = {httpStatus: 500, code: blError.getCode(), message: 'server error'};
 		
-		if (!blError.getCode() || blError.getCode() === 0) blErrorResponse;
-		if (blError.getCode() > 699 && blError.getCode() < 800) return this.documentErrorResponse(blError.getCode());
-		if (blError.getCode() >= 800 && blError.getCode() <= 899) return this.serverErrorResponse(blError.getCode());
-		if (blError.getCode() >= 900 && blError.getCode() <= 999) return this.authErrorResponse(blError.getCode());
+		if (!blError.getCode() || blError.getCode() === 0) return blErrorResponse;
+		else if (blError.getCode() >= 200 && blError.getCode() <= 299) return this.serverErrorResponse(blError.getCode());
+		else if (blError.getCode() >= 700 && blError.getCode() <= 799) return this.documentErrorResponse(blError.getCode());
+		else if (blError.getCode() >= 800 && blError.getCode() <= 899) return this.requestErrorResponse(blError.getCode());
+		else if (blError.getCode() >= 900 && blError.getCode() <= 999) return this.authErrorResponse(blError.getCode());
+		else return blErrorResponse;
 	}
 	
 	private serverErrorResponse(code: number) {
+		let blErrorResponse = {httpStatus: 500, code: code, message: 'server error'};
+		
+		switch (code) {
+			case 200:
+				blErrorResponse.message = 'server error';
+				break;
+		}
+		
+		return blErrorResponse;
+	}
+	
+	private requestErrorResponse(code: number) {
 		let blErrorResponse = {httpStatus: 500, code: code, message: 'server error'};
 		
 		switch (code) {

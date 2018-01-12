@@ -2,6 +2,7 @@ import {EndpointConfig, Path} from "../../endpoint/endpoint.express";
 import {SESchema} from "../../config/schema/se.schema";
 import {OrderSchema} from "./order.schema";
 import {ValidParam} from "../../query/valid-param/db-query-valid-params";
+import {OrderHook} from "./order.hook";
 
 export class OrderConfig implements EndpointConfig {
 	basePath: string = 'api';
@@ -24,7 +25,8 @@ export class OrderConfig implements EndpointConfig {
 					login: true,
 					loginOptions: {
 						permissions: ["customer", "employee", "admin"]
-					}
+					},
+					hook: new OrderHook()
 				}
 			]
 		},
