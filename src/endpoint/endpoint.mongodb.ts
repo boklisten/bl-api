@@ -2,6 +2,7 @@ import {SESchema} from "../config/schema/se.schema";
 import {SEDocument} from "../db/model/se.document";
 import {SEDbQuery} from "../query/se.db-query";
 import {BlError} from "bl-model";
+import * as mongoose from "mongoose";
 
 
 export class EndpointMongodb {
@@ -44,6 +45,32 @@ export class EndpointMongodb {
 					
 					resolve(sdocs);
 				})
+		});
+	}
+	
+	public getManyById(ids: string[]): Promise<SEDocument[]> {
+		const idArr = [];
+		
+		for (let id of ids) {
+			try {
+				idArr.push(mongoose.Types.ObjectId(id));
+			} catch (e) {
+				return Promise.reject(new BlError('id in array is not valid'));
+			}
+		}
+		
+		return new Promise((resolve, reject) => {
+			this.schema.mongooseModel.find({'_id': {$in: idArr}}).exec((error, docs) => {
+				if (error || docs.length <= 0) return reject(this.handleError(new BlError('error when trying to find document'), error));
+				
+				let sdocs: SEDocument[] = [];
+				
+				for (let doc of docs) {
+					sdocs.push(new SEDocument(this.schema.title, doc));
+				}
+				
+				resolve(sdocs);
+			});
 		});
 	}
 

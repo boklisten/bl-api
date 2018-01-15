@@ -5,11 +5,8 @@ import {HookConfig} from "./hook.config";
 import {SEDocument} from "../db/model/se.document";
 
 export class Hook implements IHook {
-	private _hookConfig: HookConfig;
 	
-	constructor(hookConfig: HookConfig) {
-		this._hookConfig = hookConfig;
-	}
+	constructor() {}
 	
 	public run(docs?: SEDocument[]): Promise<boolean> {
 		return Promise.reject(new Error('method is not implemented'));

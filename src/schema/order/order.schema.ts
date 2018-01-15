@@ -26,7 +26,25 @@ export let OrderSchema = {
 		required: true
 	},
 	orderItems: {
-		type: [Schema.Types.ObjectId],
+		type: [
+			{
+				item: {
+					type: Schema.Types.ObjectId,
+					required: true
+				},
+				amount: {
+					type: Schema.Types.Number,
+					required: true
+				},
+				type: {
+					type: Schema.Types.String,
+					required: true
+				},
+				customerItem: {
+					type: Schema.Types.String
+				}
+			}
+		],
 		default: []
 	},
 	payments: {
@@ -61,7 +79,7 @@ export let OrderSchema = {
 	},
 	user: {
 		type: {
-			blid: {
+			id: {
 				type: Schema.Types.String
 			}
 		},

@@ -1,0 +1,34 @@
+
+{
+  "employee": "5a1d67cef14cbe78ff047d1b",
+  "customer": "5a1fd3745882d811bb9db993",
+  "amount": 100,
+  "application": "bl-admin",
+  "byCustomer": false,
+  "branch": "5a1d67cdf14cbe78ff047d00",
+  "orderItems": [
+    {
+      "item": "5a1d67cdf14cbe78ff047d03",
+      "amount": 50,
+      "type": "rent"
+    },
+    {
+      "item": "5a1d67cdf14cbe78ff047d06",
+      "amount": 50,
+      "type": "buy"
+    }
+  ],
+  "payments": [
+    {
+      "method": "card",
+      "amount": 100,
+      "confirmed": false,
+      "byBranch": false,
+      "branch": "5a1d67cdf14cbe78ff047d00",
+      "time": "1"
+    }
+  ],
+  "user": {
+    "id": "5a1fd3745882d811bb9db993"
+  }
+}
