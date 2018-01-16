@@ -1,102 +1,46 @@
 
 
 import {Hook} from "../../hook/hook";
-import {HookConfig} from "../../hook/hook.config";
-import {BlDocument, BlError, Item, Order, OrderItem} from "bl-model";
+import {BlError, CustomerItem, Item, Order, OrderItem, OrderPayment} from "bl-model";
 import {SEDocument} from "../../db/model/se.document";
-import {EmailHandler, EmailTemplateInput} from "bl-email";
-import {SECRETS} from "../../config/secrets";
-import {EMAIL_TEMPLATE_CONFIG} from "../../config/email/emailTemplateConfig";
-import {EndpointExpress} from "../../endpoint/endpoint.express";
 import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
+import {OrderValidator} from "./order-validator/order-validator";
 
 export class OrderHook extends Hook {
+	private orderValidator: OrderValidator;
 	
 	constructor(private itemMongo: EndpointMongodb, private customerItemMongo: EndpointMongodb) {
 		super();
+		this.orderValidator = new OrderValidator(itemMongo, customerItemMongo);
 	}
 
-	public run(docs: SEDocument[]): Promise<boolean> {
-		
-		const emailItems = [];
-		
+	public async run(docs: SEDocument[]): Promise<boolean> {
+		if (!docs || docs.length <= 0) return Promise.reject(new BlError('no documents provided'));
 		
 		for (let doc of docs) {
+			
+			try {
+				this.validateDocument(doc);
+			} catch (e) {
+				return Promise.reject(new BlError('the document is not valid').add(e));
+			}
+			
 			const order = doc.data as Order;
 			
-			
+			this.orderValidator.validate(order).then(() => {
+				
+				console.log('the order was validated!!');
+				
+			}).catch((orderValidatorError: BlError) => {
+				return Promise.reject(new BlError('order could not be validated').code(701).add(orderValidatorError));
+			});
 		}
-	/*
-		const emailHandler: EmailHandler = new EmailHandler({sendgrid: {apiKey: SECRETS.email.sendgrid.apiKey}});
-		const emailTemplateInput: EmailTemplateInput = {
-			toEmail: "aholskil@gmail.com",
-			emailType: "receipt",
-			items: [
-				{
-					status: "ordered",
-					title: "Signa"
-				}
-			]
-		};
-		//emailHandler.send(EMAIL_TEMPLATE_CONFIG, )
-		
-		//return Promise.resolve(true);
-		*/
 		return Promise.resolve(true);
 	}
-
-
-
-	private validateOrderItems(orderItems: OrderItem[]): boolean {
-		for (let orderItem of orderItems) {
-			if (orderItem.type === "rent") {
-				if (!orderItem.customerItem) return false
-			}
-		}
-	}
 	
-	private haveTypeRent(orderItems: OrderItem[]): boolean {
-		for (let orderItem of orderItems) {
-			if (orderItem.type === 'rent') return true;
-		}
-		return false;
-	}
-	
-	private getEmailItems(orderItems: OrderItem[]): Promise<{title: string, status: string, price: number, deadline: string}> {
-		return new Promise((resolve, reject) => {
-			
-			let orderItemIds = [];
-			let emailItemsMid = [];
-	
-			let customerItemIds = [];
-			
-			for (let orderItem of orderItems) {
-				orderItemIds.push(orderItem.item);
-				
-				emailItemsMid[orderItem.item] = {price: orderItem.amount};
-				
-				if (orderItem.customerItem) {
-					customerItemIds.push(orderItem.customerItem);
-				}
-			}
-			
-			this.itemMongo.getManyById(orderItemIds).then((oiDocs: SEDocument[]) => {
-				for (let oidoc of oiDocs) {
-					const item = oidoc.data as Item;
-					emailItemsMid[item.id] = {price: emailItemsMid[item.id].price, title: item.title};
-				}
-			}).catch((oiDocError: BlError) => {
-				console.log('there was an error..', oiDocError);
-			});
-			
-			if (this.haveTypeRent(orderItems)) {
-				this.customerItemMongo.getManyById(customerItemIds).then((ciDocs: SEDocument[]) => {
-					console.log('we got some customerItems!', ciDocs);
-				}).catch((ciDocError: BlError) => {
-					console.log('there was an error getting customerItems...', ciDocError);
-				})
-			}
-			
-		});
+	private validateDocument(doc: SEDocument): boolean {
+		if (doc.documentName !== 'order') throw new BlError('document is not of valid type "order", it was "' + doc.documentName);
+		if (!doc.data) throw new BlError('no data provided on document');
+		return true;
 	}
 }

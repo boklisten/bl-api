@@ -3,6 +3,9 @@ import {SESchema} from "../../config/schema/se.schema";
 import {OrderSchema} from "./order.schema";
 import {ValidParam} from "../../query/valid-param/db-query-valid-params";
 import {OrderHook} from "./order.hook";
+import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
+import {ItemSchema} from "../item/item.schema";
+import {CustomerItemSchema} from "../customer-item/customer-item.schema";
 
 export class OrderConfig implements EndpointConfig {
 	basePath: string = 'api';
@@ -26,7 +29,7 @@ export class OrderConfig implements EndpointConfig {
 					loginOptions: {
 						permissions: ["customer", "employee", "admin"]
 					},
-					hook: new OrderHook()
+					hook: new OrderHook(new EndpointMongodb(new SESchema('items', ItemSchema)), new EndpointMongodb(new SESchema('customerItems', CustomerItemSchema)))
 				}
 			]
 		},
