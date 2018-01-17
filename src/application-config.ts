@@ -63,5 +63,8 @@ export const APP_CONFIG = {
 			aud: 'boklisten.co',
 			expiresIn: "24 hours"
 		}
+	},
+	date: {
+		cancelDays: 14
 	}
 };

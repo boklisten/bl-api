@@ -1,6 +1,8 @@
 
 import {EndpointMongodb} from "../../../../endpoint/endpoint.mongodb";
 import {BlError, CustomerItem, OrderItem} from "bl-model";
+import * as moment from 'moment';
+import {APP_CONFIG} from "../../../../application-config";
 
 export class CustomerItemValidator {
 	
@@ -16,6 +18,12 @@ export class CustomerItemValidator {
 				case 'rent':
 					this.validateOrderItemTypeRent(orderItem, cItem);
 					break;
+				case 'buy':
+					this.validateOrderItemTypeBuy(orderItem, cItem);
+					break;
+				case 'cancel':
+					this.validateOrderItemTypeCancel(orderItem, cItem);
+					break;
 			}
 		}
 		return true;
@@ -24,7 +32,25 @@ export class CustomerItemValidator {
 	private validateOrderItemTypeRent(orderItem: OrderItem, customerItem: CustomerItem): boolean {
 		if (orderItem.item !== customerItem.item) throw new BlError('orderItem.item is not equal to customerItem.item');
 		if (customerItem && orderItem.amount !== customerItem.totalAmount) throw new BlError('orderItem.amount is not equal to customerItem.totalAmount');
+		if (!customerItem.user || !customerItem.user.id) throw new BlError('customerItem.user is undefined');
+		if (customerItem.returned) throw new BlError('customerItem.returned is true when orderItem.type is of type "rent"');
 		return true;
+	}
 	
+	private validateOrderItemTypeBuy(orderItem: OrderItem, customerItem: CustomerItem): boolean {
+		if (orderItem.customerItem) throw new BlError('orderItem.customerItem is defined when type is "buy"');
+		return true;
+	}
+	
+	private validateOrderItemTypeCancel(orderItem: OrderItem, customerItem: CustomerItem): boolean {
+		if (customerItem) {
+			if (customerItem.handout) {
+				if (customerItem.returned) throw new BlError('customerItem.returned can not be true when orderItem.type is cancel');
+				if (!customerItem.handoutTime) throw new BlError('customerItem.handoutTime is not defined when customerItem.handout is true');
+				if (moment().isAfter(moment(customerItem.handoutTime).day(APP_CONFIG.date.cancelDays))) throw new BlError('customerItem.handoutTime is longer ago than return policy');
+				if (customerItem.totalAmount != orderItem.amount) throw new BlError('orderItem.amount is not equal to customerItem.totalAmount');
+			}
+		}
+		return true;
 	}
 }

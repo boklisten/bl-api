@@ -233,23 +233,9 @@ describe('OrderValidator', () => {
 						done();
 					});
 				});
-				
-				it('orderItem is of type "rent" but does not have a customerItem id', (done) => {
-					testOrder.orderItems = [
-						{
-							type: "rent",
-							amount: 400,
-							item: 'i1'
-						}
-					];
-					
-					orderValidator.validate(testOrder).catch((orderValidatorError: BlError) => {
-						expect(orderValidatorError.getMsg()).to.contain('no customerItem');
-						done();
-					});
-				});
 			});
 		});
+		
 		context('CustomerItems is not valid', () => {
 			
 			it('should reject with BlError when a customerItem does not exist', (done) => {
@@ -268,48 +254,6 @@ describe('OrderValidator', () => {
 					done();
 				});
 			});
-			
-			context('when orderItem type is rent', () => {
-				it('should reject with BlError when customerItem totalAmount is not the same as orderItem amount', (done) => {
-					testOrder.orderItems = [
-						{
-							type: 'rent',
-							amount: 400,
-							item: 'i2',
-							customerItem: 'ci2'
-						}
-					];
-					
-					orderValidator.validate(testOrder).catch((err: BlError) => {
-						expect(err.getMsg()).to.contain('orderItem.amount is not equal to customerItem.totalAmount');
-						
-						done();
-					});
-				});
-				
-				it('should reject with BlError when customerItem.item is not equal to orderItem.item', (done) => {
-					testOrder.amount = 100;
-					testOrder.orderItems = [
-						{
-							type: 'rent',
-							amount: 100,
-							item: 'i1',
-							customerItem: 'ci2'
-						}
-					];
-					let payments: OrderPayment[] = [];
-					payments.push(testOrder.payments[0]);
-					payments[0].amount = 100;
-					testOrder.payments = payments;
-					
-					
-					orderValidator.validate(testOrder).catch((err: BlError) => {
-						expect(err.getMsg()).to.eql('orderItem.item is not equal to customerItem.item');
-						done();
-					});
-				});
-				
-			});
 		});
 		
 		context('items of orderItems is not valid', () => {
@@ -327,10 +271,6 @@ describe('OrderValidator', () => {
 				return orderValidator.validate(testOrder)
 					.should.be.rejectedWith(BlError);
 			});
-		});
-		
-		context('customerItems is ', () => {
-		    
 		});
 	});
 });

@@ -9,7 +9,6 @@ export let CustomerItemSchema = {
 	},
 	user: {
 		type: Schema.Types.ObjectId,
-		required: true
 	},
 	deadline: {
 		type: Schema.Types.Date,
