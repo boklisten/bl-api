@@ -2,11 +2,13 @@
 import {BlError, CustomerItem, Item, Order, OrderItem, OrderPayment} from "bl-model";
 import {EndpointMongodb} from "../../../endpoint/endpoint.mongodb";
 import {SEDocument} from "../../../db/model/se.document";
+import {CustomerItemValidator} from "./customer-item-validator/customer-item-validator";
 
 export class OrderValidator {
+	private customerItemValidator: CustomerItemValidator;
 	
 	constructor(private itemMongo: EndpointMongodb, private customerItemMongo: EndpointMongodb) {
-	
+		this.customerItemValidator = new CustomerItemValidator();
 	}
 	
 	public async validate(order: Order): Promise<boolean> {
@@ -18,11 +20,28 @@ export class OrderValidator {
 			const customerItems = await this.getCustomerItems(order.orderItems);
 			const items = await this.getItems(order.orderItems);
 			
+			this.customerItemValidator.validateWithOrderItems(order.orderItems, customerItems);
+			
+			//this.validateCustomerItems(order.orderItems, customerItems);
+			
 			return Promise.resolve(true);
 			
 		} catch (validateError) {
-			return Promise.reject(new BlError('order is not valid').add(validateError));
+			if (validateError instanceof BlError) return Promise.reject(validateError);
+			return Promise.reject(new BlError('order is not valid, unknown error'));
 		}
+	}
+	
+	private validateCustomerItems(orderItems: OrderItem[], customerItems: CustomerItem[]): boolean {
+		for (let orderItem of orderItems) {
+			let cItem = customerItems.find(customerItem => {return orderItem.customerItem === customerItem.id});
+			
+			if (orderItem.type == 'rent') {
+				if (orderItem.item !== cItem.item) throw new BlError('orderItem.item is not equal to customerItem.item');
+				if (cItem && orderItem.amount !== cItem.totalAmount) throw new BlError('orderItem.amount is not equal to customerItem.totalAmount');
+			}
+		}
+		return true;
 	}
 	
 	private getItems(orderItems: OrderItem[]): Promise<Item[]> {
@@ -54,6 +73,7 @@ export class OrderValidator {
 		return new Promise((resolve, reject) => {
 			this.customerItemMongo.getManyById(customerItemIds).then((docs: SEDocument[]) => {
 				let customerItems: CustomerItem[] = [];
+				
 				for (let doc of docs) {
 					customerItems.push(doc.data as CustomerItem);
 				}
