@@ -16,7 +16,32 @@ export class PriceValidator {
 			case 'sell':
 				this.validateOrderItemTypeSell(orderItem, item);
 				break;
+			case 'rent':
+				this.validateOrderItemTypeRent(orderItem, customerItem, item, branch);
+				break;
+			default:
+				throw new BlError('orderItem.type "' + orderItem.type + '" is not supported by PriceValidator');
 		}
+		return true;
+	}
+	
+	private validateOrderItemTypeRent(orderItem: OrderItem, customerItem: CustomerItem, item: Item, branch: Branch): boolean {
+		if (!orderItem.rentInfo) throw new BlError('orderItem.rentInfo is not defined when orderItem.type is rent');
+		if (orderItem.rentInfo.oneSemester == orderItem.rentInfo.twoSemesters) throw new BlError('orderItem.rentInfo.oneSemester and twoSemesters can not be equal');
+		if (orderItem.rentInfo.oneSemester) {
+			const calculatedPrice = this.calculateOrderItemPrice(item.price * branch.payment.rentPricePercentage.oneSemester, orderItem.discount);
+			if (calculatedPrice != orderItem.amount) {
+				throw new BlError('orderItem.amount is not correct, it was "' + orderItem.amount + '" but should be "' + calculatedPrice + '"');
+			}
+		}
+		
+		if (orderItem.rentInfo.twoSemesters) {
+			const calculatedPrice = this.calculateOrderItemPrice(item.price * branch.payment.rentPricePercentage.twoSemesters, orderItem.discount);
+			if (calculatedPrice != orderItem.amount) {
+				throw new BlError('orderItem.amount is not correct, it was "' + orderItem.amount + '" but should be "' + calculatedPrice + '"');
+			}
+		}
+		
 		return true;
 	}
 	

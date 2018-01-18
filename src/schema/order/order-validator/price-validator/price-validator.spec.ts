@@ -23,7 +23,7 @@ describe('PriceValidator', () => {
 				isbn: ''
 			},
 			desc: '',
-			price: 109.0,
+			price: 100.0,
 			sell: true,
 			sellPrice: 100,
 			rent: true,
@@ -62,7 +62,7 @@ describe('PriceValidator', () => {
 		testOrderItem = {
 			item: 'i1',
 			amount: 100,
-			type: "rent"
+			type: "buy"
 		};
 		
 		testBranch = {
@@ -77,9 +77,9 @@ describe('PriceValidator', () => {
 			payment: {
 				branchResponsible: false,
 				rentPricePercentage: {
-					base: 1.1,
-					oneSemester: 1.1,
-					twoSemesters: 1.2,
+					base: 0.70,
+					oneSemester: 0.5,
+					twoSemesters: 0.70,
 					buyout: 100
 				},
 				extendPrice: 100,
@@ -217,6 +217,119 @@ describe('PriceValidator', () => {
 				expect(() => {
 					priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
 				}).to.throw(BlError, /orderItem.amount is not correct/);
+			});
+		});
+		
+		context('when orderItem.type = rent', () => {
+		    beforeEach(() => {
+		    	testOrderItem.type = 'rent';
+			});
+			
+			it('should throw error if orderItem.rentInfo is undefined', () => {
+				testOrderItem.rentInfo = null;
+				
+				expect(() => {
+					priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch);
+				}).to.throw(BlError, /orderItem.rentInfo is not defined/);
+			});
+			
+			it('should throw error if both orderItem.rentInfo.oneSemester and twoSemesters is false or true at the same time', () => {
+				testOrderItem.rentInfo = {
+					oneSemester: true,
+					twoSemesters: true
+				};
+				
+				expect(() => {
+					priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch);
+				}).to.throw(BlError, /oneSemester and twoSemesters can not be equal/);
+			});
+			
+			context('when orderItem.rentInfo.oneSemester is set', () => {
+				beforeEach(() => {
+					testOrderItem.rentInfo = {oneSemester: true, twoSemesters: false};
+				});
+				
+				
+				it('should return true when orderItem.amount is equal to branch payment values * item.price', () => {
+					testBranch.payment.rentPricePercentage.oneSemester = 0.50;
+					testItem.price = 100;
+					testOrderItem.amount = 50;
+					testOrderItem.discount = 0;
+					
+					expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+						.to.be.true;
+				});
+				
+				it('should throw error when orderItem.amount is not equal to branch payment values * item.price', () => {
+					testBranch.payment.rentPricePercentage.oneSemester = 0.50;
+					testItem.price = 400;
+					testOrderItem.amount = 50;
+					testOrderItem.discount = 0;
+					
+					expect(() => {
+						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+					}).to.throw(BlError, /orderItem.amount is not correct/);
+				});
+				
+				it('should throw error when orderItem.amount is not equal to branch payment values * item.price + orderItem.discount', () => {
+					testBranch.payment.rentPricePercentage.oneSemester = 0.50;
+					testItem.price = 100;
+					testOrderItem.amount = 50;
+					testOrderItem.discount = -3;
+					
+					expect(() => {
+						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+					}).to.throw(BlError, /orderItem.amount is not correct/);
+				});
+			});
+			
+			context('when orderItem.rentInfo.twoSemester is set', () => {
+				beforeEach(() => {
+					testOrderItem.rentInfo = {oneSemester: false, twoSemesters: true};
+				});
+				
+				
+				it('should return true when orderItem.amount is equal to branch payment values * item.price', () => {
+					testBranch.payment.rentPricePercentage.twoSemesters = 0.50;
+					testItem.price = 100;
+					testOrderItem.amount = 50;
+					testOrderItem.discount = 0;
+					
+					expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+						.to.be.true;
+				});
+				
+				it('should return true when orderItem.amount is equal to branch payment values * item.price + orderItem.discount', () => {
+					testBranch.payment.rentPricePercentage.twoSemesters = 0.50;
+					testItem.price = 100;
+					testOrderItem.amount = 40;
+					testOrderItem.discount = -10;
+					
+					expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+						.to.be.true;
+				});
+				
+				it('should throw error when orderItem.amount is not equal to branch payment values * item.price', () => {
+					testBranch.payment.rentPricePercentage.twoSemesters = 0.50;
+					testItem.price = 400;
+					testOrderItem.amount = 50;
+					testOrderItem.discount = 0;
+					
+					expect(() => {
+						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+					}).to.throw(BlError, /orderItem.amount is not correct/);
+				});
+				
+				it('should throw error when orderItem.amount is not equal to branch payment values * item.price + orderItem.discount', () => {
+					testBranch.payment.rentPricePercentage.twoSemesters = 0.50;
+					testItem.price = 100;
+					testOrderItem.amount = 50;
+					testOrderItem.discount = -3;
+					
+					expect(() => {
+						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+					}).to.throw(BlError, /orderItem.amount is not correct/);
+				});
 			});
 		});
 	});
