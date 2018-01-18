@@ -8,11 +8,11 @@ import {PriceValidator} from "./price-validator";
 chai.use(chaiAsPromised);
 
 describe('PriceValidator', () => {
+	const priceValidator: PriceValidator = new PriceValidator();
 	let testItem: Item;
 	let testOrderItem: OrderItem;
 	let testBranch: Branch;
 	let testCustomerItem: CustomerItem;
-	const priceValidator: PriceValidator = new PriceValidator();
 	
 	beforeEach(() => {
 		testItem = {
