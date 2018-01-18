@@ -19,13 +19,31 @@ export class CustomerItemValidator {
 					this.validateOrderItemTypeRent(orderItem, cItem);
 					break;
 				case 'buy':
-					this.validateOrderItemTypeBuy(orderItem, cItem);
+					this.validateOrderItemTypeBuy(orderItem);
+					break;
+				case 'sell':
+					this.validateOrderItemTypeSell(orderItem);
 					break;
 				case 'cancel':
 					this.validateOrderItemTypeCancel(orderItem, cItem);
 					break;
+				case 'buyout':
+					this.validateOrderItemTypeBuyOut(orderItem, cItem);
+					break;
+				default:
+					throw new BlError('orderItem.type is not a valid type, it was "' + orderItem.type + '"');
 			}
 		}
+		return true;
+	}
+	
+	private validateOrderItemTypeBuyOut(orderItem: OrderItem, customerItem: CustomerItem): boolean {
+		if (!orderItem.customerItem) throw new BlError('orderItem.customerItem is not defined');
+		return true;
+	}
+	
+	private validateOrderItemTypeSell(orderItem: OrderItem): boolean {
+		if (orderItem.customerItem) throw new BlError('orderItem.customerItem is defined but the orderItem.type is cancel');
 		return true;
 	}
 	
@@ -37,7 +55,7 @@ export class CustomerItemValidator {
 		return true;
 	}
 	
-	private validateOrderItemTypeBuy(orderItem: OrderItem, customerItem: CustomerItem): boolean {
+	private validateOrderItemTypeBuy(orderItem: OrderItem): boolean {
 		if (orderItem.customerItem) throw new BlError('orderItem.customerItem is defined when type is "buy"');
 		return true;
 	}

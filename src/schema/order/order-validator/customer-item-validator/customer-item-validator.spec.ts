@@ -114,7 +114,7 @@ describe('CustomerItemValidator', () => {
 		});
 		
 		context('when orderItem.type is "cancel"', () => {
-			context('when orderItem.customerItem is defined', () => {
+			describe('when orderItem.customerItem is defined', () => {
 				it('should throw BlError if customerItem.handoutTime is over the return policy days (two weeks)', (done) => {
 					testOrderItems[0].type = 'cancel';
 					testCustomerItems[0].handout = true;
@@ -157,6 +157,35 @@ describe('CustomerItemValidator', () => {
 			});
 		});
 		
+		context('when orderItem.type is "sell"', () => {
+			it('should throw BlError if orderItem.customerItem is defined', (done) => {
+				testOrderItems[0].type = 'sell';
+				
+				try {
+					customerItemValidator.validateWithOrderItems(testOrderItems, testCustomerItems);
+				} catch (err) {
+					if (!(err instanceof BlError)) throw new Error('error is not an instance of BlError');
+					expect(err.getMsg()).to.contain('orderItem.customerItem is defined');
+					done();
+				}
+				
+			});
+		});
 		
+		context('when orderItem.type is "buyout"', () => {
+			it('should throw BlError if orderItem.customerItem is not defined', (done) => {
+				testOrderItems[0].type = 'buyout';
+				testOrderItems[0].customerItem = null;
+				
+				try {
+					customerItemValidator.validateWithOrderItems(testOrderItems, testCustomerItems);
+				} catch (err) {
+					if (!(err instanceof BlError)) throw new Error('error is not an instance of BlError');
+					expect(err.getMsg()).to.contain('orderItem.customerItem is not defined');
+					done();
+				}
+				
+			});
+		});
 	});
 });
