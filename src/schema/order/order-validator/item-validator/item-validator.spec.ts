@@ -11,7 +11,6 @@ describe('ItemValidator', () => {
 	
 	let testItem: Item;
 	let testOrderItem: OrderItem;
-	let testBranch: Branch;
 	const itemValidator: ItemValidator = new ItemValidator();
 	
 	beforeEach(() => {
@@ -39,32 +38,6 @@ describe('ItemValidator', () => {
 			amount: 100,
 			type: "rent"
 		};
-		
-		testBranch = {
-			id: 'b1',
-			name: 'testBranch',
-			type: 'school',
-			desc: '',
-			root: true,
-			childBranches: [''],
-			items: [],
-			openingHours: [],
-			payment: {
-				branchResponsible: true,
-				rentPricePercentage: {
-					base: 1.1,
-					oneSemester: 1.1,
-					twoSemesters: 1.2,
-					buyout: 100
-				},
-				extendPrice: 100,
-				acceptedMethods: []
-			},
-			comments: [],
-			active: true,
-			lastUpdated: new Date(),
-			creationTime: new Date()
-		}
 	});
 	
 	describe('#validateWithOrderItem()', () => {
