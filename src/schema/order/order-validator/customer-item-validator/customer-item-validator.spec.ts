@@ -52,6 +52,10 @@ describe('CustomerItemValidator', () => {
 			];
 		});
 		
+		it('should return true when using valid customerItems and valid orderItems', () => {
+			expect(customerItemValidator.validateWithOrderItems(testOrderItems, testCustomerItems)).to.be.true;
+		});
+		
 		context('when orderItem.type is "rent"', () => {
 			
 			it('should throw BlError when customerItem.item is not equal to orderItem.item', (done) => {

@@ -67,7 +67,12 @@ describe('ItemValidator', () => {
 		}
 	});
 	
-	describe('#validateWithOrderItem', () => {
+	describe('#validateWithOrderItem()', () => {
+		
+		it('should return true when using valid orderItem and valid item', () => {
+			expect(itemValidator.validateItemInOrder(testItem, testOrderItem)).to.be.true;
+		});
+		
 		it('should throw BlError when orderItem.item is not the same as item.id', () => {
 			testItem.id = 'notarealId';
 			testOrderItem.item = 'i4';
