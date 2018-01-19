@@ -117,10 +117,10 @@ describe('CustomerItemValidator', () => {
 			});
 		});
 		
-		context('when orderItem.type is "cancel"', () => {
+		context('when orderItem.type is "cancel-rent"', () => {
 			describe('when orderItem.customerItem is defined', () => {
 				it('should throw BlError if customerItem.handoutTime is over the return policy days (two weeks)', (done) => {
-					testOrderItems[0].type = 'cancel';
+					testOrderItems[0].type = 'cancel-rent';
 					testCustomerItems[0].handout = true;
 					testCustomerItems[0].handoutTime = new Date(1900, 1, 1);
 					try {
@@ -133,7 +133,7 @@ describe('CustomerItemValidator', () => {
 				});
 				
 				it('should throw BlError if customerItem.returned is true', (done) => {
-					testOrderItems[0].type = 'cancel';
+					testOrderItems[0].type = 'cancel-rent';
 					testCustomerItems[0].returned = true;
 					testCustomerItems[0].handout = true;
 					testCustomerItems[0].handoutTime = new Date();
@@ -147,7 +147,7 @@ describe('CustomerItemValidator', () => {
 				});
 				
 				it('should throw BlError if orderItem.amount is not the same as customerItem.totalAmount', (done) => {
-					testOrderItems[0].type = 'cancel';
+					testOrderItems[0].type = 'cancel-rent';
 					testOrderItems[0].amount = 1000;
 					testCustomerItems[0].totalAmount = 200;
 					try {

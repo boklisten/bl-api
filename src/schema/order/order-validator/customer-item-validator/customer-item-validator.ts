@@ -24,8 +24,8 @@ export class CustomerItemValidator {
 				case 'sell':
 					this.validateOrderItemTypeSell(orderItem);
 					break;
-				case 'cancel':
-					this.validateOrderItemTypeCancel(orderItem, cItem);
+				case 'cancel-rent':
+					this.validateOrderItemTypeCancelRent(orderItem, cItem);
 					break;
 				case 'buyout':
 					this.validateOrderItemTypeBuyOut(orderItem, cItem);
@@ -60,7 +60,7 @@ export class CustomerItemValidator {
 		return true;
 	}
 	
-	private validateOrderItemTypeCancel(orderItem: OrderItem, customerItem: CustomerItem): boolean {
+	private validateOrderItemTypeCancelRent(orderItem: OrderItem, customerItem: CustomerItem): boolean {
 		if (customerItem) {
 			if (customerItem.handout) {
 				if (customerItem.returned) throw new BlError('customerItem.returned can not be true when orderItem.type is cancel');
