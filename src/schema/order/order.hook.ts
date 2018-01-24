@@ -9,9 +9,9 @@ import {OrderValidator} from "./order-validator/order-validator";
 export class OrderHook extends Hook {
 	private orderValidator: OrderValidator;
 	
-	constructor(private itemMongo: EndpointMongodb, private customerItemMongo: EndpointMongodb) {
+	constructor(private itemMongo: EndpointMongodb, private customerItemMongo: EndpointMongodb, private branchMongo: EndpointMongodb) {
 		super();
-		this.orderValidator = new OrderValidator(itemMongo, customerItemMongo);
+		this.orderValidator = new OrderValidator(itemMongo, customerItemMongo, branchMongo);
 	}
 
 	public async run(docs: SEDocument[]): Promise<boolean> {
@@ -32,6 +32,8 @@ export class OrderHook extends Hook {
 				console.log('the order was validated!!');
 				
 			}).catch((orderValidatorError: BlError) => {
+				console.log('error when validating order..');
+				orderValidatorError.printStack();
 				return Promise.reject(new BlError('order could not be validated').code(701).add(orderValidatorError));
 			});
 		}

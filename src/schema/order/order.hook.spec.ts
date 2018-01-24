@@ -12,25 +12,9 @@ import {CustomerItemSchema} from "../customer-item/customer-item.schema";
 
 chai.use(chaiAsPromised);
 
-class EndpointMongoDbMock extends EndpointMongodb {
-	
-	public getManyById(ids: string[]): Promise<SEDocument[]> {
-		let returnItems: SEDocument[] = [];
-		for (let id of ids) {
-			if (!(['i1', 'i2', 'ci1', 'ci2'].indexOf(id) > -1)) return Promise.reject(new BlError('not found').code(702));
-			returnItems.push(new SEDocument(this.schema.title, {id: id}));
-		}
-		return Promise.resolve(returnItems);
-	}
-}
 
 describe('OrderHook', () => {
 	
-	const itemMongoMock = new EndpointMongoDbMock(new SESchema('items', ItemSchema));
-	const customerItemMongoMock = new EndpointMongoDbMock(new SESchema('items', CustomerItemSchema));
-	
-	
-	const orderHook: OrderHook = new OrderHook(itemMongoMock, customerItemMongoMock);
 	
 	describe('#run()', () => {
 		let validOrder: Order = new Order();
@@ -78,31 +62,6 @@ describe('OrderHook', () => {
 				creationTime: new Date()
 			};
 		});
-		
-		context('no documents provided', () => {
-			it('should reject with BlError', () => {
-				
-				return orderHook.run([])
-					.should.be.rejectedWith(BlError);
-			
-			});
-		});
-		
-		context('document are not of valid type', () => {
-			it('should reject with BlError when documentName is not "Order"', () => {
-				return orderHook.run([{documentName: 'someOtherValue', data: null}])
-					.should.be.rejectedWith(BlError);
-			});
-			
-			it('should reject with BlError when data is not defined', () => {
-				return orderHook.run([{documentName: 'order', data: null}])
-					.should.be.rejectedWith(BlError);
-			});
-		});
-		
-		
-		
-		
 		
 	});
 });

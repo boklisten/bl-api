@@ -2,7 +2,7 @@ import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
-import {Order, BlError, CustomerItem, Item, OrderPayment} from "bl-model";
+import {Order, BlError, CustomerItem, Item, OrderPayment, Branch} from "bl-model";
 import {SEDocument} from "../../../db/model/se.document";
 import {CustomerItemSchema} from "../../customer-item/customer-item.schema";
 import {SESchema} from "../../../config/schema/se.schema";
@@ -10,6 +10,7 @@ import {ItemSchema} from "../../item/item.schema";
 import {OrderValidator} from "./order-validator";
 import {EndpointMongodb} from "../../../endpoint/endpoint.mongodb";
 import * as sinon from 'sinon';
+import {BranchSchema} from "../../branch/branch.schema";
 
 chai.use(chaiAsPromised);
 
@@ -18,7 +19,8 @@ describe('OrderValidator', () => {
 	
 	const itemMongo = new EndpointMongodb(new SESchema('items', ItemSchema));
 	const customerItemMongo = new EndpointMongodb(new SESchema('customerItems', CustomerItemSchema));
-	const orderValidator: OrderValidator = new OrderValidator(itemMongo, customerItemMongo);
+	const branchMongo = new EndpointMongodb(new SESchema('branches', BranchSchema));
+	const orderValidator: OrderValidator = new OrderValidator(itemMongo, customerItemMongo, branchMongo);
 	
 	let testOrder: Order;
 	
@@ -68,6 +70,41 @@ describe('OrderValidator', () => {
 	});
 	
 	describe('#validate()', () => {
+		sinon.stub(branchMongo, 'getById').callsFake((id: string) => {
+			return new Promise((resolve, reject) => {
+			    if (id === 'b1') {
+			    	const branch: Branch = {
+							id: 'b1',
+							name: 'testBranch',
+							type: 'school',
+							desc: '',
+							root: true,
+							childBranches: [''],
+							items: [],
+							openingHours: [],
+							payment: {
+								branchResponsible: false,
+								rentPricePercentage: {
+									base: 0.70,
+									oneSemester: 0.5,
+									twoSemesters: 0.70,
+									buyout: 100
+								},
+								extendPrice: 100,
+								acceptedMethods: []
+							},
+							comments: [],
+							active: true,
+							lastUpdated: new Date(),
+							creationTime: new Date()
+			    	};
+					resolve([new SEDocument('branch', branch)]);
+				} else {
+			    	reject(new BlError('not found'));
+				}
+				
+			});
+		})
 		
 		sinon.stub(customerItemMongo, 'getManyById').callsFake((ids: string[]) => {
 				const testCustomerItem1: CustomerItem = {
@@ -202,75 +239,6 @@ describe('OrderValidator', () => {
 			if (ids.indexOf('i2') > -1) res.push(new SEDocument('item', testItem2))
 			if (res.length <= 0) return Promise.reject(new BlError('not found').code(702));
 			return Promise.resolve(res);
-		});
-		
-		
-		context('Order are not valid', () => {
-			describe('should reject with BlError when', () => {
-				
-				it('total amount is not equal to the total amount in orderItems', (done) => {
-					testOrder.amount = 340;
-					
-					orderValidator.validate(testOrder).catch((err: BlError) => {
-						expect(err.getMsg()).to.contain('not equal the total of all order item amounts');
-						done();
-					});
-				});
-				
-				it('total of all payments in Order does not equal the total amount in Order', (done) => {
-					testOrder.payments = [
-						{
-							method: "card",
-							amount: 30,
-							confirmed: true,
-							byBranch: false,
-							time: new Date()
-						}
-					];
-					
-					orderValidator.validate(testOrder).catch((err: BlError) => {
-						expect(err.getMsg()).to.contain('not equal the total of all payments');
-						done();
-					});
-				});
-			});
-		});
-		
-		context('CustomerItems is not valid', () => {
-			
-			it('should reject with BlError when a customerItem does not exist', (done) => {
-				
-				testOrder.orderItems = [
-					{
-						type: "rent",
-						amount: 400,
-						item: 'i1',
-						customerItem: 'notValidId'
-					}
-				];
-				
-				orderValidator.validate(testOrder).catch((validateError: BlError) => {
-					expect(validateError.getMsg()).to.contain('could not get customerItem');
-					done();
-				});
-			});
-		});
-		
-		context('items of orderItems is not valid', () => {
-			it('should reject with BlError when a item does not exist', () => {
-				
-				testOrder.orderItems = [
-					{
-						type: "rent",
-						amount: 400,
-						item: 'notValid',
-						customerItem: 'ci1'
-					}
-				];
-				
-				return orderValidator.validate(testOrder)
-					.should.be.rejectedWith(BlError);
-			});
 		});
 	});
 });

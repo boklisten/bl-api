@@ -1,11 +1,29 @@
 
 import {BlError, Branch, CustomerItem, Item, Order, OrderItem} from "bl-model";
+import {PriceValidatorCancel} from "./price-validator-cancel/price-validator-cancel";
+import {PriceValidatorOrder} from "./price-validator-order/price-validator-order";
 
 export class PriceValidator {
 	private precision: number;
+	private priceValidatorCancel: PriceValidatorCancel;
+	private priceValidatorOrder: PriceValidatorOrder;
 	
 	constructor() {
 		this.precision = 2;
+		this.priceValidatorCancel = new PriceValidatorCancel();
+		this.priceValidatorOrder = new PriceValidatorOrder();
+		
+	}
+	
+	public validateOrder(order: Order): boolean {
+		try {
+			this.priceValidatorOrder.validate(order);
+		} catch (err) {
+			if (err instanceof BlError) throw new BlError('could not validate the price of order').add(err);
+			throw new BlError('could not validate the price of order');
+		}
+		
+		return true;
 	}
 	
 	public validateOrderItem(orderItem: OrderItem, customerItem: CustomerItem, item: Item, branch: Branch): boolean {

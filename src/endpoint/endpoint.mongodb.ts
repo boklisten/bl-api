@@ -203,12 +203,17 @@ export class EndpointMongodb {
 	
 	
 	private handleError(blError: BlError, error: any): BlError {
-		if (error.name === 'CastError') {
-			return blError.code(702);
-		} else if (error.name == 'ValidationError') {
-			return blError.code(701);
+		if (error) {
+			
+			if (error.name === 'CastError') {
+				return blError.code(702);
+			} else if (error.name == 'ValidationError') {
+				return blError.code(701);
+			} else {
+				return blError.code(200);
+			}
 		} else {
-			return blError.code(200);
+			return new BlError('EndpointMongoDb: unknown error').add(blError).code(200);
 		}
 	}
 }

@@ -6,6 +6,7 @@ import {OrderHook} from "./order.hook";
 import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
 import {ItemSchema} from "../item/item.schema";
 import {CustomerItemSchema} from "../customer-item/customer-item.schema";
+import {BranchSchema} from "../branch/branch.schema";
 
 export class OrderConfig implements EndpointConfig {
 	basePath: string = 'api';
@@ -29,7 +30,10 @@ export class OrderConfig implements EndpointConfig {
 					loginOptions: {
 						permissions: ["customer", "employee", "admin"]
 					},
-					hook: new OrderHook(new EndpointMongodb(new SESchema('items', ItemSchema)), new EndpointMongodb(new SESchema('customerItems', CustomerItemSchema)))
+					hook: new OrderHook(
+						new EndpointMongodb(new SESchema('items', ItemSchema)),
+						new EndpointMongodb(new SESchema('customerItems', CustomerItemSchema)),
+						new EndpointMongodb(new SESchema('branches', BranchSchema)))
 				}
 			]
 		},
