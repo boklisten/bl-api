@@ -107,5 +107,31 @@ describe('PriceValidatorOrder', () => {
 				}).to.throw(BlError, /payments total amount is not equal to order.amount/);
 			});
 		});
+		
+		context('if ', () => {
+			it('should throw BlError', () => {
+				testOrder.payments = [
+					{
+						method: "card",
+						amount: 100,
+						confirmed: false,
+						byBranch: false,
+						time: new Date()
+					},
+					{
+						method: "cash",
+						amount: 450.8,
+						confirmed: false,
+						byBranch: false,
+						time: new Date()
+					}
+				];
+				testOrder.amount = 200;
+				
+				expect(() => {
+					priceValidatorOrder.validate(testOrder);
+				}).to.throw(BlError, /payments total amount is not equal to order.amount/);
+			});
+		});
 	});
 });

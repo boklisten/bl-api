@@ -19,8 +19,6 @@ export class ItemValidator {
 			case 'sell':
 				this.validateOrderItemTypeSell(item);
 				break;
-			default:
-				throw new BlError('the orderItem.type is unknown, it was "' + orderItem.type + '"');
 		}
 		
 		return true;

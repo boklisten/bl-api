@@ -38,7 +38,7 @@ describe('OrderValidator', () => {
 					type: "rent",
 					amount: 150,
 					item: 'i2',
-					customerItem: 'ci1',
+					customerItem: 'ci2',
 					rentInfo: {
 						oneSemester: true,
 						twoSemesters: false
@@ -156,7 +156,7 @@ describe('OrderValidator', () => {
 					returnTime: new Date(),
 					returnBranch: '',
 					returnEmployee: '',
-					totalAmount: 100,
+					totalAmount: 150,
 					orderItems: ["oi1"],
 					deadlineExtends: []
 				};

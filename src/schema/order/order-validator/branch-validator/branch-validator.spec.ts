@@ -52,13 +52,13 @@ describe('BranchValidator', () => {
 			testBranch.active = false;
 			
 			expect(() => {
-				branchValidator.validateBranchInOrder(testBranch, testOrderItem);
+				branchValidator.validateBranchInOrderItem(testBranch, testOrderItem);
 			}).to.throw(BlError, /branch.active is false/);
 			
 		});
 		
 		it('should return true when using valid orderItem and valid branch', () => {
-			expect(branchValidator.validateBranchInOrder(testBranch, testOrderItem))
+			expect(branchValidator.validateBranchInOrderItem(testBranch, testOrderItem))
 				.to.be.true;
 		});
 		
@@ -69,7 +69,7 @@ describe('BranchValidator', () => {
 				testOrderItem.type = 'rent';
 				
 				expect(() => {
-					branchValidator.validateBranchInOrder(testBranch, testOrderItem);
+					branchValidator.validateBranchInOrderItem(testBranch, testOrderItem);
 				}).to.throw(BlError, /amount is over 0 when branch.payment.branchResponsible is true/);
 			});
 		});

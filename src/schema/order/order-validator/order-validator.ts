@@ -4,23 +4,35 @@ import {EndpointMongodb} from "../../../endpoint/endpoint.mongodb";
 import {SEDocument} from "../../../db/model/se.document";
 import {CustomerItemValidator} from "./customer-item-validator/customer-item-validator";
 import {PriceValidator} from "./price-validator/price-validator";
+import {BranchValidator} from "./branch-validator/branch-validator";
+import {ItemValidator} from "./item-validator/item-validator";
+
+type OiAttached = {orderItem: OrderItem, item: Item, branch: Branch, customerItem: CustomerItem};
 
 export class OrderValidator {
 	private customerItemValidator: CustomerItemValidator;
 	private priceValicator: PriceValidator;
+	private branchValidator: BranchValidator;
+	private itemValidator: ItemValidator;
 	
 	constructor(private itemMongo: EndpointMongodb, private customerItemMongo: EndpointMongodb, private branchMongo: EndpointMongodb) {
 		this.customerItemValidator = new CustomerItemValidator();
 		this.priceValicator = new PriceValidator();
+		this.branchValidator = new BranchValidator();
+		this.itemValidator = new ItemValidator();
 	}
 	
 	public async validate(order: Order): Promise<boolean> {
-		let oiarr: {orderItem: OrderItem, item: Item, branch: Branch, customerItem?: CustomerItem}[] = [];
+		let oiarr: OiAttached[] = [];
+		
+		let customerItems: CustomerItem[];
+		let branch: Branch;
+		let items: Item[];
 		
 		try {
-			let branch = await this.getBranch(order.branch);
-			let customerItems = await this.getCustomerItems(order.orderItems);
-			let items = await this.getItems(order.orderItems);
+			branch = await this.getBranch(order.branch);
+			customerItems = await this.getCustomerItems(order.orderItems);
+			items = await this.getItems(order.orderItems);
 		
 			oiarr = this.attachToOrderItems(order.orderItems, branch, customerItems, items);
 		
@@ -29,20 +41,58 @@ export class OrderValidator {
 			throw new BlError('could not fetch the required customerItems, items and branch');
 		}
 		
-		for (let oi of oiarr) {
-			try {
-				this.priceValicator.validateOrder(order);
-				this.priceValicator.validateOrderItem(oi.orderItem, oi.customerItem, oi.item, oi.branch);
-			} catch (err) {
-				if (err instanceof BlError) throw err;
-				throw new BlError('could not validate the price of the order');
-			}
+		try {
+			this.validatePrice(order, oiarr);
+			this.validateOrderItems(oiarr);
+			this.validateCustomerItems(order.orderItems, customerItems);
+		} catch (err) {
+			if (err instanceof BlError) throw err;
+			throw new BlError('could not validate the order');
 		}
 	
 		return true;
 	}
 	
-	private attachToOrderItems(orderItems: OrderItem[], branch: Branch, customerItems: CustomerItem[], items: Item[]): {orderItem: OrderItem, branch: Branch, customerItem: CustomerItem, item: Item}[] {
+	private validatePrice(order: Order, oiarr: OiAttached[]): boolean {
+		for (let oi of oiarr) {
+			try {
+				this.priceValicator.validateOrder(order);
+				this.priceValicator.validateOrderItem(oi.orderItem, oi.customerItem, oi.item, oi.branch);
+				this.branchValidator.validateBranchInOrderItem(oi.branch, oi.orderItem);
+			} catch (err) {
+				if (err instanceof BlError) throw err;
+				throw new BlError('could not validate the order');
+			}
+		}
+		
+		return true;
+	}
+	
+	private validateOrderItems(oiarr: OiAttached[]) {
+		for (let oi of oiarr) {
+			try {
+				this.branchValidator.validateBranchInOrderItem(oi.branch, oi.orderItem);
+				this.itemValidator.validateItemInOrder(oi.item, oi.orderItem);
+			} catch (err) {
+				if (err instanceof BlError) throw err;
+				throw new BlError('could not validate the orderItems');
+			}
+		}
+	}
+	
+	private validateCustomerItems(orderItems: OrderItem[], customerItems: CustomerItem[]): boolean {
+		try {
+			this.customerItemValidator.validateWithOrderItems(orderItems, customerItems);
+		} catch(err) {
+			if (err instanceof BlError) throw err;
+			throw new BlError('could not validate customerItems');
+		}
+		
+		return true;
+	}
+	
+	
+	private attachToOrderItems(orderItems: OrderItem[], branch: Branch, customerItems: CustomerItem[], items: Item[]): OiAttached[] {
 		let oiarr: {orderItem: OrderItem, branch: Branch, customerItem: CustomerItem, item: Item}[] = [];
 		
 		for (let orderItem of orderItems) {

@@ -7,7 +7,7 @@ export class BranchValidator {
 	
 	}
 	
-	public validateBranchInOrder(branch: Branch, orderItem: OrderItem): boolean {
+	public validateBranchInOrderItem(branch: Branch, orderItem: OrderItem): boolean {
 		if (!branch.active) throw new BlError('branch.active is false and can not be used');
 		
 		switch (orderItem.type) {
