@@ -23,34 +23,37 @@ export class OrderValidator {
 	}
 	
 	public async validate(order: Order): Promise<boolean> {
-		let oiarr: OiAttached[] = [];
-		
-		let customerItems: CustomerItem[];
-		let branch: Branch;
-		let items: Item[];
-		
-		try {
-			branch = await this.getBranch(order.branch);
-			customerItems = await this.getCustomerItems(order.orderItems);
-			items = await this.getItems(order.orderItems);
-		
-			oiarr = this.attachToOrderItems(order.orderItems, branch, customerItems, items);
-		
-		} catch (err) {
-			if (err instanceof BlError) throw err;
-			throw new BlError('could not fetch the required customerItems, items and branch');
-		}
-		
-		try {
-			this.validatePrice(order, oiarr);
-			this.validateOrderItems(oiarr);
-			this.validateCustomerItems(order.orderItems, customerItems);
-		} catch (err) {
-			if (err instanceof BlError) throw err;
-			throw new BlError('could not validate the order');
-		}
-	
-		return true;
+			let oiarr: OiAttached[] = [];
+			
+			let customerItems: CustomerItem[];
+			let branch: Branch;
+			let items: Item[];
+			
+			if (!order.orderItems || order.orderItems.length <= 0) return Promise.reject(new BlError('order.orderItems is empty or undefined'));
+			
+			try {
+				branch = await this.getBranch(order.branch);
+				customerItems = await this.getCustomerItems(order.orderItems);
+				
+				items = await this.getItems(order.orderItems);
+				
+				oiarr = this.attachToOrderItems(order.orderItems, branch, customerItems, items);
+				
+			} catch (err) {
+				if (err instanceof BlError) return Promise.reject(err);
+				return Promise.reject(new BlError('could not get branch, customerItems or items'));
+			}
+			
+			try {
+				this.validatePrice(order, oiarr);
+				this.validateOrderItems(oiarr);
+				this.validateCustomerItems(order.orderItems, customerItems);
+			} catch (err) {
+				if (err instanceof BlError) return Promise.reject(err);
+				return Promise.reject(new BlError('could not validate order'));
+			}
+			
+			Promise.resolve(true);
 	}
 	
 	private validatePrice(order: Order, oiarr: OiAttached[]): boolean {

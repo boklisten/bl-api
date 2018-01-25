@@ -250,6 +250,13 @@ describe('OrderValidator', () => {
 				.should.be.fulfilled;
 		});
 		
+		it('should throw error if order.orderItems is empty', () => {
+			testOrder.orderItems = [];
+			
+			return orderValidator.validate(testOrder)
+				.should.be.rejectedWith(BlError);
+		});
+		
 		context('when order is not valid', () => {
 			it('should throw error when one of the items in order is not found', () => {
 				testOrder.orderItems[0].item = 'notAvalidObjid';
