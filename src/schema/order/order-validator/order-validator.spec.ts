@@ -27,7 +27,7 @@ describe('OrderValidator', () => {
 	beforeEach(() => {
 		testOrder = {
 			id: 'o1',
-			amount: 400,
+			amount: 450,
 			orderItems: [
 				{
 					type: "buy",
@@ -36,9 +36,13 @@ describe('OrderValidator', () => {
 				},
 				{
 					type: "rent",
-					amount: 100,
-					item: 'i1',
-					customerItem: 'ci1'
+					amount: 150,
+					item: 'i2',
+					customerItem: 'ci1',
+					rentInfo: {
+						oneSemester: true,
+						twoSemesters: false
+					}
 				}
 			],
 			branch: 'b1',
@@ -53,7 +57,7 @@ describe('OrderValidator', () => {
 				},
 				{
 					method: "cash",
-					amount: 350.0,
+					amount: 400.0,
 					confirmed: true,
 					byBranch: false,
 					time: new Date()
@@ -104,7 +108,7 @@ describe('OrderValidator', () => {
 				}
 				
 			});
-		})
+		});
 		
 		sinon.stub(customerItemMongo, 'getManyById').callsFake((ids: string[]) => {
 				const testCustomerItem1: CustomerItem = {
@@ -127,7 +131,7 @@ describe('OrderValidator', () => {
 					returnTime: new Date(),
 					returnBranch: '',
 					returnEmployee: '',
-					totalAmount: 400,
+					totalAmount: 100,
 					orderItems: ["oi1"],
 					deadlineExtends: []
 				};
@@ -206,7 +210,7 @@ describe('OrderValidator', () => {
 					isbn: '123'
 				},
 				desc: '',
-				price: 100,
+				price: 300,
 				sell: true,
 				sellPrice: 100,
 				rent: true,
@@ -227,7 +231,7 @@ describe('OrderValidator', () => {
 					isbn: '1234'
 				},
 				desc: '',
-				price: 50,
+				price: 300,
 				sell: true,
 				sellPrice: 20,
 				rent: true,
@@ -237,8 +241,39 @@ describe('OrderValidator', () => {
 			let res: SEDocument[] = [];
 			if (ids.indexOf('i1') > -1) res.push(new SEDocument('item', testItem1));
 			if (ids.indexOf('i2') > -1) res.push(new SEDocument('item', testItem2))
-			if (res.length <= 0) return Promise.reject(new BlError('not found').code(702));
+			if (res.length < ids.length) return Promise.reject(new BlError('not found').code(702));
 			return Promise.resolve(res);
 		});
+		
+		it('should return true when all parameters are valid', () => {
+			return orderValidator.validate(testOrder)
+				.should.be.fulfilled;
+		});
+		
+		context('when order is not valid', () => {
+			it('should throw error when one of the items in order is not found', () => {
+				testOrder.orderItems[0].item = 'notAvalidObjid';
+				
+				return orderValidator.validate(testOrder)
+					.should.be.rejectedWith(BlError);
+			});
+		});
+		
+		it('should throw error when the order.amount is not equal to orderItems or payments', () => {
+			testOrder.amount = 0;
+			
+			return orderValidator.validate(testOrder)
+				.should.be.rejectedWith(BlError);
+		});
+		
+		it('should throw error when orderItems is empty', () => {
+			testOrder.orderItems = [];
+			
+			return orderValidator.validate(testOrder)
+				.should.be.rejectedWith(BlError);
+		});
+		
+		
+		
 	});
 });

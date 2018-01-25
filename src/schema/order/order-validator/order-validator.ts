@@ -15,10 +15,7 @@ export class OrderValidator {
 	}
 	
 	public async validate(order: Order): Promise<boolean> {
-		let customerItems: CustomerItem[];
-		let items: Item[];
 		let oiarr: {orderItem: OrderItem, item: Item, branch: Branch, customerItem?: CustomerItem}[] = [];
-		let branch: Branch;
 		
 		try {
 			let branch = await this.getBranch(order.branch);
@@ -31,9 +28,10 @@ export class OrderValidator {
 			if (err instanceof BlError) throw err;
 			throw new BlError('could not fetch the required customerItems, items and branch');
 		}
-	
+		
 		for (let oi of oiarr) {
 			try {
+				this.priceValicator.validateOrder(order);
 				this.priceValicator.validateOrderItem(oi.orderItem, oi.customerItem, oi.item, oi.branch);
 			} catch (err) {
 				if (err instanceof BlError) throw err;
@@ -65,19 +63,6 @@ export class OrderValidator {
 			});
 		});
 	};
-	
-	
-	private validateCustomerItems(orderItems: OrderItem[], customerItems: CustomerItem[]): boolean {
-		for (let orderItem of orderItems) {
-			let cItem = customerItems.find(customerItem => {return orderItem.customerItem === customerItem.id});
-			
-			if (orderItem.type == 'rent') {
-				if (orderItem.item !== cItem.item) throw new BlError('orderItem.item is not equal to customerItem.item');
-				if (cItem && orderItem.amount !== cItem.totalAmount) throw new BlError('orderItem.amount is not equal to customerItem.totalAmount');
-			}
-		}
-		return true;
-	}
 	
 	private getItems(orderItems: OrderItem[]): Promise<Item[]> {
 		let itemIds: string[] = [];
@@ -120,35 +105,5 @@ export class OrderValidator {
 			});
 		});
 		
-	}
-	
-	private validateOrderAmountToPaymentAmounts(orderAmount: number, payments: OrderPayment[]): boolean {
-		let totalAmount = 0;
-		
-		for (let payment of payments) {
-			totalAmount += payment.amount;
-		}
-		if (totalAmount != orderAmount) throw new BlError('orderAmount does not equal the total of all payments amounts');
-		return true;
-		
-	}
-	
-	private validateOrderAmountToOrderItemAmounts(orderAmount: number, orderItems: OrderItem[]): boolean {
-		let totalAmount = 0;
-		
-		for(let orderItem of orderItems) {
-			totalAmount += orderItem.amount;
-		}
-		if(totalAmount != orderAmount) throw new BlError('orderAmount does not equal the total of all order item amounts');
-		return true;
-	}
-	
-	private validateOrderItems(orderItems: OrderItem[]): boolean {
-		for (let orderItem of orderItems) {
-			if (orderItem.type === "rent") {
-				if (!orderItem.customerItem) throw new BlError('orderItem has type rent but no customerItem attached');
-			}
-		}
-		return true;
 	}
 }
