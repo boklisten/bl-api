@@ -19,9 +19,19 @@ describe('PriceValidatorCancelBuy', () => {
 			testOrderItem = {
 				item: 'i1',
 				amount: -100,
+				taxAmount: 0,
+				taxRate: 0,
+				unitPrice: 100,
+				rentRate: 0,
+				title: 'signatur 3',
 				type: "cancel-rent",
 				lastOrderItem: {
 					item: 'i1',
+					title: 'signatur 3',
+					taxAmount: 0,
+					taxRate: 0,
+					unitPrice: 100,
+					rentRate: 0,
 					amount: 100,
 					type: 'buy'
 				}
@@ -35,6 +45,7 @@ describe('PriceValidatorCancelBuy', () => {
 					isbn: ''
 				},
 				desc: '',
+				taxRate: 0,
 				price: 100,
 				sell: true,
 				sellPrice: 100,
@@ -92,6 +103,11 @@ describe('PriceValidatorCancelBuy', () => {
 			testOrderItem.type = 'cancel-buy';
 			testOrderItem.lastOrderItem = {
 				item: 'i1',
+				title: 'signatur',
+				unitPrice: 100,
+				rentRate: 0,
+				taxRate: 0,
+				taxAmount: 0,
 				type: 'rent',
 				amount: 100
 			};
@@ -109,6 +125,11 @@ describe('PriceValidatorCancelBuy', () => {
 					testOrderItem.amount = -100;
 					testOrderItem.lastOrderItem = {
 						item: 'i1',
+						title: 'signatur',
+						unitPrice: 100,
+						rentRate: 0,
+						taxRate: 0,
+						taxAmount: 0,
 						type: 'buy',
 						amount: 200
 					};
@@ -126,6 +147,11 @@ describe('PriceValidatorCancelBuy', () => {
 					testOrderItem.amount = -100;
 					testOrderItem.lastOrderItem = {
 						item: 'i1',
+						title: 'signatur',
+						unitPrice: 100,
+						rentRate: 0,
+						taxRate: 0,
+						taxAmount: 0,
 						type: 'buy',
 						amount: 100
 					};

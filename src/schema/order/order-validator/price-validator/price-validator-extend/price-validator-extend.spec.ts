@@ -17,6 +17,11 @@ describe('PriceValidatorExtend', () => {
 		
 		testOrderItem = {
 			item: 'i1',
+			title: 'signatur',
+			rentRate: 0,
+			unitPrice: 100,
+			taxRate: 0,
+			taxAmount: 0,
 			amount: 100,
 			type: "extend"
 		};

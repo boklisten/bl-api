@@ -19,6 +19,11 @@ describe('PriceValidatorCancel', () => {
 		beforeEach(() => {
 			testOrderItem = {
 				item: 'i1',
+				title: 'signatur',
+				unitPrice: 100,
+				taxAmount: 0,
+				taxRate: 0,
+				rentRate: 0,
 				amount: 100,
 				type: "cancel-rent"
 			};
@@ -56,6 +61,7 @@ describe('PriceValidatorCancel', () => {
 					isbn: ''
 				},
 				desc: '',
+				taxRate: 0,
 				price: 100.0,
 				sell: true,
 				sellPrice: 100,

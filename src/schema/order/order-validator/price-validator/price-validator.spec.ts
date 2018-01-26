@@ -23,6 +23,7 @@ describe('PriceValidator', () => {
 				isbn: ''
 			},
 			desc: '',
+			taxRate: 0,
 			price: 100.0,
 			sell: true,
 			sellPrice: 100,
@@ -62,7 +63,12 @@ describe('PriceValidator', () => {
 		testOrderItem = {
 			item: 'i1',
 			amount: 100,
-			type: "buy"
+			type: "buy",
+			title: 'signatur',
+			rentRate: 0,
+			taxRate: 0,
+			taxAmount: 0,
+			unitPrice: 100
 		};
 		
 		testBranch = {

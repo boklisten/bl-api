@@ -17,6 +17,11 @@ describe('PriceValidatorCancelRent', () => {
 		beforeEach(() => {
 			testOrderItem = {
 				item: 'i1',
+				title: 'signatur 2',
+				unitPrice: 100,
+				rentRate: 0,
+				taxAmount: 0,
+				taxRate: 0,
 				amount: 100,
 				type: "cancel-rent",
 				customerItem: 'ci1'

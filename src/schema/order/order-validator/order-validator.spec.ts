@@ -32,13 +32,23 @@ describe('OrderValidator', () => {
 				{
 					type: "buy",
 					amount: 300,
-					item: 'i1'
+					item: 'i1',
+					title: 'signatur',
+					rentRate: 0,
+					taxRate: 0,
+					taxAmount: 0,
+					unitPrice: 300
 				},
 				{
 					type: "rent",
 					amount: 150,
 					item: 'i2',
 					customerItem: 'ci2',
+					title: 'signatur',
+					rentRate: 0,
+					taxRate: 0,
+					taxAmount: 0,
+					unitPrice: 300,
 					rentInfo: {
 						oneSemester: true,
 						twoSemesters: false
@@ -210,6 +220,7 @@ describe('OrderValidator', () => {
 					isbn: '123'
 				},
 				desc: '',
+				taxRate: 0,
 				price: 300,
 				sell: true,
 				sellPrice: 100,
@@ -231,6 +242,7 @@ describe('OrderValidator', () => {
 					isbn: '1234'
 				},
 				desc: '',
+				taxRate: 0,
 				price: 300,
 				sell: true,
 				sellPrice: 20,

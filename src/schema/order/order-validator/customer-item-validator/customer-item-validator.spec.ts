@@ -18,6 +18,11 @@ describe('CustomerItemValidator', () => {
 		beforeEach(() => {
 			testOrderItems = [
 				{
+					title: 'signatur 3',
+					unitPrice: 100,
+					rentRate: 0,
+					taxAmount: 0,
+					taxRate: 0,
 					type: "rent",
 					amount: defaultTotalAmount,
 					item: 'i1',

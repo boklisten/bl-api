@@ -36,13 +36,23 @@ describe('OrderHook', () => {
 					{
 						type: "buy",
 						amount: 300,
-						item: 'i1'
+						item: 'i1',
+						title: 'signatur',
+						rentRate: 0,
+						taxRate: 0,
+						taxAmount: 0,
+						unitPrice: 300
 					},
 					{
 						type: "rent",
 						amount: 100,
 						item: 'i1',
-						customerItem: 'ci1'
+						customerItem: 'ci1',
+						title: 'signatur',
+						rentRate: 0,
+						taxRate: 0,
+						taxAmount: 0,
+						unitPrice: 300
 					}
 				],
 				branch: 'b1',

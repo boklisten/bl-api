@@ -22,13 +22,23 @@ describe('PriceValidatorOrder', () => {
 					{
 						type: "buy",
 						amount: 100,
-						item: 'i1'
+						item: 'i1',
+						title: 'signatur',
+						rentRate: 0,
+						taxRate: 0,
+						taxAmount: 0,
+						unitPrice: 100
 					},
 					{
 						type: "rent",
 						amount: 100,
 						item: 'i1',
-						customerItem: 'ci1'
+						customerItem: 'ci1',
+						title: 'signatur',
+						rentRate: 0,
+						taxRate: 0,
+						taxAmount: 0,
+						unitPrice: 100
 					}
 				],
 				branch: 'b1',
@@ -65,12 +75,22 @@ describe('PriceValidatorOrder', () => {
 					{
 						type: "rent",
 						amount: 100,
-						item: 'i1'
+						item: 'i1',
+						title: 'signatur',
+						rentRate: 0,
+						taxRate: 0,
+						taxAmount: 0,
+						unitPrice: 100
 					},
 					{
 						type: "rent",
 						amount: 100,
-						item: 'i2'
+						item: 'i2',
+						title: 'signatur 2',
+						rentRate: 0,
+						taxRate: 0,
+						taxAmount: 0,
+						unitPrice: 100
 					}
 				];
 				

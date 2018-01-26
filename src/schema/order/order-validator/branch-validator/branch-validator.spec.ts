@@ -14,6 +14,11 @@ describe('BranchValidator', () => {
 	
 	beforeEach(() => {
 		testOrderItem = {
+			title: "signatur 3",
+			unitPrice: 200,
+			rentRate: 0,
+			taxRate: 0,
+			taxAmount: 0,
 			item: 'i1',
 			amount: 100,
 			type: "rent"
