@@ -23,8 +23,8 @@ describe('DibsPayment', () => {
 					type: "rent",
 					title: "Signatur 3",
 					amount: 100,
-					unitPrice: 200,
-					rentRate: 0.5,
+					unitPrice: 100,
+					rentRate: 0,
 					taxRate: 0,
 					taxAmount: 0,
 					item: 'i1',
@@ -102,7 +102,10 @@ describe('DibsPayment', () => {
 		});
 		
 		it('should return a total amount of 10000 when item costs 100kr', () => {
+			testOrder.orderItems[0].amount = 100;
+			testOrder.orderItems[0].unitPrice = 100;
 			let deo: DibsEasyOrder = dibsPayment.orderToDibsEasyOrder(testOrder);
+			
 			expect(deo.amount).to.eql(10000);
 		});
 		
@@ -123,6 +126,8 @@ describe('DibsPayment', () => {
 			
 			it('should have grossTotalAmount of 15000', () => {
 				testOrder.orderItems[0].amount = 150;
+				testOrder.orderItems[0].unitPrice = 150;
+				testOrder.orderItems[0].rentRate = 0;
 				testOrder.amount = 150;
 				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
 				
@@ -130,7 +135,8 @@ describe('DibsPayment', () => {
 			});
 			
 			it('should have taxAmount equal to 5000', () => {
-			
+				testOrder.orderItems[0].unitPrice = 100;
+				testOrder.orderItems[0].taxRate = 0.5;
 			});
 		});
 		

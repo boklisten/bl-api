@@ -11,7 +11,6 @@ export class DibsPayment {
 		if (!order.byCustomer) throw new BlError('order.byCustomer is false, no need to make dibs easy order');
 		if (order.amount == 0) throw new BlError('order.amount is zero');
 		
-		
 		let items: DibsEasyItem[] = [];
 		
 		for (let orderItem of order.orderItems) {
@@ -33,7 +32,6 @@ export class DibsPayment {
 		
 		return dibsEasyOrder;
 		
-		
 	}
 	
 	private getTotalGrossAmount(dibsEasyItems: DibsEasyItem[]): number {
@@ -49,34 +47,16 @@ export class DibsPayment {
 		let dibsEasyItem = new DibsEasyItem();
 		
 		dibsEasyItem.reference = orderItem.item ;
-		dibsEasyItem.name = (orderItem.title) ? orderItem.title : "boklisten";
+		dibsEasyItem.name = orderItem.title;
 		dibsEasyItem.quantity = 1;
 		dibsEasyItem.unit = "book";
-		dibsEasyItem.unitPrice = this.toEars(orderItem.amount);
-		dibsEasyItem.taxRate = (orderItem.taxRate) ? this.taxRate(orderItem.taxRate) : 0;
-		dibsEasyItem.taxAmount = this.taxAmount(((orderItem.taxRate) ? orderItem.taxRate : 0), orderItem.amount);
-		dibsEasyItem.grossTotalAmount = this.grossTotalAmount(orderItem.amount);
-		dibsEasyItem.netTotalAmount = this.netTotalAmount(orderItem.taxRate, orderItem.amount);
+		dibsEasyItem.unitPrice = this.toEars(orderItem.unitPrice);
+		dibsEasyItem.taxRate = this.toEars(orderItem.taxRate);
+		dibsEasyItem.taxAmount = this.toEars(orderItem.taxAmount);
+		dibsEasyItem.netTotalAmount = this.toEars(orderItem.unitPrice);
+		dibsEasyItem.grossTotalAmount = this.toEars(orderItem.amount);
 		
 		return dibsEasyItem;
-	}
-	
-	private netTotalAmount(taxPercent: number, price: number): number {
-		return this.grossTotalAmount(price) - this.taxAmount(taxPercent, price);
-	}
-	
-	private grossTotalAmount(price: number): number {
-		return this.toEars(price);
-	}
-	
-	private taxAmount(taxPercent: number, price: number): number {
-		return price * taxPercent;
-	}
-	
-	private taxRate(taxPercent: number): number {
-		if (taxPercent <= 0) return 0;
-		
-		return taxPercent * 100;
 	}
 	
 	private toEars(price: number): number {

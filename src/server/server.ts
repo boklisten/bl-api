@@ -37,12 +37,12 @@ export class Server {
 
 		this.app.use(bodyParser.json());
 
-		//let cors = require('cors');
+		let cors = require('cors');
 
-		//cors({
-		//	'Access-Control-Allow-Origin': 'localhost'
-		//});
-		//this.app.use(cors());
+		cors({
+			'Access-Control-Allow-Origin': '*'
+		});
+		this.app.use(cors());
 		//this.app.use(session({secret: 'hello there'}));
 		this.app.use(require('cookie-parser')());
 		this.app.use(passport.initialize());
