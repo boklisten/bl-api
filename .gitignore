@@ -3,3 +3,5 @@
 .tscache
 .idea
 src/config/secrets.ts
+
+\.nyc_output/
