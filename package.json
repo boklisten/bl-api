@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "grunt dev",
+    "start": "grunt build && node ./dist/index.js",
+    "watch": "grunt dev",
     "grunt": "grunt",
     "pkg": "grunt pkg",
     "dev": "grunt dev",

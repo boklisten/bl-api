@@ -25,7 +25,7 @@ export class FacebookAuth {
 		passport.use(new Strategy({
 				clientID: SECRETS.boklistentest.facebook.clientId,
 				clientSecret: SECRETS.boklistentest.facebook.secret,
-				callbackURL: this.apiPath.createPath('auth/facebook/callback'),
+				callbackURL: this.apiPath.createPath('auth/facebook'),
 				profileFields: ['id', 'email', 'name']
 
 			},
@@ -83,7 +83,14 @@ export class FacebookAuth {
 
 	private createAuthGet(router: Router) {
 		router.get(this.apiPath.createPath('auth/facebook'),
-			passport.authenticate('facebook', {scope: ['public_profile', 'email']}));
+			passport.authenticate('facebook', {scope: ['public_profile', 'email']}),
+			(req: any, res: any) => {
+				this.resHandler.sendResponse(res, new BlapiResponse([
+					new SEDocument('accessToken', req.user.accessToken),
+					new SEDocument('refreshToken', req.user.refreshToken)
+				]));
+			});
+
 	}
 
 	private createCallbackGet(router: Router) {

@@ -17,6 +17,7 @@ export class EndpointPatchExpress {
 	constructor(resHandler: SEResponseHandler, endpointMongoDb: EndpointMongodb) {
 		this.resHandler = resHandler;
 		this.enpointMongoDb = endpointMongoDb;
+		this.seToken = new SEToken();
 	}
 
 	public createPatchEndpoint(router: Router, method: Method, url: string) {
@@ -36,11 +37,11 @@ export class EndpointPatchExpress {
 			if (method.loginOptions.restrictedToUserOrAbove) {
 				this.enpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
 					(docs: SEDocument[]) => {
-						this.patchDocument(res, req.params.id, req.body, method.hook);
+						this.patchDocument(res, req.params.id, new SEDocument(this.enpointMongoDb.schema.title, req.body), method.hook);
 					},
 					(validateByBlidError: BlError) => {
 						if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
-							this.patchDocument(res, req.params.id, req.body, method.hook);
+							this.patchDocument(res, req.params.id, new SEDocument(this.enpointMongoDb.schema.title, req.body), method.hook);
 						} else {
 							this.resHandler.sendErrorResponse(res, new BlError('could not validate blid')
 								.store('accessTokenPayload', accessToken)
@@ -50,12 +51,12 @@ export class EndpointPatchExpress {
 						}
 					});
 			} else {
-				this.patchDocument(res, req.params.id, req.body, method.hook);
+				this.patchDocument(res, req.params.id, new SEDocument(this.enpointMongoDb.schema.title, req.body), method.hook);
 			}
 		});
 	}
 
-	private patchDocument(res: Response, id: string, body: any, hook?: Hook) {
+	private patchDocument(res: Response, id: string, body: SEDocument, hook?: Hook) {
 		this.enpointMongoDb.patch(id, body).then(
 			(docs: SEDocument[]) => {
 				this.handleResponse(res, docs, hook);
@@ -75,6 +76,8 @@ export class EndpointPatchExpress {
 			}).catch((hookError: BlError) => {
 				this.resHandler.sendErrorResponse(res, new BlError('hook failed').add(hookError).code(800));
 			});
+		} else {
+			this.resHandler.sendResponse(res, new BlapiResponse(docs));
 		}
 	}
 
