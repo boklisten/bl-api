@@ -58,6 +58,7 @@ export class LocalAuth {
 					}
 					
 					req.login(jwTokens, (error) => {
+						console.log('we are here');
 						if (error) return next(error);
 						return this.resHandler.sendResponse(res, new BlapiResponse([
 							new SEDocument('refreshToken', jwTokens.refreshToken),

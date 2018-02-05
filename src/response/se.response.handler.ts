@@ -18,17 +18,40 @@ export class SEResponseHandler {
 		this.setHeaders(res);
 		res.send(blapiRes);
 	}
+	
+	public sendAuthErrorResponse(res: Response, info: any) {
+		const blapiErrorResponse = this.getBlapiErrorResponseByAuthError(info);
+		this.setHeaders(res);
+		res.status(blapiErrorResponse.httpStatus);
+		res.send(blapiErrorResponse);
+		res.end();
+	}
 
 	public sendErrorResponse(res: Response, blError: BlError) {
-		let blapiErrorRes = this.errorHandler.createBlapiErrorResponse(blError);
-		res.status(blapiErrorRes.code);
+		
+		let blapiErrorRes: BlapiErrorResponse = this.errorHandler.createBlapiErrorResponse(blError);
+		
+		res.status(blapiErrorRes.httpStatus);
+		
 		this.setHeaders(res);
-		res.send(blapiErrorRes.data);
+		res.send(blapiErrorRes);
+		
+		
 		res.end();
 	}
 	
 	private setHeaders(res: Response) {
 		res.setHeader('Access-Control-Allow-Origin', '*');
 		res.setHeader('Content-Type', 'application/json');
+	}
+	
+	private getBlapiErrorResponseByAuthError(info: any): BlapiErrorResponse {
+		if (info['name']) {
+			switch (info['name']) {
+				case 'TokenExpiredError':
+					return new BlapiErrorResponse(401, 910, 'accessToken expired');
+			}
+		}
+		return new BlapiErrorResponse(401, 905, 'token validation failed');
 	}
 }

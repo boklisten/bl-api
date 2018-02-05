@@ -28,6 +28,7 @@ export class AccessTokenAuth {
 
 	private getOptions(): any {
 		let opts: any = {};
+		opts.passReqToCallback = true;
 		opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 		opts.secretOrKey = this.accessTokenSecret.get();
 		opts.issuer = this.tokenConfig.accessToken.iss;

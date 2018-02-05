@@ -56,12 +56,12 @@ export const APP_CONFIG = {
 		refresh: {
 			iss: 'boklisten.co',
 			aud: 'boklisten.co',
-			expiresIn: "48 hours"
+			expiresIn: "1 minutes"
 		},
 		access: {
 			iss: 'boklisten.co',
 			aud: 'boklisten.co',
-			expiresIn: "24 hours"
+			expiresIn: "1 minutes"
 		}
 	},
 	date: {

@@ -59,36 +59,48 @@ export class EndpointGetExpress {
 	}
 
 	private createLoginGet(router: Router, url: string, method: Method, validSearchParams?: ValidParam[]) {
-		router.get(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
-			this.handleGetWithQuery(req, res, method, validSearchParams);
+		router.get(url, (req: Request, res: Response, next) => {
+			passport.authenticate('jwt', (err, user, info) => {
+				if (!user) {
+					return this.resHandler.sendAuthErrorResponse(res, info);
+				}
+				
+				this.handleGetWithQuery(req, res, method, validSearchParams);
+			})(req, res, next);
 		});
 	}
 
 	private createLoginGetWithId(router: Router, url: string, method: Method) {
-		router.get(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
-			let accessToken: AccessToken = req.user.accessToken;
-			if (!accessToken) this.resHandler.sendErrorResponse(res, new BlError('accessToken not found').code(905));
-			
-			if (method.loginOptions && method.loginOptions.restrictedToUserOrAbove) {
-				this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
-					(docs: SEDocument[]) => {
-						this.handleResponse(res, docs, method.hook);
-					},
-					(validateByBlidError: BlError) => {
-						if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
-							this.handleGetWithId(req, res, method);
-						} else {
-							this.resHandler.sendErrorResponse(res, new BlError('could not validate by blid')
-								.store('url', url)
-								.store('accessToken', accessToken)
-								.code(904)
-								.add(validateByBlidError));
-							
-						}
-					});
-			} else {
-				this.handleGetWithId(req, res, method);
-			}
+		router.get(url, (req: Request, res: Response, next) => {
+			passport.authenticate('jwt', (err, user, info) => {
+				if (!user) {
+					return this.resHandler.sendAuthErrorResponse(res, info);
+				}
+				
+				let accessToken: AccessToken = req.user.accessToken;
+				if (!accessToken) this.resHandler.sendErrorResponse(res, new BlError('accessToken not found').code(905));
+				
+				if (method.loginOptions && method.loginOptions.restrictedToUserOrAbove) {
+					this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
+						(docs: SEDocument[]) => {
+							this.handleResponse(res, docs, method.hook);
+						},
+						(validateByBlidError: BlError) => {
+							if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
+								this.handleGetWithId(req, res, method);
+							} else {
+								this.resHandler.sendErrorResponse(res, new BlError('could not validate by blid')
+									.store('url', url)
+									.store('accessToken', accessToken)
+									.code(904)
+									.add(validateByBlidError));
+								
+							}
+						});
+				} else {
+					this.handleGetWithId(req, res, method);
+				}
+			})(req, res, next);
 		});
 	}
 
