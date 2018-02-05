@@ -25,24 +25,30 @@ export class EndpointPostExpress {
 	}
 
 	private createLoginPost(router: Router, url: string, collectionName: string,  method: Method) {
-		router.post(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
-			const accessToken: AccessToken = req.user.accessToken;
-			
-			if (!accessToken) return this.resHandler.sendErrorResponse(res, new BlError('accessToken not found')
-				.code(905)
-				.store('url', url));
-			
-			this.endpointMongoDb.post(new SEDocument(collectionName, req.body)).then(
-				(docs: SEDocument[]) => {
-					this.handleResponse(res, docs, method.hook);
-				},
-				(postError: BlError) => {
-					this.resHandler.sendErrorResponse(res, new BlError('could not post document')
-						.store('url', url)
-						.store('body', req.body)
-						.add(postError)
-						.code(700));
-				});
+		router.post(url, (req: Request, res: Response, next) => {
+			passport.authenticate('jwt', (err, user, info) => {
+				if (!user || err) {
+					return this.resHandler.sendAuthErrorResponse(res, info);
+				}
+				
+				const accessToken: AccessToken = req.user.accessToken;
+				
+				if (!accessToken) return this.resHandler.sendErrorResponse(res, new BlError('accessToken not found')
+					.code(905)
+					.store('url', url));
+				
+				this.endpointMongoDb.post(new SEDocument(collectionName, req.body)).then(
+					(docs: SEDocument[]) => {
+						this.handleResponse(res, docs, method.hook);
+					},
+					(postError: BlError) => {
+						this.resHandler.sendErrorResponse(res, new BlError('could not post document')
+							.store('url', url)
+							.store('body', req.body)
+							.add(postError)
+							.code(700));
+					});
+			})(req, res, next);
 		});
 	}
 	
