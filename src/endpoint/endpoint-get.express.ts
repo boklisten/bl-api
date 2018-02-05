@@ -61,7 +61,7 @@ export class EndpointGetExpress {
 	private createLoginGet(router: Router, url: string, method: Method, validSearchParams?: ValidParam[]) {
 		router.get(url, (req: Request, res: Response, next) => {
 			passport.authenticate('jwt', (err, user, info) => {
-				if (!user) {
+				if (!user || err) {
 					return this.resHandler.sendAuthErrorResponse(res, info);
 				}
 				
@@ -73,7 +73,7 @@ export class EndpointGetExpress {
 	private createLoginGetWithId(router: Router, url: string, method: Method) {
 		router.get(url, (req: Request, res: Response, next) => {
 			passport.authenticate('jwt', (err, user, info) => {
-				if (!user) {
+				if (!user || err) {
 					return this.resHandler.sendAuthErrorResponse(res, info);
 				}
 				

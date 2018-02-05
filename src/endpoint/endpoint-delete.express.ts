@@ -34,32 +34,38 @@ export class EndpointDeleteExpress {
 	}
 	
 	private createLoginDelete(router: Router, url: string, method: Method) {
-		router.delete(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
-			const accessToken: AccessToken = req.user.accessToken;
-			
-			if (!accessToken) return this.resHandler.sendErrorResponse(res, new BlError('no access token found').store('url', url).code(905));
-			
-			if (method.loginOptions.restrictedToUserOrAbove) {
-				this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
-					(docs: SEDocument[]) => {//user has access
-						this.handleDeleteDocument(res, req.params.id, method.hook);
-					},
-					(validateByUserBlidError: BlError) => {
-						
-						if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
-							this.handleDeleteDocument(res, req.params.id, method.hook)
-						} else {
-							this.resHandler.sendErrorResponse(res,
-								new BlError('user does not have the right permission')
-									.store('accessTokenPayload', accessToken)
-									.store('url', url)
-									.code(401)
-									.add(validateByUserBlidError));
-						}
-					});
-			} else {
-				this.handleDeleteDocument(res, req.params.id, method.hook);
-			}
+		router.delete(url, (req: Request, res: Response, next) => {
+			passport.authenticate('jwt', (err, user, info) => {
+				if (!user || err) {
+					this.resHandler.sendAuthErrorResponse(res, info);
+				}
+				
+				const accessToken: AccessToken = req.user.accessToken;
+				
+				if (!accessToken) return this.resHandler.sendErrorResponse(res, new BlError('no access token found').store('url', url).code(905));
+				
+				if (method.loginOptions.restrictedToUserOrAbove) {
+					this.endpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
+						(docs: SEDocument[]) => {//user has access
+							this.handleDeleteDocument(res, req.params.id, method.hook);
+						},
+						(validateByUserBlidError: BlError) => {
+							
+							if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
+								this.handleDeleteDocument(res, req.params.id, method.hook)
+							} else {
+								this.resHandler.sendErrorResponse(res,
+									new BlError('user does not have the right permission')
+										.store('accessTokenPayload', accessToken)
+										.store('url', url)
+										.code(401)
+										.add(validateByUserBlidError));
+							}
+						});
+				} else {
+					this.handleDeleteDocument(res, req.params.id, method.hook);
+				}
+			}) (req, res, next);
 		});
 	}
 	
