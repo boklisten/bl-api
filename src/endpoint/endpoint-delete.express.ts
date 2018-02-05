@@ -37,7 +37,7 @@ export class EndpointDeleteExpress {
 		router.delete(url, (req: Request, res: Response, next) => {
 			passport.authenticate('jwt', (err, user, info) => {
 				if (!user || err) {
-					this.resHandler.sendAuthErrorResponse(res, info);
+					return this.resHandler.sendAuthErrorResponse(res, info);
 				}
 				
 				const accessToken: AccessToken = req.user.accessToken;

@@ -27,32 +27,38 @@ export class EndpointPatchExpress {
 	}
 
 	private createLoginPatch(router: Router, url: string, method: Method) {
-		router.patch(url, passport.authenticate('jwt'), (req: Request, res: Response) => {
-			const accessToken: AccessToken = req.user.accessToken;
-			if (!accessToken) return this.resHandler.sendErrorResponse(res,
-				new BlError('accessToken not found')
-					.store('url', url)
-					.code(905));
-			
-			if (method.loginOptions.restrictedToUserOrAbove) {
-				this.enpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
-					(docs: SEDocument[]) => {
-						this.patchDocument(res, req.params.id, new SEDocument(this.enpointMongoDb.schema.title, req.body), method.hook);
-					},
-					(validateByBlidError: BlError) => {
-						if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
+		router.patch(url, (req: Request, res: Response, next) => {
+			passport.authenticate('jwt', (err, user, info) => {
+				if (!user || err) {
+					return this.resHandler.sendAuthErrorResponse(res, info);
+				}
+				
+				const accessToken: AccessToken = req.user.accessToken;
+				if (!accessToken) return this.resHandler.sendErrorResponse(res,
+					new BlError('accessToken not found')
+						.store('url', url)
+						.code(905));
+				
+				if (method.loginOptions.restrictedToUserOrAbove) {
+					this.enpointMongoDb.getAndValidateByUserBlid(req.params.id, accessToken.sub).then(
+						(docs: SEDocument[]) => {
 							this.patchDocument(res, req.params.id, new SEDocument(this.enpointMongoDb.schema.title, req.body), method.hook);
-						} else {
-							this.resHandler.sendErrorResponse(res, new BlError('could not validate blid')
-								.store('accessTokenPayload', accessToken)
-								.store('url', url)
-								.code(905)
-								.add(validateByBlidError));
-						}
-					});
-			} else {
-				this.patchDocument(res, req.params.id, new SEDocument(this.enpointMongoDb.schema.title, req.body), method.hook);
-			}
+						},
+						(validateByBlidError: BlError) => {
+							if (this.seToken.permissionAbove(accessToken.permission, method.loginOptions.permissions)) {
+								this.patchDocument(res, req.params.id, new SEDocument(this.enpointMongoDb.schema.title, req.body), method.hook);
+							} else {
+								this.resHandler.sendErrorResponse(res, new BlError('could not validate blid')
+									.store('accessTokenPayload', accessToken)
+									.store('url', url)
+									.code(905)
+									.add(validateByBlidError));
+							}
+						});
+				} else {
+					this.patchDocument(res, req.params.id, new SEDocument(this.enpointMongoDb.schema.title, req.body), method.hook);
+				}
+			})(req, res, next);
 		});
 	}
 
