@@ -27,11 +27,11 @@ export class EndpointPostExpress {
 	private createLoginPost(router: Router, url: string, collectionName: string,  method: Method) {
 		router.post(url, (req: Request, res: Response, next) => {
 			passport.authenticate('jwt', (err, user, info) => {
-				if (!user || err) {
-					return this.resHandler.sendAuthErrorResponse(res, info);
+				if (!user || err || !user.accessToken) {
+					return this.resHandler.sendAuthErrorResponse(res, info, err);
 				}
 				
-				const accessToken: AccessToken = req.user.accessToken;
+				const accessToken: AccessToken = user.accessToken;
 				
 				if (!accessToken) return this.resHandler.sendErrorResponse(res, new BlError('accessToken not found')
 					.code(905)

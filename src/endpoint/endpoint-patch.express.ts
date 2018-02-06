@@ -29,11 +29,11 @@ export class EndpointPatchExpress {
 	private createLoginPatch(router: Router, url: string, method: Method) {
 		router.patch(url, (req: Request, res: Response, next) => {
 			passport.authenticate('jwt', (err, user, info) => {
-				if (!user || err) {
-					return this.resHandler.sendAuthErrorResponse(res, info);
+				if (!user || err || !user.accessToken) {
+					return this.resHandler.sendAuthErrorResponse(res, info, err);
 				}
 				
-				const accessToken: AccessToken = req.user.accessToken;
+				const accessToken: AccessToken = user.accessToken;
 				if (!accessToken) return this.resHandler.sendErrorResponse(res,
 					new BlError('accessToken not found')
 						.store('url', url)

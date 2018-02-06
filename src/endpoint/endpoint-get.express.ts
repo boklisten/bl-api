@@ -62,7 +62,7 @@ export class EndpointGetExpress {
 		router.get(url, (req: Request, res: Response, next) => {
 			passport.authenticate('jwt', (err, user, info) => {
 				if (!user || err) {
-					return this.resHandler.sendAuthErrorResponse(res, info);
+					return this.resHandler.sendAuthErrorResponse(res, info, err);
 				}
 				
 				this.handleGetWithQuery(req, res, method, validSearchParams);
@@ -73,11 +73,11 @@ export class EndpointGetExpress {
 	private createLoginGetWithId(router: Router, url: string, method: Method) {
 		router.get(url, (req: Request, res: Response, next) => {
 			passport.authenticate('jwt', (err, user, info) => {
-				if (!user || err) {
-					return this.resHandler.sendAuthErrorResponse(res, info);
+				if (!user || err || !user.accessToken) {
+					return this.resHandler.sendAuthErrorResponse(res, info, err);
 				}
 				
-				let accessToken: AccessToken = req.user.accessToken;
+				let accessToken: AccessToken = user.accessToken;
 				if (!accessToken) this.resHandler.sendErrorResponse(res, new BlError('accessToken not found').code(905));
 				
 				if (method.loginOptions && method.loginOptions.restrictedToUserOrAbove) {

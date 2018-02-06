@@ -21,14 +21,14 @@ export class AccessTokenAuth {
 		this.tokenConfig = new TokenConfig(appTokenConfig.access, appTokenConfig.refresh);
 
 
-		passport.use(new Strategy(this.getOptions(), (accessToken: AccessToken, done: any) => {
+		passport.use(new Strategy(this.getOptions(), (accessToken: AccessToken, done) => {
+			console.log('hello there!', accessToken);
 			done(null, {accessToken: accessToken});
 		}));
 	}
 
 	private getOptions(): any {
 		let opts: any = {};
-		opts.passReqToCallback = true;
 		opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 		opts.secretOrKey = this.accessTokenSecret.get();
 		opts.issuer = this.tokenConfig.accessToken.iss;

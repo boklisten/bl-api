@@ -19,7 +19,8 @@ export class SEResponseHandler {
 		res.send(blapiRes);
 	}
 	
-	public sendAuthErrorResponse(res: Response, info: any) {
+	public sendAuthErrorResponse(res: Response, info: any, err: any) {
+		console.log('there was an auth error: info: ', info, 'err: ', err);
 		const blapiErrorResponse = this.getBlapiErrorResponseByAuthError(info);
 		this.setHeaders(res);
 		res.status(blapiErrorResponse.httpStatus);
@@ -46,10 +47,17 @@ export class SEResponseHandler {
 	}
 	
 	private getBlapiErrorResponseByAuthError(info: any): BlapiErrorResponse {
-		if (info['name']) {
-			switch (info['name']) {
-				case 'TokenExpiredError':
-					return new BlapiErrorResponse(401, 910, 'accessToken expired');
+		if (info) {
+			if (info['name']) {
+				switch (info['name']) {
+					case 'TokenExpiredError':
+						return new BlapiErrorResponse(401, 910, 'accessToken expired');
+				}
+			}
+			if (info.message) {
+				if (info.message === 'No auth token') {
+					return new BlapiErrorResponse(403, 911, 'no auth token');
+				}
 			}
 		}
 		return new BlapiErrorResponse(401, 905, 'token validation failed');
