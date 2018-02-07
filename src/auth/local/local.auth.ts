@@ -49,6 +49,15 @@ export class LocalAuth {
 				passport.authenticate('local', (error,
 												jwTokens: {accessToken: string, refreshToken: string},
 												blError: BlError) => {
+					
+					if (blError) {
+						console.log('there was an unkown error...', blError);
+						if (!(blError instanceof BlError)) {
+							blError = new BlError('unknown error').code(500);
+							return this.resHandler.sendErrorResponse(res, blError);
+						}
+					}
+					
 					if (error) {
 						return next(error);
 					}
@@ -58,7 +67,6 @@ export class LocalAuth {
 					}
 					
 					req.login(jwTokens, (error) => {
-						console.log('we are here');
 						if (error) return next(error);
 						return this.resHandler.sendResponse(res, new BlapiResponse([
 							new SEDocument('refreshToken', jwTokens.refreshToken),

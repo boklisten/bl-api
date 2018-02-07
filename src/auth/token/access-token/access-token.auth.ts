@@ -22,7 +22,6 @@ export class AccessTokenAuth {
 
 
 		passport.use(new Strategy(this.getOptions(), (accessToken: AccessToken, done) => {
-			console.log('hello there!', accessToken);
 			done(null, {accessToken: accessToken});
 		}));
 	}
