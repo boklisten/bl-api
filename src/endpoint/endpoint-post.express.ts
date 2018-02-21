@@ -52,12 +52,26 @@ export class EndpointPostExpress {
 		});
 	}
 	
+	private deletePostedDocuments(docs: SEDocument[]): Promise<any> {
+		let deletePromiseArr: Promise<any>[] = [];
+		
+		for (let doc of docs) {
+			deletePromiseArr.push(this.endpointMongoDb.deleteById(doc.data.id));
+		}
+		
+		return Promise.all(deletePromiseArr);
+	}
+	
 	private handleResponse(res: any, docs: SEDocument[], hook?: Hook) {
 		if (hook) {
 			hook.run(docs).then(() => {
 				this.resHandler.sendResponse(res, new BlapiResponse(docs));
 			}).catch((hookError: BlError) => {
-				this.resHandler.sendErrorResponse(res, new BlError('hook failed').add(hookError).code(800));
+				this.deletePostedDocuments(docs).then(() => {
+					this.resHandler.sendErrorResponse(res, new BlError('hook failed').add(hookError).code(800));
+				}).catch(() => {
+					this.resHandler.sendErrorResponse(res, new BlError('hook failed, and failed to delete documents').code(800).add(hookError));
+				})
 			});
 		} else {
 			this.resHandler.sendResponse(res, new BlapiResponse(docs));

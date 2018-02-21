@@ -44,8 +44,8 @@ export class OrderHook extends Hook {
 			Promise.all(validatedOrders).then(() => {
 				console.log('we are done!');
 				resolve(true);
-			}).catch(() => {
-				reject(new BlError('the orders are not valid').code(701));
+			}).catch((err: BlError) => {
+				reject(new BlError('the orders are not valid').code(701).add(err));
 			})
 		});
 	}

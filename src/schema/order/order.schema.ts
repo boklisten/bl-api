@@ -32,7 +32,23 @@ export let OrderSchema = {
 					type: Schema.Types.ObjectId,
 					required: true
 				},
+				title: {
+					type: Schema.Types.String,
+					required: true,
+				},
 				amount: {
+					type: Schema.Types.Number,
+					required: true
+				},
+				unitPrice: {
+					type: Schema.Types.Number,
+					required: true
+				},
+				taxAmount: {
+					type: Schema.Types.Number,
+					required: true
+				},
+				taxRate: {
 					type: Schema.Types.Number,
 					required: true
 				},
@@ -42,6 +58,12 @@ export let OrderSchema = {
 				},
 				customerItem: {
 					type: Schema.Types.String
+				},
+				discount: {
+					type: Schema.Types.Number
+				},
+				lastOrderItem: {
+					type: Schema.Types.Mixed
 				}
 			}
 		],

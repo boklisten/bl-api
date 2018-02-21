@@ -47,7 +47,7 @@ export class OrderValidator {
 			try {
 				this.validatePrice(order, oiarr);
 				this.validateOrderItems(oiarr);
-				this.validateCustomerItems(order.orderItems, customerItems);
+				//this.validateCustomerItems(order.orderItems, customerItems);
 			} catch (err) {
 				if (err instanceof BlError) return Promise.reject(err);
 				return Promise.reject(new BlError('could not validate order'));

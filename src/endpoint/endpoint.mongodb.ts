@@ -100,6 +100,7 @@ export class EndpointMongodb {
 
 			newDocument.save((error, doc) => {
 				if (error) {
+					console.log('the error', error);
 					return reject(this.handleError(new BlError('error when trying to save document')
 						.data(document)
 						.methodName('post')
