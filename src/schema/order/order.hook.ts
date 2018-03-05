@@ -1,10 +1,13 @@
 
 
 import {Hook} from "../../hook/hook";
-import {BlError, CustomerItem, Item, Order, OrderItem, OrderPayment} from "bl-model";
+import {BlError, CustomerItem, Item, Order, OrderItem, OrderPayment, UserDetail} from "bl-model";
 import {SEDocument} from "../../db/model/se.document";
 import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
 import {OrderValidator} from "./order-validator/order-validator";
+import {UserDetailSchema} from "../../config/schema/user/user-detail.schema";
+import {SESchema} from "../../config/schema/se.schema";
+import {User} from "../../config/schema/user/user";
 
 export class OrderHook extends Hook {
 	
@@ -16,17 +19,62 @@ export class OrderHook extends Hook {
 		return new Promise((resolve, reject) => {
 			if (!docs || docs.length <= 0) return reject(new BlError('no documents provided').code(701));
 			
-			this.validateDocs(docs).then(() => {
-				
-				return resolve(true);
-				
+			this.validateDocs(docs).then((orders: Order[]) => {
+				this.updateUserDetails(orders[0].customer, orders).then(() => {
+					resolve(true);
+				}).catch((updateErr: BlError) => {
+					reject(new BlError('could not update userDetails after order creation').add(updateErr));
+				});
 			}).catch((err: BlError) => {
 				return reject(new BlError('there was an error with the order data provided').code(701).add(err));
 			})
 		});
 	}
 	
-	private validateDocs(docs: SEDocument[]): Promise<boolean> {
+	private updateUserDetails(userDetailId: string, orders: Order[]): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+		    let userDetailMongoDb: EndpointMongodb = new EndpointMongodb(new SESchema('userdetails', UserDetailSchema));
+		    let userDetailsPromiseArr: Promise<boolean>[] = [];
+		    let orderIds: string[] = [];
+		    
+		    for (let order of orders) {
+		    	orderIds.push(order.id);
+			}
+			
+			userDetailsPromiseArr.push(this.patchUserDetails(userDetailMongoDb, userDetailId, orderIds));
+		    
+		    Promise.all(userDetailsPromiseArr).then((updated) => {
+		    	resolve(true);
+			}).catch((updateError: BlError) => {
+		    	reject(new BlError('could not update userDetails').add(updateError));
+			})
+		});
+	}
+	
+	private patchUserDetails(userDetailMongo: EndpointMongodb, userDetailId: string, orderIds: string[]): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			userDetailMongo.getById(userDetailId).then((doc: SEDocument[]) => {
+		    		let userDetail = doc[0].data as UserDetail;
+		    		
+		    		let orders = (userDetail.orders) ? userDetail.orders : [];
+		    		for (let orderId of orderIds) {
+						orders.push(orderId);
+					}
+		    		
+		    		userDetailMongo.patch(userDetail.id, new SEDocument('userdetails', {orders: orders})).then(() => {
+		    			resolve(true);
+					}).catch((patchError: BlError) => {
+		   				reject(new BlError('could not update userDetails with the new orders array').add(patchError));
+					});
+		   
+		   
+			}).catch((getByIdError: BlError) => {
+				reject(new BlError('could not get userDetails based on userId when trying to update userDetails').add(getByIdError));
+			})
+		});
+	}
+	
+	private validateDocs(docs: SEDocument[]): Promise<Order[]> {
 		return new Promise((resolve, reject) => {
 			
 			try {
@@ -35,22 +83,21 @@ export class OrderHook extends Hook {
 				return reject(err);
 			}
 			
-			let validatedOrders: Promise<boolean>[] = [];
+			let validatedOrders: Promise<Order>[] = [];
 			
 			for (let doc of docs) {
 				validatedOrders.push(this.validateData(doc));
 			}
 			
-			Promise.all(validatedOrders).then(() => {
-				console.log('we are done!');
-				resolve(true);
+			Promise.all(validatedOrders).then((validatedOrders: Order[]) => {
+				resolve(validatedOrders);
 			}).catch((err: BlError) => {
 				reject(new BlError('the orders are not valid').code(701).add(err));
 			})
 		});
 	}
 	
-	private validateData(doc: SEDocument): Promise<boolean> {
+	private validateData(doc: SEDocument): Promise<Order> {
 		return new Promise((resolve, reject) => {
 			try {
 				this.validateDocument(doc);
@@ -62,7 +109,7 @@ export class OrderHook extends Hook {
 			
 			
 			this.orderValidator.validate(order).then(() => {
-				resolve(true);
+				resolve(order);
 			}).catch((orderValidationError: BlError) => {
 				reject(new BlError('order could not be validated').code(701).add(orderValidationError));
 			});

@@ -26,7 +26,7 @@ export class PriceValidator {
 		return true;
 	}
 	
-	public validateOrderItem(orderItem: OrderItem, customerItem: CustomerItem, item: Item, branch: Branch): boolean {
+	public validateOrderItem(orderItem: OrderItem, item: Item, branch: Branch): boolean {
 		switch (orderItem.type) {
 			case 'buy':
 				this.validateOrderItemTypeBuy(orderItem, item);
@@ -35,7 +35,7 @@ export class PriceValidator {
 				this.validateOrderItemTypeSell(orderItem, item);
 				break;
 			case 'rent':
-				this.validateOrderItemTypeRent(orderItem, customerItem, item, branch);
+				this.validateOrderItemTypeRent(orderItem, item, branch);
 				break;
 			default:
 				throw new BlError('orderItem.type "' + orderItem.type + '" is not supported by PriceValidator');
@@ -43,7 +43,7 @@ export class PriceValidator {
 		return true;
 	}
 	
-	private validateOrderItemTypeRent(orderItem: OrderItem, customerItem: CustomerItem, item: Item, branch: Branch): boolean {
+	private validateOrderItemTypeRent(orderItem: OrderItem, item: Item, branch: Branch): boolean {
 		if (!orderItem.rentInfo) throw new BlError('orderItem.rentInfo is not defined when orderItem.type is rent');
 		if (orderItem.rentInfo.oneSemester == orderItem.rentInfo.twoSemesters) throw new BlError('orderItem.rentInfo.oneSemester and twoSemesters can not be equal');
 		if (orderItem.rentInfo.oneSemester) {
@@ -77,6 +77,9 @@ export class PriceValidator {
 	
 	
 	private calculateOrderItemPrice(price: number, discount?: number) {
+		if (price > 0) {
+			return parseInt((this.toFixed((discount) ? price + discount : price) / 10).toString(),10) * 10;
+		}
 		return this.toFixed((discount) ? price + discount : price);
 	}
 	

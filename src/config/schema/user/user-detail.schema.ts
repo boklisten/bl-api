@@ -59,5 +59,9 @@ export let UserDetailSchema = {
 	customerItems: {
 		type: [Schema.Types.ObjectId],
 		default: []
+	},
+	orders: {
+		type: [Schema.Types.ObjectId],
+		default: []
 	}
 };

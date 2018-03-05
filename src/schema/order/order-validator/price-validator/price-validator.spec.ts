@@ -100,7 +100,7 @@ describe('PriceValidator', () => {
 	
 	describe('#validatePriceOfCustomerItem()', () => {
 		it('should return true when given valid input', () => {
-			expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+			expect(priceValidator.validateOrderItem(testOrderItem, testItem, testBranch))
 				.to.be.true;
 		});
 		
@@ -115,7 +115,7 @@ describe('PriceValidator', () => {
 				testItem.price = 100;
 				
 				expect(() => {
-					priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch);
+					priceValidator.validateOrderItem(testOrderItem, testItem, testBranch);
 				}).to.throw(BlError, /orderItem.amount is not correct/);
 			});
 			
@@ -123,7 +123,7 @@ describe('PriceValidator', () => {
 				testOrderItem.amount = 100;
 				testItem.price = 100;
 				
-				expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+				expect(priceValidator.validateOrderItem(testOrderItem, testItem, testBranch))
 					.to.be.true;
 			});
 			
@@ -132,7 +132,7 @@ describe('PriceValidator', () => {
 				testOrderItem.discount = -100;
 				testItem.price = 600;
 				
-				expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+				expect(priceValidator.validateOrderItem(testOrderItem, testItem, testBranch))
 					.to.be.true;
 			});
 			
@@ -145,7 +145,7 @@ describe('PriceValidator', () => {
 					testOrderItem.discount = 50;
 					
 					expect(() => {
-						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+						priceValidator.validateOrderItem(testOrderItem, testItem, testBranch)
 					}).to.throw(BlError);
 				});
 				
@@ -155,7 +155,7 @@ describe('PriceValidator', () => {
 					testOrderItem.discount = 10;
 					
 					expect(() => {
-						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+						priceValidator.validateOrderItem(testOrderItem, testItem, testBranch)
 					}).to.throw(BlError);
 				});
 				
@@ -165,7 +165,7 @@ describe('PriceValidator', () => {
 					testOrderItem.discount = 66;
 					
 					expect(() => {
-						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+						priceValidator.validateOrderItem(testOrderItem, testItem, testBranch)
 					}).to.throw(BlError);
 				});
 			});
@@ -176,7 +176,7 @@ describe('PriceValidator', () => {
 					testOrderItem.discount = -300;
 					testOrderItem.amount = -200;
 					
-					expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+					expect(priceValidator.validateOrderItem(testOrderItem, testItem, testBranch))
 						.to.be.true;
 				});
 			    
@@ -186,7 +186,7 @@ describe('PriceValidator', () => {
 					testOrderItem.amount = -100;
 					
 					expect(() => {
-						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+						priceValidator.validateOrderItem(testOrderItem, testItem, testBranch)
 					}).to.throw(BlError);
 				});
 			});
@@ -202,7 +202,7 @@ describe('PriceValidator', () => {
 				testItem.sellPrice = 187.5;
 				testOrderItem.amount = -187.5;
 				
-				expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+				expect(priceValidator.validateOrderItem(testOrderItem, testItem, testBranch))
 					.to.be.true;
 			});
 			
@@ -211,7 +211,7 @@ describe('PriceValidator', () => {
 				testOrderItem.discount = -20;
 				testOrderItem.amount = -110.8;
 				
-				expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+				expect(priceValidator.validateOrderItem(testOrderItem, testItem, testBranch))
 					.to.be.true;
 			});
 			
@@ -221,7 +221,7 @@ describe('PriceValidator', () => {
 				testOrderItem.amount = -44;
 				
 				expect(() => {
-					priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+					priceValidator.validateOrderItem(testOrderItem, testItem, testBranch)
 				}).to.throw(BlError, /orderItem.amount is not correct/);
 			});
 		});
@@ -235,7 +235,7 @@ describe('PriceValidator', () => {
 				testOrderItem.rentInfo = null;
 				
 				expect(() => {
-					priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch);
+					priceValidator.validateOrderItem(testOrderItem, testItem, testBranch);
 				}).to.throw(BlError, /orderItem.rentInfo is not defined/);
 			});
 			
@@ -246,7 +246,7 @@ describe('PriceValidator', () => {
 				};
 				
 				expect(() => {
-					priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch);
+					priceValidator.validateOrderItem(testOrderItem, testItem, testBranch);
 				}).to.throw(BlError, /oneSemester and twoSemesters can not be equal/);
 			});
 			
@@ -262,7 +262,7 @@ describe('PriceValidator', () => {
 					testOrderItem.amount = 50;
 					testOrderItem.discount = 0;
 					
-					expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+					expect(priceValidator.validateOrderItem(testOrderItem, testItem, testBranch))
 						.to.be.true;
 				});
 				
@@ -273,7 +273,7 @@ describe('PriceValidator', () => {
 					testOrderItem.discount = 0;
 					
 					expect(() => {
-						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+						priceValidator.validateOrderItem(testOrderItem, testItem, testBranch)
 					}).to.throw(BlError, /orderItem.amount is not correct/);
 				});
 				
@@ -284,7 +284,7 @@ describe('PriceValidator', () => {
 					testOrderItem.discount = -3;
 					
 					expect(() => {
-						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+						priceValidator.validateOrderItem(testOrderItem, testItem, testBranch)
 					}).to.throw(BlError, /orderItem.amount is not correct/);
 				});
 			});
@@ -301,7 +301,7 @@ describe('PriceValidator', () => {
 					testOrderItem.amount = 50;
 					testOrderItem.discount = 0;
 					
-					expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+					expect(priceValidator.validateOrderItem(testOrderItem, testItem, testBranch))
 						.to.be.true;
 				});
 				
@@ -311,7 +311,7 @@ describe('PriceValidator', () => {
 					testOrderItem.amount = 40;
 					testOrderItem.discount = -10;
 					
-					expect(priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch))
+					expect(priceValidator.validateOrderItem(testOrderItem, testItem, testBranch))
 						.to.be.true;
 				});
 				
@@ -322,7 +322,7 @@ describe('PriceValidator', () => {
 					testOrderItem.discount = 0;
 					
 					expect(() => {
-						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+						priceValidator.validateOrderItem(testOrderItem, testItem, testBranch)
 					}).to.throw(BlError, /orderItem.amount is not correct/);
 				});
 				
@@ -333,7 +333,7 @@ describe('PriceValidator', () => {
 					testOrderItem.discount = -3;
 					
 					expect(() => {
-						priceValidator.validateOrderItem(testOrderItem, testCustomerItem, testItem, testBranch)
+						priceValidator.validateOrderItem(testOrderItem, testItem, testBranch)
 					}).to.throw(BlError, /orderItem.amount is not correct/);
 				});
 			});

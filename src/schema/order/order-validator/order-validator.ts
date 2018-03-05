@@ -7,7 +7,7 @@ import {PriceValidator} from "./price-validator/price-validator";
 import {BranchValidator} from "./branch-validator/branch-validator";
 import {ItemValidator} from "./item-validator/item-validator";
 
-type OiAttached = {orderItem: OrderItem, item: Item, branch: Branch, customerItem: CustomerItem};
+type OiAttached = {orderItem: OrderItem, item: Item, branch: Branch};
 
 export class OrderValidator {
 	private customerItemValidator: CustomerItemValidator;
@@ -25,7 +25,6 @@ export class OrderValidator {
 	public async validate(order: Order): Promise<boolean> {
 			let oiarr: OiAttached[] = [];
 			
-			let customerItems: CustomerItem[];
 			let branch: Branch;
 			let items: Item[];
 			
@@ -33,11 +32,10 @@ export class OrderValidator {
 			
 			try {
 				branch = await this.getBranch(order.branch);
-				customerItems = await this.getCustomerItems(order.orderItems);
 				
 				items = await this.getItems(order.orderItems);
 				
-				oiarr = this.attachToOrderItems(order.orderItems, branch, customerItems, items);
+				oiarr = this.attachToOrderItems(order.orderItems, branch, items);
 				
 			} catch (err) {
 				if (err instanceof BlError) return Promise.reject(err);
@@ -47,7 +45,6 @@ export class OrderValidator {
 			try {
 				this.validatePrice(order, oiarr);
 				this.validateOrderItems(oiarr);
-				//this.validateCustomerItems(order.orderItems, customerItems);
 			} catch (err) {
 				if (err instanceof BlError) return Promise.reject(err);
 				return Promise.reject(new BlError('could not validate order'));
@@ -60,7 +57,7 @@ export class OrderValidator {
 		for (let oi of oiarr) {
 			try {
 				this.priceValicator.validateOrder(order);
-				this.priceValicator.validateOrderItem(oi.orderItem, oi.customerItem, oi.item, oi.branch);
+				this.priceValicator.validateOrderItem(oi.orderItem, oi.item, oi.branch);
 				this.branchValidator.validateBranchInOrderItem(oi.branch, oi.orderItem);
 			} catch (err) {
 				if (err instanceof BlError) throw err;
@@ -95,13 +92,12 @@ export class OrderValidator {
 	}
 	
 	
-	private attachToOrderItems(orderItems: OrderItem[], branch: Branch, customerItems: CustomerItem[], items: Item[]): OiAttached[] {
-		let oiarr: {orderItem: OrderItem, branch: Branch, customerItem: CustomerItem, item: Item}[] = [];
+	private attachToOrderItems(orderItems: OrderItem[], branch: Branch, items: Item[]): OiAttached[] {
+		let oiarr: {orderItem: OrderItem, branch: Branch, item: Item}[] = [];
 		
 		for (let orderItem of orderItems) {
-			let customerItem = customerItems.find(ci => (orderItem.customerItem == ci.id));
 			let item = items.find(it => (orderItem.item == it.id));
-			oiarr.push({orderItem: orderItem, branch: branch, customerItem: customerItem, item: item});
+			oiarr.push({orderItem: orderItem, branch: branch, item: item});
 		}
 		
 		return oiarr;

@@ -63,6 +63,7 @@ export class BranchConfig implements EndpointConfig {
 		{fieldName: 'name', type: "string"},
 		{fieldName: 'type', type: "string"},
 		{fieldName: 'desc', type: "string"},
-		{fieldName: 'root', type: "boolean"}
+		{fieldName: 'root', type: "boolean"},
+		{fieldName: 'items', type: "string"}
 	]
 }

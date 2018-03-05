@@ -12,6 +12,10 @@ export let ItemSchema = {
 		type: Schema.Types.String,
 		required: true
 	},
+	categories: {
+		type: [Schema.Types.String],
+		default: []
+	},
 	info: {
 		type: Schema.Types.Mixed,
 		required: true

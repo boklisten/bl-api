@@ -62,6 +62,14 @@ export let OrderSchema = {
 				discount: {
 					type: Schema.Types.Number
 				},
+				rentInfo: {
+					oneSemester: {
+						type: Schema.Types.Boolean
+					},
+					twoSemesters: {
+						type: Schema.Types.Boolean
+					}
+				},
 				lastOrderItem: {
 					type: Schema.Types.Mixed
 				}

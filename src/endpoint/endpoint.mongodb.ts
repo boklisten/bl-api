@@ -180,23 +180,21 @@ export class EndpointMongodb {
 	public getAndValidateByUserBlid(objId: string, blid: string): Promise<SEDocument[]> {
 		
 		return new Promise((resolve, reject) => {
-			let blError = new BlError('').className('EndpointMongoDb').methodName('getAndValidateByUserBlid');
 			this.getById(objId).then(
 				(docs: SEDocument[]) => {
 					let data = docs[0].data;
 
 					if (data.user) {
-						if (data.user.blid) {
-							if (data.user.blid === blid) {
+						if (data.user.id) {
+							if (data.user.id === blid) {
 								return resolve(docs);
 							}
 						}
 					}
-
-					reject(blError.msg('the user is not valid, the objId was "' + objId + '"').data(blid));
+					reject(new BlError('the user is not valid, the objId was "' + objId + '"').data(blid));
 				},
 				(error: BlError) => {
-					reject(error.add(blError.msg('failed to getById')));
+					reject(new BlError('failed to getById "' + objId + '"').add(error));
 				});
 		});
 	}
@@ -205,6 +203,7 @@ export class EndpointMongodb {
 	
 	
 	private handleError(blError: BlError, error: any): BlError {
+		
 		if (error) {
 			
 			if (error.name === 'CastError') {

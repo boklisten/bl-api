@@ -83,6 +83,13 @@ export let BranchSchema = {
 			required: true
 		}
 	},
+	itemCategories: {
+		type: [{
+			name: Schema.Types.String,
+			items: [Schema.Types.ObjectId]
+		}],
+		default: []
+	},
 	openingHours: {
 		type: [Schema.Types.ObjectId],
 		default: []
