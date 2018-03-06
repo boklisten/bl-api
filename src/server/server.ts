@@ -38,11 +38,22 @@ export class Server {
 		this.app.use(bodyParser.json());
 
 		let cors = require('cors');
-
-		cors({
-			'Access-Control-Allow-Origin': '*'
-		});
-		this.app.use(cors());
+		
+		let whitelist = ['http://localhost:4200', '*', '127.0.0.1'];
+		let allowedMethods = ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'];
+		let allowedHeaders = ['Content-Type', 'Authorization', 'X-Requested-With'];
+	
+		
+		let corsConfig = {
+			origin: whitelist,
+			methods: allowedMethods,
+			allowedHeaders: allowedHeaders,
+			preflightContinue: true,
+			optionsSuccessStatus: 204
+		};
+		
+		this.app.use(cors(corsConfig));
+		
 		//this.app.use(session({secret: 'hello there'}));
 		this.app.use(require('cookie-parser')());
 		this.app.use(passport.initialize());
@@ -54,7 +65,8 @@ export class Server {
 		let debugLogPath = (req: Request, res: Response, next: any) => {
 			let d = new Date();
 			let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-			console.log('[' + d.toISOString() + '](' + ip + ') ' + req.method + ' ' + req.url);
+			console.log('> [' + d.toISOString() + '](' + ip + ')');
+			console.log('\t' + req.method + ' ' + req.url);
 			next();
 		};
 		

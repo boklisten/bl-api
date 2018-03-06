@@ -19,6 +19,10 @@ export class SEResponseHandler {
 		res.send(blapiRes);
 	}
 	
+	public sendAuthTokens(res: Response, accessToken: string, refreshToken: string) {
+		res.redirect('http://localhost:4200/#/auth/token;accessToken=' + accessToken + ';refreshToken=' + refreshToken);
+	}
+	
 	public sendAuthErrorResponse(res: Response, info: any, err: any) {
 		console.log('there was an auth error: info: ', info, 'err: ', err);
 		const blapiErrorResponse = this.getBlapiErrorResponseByAuthError(info);

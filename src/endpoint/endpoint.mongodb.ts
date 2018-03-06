@@ -205,11 +205,10 @@ export class EndpointMongodb {
 	private handleError(blError: BlError, error: any): BlError {
 		
 		if (error) {
-			
 			if (error.name === 'CastError') {
-				return blError.code(702);
+				return blError.code(702).store('castError', error);
 			} else if (error.name == 'ValidationError') {
-				return blError.code(701);
+				return blError.code(701).store('validationError', error);
 			} else {
 				return blError.code(200);
 			}

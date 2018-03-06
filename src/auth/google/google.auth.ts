@@ -91,10 +91,7 @@ export class GoogleAuth {
 		router.get(this.apiPath.createPath('auth/google/callback'),
 			passport.authenticate(blConfig.APP_CONFIG.login.google.name, {failureRedirect: this.apiPath.createPath('login') }),
 			(req: any, res: any) => {
-				this.resHandler.sendResponse(res, new BlapiResponse([
-					new SEDocument('accessToken', req.user.accessToken),
-					new SEDocument('refreshToken', req.user.refreshToken),
-				]));
+				this.resHandler.sendAuthTokens(res, req.user.accessToken, req.user.refreshToken);
 			});
 	}
 }

@@ -51,11 +51,11 @@ export class LocalAuth {
 												blError: BlError) => {
 					
 					if (blError) {
-						console.log('there was an unkown error...', blError);
 						if (!(blError instanceof BlError)) {
 							blError = new BlError('unknown error').code(500);
 							return this.resHandler.sendErrorResponse(res, blError);
 						}
+						console.log('there was an unkown error...', blError);
 					}
 					
 					if (error) {
