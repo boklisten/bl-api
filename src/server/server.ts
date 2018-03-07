@@ -48,7 +48,7 @@ export class Server {
 			origin: whitelist,
 			methods: allowedMethods,
 			allowedHeaders: allowedHeaders,
-			preflightContinue: true,
+			preflightContinue: false,
 			optionsSuccessStatus: 204
 		};
 		
@@ -65,8 +65,8 @@ export class Server {
 		let debugLogPath = (req: Request, res: Response, next: any) => {
 			let d = new Date();
 			let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-			console.log('> [' + d.toISOString() + '](' + ip + ')');
-			console.log('\t' + req.method + ' ' + req.url);
+			console.log('%s\x1b[2m%s\x1b[0m', '> ', '[' + d.toISOString() + '](' + ip + ')');
+			console.log('\x1b[2m\x1b[33m%s\x1b[1m\x1b[32m%s\x1b[0m', '\t' + req.method + ' ', req.url);
 			next();
 		};
 		
