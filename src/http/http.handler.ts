@@ -1,6 +1,9 @@
 
 
 import {BlError} from "bl-model";
+const querystring = require('querystring');
+const qs = require('qs');
+const request = require('request')
 
 export class HttpHandler {
 	
@@ -8,53 +11,32 @@ export class HttpHandler {
 	
 	}
 	
-	post(data: string, hostname: string, path: string, authorization?: string): Promise<string> {
+	post(url: string, data: any, authorization?: string): Promise<string> {
 		return new Promise((resolve, reject) => {
-			const http = require('http');
 			
-			let headers = {
-				'Content-Type': 'application/json',
-				'accept': 'application/json',
+			const options = {
+				url: url,
+				json: data,
+				headers: {}
 			};
 			
 			if (authorization) {
-				headers['Authorization'] = authorization;
+				options['headers']['Authorization'] = authorization;
 			}
 			
-			const options = {
-				hostname: hostname,
-				port: 80,
-				path: path,
-				method: 'POST',
-				headers: headers
-			};
-			
-			let responseData = '';
-			
-			const req = http.request(options, (res) => {
-				console.log('res statusCode: ', res.statusCode);
-				console.log('res headers: ', JSON.stringify(res.headers));
+		    request.post(options, (err, res, body) => {
+		    	if (err) {
+		    		return reject(new BlError(`error on request to "${url}"`));
+				}
 				
-				//res.setEncoding('utf8');
-				/*
-				res.on('data', (chunk) => {
-					console.log('BODY:', chunk);
-					responseData += chunk;
-				});
-				
-				res.on('end', () => {
-					console.log('here are the data: "' + responseData + '"');
-					resolve(responseData);
-				});
-				*/
+				if (res && res.statusCode) {
+		    		if (res.statusCode == 200 || res.statusCode === 201) {
+		    			return resolve(body);
+					}
+					
+					return reject(new BlError(`the request to "${url} responded with status ${res.statusCode}`).store('body', body));
+				}
 			});
-			
-			req.on('error', (e) => {
-				reject(new BlError('problem with request').store('message', e.message));
-			});
-			
-			req.write(data);
-			req.end();
 		});
 	};
 }

@@ -15,17 +15,17 @@ export class DibsPayment {
 	public getPaymentId(dibsEasyOrder: DibsEasyOrder): Promise<string> {
 		return new Promise((resolve, reject) => {
 			let httpHandler: HttpHandler = new HttpHandler();
-			reject(new BlError('could not get paymentId from dibs'));
-			/*
-			httpHandler.post(JSON.stringify(dibsEasyOrder), 'test.api.dibspayment.eu',
-				'/v1/payments', 'f82b1743410b4f91adcc6420390096d4').then((responseData: string) => {
-				console.log('we got a response from dibs!', responseData);
-				resolve(responseData);
+			httpHandler.post('https://test.api.dibspayment.eu/v1/payments', dibsEasyOrder, 'test-secret-key-f82b1743410b4f91adcc6420390096d4').then((responseData: string) => {
+				
+				if (responseData) {
+					if (responseData['paymentId']) {
+						return resolve(responseData['paymentId']);
+					}
+				}
+				return reject(new BlError('did not get the paymentId back from dibs'));
 			}).catch((blError: BlError) => {
-				console.log('there was an error with the request to dibs', blError);
 				reject(new BlError('could not get paymentID from dibs').add(blError));
 			});
-			*/
 		});
 	}
 	
@@ -41,12 +41,15 @@ export class DibsPayment {
 		
 		let dibsEasyOrder: DibsEasyOrder = new DibsEasyOrder();
 		
-		dibsEasyOrder.reference = order.id;
-		dibsEasyOrder.items = items;
-		dibsEasyOrder.amount = this.getTotalGrossAmount(items);
-		dibsEasyOrder.currency = "NOK";
+		dibsEasyOrder.order.reference = order.id;
+		dibsEasyOrder.order.items = items;
+		dibsEasyOrder.order.amount = this.getTotalGrossAmount(items);
+		dibsEasyOrder.order.currency = "NOK";
+		
+		
 		dibsEasyOrder.checkout = {
-			url: "",
+			url: "http://localhost:1337/checkout",
+			termsUrl: "http://localhost:1337/terms",
 			ShippingCountries: [
 				{countryCode: "NOR"}
 			]

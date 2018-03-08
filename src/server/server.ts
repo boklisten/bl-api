@@ -6,6 +6,8 @@ import {BlAuth} from "../auth/bl.auth";
 import {BlEndpoint} from "../endpoint/bl.endpoint";
 import {PaymentModule} from "../payment/payment.module";
 import {SEResponseHandler} from "../response/se.response.handler";
+import {DibsPayment} from "../payment/dibs/dibs-payment";
+import {BlError, Order} from "bl-model";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
 const packageJson = require('../../package.json');
@@ -66,6 +68,10 @@ export class Server {
 		this.router = Router();
 		
 		
+		this.test();
+		
+		
+		
 		let debugLogPath = (req: Request, res: Response, next: any) => {
 			let d = new Date();
 			let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -84,7 +90,57 @@ export class Server {
 	}
 	
 	private test() {
-	
+		let orderJson: any = {
+			"id": "o1",
+			"amount": 370,
+			"application": "bl-web",
+			"orderItems": [
+				{
+					"type": "rent",
+					"amount": 370,
+					"item": "5a1d67cdf14cbe78ff047d02",
+					"title": "Signatur 3",
+					"rentRate": 0,
+					"taxRate": 0,
+					"taxAmount": 0,
+					"unitPrice": 370,
+					"rentInfo": {
+						"oneSemester": true,
+						"twoSemesters": false
+					}
+				}
+			],
+			"branch": "5a1d67cdf14cbe78ff047d00",
+			"byCustomer": true,
+			"payments": [
+				{
+					"method": "dibs",
+					"amount": 370,
+					"confirmed": false,
+					"byBranch": false,
+					"time": "1"
+				}
+			],
+			"comments": [],
+			"active": false,
+			"user": {
+				"id": "u1"
+			},
+			"lastUpdated": '1',
+			"creationTime": '1'
+		};
+		
+		let dibsPayment = new DibsPayment();
+		let deo = dibsPayment.orderToDibsEasyOrder(orderJson as Order)
+		/*
+		dibsPayment.getPaymentId(deo).then((paymentId: string) => {
+			console.log(`it worked? "${paymentId}"`);
+		}).catch((blError: BlError) => {
+			console.log('got error when requesting payment id', blError);
+		})
+		*/
+		
+		
 	}
 	
 	private initModules() {

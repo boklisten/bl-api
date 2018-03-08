@@ -67,7 +67,7 @@ export class PaymentEndpoint {
 						
 						
 						this.dibsPayment.getPaymentId(deo).then((paymentId: string) => {
-							res.send('we got a paymentId! "' + paymentId + '"');
+							res.send({paymentId: paymentId});
 							res.end();
 						}).catch((blError: BlError) => {
 							return this.resHandler.sendErrorResponse(res, new BlError('failed to get payment id from dibs').add(blError));
