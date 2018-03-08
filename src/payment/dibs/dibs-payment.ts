@@ -3,53 +3,28 @@
 import {BlError, Order, OrderItem, OrderPayment} from "bl-model";
 import {DibsEasyItem} from "./dibs-easy-item/dibs-easy-item";
 import {DibsEasyOrder} from "./dibs-easy-order/dibs-easy-order";
+import {HttpHandler} from "../../http/http.handler";
 
 export class DibsPayment {
 	
+	constructor() {
+	
+	}
+	
 	
 	public getPaymentId(dibsEasyOrder: DibsEasyOrder): Promise<string> {
+		//console.log('dibsEasy order: ', dibsEasyOrder);
 		return new Promise((resolve, reject) => {
-			console.log('hi hellow there');
+			let httpHandler: HttpHandler = new HttpHandler();
 			
-			const http = require('http');
-			
-			const postData = JSON.stringify(dibsEasyOrder);
-			
-			const options = {
-				hostname: 'test.api.dibspayment.eu',
-				port: 80,
-				path: '/v1/payments',
-				method: 'POST',
-				headers: {
-					'content-type': 'application/json',
-					'accept': 'application/json',
-					'authorization': '100000934'
-				}
-			};
-			
-			const req = http.request(options, (res) => {
-				res.setEncoding('utf8');
-				let data = '';
-				res.on('data', (chunk) => {
-					console.log(`BODY: ${chunk}`);
-					data += chunk;
-				});
-				res.on('end', () => {
-					console.log('here are the data: "' + data + '"');
-					resolve('data: ' + data);
-				});
+			httpHandler.post(JSON.stringify(dibsEasyOrder), 'test.api.dibspayment.eu',
+				'/v1/payments', 'f82b1743410b4f91adcc6420390096d4').then((responseData: string) => {
+				console.log('we got a response from dibs!', responseData);
+				resolve(responseData);
+			}).catch((blError: BlError) => {
+				console.log('there was an error with the request to dibs', blError);
+				reject(new BlError('could not get paymentID from dibs').add(blError));
 			});
-			
-			req.on('error', (e) => {
-				console.error(`problem with request: ${e.message}`);
-				reject(new BlError('problem with request').store('message', e.message));
-			});
-			
-			console.log('we are ready to send post request');
-			
-			// write data to request body
-			req.write(postData);
-			req.end();
 		});
 	}
 	

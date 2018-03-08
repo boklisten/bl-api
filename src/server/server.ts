@@ -7,6 +7,8 @@ import {BlEndpoint} from "../endpoint/bl.endpoint";
 import {PaymentModule} from "../payment/payment.module";
 import {SEResponseHandler} from "../response/se.response.handler";
 let bodyParser = require('body-parser');
+const chalk = require('chalk');
+const packageJson = require('../../package.json');
 
 export class Server {
 
@@ -67,8 +69,8 @@ export class Server {
 		let debugLogPath = (req: Request, res: Response, next: any) => {
 			let d = new Date();
 			let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-			console.log('%s\x1b[2m%s\x1b[0m', '> ', '[' + d.toISOString() + '](' + ip + ')');
-			console.log('\x1b[2m\x1b[33m%s\x1b[1m\x1b[32m%s\x1b[0m', '\t' + req.method + ' ', req.url);
+			console.log(chalk.blue('> ') + chalk.gray.bold('[' + d.toISOString() + ']' + chalk.gray('(' + ip + ')')));
+			console.log(chalk.bold.dim.yellow('\t' + req.method + ' ') + chalk.green(req.url));
 			next();
 		};
 		
@@ -79,6 +81,10 @@ export class Server {
 		
 		
 		this.app.use(this.router);
+	}
+	
+	private test() {
+	
 	}
 	
 	private initModules() {
@@ -102,11 +108,14 @@ export class Server {
 	}
 
 	private printServerStartMessage() {
-		console.log('\n\t######');
-		console.log('\t#\tBL_API now running');
-		console.log('\t#\tapi: \t\t' + this.getServerPath());
-		console.log('\t#\tmongoDB: \t' + this.getMongoDbPath());
-		console.log('\t######\n');
+		console.log(chalk.blue(`\t _     _             _\n`+
+			                   `\t| |__ | | __ _ _ __ (_)\n`+
+			                   `\t| '_ \\| |/ _\` | '_ \\| |\n`+
+			                   `\t| |_) | | (_| | |_) | |\n`+
+							   `\t|_.__/|_|\\__,_| .__/|_|\n`+
+			                   `\t	      |_| v${packageJson.version}\n`));
+		console.log(chalk.blue('\t# ') + chalk.gray('hostname:\t') + chalk.dim.green(this.getServerPath()));
+		console.log(chalk.blue('\t# ') + chalk.gray('mongoDb: \t') + chalk.dim.green(this.getMongoDbPath()) + '\n');
 	}
 
 	private getMongoDbPath(): string {

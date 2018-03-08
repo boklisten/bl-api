@@ -38,7 +38,6 @@ export class PaymentEndpoint {
 	createGetDibsPaymentIdEndpoint() {
 		
 		this.router.post(this.apiPath.createPath('payment/dibs'), (req: Request, res: Response, next) => {
-			console.log('we got a request!');
 			passport.authenticate('jwt', (err, user, info) => {
 				if (!user || err || !user.accessToken) {
 					return this.resHandler.sendAuthErrorResponse(res, info, err);
@@ -68,8 +67,7 @@ export class PaymentEndpoint {
 						
 						
 						this.dibsPayment.getPaymentId(deo).then((paymentId: string) => {
-							console.log('we actually got the paymentID', paymentId);
-							res.send('we got a paymentId!' + paymentId);
+							res.send('we got a paymentId! "' + paymentId + '"');
 							res.end();
 						}).catch((blError: BlError) => {
 							console.log('there was an error getting the paymentId', blError);

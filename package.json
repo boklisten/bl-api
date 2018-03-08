@@ -4,8 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "grunt build && node ./dist/index.js",
-    "watch": "grunt dev",
+    "start": "grunt watch",
     "grunt": "grunt",
     "pkg": "grunt pkg",
     "dev": "grunt dev",
@@ -24,6 +23,7 @@
     "bl-email": "^1.0.6",
     "bl-model": "^0.11.9",
     "bluebird": "^3.5.1",
+    "chalk": "^2.3.2",
     "commander": "^2.13.0",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",

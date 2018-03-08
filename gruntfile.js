@@ -39,7 +39,12 @@ module.exports = function (grunt) {
         },
         nodemon: {
             dev: {
-                script: './dist/index.js'
+                options: {
+                    watch: ["src"],
+                    ext: "ts",
+                    ignore: ["src/**/*.spec.ts"],
+                    exec: "ts-node ./src/index.ts"
+                }
             },
             'generate-dev': {
                 script: './dist/generator-dev/generator.dev-environment.js'
@@ -144,11 +149,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-mocha-test');
 
-    grunt.registerTask("dev", [
-        'concurrent:dev',
-        'ts',
-        'nodemon:dev',
-        'watch:ts'
+    grunt.registerTask("watch", [
+        'nodemon:dev'
     ]);
 
     grunt.registerTask("pkg", [

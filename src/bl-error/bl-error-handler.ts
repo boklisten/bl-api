@@ -3,14 +3,38 @@
 import {BlError} from "bl-model";
 import {BlapiErrorResponse} from "bl-model";
 import {SEDocument} from "../db/model/se.document";
+const chalk = require('chalk');
 
 
 export class BlErrorHandler {
 	
 	public createBlapiErrorResponse(blError: BlError): BlapiErrorResponse {
-		blError.printStack();
+		this.printErrorStack(blError);
+		
 		let blErrorResponse = this.getErrorResponse(blError);
 		return new BlapiErrorResponse(blErrorResponse.httpStatus, blErrorResponse.code, blErrorResponse.msg);
+	}
+	
+	private printErrorStack(blError: BlError) {
+		console.log('\t\t' + chalk.bold.bgRed('BlError'));
+		this.printBlError(blError);
+	}
+	
+	private printBlError(blError: BlError) {
+		console.log('\t\t\t' + chalk.cyan(blError.getMsg()))
+		
+		if (blError.getStore() && blError.getStore().length > 0) {
+			console.log('\t\t\t ' + chalk.blue('# ') + chalk.green('stored error data'));
+			for (let storeData of blError.getStore()) {
+				console.log('\t\t\t\t' + chalk.blue('msg: ') + chalk.yellow(storeData.key) + chalk.blue(' data: ') + chalk.yellow(storeData.value));
+			}
+		}
+		
+		if (blError.errorStack && blError.errorStack.length > 0) {
+			for (let err of blError.errorStack) {
+				this.printBlError(err);
+			}
+		}
 	}
 	
 	private getErrorResponse(blError: BlError): BlapiErrorResponse {

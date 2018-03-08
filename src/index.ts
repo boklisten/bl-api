@@ -18,6 +18,5 @@ if (program.generateDevEnvironment) {
 	//if (program.port) console.log('the port flag', program.port);
 	//if (program.host) console.log('the host flag', program.host);
 	
-	console.log('starting server...');
 	const server = new Server();
 }
