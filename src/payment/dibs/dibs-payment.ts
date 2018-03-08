@@ -13,10 +13,10 @@ export class DibsPayment {
 	
 	
 	public getPaymentId(dibsEasyOrder: DibsEasyOrder): Promise<string> {
-		//console.log('dibsEasy order: ', dibsEasyOrder);
 		return new Promise((resolve, reject) => {
 			let httpHandler: HttpHandler = new HttpHandler();
-			
+			reject(new BlError('could not get paymentId from dibs'));
+			/*
 			httpHandler.post(JSON.stringify(dibsEasyOrder), 'test.api.dibspayment.eu',
 				'/v1/payments', 'f82b1743410b4f91adcc6420390096d4').then((responseData: string) => {
 				console.log('we got a response from dibs!', responseData);
@@ -25,6 +25,7 @@ export class DibsPayment {
 				console.log('there was an error with the request to dibs', blError);
 				reject(new BlError('could not get paymentID from dibs').add(blError));
 			});
+			*/
 		});
 	}
 	

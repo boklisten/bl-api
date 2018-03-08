@@ -70,9 +70,7 @@ export class PaymentEndpoint {
 							res.send('we got a paymentId! "' + paymentId + '"');
 							res.end();
 						}).catch((blError: BlError) => {
-							console.log('there was an error getting the paymentId', blError);
-							
-							return this.resHandler.sendErrorResponse(res, blError);
+							return this.resHandler.sendErrorResponse(res, new BlError('failed to get payment id from dibs').add(blError));
 						});
 					}).catch((blError: BlError) => {
 						return this.resHandler.sendErrorResponse(res, blError);

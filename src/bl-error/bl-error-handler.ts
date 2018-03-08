@@ -16,17 +16,19 @@ export class BlErrorHandler {
 	}
 	
 	private printErrorStack(blError: BlError) {
-		console.log('\t\t' + chalk.bold.bgRed('BlError'));
 		this.printBlError(blError);
+		console.log();
 	}
 	
 	private printBlError(blError: BlError) {
-		console.log('\t\t\t' + chalk.cyan(blError.getMsg()))
+		
+		console.log(chalk.blue('\t# [' + blError.getCode() + '] ') + chalk.red(blError.getMsg()))
+		//console.log('\t\t\t ' + chalk.dim(blError.stack));
 		
 		if (blError.getStore() && blError.getStore().length > 0) {
-			console.log('\t\t\t ' + chalk.blue('# ') + chalk.green('stored error data'));
+			console.log('\t\t ' + chalk.blue('# ') + chalk.green('stored error data'));
 			for (let storeData of blError.getStore()) {
-				console.log('\t\t\t\t' + chalk.blue('msg: ') + chalk.yellow(storeData.key) + chalk.blue(' data: ') + chalk.yellow(storeData.value));
+				console.log('\t\t\t' + chalk.blue('key: ') + chalk.green(storeData.key), chalk.dim(JSON.stringify(storeData.value)));
 			}
 		}
 		
