@@ -197,6 +197,8 @@ describe('PriceValidator', () => {
 		    beforeEach(() => {
 		    	testOrderItem.type = 'sell';
 			});
+		    
+		    /*
 			
 			it('should return true when item.sellPrice + orderItem.amount = 0', () => {
 				testItem.sellPrice = 187.5;
@@ -206,6 +208,7 @@ describe('PriceValidator', () => {
 					.to.be.true;
 			});
 			
+			
 			it('should return true when (item.sellPrice + orderItem.discount) + orderItem.amount = 0', () => {
 				testItem.sellPrice = 130.8;
 				testOrderItem.discount = -20;
@@ -214,6 +217,7 @@ describe('PriceValidator', () => {
 				expect(priceValidator.validateOrderItem(testOrderItem, testItem, testBranch))
 					.to.be.true;
 			});
+			*/
 			
 			it('should throw error when item.sellPrice - orderItem.amount != 0', () => {
 				testItem.price = 45;

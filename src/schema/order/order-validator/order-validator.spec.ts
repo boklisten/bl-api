@@ -18,9 +18,8 @@ describe('OrderValidator', () => {
 	
 	
 	const itemMongo = new EndpointMongodb(new SESchema('items', ItemSchema));
-	const customerItemMongo = new EndpointMongodb(new SESchema('customerItems', CustomerItemSchema));
 	const branchMongo = new EndpointMongodb(new SESchema('branches', BranchSchema));
-	const orderValidator: OrderValidator = new OrderValidator(itemMongo, customerItemMongo, branchMongo);
+	const orderValidator: OrderValidator = new OrderValidator(itemMongo, branchMongo);
 	
 	let testOrder: Order;
 	
@@ -96,6 +95,7 @@ describe('OrderValidator', () => {
 							childBranches: [''],
 							items: [],
 							openingHours: [],
+							itemCategories: [],
 							payment: {
 								branchResponsible: false,
 								rentPricePercentage: {
@@ -119,7 +119,7 @@ describe('OrderValidator', () => {
 				
 			});
 		});
-		
+		/*
 		sinon.stub(customerItemMongo, 'getManyById').callsFake((ids: string[]) => {
 				const testCustomerItem1: CustomerItem = {
 					id: 'ci1',
@@ -203,6 +203,7 @@ describe('OrderValidator', () => {
 				if (res.length <= 0) return Promise.reject(new BlError('not found').code(702));
 				return Promise.resolve(res);
 			});
+			*/
 		
 		sinon.stub(itemMongo, 'getManyById').callsFake((ids: string[]) => {
 			const testItem1: Item = {
@@ -214,6 +215,7 @@ describe('OrderValidator', () => {
 				user: {
 					id: 'u1'
 				},
+				categories: [],
 				title: 'Signatur 2',
 				type: 'book',
 				info: {
@@ -233,6 +235,7 @@ describe('OrderValidator', () => {
 				lastUpdated: new Date(),
 				active: true,
 				comments: [],
+				categories: [],
 				user: {
 					id: 'u1'
 				},

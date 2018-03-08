@@ -60,6 +60,7 @@ describe('PriceValidatorCancel', () => {
 				info: {
 					isbn: ''
 				},
+				categories: [],
 				desc: '',
 				taxRate: 0,
 				price: 100.0,

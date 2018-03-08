@@ -1,5 +1,8 @@
 
 export const APP_CONFIG = {
+	server: {
+		basePath: 'http://localhost:1337/api/v1/'
+	},
 	dev: {
 		server: {
 			host: 'localhost',

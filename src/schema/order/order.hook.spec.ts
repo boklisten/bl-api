@@ -20,7 +20,7 @@ describe('OrderHook', () => {
 	const itemMongo: EndpointMongodb = new EndpointMongodb(new SESchema('items', ItemSchema));
 	const customerItemMongo: EndpointMongodb = new EndpointMongodb(new SESchema('customerItems', CustomerItemSchema));
 	const branchMongo: EndpointMongodb = new EndpointMongodb(new SESchema('branches', BranchSchema));
-	const orderValidator: OrderValidator = new OrderValidator(itemMongo, customerItemMongo, branchMongo);
+	const orderValidator: OrderValidator = new OrderValidator(itemMongo, branchMongo);
 	const orderHook: OrderHook = new OrderHook(orderValidator);
 	
 	describe('#run()', () => {

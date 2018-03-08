@@ -39,6 +39,7 @@ describe('PriceValidatorCancelBuy', () => {
 			
 			testItem = {
 				id: 'i1',
+				categories: [],
 				title: 'Signatur 2',
 				type: 'book',
 				info: {

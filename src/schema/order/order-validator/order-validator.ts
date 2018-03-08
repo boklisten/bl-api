@@ -15,7 +15,7 @@ export class OrderValidator {
 	private branchValidator: BranchValidator;
 	private itemValidator: ItemValidator;
 	
-	constructor(private itemMongo: EndpointMongodb, private customerItemMongo: EndpointMongodb, private branchMongo: EndpointMongodb) {
+	constructor(private itemMongo: EndpointMongodb, private branchMongo: EndpointMongodb) {
 		this.customerItemValidator = new CustomerItemValidator();
 		this.priceValicator = new PriceValidator();
 		this.branchValidator = new BranchValidator();
@@ -130,29 +130,5 @@ export class OrderValidator {
 				reject(new BlError('could not get items').add(itemError));
 			});
 		});
-	}
-	
-	private getCustomerItems(orderItems: OrderItem[]): Promise<CustomerItem[]> {
-		let customerItemIds: string[] = [];
-		
-		for (let orderItem of orderItems) {
-			if (orderItem.type === 'rent') customerItemIds.push(orderItem.customerItem);
-		}
-		
-		return new Promise((resolve, reject) => {
-			this.customerItemMongo.getManyById(customerItemIds).then((docs: SEDocument[]) => {
-				let customerItems: CustomerItem[] = [];
-				
-				for (let doc of docs) {
-					customerItems.push(doc.data as CustomerItem);
-				}
-				
-				
-				resolve(customerItems);
-			}).catch((ciDocError: BlError) => {
-				reject(new BlError('could not get customerItems based on the ids provided').add(ciDocError));
-			});
-		});
-		
 	}
 }

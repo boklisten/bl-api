@@ -45,6 +45,7 @@ describe('BranchValidator', () => {
 				acceptedMethods: []
 			},
 			comments: [],
+			itemCategories: [],
 			active: true,
 			lastUpdated: new Date(),
 			creationTime: new Date()

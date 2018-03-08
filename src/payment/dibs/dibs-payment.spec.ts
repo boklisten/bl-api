@@ -18,6 +18,9 @@ describe('DibsPayment', () => {
 		testOrder = {
 			id: 'o1',
 			amount: 100,
+			application: 'bl-web',
+			byCustomer: true,
+			branch: 'b1',
 			orderItems: [
 				{
 					type: "rent",
@@ -31,11 +34,9 @@ describe('DibsPayment', () => {
 					customerItem: 'ci1'
 				}
 			],
-			branch: 'b1',
-			byCustomer: true,
 			payments: [
 				{
-					method: "card",
+					method: "dibs",
 					amount: 100,
 					confirmed: true,
 					byBranch: false,
@@ -87,6 +88,53 @@ describe('DibsPayment', () => {
 			}).to.throw(BlError, /order.id is not defined/);
 		});
 		
+		it('should throw error if order.payments include more than one payment with method "dibs"', () => {
+			testOrder.payments = [
+				{
+					method: "dibs",
+					amount: 50,
+					confirmed: true,
+					byBranch: false,
+					time: new Date()
+				},
+				{
+					method: "dibs",
+					amount: 50,
+					confirmed: true,
+					byBranch: false,
+					time: new Date()
+				}
+			];
+			
+			expect(() => {
+				dibsPayment.orderToDibsEasyOrder(testOrder);
+			}).to.throw(BlError, /order.payments include more than one payment with method "dibs"/);
+		});
+		
+		
+		it('should throw error if none of the order.payments is of type "dibs"', () => {
+			testOrder.payments = [
+				{
+					method: "cash",
+					amount: 50,
+					confirmed: true,
+					byBranch: false,
+					time: new Date()
+				},
+				{
+					method: "card",
+					amount: 50,
+					confirmed: true,
+					byBranch: false,
+					time: new Date()
+				}
+			];
+			
+			expect(() => {
+				dibsPayment.orderToDibsEasyOrder(testOrder);
+			}).to.throw(BlError, /order.payments does not include a payment with method "dibs"/);
+		});
+		
 		it('should throw error if order.amount is 0', () => {
 			testOrder.amount = 0;
 			expect(() => {
@@ -116,10 +164,13 @@ describe('DibsPayment', () => {
 		});
 		
 		context('dibsEasyOrder.items should be valid', () => {
+			
 			it('should have name of "signatur 3"', () => {
 				const title = 'signatur 3';
 				testOrder.orderItems[0].title = title;
+				
 				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
+				
 				
 				expect(deo.items[0].name).to.eql(title);
 			});
@@ -137,6 +188,38 @@ describe('DibsPayment', () => {
 			it('should have taxAmount equal to 5000', () => {
 				testOrder.orderItems[0].unitPrice = 100;
 				testOrder.orderItems[0].taxRate = 0.5;
+				testOrder.orderItems[0].taxAmount = 50;
+				
+				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
+				
+				expect(deo.items[0].taxAmount).to.eql(5000);
+			});
+			
+			it('should have taxRate equal to 2500', () => {
+				testOrder.orderItems[0].unitPrice = 100;
+				testOrder.orderItems[0].taxRate = 0.25;
+				
+				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
+				
+				expect(deo.items[0].taxRate).to.eql(2500);
+			});
+		});
+		
+		context('dibsEasyOrder should be valid', () => {
+		 
+			it('should have reference equal to the order.id', () => {
+				testOrder.id = 'orderId1';
+				
+				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
+				
+				expect(deo.reference).to.eql(testOrder.id);
+			});
+			
+			it('should have items.length equal to the number of items in order', () => {
+				
+				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
+				
+				expect(deo.items.length).to.eql(testOrder.orderItems.length);
 			});
 		});
 		

@@ -27,6 +27,7 @@ describe('ItemValidator', () => {
 			sell: true,
 			sellPrice: 100,
 			rent: true,
+			categories: [],
 			buy: true,
 			creationTime: new Date(),
 			lastUpdated: new Date(),

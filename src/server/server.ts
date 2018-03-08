@@ -4,6 +4,8 @@ import * as passport from "passport";
 import {APP_CONFIG} from "../application-config";
 import {BlAuth} from "../auth/bl.auth";
 import {BlEndpoint} from "../endpoint/bl.endpoint";
+import {PaymentModule} from "../payment/payment.module";
+import {SEResponseHandler} from "../response/se.response.handler";
 let bodyParser = require('body-parser');
 
 export class Server {
@@ -72,7 +74,15 @@ export class Server {
 		
 		this.app.use(debugLogPath);
 		
+		
+		this.initModules();
+		
+		
 		this.app.use(this.router);
+	}
+	
+	private initModules() {
+		let paymentModule = new PaymentModule(this.router, new SEResponseHandler());
 	}
 
 	private initialPassportConfig() {
@@ -97,7 +107,6 @@ export class Server {
 		console.log('\t#\tapi: \t\t' + this.getServerPath());
 		console.log('\t#\tmongoDB: \t' + this.getMongoDbPath());
 		console.log('\t######\n');
-
 	}
 
 	private getMongoDbPath(): string {

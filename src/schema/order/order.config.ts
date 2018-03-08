@@ -33,7 +33,6 @@ export class OrderConfig implements EndpointConfig {
 					},
 					hook: new OrderHook(new OrderValidator(
 						new EndpointMongodb(new SESchema('items', ItemSchema)),
-						new EndpointMongodb(new SESchema('customerItems', CustomerItemSchema)),
 						new EndpointMongodb(new SESchema('branches', BranchSchema))))
 				}
 			]
