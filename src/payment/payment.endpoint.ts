@@ -9,7 +9,7 @@ import {DibsPayment} from "./dibs/dibs-payment";
 import {ApiPath} from "../config/api-path";
 import {OrderValidator} from "../schema/order/order-validator/order-validator";
 import {EndpointMongodb} from "../endpoint/endpoint.mongodb";
-import {BlError, Order} from "bl-model";
+import {BlapiResponse, BlError, Order} from "bl-model";
 import {SESchema} from "../config/schema/se.schema";
 import {OrderSchema} from "../schema/order/order.schema";
 import {SEDocument} from "../db/model/se.document";
@@ -67,8 +67,7 @@ export class PaymentEndpoint {
 						
 						
 						this.dibsPayment.getPaymentId(deo).then((paymentId: string) => {
-							res.send({paymentId: paymentId});
-							res.end();
+							return this.resHandler.sendResponse(res, new BlapiResponse([{paymentId: paymentId}]))
 						}).catch((blError: BlError) => {
 							return this.resHandler.sendErrorResponse(res, new BlError('failed to get payment id from dibs').add(blError));
 						});
