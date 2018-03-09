@@ -5,7 +5,7 @@ import {BlCollection, BlEndpoint} from "../bl-collection";
 import {paymentSchema} from "./payment.schema";
 
 export class PaymentCollection implements BlCollection {
-	public collectionName = 'payments';
+	public collectionName = 'testpayments';
 	public mongooseSchema = paymentSchema;
 	public endpoints: BlEndpoint[] = [
 		{

@@ -8,6 +8,8 @@ import {PaymentModule} from "../payment/payment.module";
 import {SEResponseHandler} from "../response/se.response.handler";
 import {DibsPayment} from "../payment/dibs/dibs-payment";
 import {BlError, Order} from "bl-model";
+import {PaymentCollection} from "../collections/payment/payment.collection";
+import {BlCollectionGenerator} from "../collections/bl-collection-generator";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
 const packageJson = require('../../package.json');
@@ -20,7 +22,8 @@ export class Server {
 	private blAuth: BlAuth;
 
 	constructor() {
-
+		this.printServerStartMessage();
+		
 		this.initialServerConfig();
 		this.initialPassportConfig();
 
@@ -90,58 +93,10 @@ export class Server {
 	}
 	
 	private test() {
-		let orderJson: any = {
-			"id": "o1",
-			"amount": 370,
-			"application": "bl-web",
-			"orderItems": [
-				{
-					"type": "rent",
-					"amount": 370,
-					"item": "5a1d67cdf14cbe78ff047d02",
-					"title": "Signatur 3",
-					"rentRate": 0,
-					"taxRate": 0,
-					"taxAmount": 0,
-					"unitPrice": 370,
-					"rentInfo": {
-						"oneSemester": true,
-						"twoSemesters": false
-					}
-				}
-			],
-			"branch": "5a1d67cdf14cbe78ff047d00",
-			"byCustomer": true,
-			"payments": [
-				{
-					"method": "dibs",
-					"amount": 370,
-					"confirmed": false,
-					"byBranch": false,
-					"time": "1"
-				}
-			],
-			"comments": [],
-			"active": false,
-			"user": {
-				"id": "u1"
-			},
-			"lastUpdated": '1',
-			"creationTime": '1'
-		};
+		const paymentCollection = new PaymentCollection();
+		const blCollectionGenerator = new BlCollectionGenerator(this.router, paymentCollection);
 		
-		let dibsPayment = new DibsPayment();
-		let deo = dibsPayment.orderToDibsEasyOrder(orderJson as Order)
-	
-		/*
-		dibsPayment.getPaymentId(deo).then((paymentId: string) => {
-			console.log(`it worked? "${paymentId}"`);
-		}).catch((blError: BlError) => {
-			console.log('got error when requesting payment id', blError);
-		})
-		*/
-		
-		
+		blCollectionGenerator.generate();
 	}
 	
 	private initModules() {
@@ -160,7 +115,7 @@ export class Server {
 
 	private serverStart() {
 		this.app.listen(APP_CONFIG.dev.server.port, () => {
-			this.printServerStartMessage();
+			console.log(chalk.blue('\t#') + chalk.gray(' server is up and running\n'));
 		});
 	}
 
@@ -172,7 +127,7 @@ export class Server {
 							   `\t|_.__/|_|\\__,_| .__/|_|\n`+
 			                   `\t	      |_| v${packageJson.version}\n`));
 		console.log(chalk.blue('\t# ') + chalk.gray('hostname:\t') + chalk.dim.green(this.getServerPath()));
-		console.log(chalk.blue('\t# ') + chalk.gray('mongoDb: \t') + chalk.dim.green(this.getMongoDbPath()) + '\n');
+		console.log(chalk.blue('\t# ') + chalk.gray('mongoDb: \t') + chalk.dim.green(this.getMongoDbPath()));
 	}
 
 	private getMongoDbPath(): string {
