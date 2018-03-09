@@ -21,7 +21,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		this.url = this.apiPath.createPath(collection.collectionName);
 		this.authStrategy = 'jwt';
 		this.resHandler = new SEResponseHandler();
-		this.documentStorage = new BlDocumentStorage(collection.mongooseSchema);
+		this.documentStorage = new BlDocumentStorage(collection.collectionName, collection.mongooseSchema);
 	}
 	
 	public generate() {
@@ -181,7 +181,8 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		this.router.post(this.url, (req: Request, res: Response, next: NextFunction) => {
 			passport.authenticate(this.authStrategy, (err, aToken: {accessToken: AccessToken}, info) => {
 				this.validateAuth(endpoint, aToken.accessToken, err, info).then((accessToken: AccessToken) => {
-					if (!req.body) {
+					
+					if (!req.body || (Object.keys(req.body).length === 0 && req.body.constructor === Object)) {
 						return this.resHandler.sendErrorResponse(res, new BlError('no data provided').code(701));
 					}
 				

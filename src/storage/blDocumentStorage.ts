@@ -1,16 +1,24 @@
 
 import {BlCollection} from "../collections/bl-collection";
 import {BlDocument, BlError} from "bl-model";
+import {BlStorageHandler} from "./blStorageHandler";
+import {MongoDbBlStorageHandler} from "./mongoDb/mongoDb.blStorageHandler";
 
-export class BlDocumentStorage<T extends BlDocument> {
+export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler<T> {
 	
-	constructor(private mongooseSchema?: any) {
+	private mongoDbHandler: MongoDbBlStorageHandler<T>;
 	
+	constructor(private collectionName: string, private mongooseSchema?: any) {
+		this.mongoDbHandler = new MongoDbBlStorageHandler(collectionName, mongooseSchema);
 	}
 	
 	get(id: string): Promise<T> {
 		return new Promise((resolve, reject) => {
-		    reject(new BlError('not implemented'));
+			this.mongoDbHandler.get(id).then((doc: T) => {
+				resolve(doc);
+			}).catch((blError: BlError) => {
+				reject(blError);
+			});
 		});
 	}
 	
@@ -28,7 +36,11 @@ export class BlDocumentStorage<T extends BlDocument> {
 	
 	add(doc: T): Promise<T> {
 		return new Promise((resolve, reject) => {
-			reject(new BlError('not implemented'));
+			this.mongoDbHandler.add(doc).then((addedDoc: T) => {
+				resolve(addedDoc);
+			}).catch((blError: BlError) => {
+				reject(blError);
+			});
 		});
 	}
 	

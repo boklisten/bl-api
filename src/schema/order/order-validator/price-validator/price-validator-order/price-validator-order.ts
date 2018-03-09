@@ -1,6 +1,6 @@
 
 
-import {BlError, Order, OrderItem, OrderPayment} from "bl-model";
+import {BlError, Order, OrderItem} from "bl-model";
 
 export class PriceValidatorOrder {
 	
@@ -29,7 +29,9 @@ export class PriceValidatorOrder {
 		return true;
 	}
 	
-	private validatePaymentsAmount(amount: number, payments: OrderPayment[]): boolean {
+	private validatePaymentsAmount(amount: number, payments: string[]): boolean {
+		return true;
+		/*
 		let sum = 0;
 		for (let payment of payments) {
 			sum += payment.amount;
@@ -37,5 +39,6 @@ export class PriceValidatorOrder {
 		
 		if (sum != amount) throw new BlError('payments total amount is not equal to order.amount');
 		return true;
+		*/
 	}
 }

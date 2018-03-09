@@ -1,7 +1,7 @@
 
 
 import {Hook} from "../../hook/hook";
-import {BlError, CustomerItem, Item, Order, OrderItem, OrderPayment, UserDetail} from "bl-model";
+import {BlError, CustomerItem, Item, Order, OrderItem, UserDetail} from "bl-model";
 import {SEDocument} from "../../db/model/se.document";
 import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
 import {OrderValidator} from "./order-validator/order-validator";

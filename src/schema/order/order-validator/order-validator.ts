@@ -1,5 +1,5 @@
 
-import {BlError, Branch, CustomerItem, Item, Order, OrderItem, OrderPayment} from "bl-model";
+import {BlError, Branch, CustomerItem, Item, Order, OrderItem} from "bl-model";
 import {EndpointMongodb} from "../../../endpoint/endpoint.mongodb";
 import {SEDocument} from "../../../db/model/se.document";
 import {CustomerItemValidator} from "./customer-item-validator/customer-item-validator";
