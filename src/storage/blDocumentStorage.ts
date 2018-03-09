@@ -52,7 +52,11 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 	
 	update(id: string, data: any): Promise<T> {
 		return new Promise((resolve, reject) => {
-			reject(new BlError('not implemented'));
+			this.mongoDbHandler.update(id, data).then((updatedDoc: T) => {
+				resolve(updatedDoc);
+			}).catch((blError: BlError) => {
+				reject(blError)
+			});
 		});
 	}
 	

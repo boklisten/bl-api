@@ -96,7 +96,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 			passport.authenticate(this.authStrategy, (err, aToken: {accessToken: AccessToken}, info) => {
 				this.validateAuth(endpoint, aToken.accessToken, err, info).then((accessToken: AccessToken) => {
 					
-					if (!req.body) {
+					if (!req.body || (Object.keys(req.body).length === 0 && req.body.constructor === Object)) {
 						return this.resHandler.sendErrorResponse(res, new BlError('no data provided').code(701));
 					}
 					
@@ -107,7 +107,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 					});
 				
 				});
-			})
+			})(req, res, next);
 		});
 		
 		this.printEndpointInfo('patch', '/:id', endpoint.restriction.permissions);

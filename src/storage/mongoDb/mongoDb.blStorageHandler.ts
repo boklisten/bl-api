@@ -72,7 +72,29 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 	
 	update(id: string, data: any): Promise<T> {
 		return new Promise((resolve, reject) => {
-			reject(new BlError('not implemented'));
+			this.mongooseModel.findById(id, (error, document) => {
+				if (error) {
+					return reject(this.handleError(new BlError(`failed to find document with id ${id}`), error));
+				}
+
+				if (document === null) {
+					return reject(new BlError(`could not find document with id "${id}"`).code(702));
+				}
+
+				document.set(data);
+				document.set({lastUpdated: new Date()});
+				
+				
+
+				document.save((error, updatedDocument) => {
+					if (error) {
+						return reject(this.handleError(new BlError(`failed to save the document`).store('data', data), error));
+					}
+					
+					resolve(updatedDocument)
+
+				});
+			})
 		});
 	}
 	
