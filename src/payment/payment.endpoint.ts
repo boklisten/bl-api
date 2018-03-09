@@ -35,6 +35,9 @@ export class PaymentEndpoint {
 		this.createGetDibsPaymentIdEndpoint();
 	}
 	
+	createPostPayment() {
+	}
+	
 	createGetDibsPaymentIdEndpoint() {
 		
 		this.router.post(this.apiPath.createPath('payment/dibs'), (req: Request, res: Response, next) => {

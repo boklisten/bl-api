@@ -53,24 +53,27 @@ describe('DibsPayment', () => {
 		};
 		
 		testDibsEasyOrder = {
-			items: [
-				{
-					reference: "i1",
-					name: "Signatur 3",
-					quantity: 1,
-					unit: "book",
-					unitPrice: 1000,
-					taxRate: 0,
-					taxAmount: 0,
-					grossTotalAmount: 1000,
-					netTotalAmount: 1000
-				}
-			],
-			amount: 1000,
-			currency: "NOK",
-			reference: "o1",
+			order: {
+				items: [
+					{
+						reference: "i1",
+						name: "Signatur 3",
+						quantity: 1,
+						unit: "book",
+						unitPrice: 1000,
+						taxRate: 0,
+						taxAmount: 0,
+						grossTotalAmount: 1000,
+						netTotalAmount: 1000
+					}
+				],
+				amount: 1000,
+				currency: "NOK",
+				reference: "o1",
+			},
 			checkout: {
 				url: "",
+				termsUrl: '',
 				ShippingCountries: [
 					{countryCode: "NOR"}
 				]
@@ -154,13 +157,13 @@ describe('DibsPayment', () => {
 			testOrder.orderItems[0].unitPrice = 100;
 			let deo: DibsEasyOrder = dibsPayment.orderToDibsEasyOrder(testOrder);
 			
-			expect(deo.amount).to.eql(10000);
+			expect(deo.order.amount).to.eql(10000);
 		});
 		
 		it('should return a dibsEasyOrder.reference equal to "103"', () => {
 			testOrder.id = '103';
 			let deo: DibsEasyOrder = dibsPayment.orderToDibsEasyOrder(testOrder);
-			expect(deo.reference).to.eql('103');
+			expect(deo.order.reference).to.eql('103');
 		});
 		
 		context('dibsEasyOrder.items should be valid', () => {
@@ -172,7 +175,7 @@ describe('DibsPayment', () => {
 				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
 				
 				
-				expect(deo.items[0].name).to.eql(title);
+				expect(deo.order.items[0].name).to.eql(title);
 			});
 			
 			it('should have grossTotalAmount of 15000', () => {
@@ -182,7 +185,7 @@ describe('DibsPayment', () => {
 				testOrder.amount = 150;
 				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
 				
-				expect(deo.items[0].grossTotalAmount).to.eql(15000);
+				expect(deo.order.items[0].grossTotalAmount).to.eql(15000);
 			});
 			
 			it('should have taxAmount equal to 5000', () => {
@@ -192,7 +195,7 @@ describe('DibsPayment', () => {
 				
 				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
 				
-				expect(deo.items[0].taxAmount).to.eql(5000);
+				expect(deo.order.items[0].taxAmount).to.eql(5000);
 			});
 			
 			it('should have taxRate equal to 2500', () => {
@@ -201,7 +204,7 @@ describe('DibsPayment', () => {
 				
 				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
 				
-				expect(deo.items[0].taxRate).to.eql(2500);
+				expect(deo.order.items[0].taxRate).to.eql(2500);
 			});
 		});
 		
@@ -212,14 +215,14 @@ describe('DibsPayment', () => {
 				
 				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
 				
-				expect(deo.reference).to.eql(testOrder.id);
+				expect(deo.order.reference).to.eql(testOrder.id);
 			});
 			
 			it('should have items.length equal to the number of items in order', () => {
 				
 				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
 				
-				expect(deo.items.length).to.eql(testOrder.orderItems.length);
+				expect(deo.order.items.length).to.eql(testOrder.orderItems.length);
 			});
 		});
 		

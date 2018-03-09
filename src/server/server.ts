@@ -132,6 +132,7 @@ export class Server {
 		
 		let dibsPayment = new DibsPayment();
 		let deo = dibsPayment.orderToDibsEasyOrder(orderJson as Order)
+	
 		/*
 		dibsPayment.getPaymentId(deo).then((paymentId: string) => {
 			console.log(`it worked? "${paymentId}"`);
