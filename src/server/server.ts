@@ -7,7 +7,7 @@ import {BlEndpoint} from "../endpoint/bl.endpoint";
 import {PaymentModule} from "../payment/payment.module";
 import {SEResponseHandler} from "../response/se.response.handler";
 import {DibsPayment} from "../payment/dibs/dibs-payment";
-import {BlError, Order} from "bl-model";
+import {BlError, Order, Payment} from "bl-model";
 import {PaymentCollection} from "../collections/payment/payment.collection";
 import {BlCollectionGenerator} from "../collections/bl-collection-generator";
 let bodyParser = require('body-parser');
@@ -93,8 +93,13 @@ export class Server {
 	}
 	
 	private test() {
+		this.generateEndpoints();
+	}
+	
+	private generateEndpoints() {
+		console.log('\t' + chalk.blue('# ') + chalk.gray('endpoints:'));
 		const paymentCollection = new PaymentCollection();
-		const blCollectionGenerator = new BlCollectionGenerator(this.router, paymentCollection);
+		const blCollectionGenerator = new BlCollectionGenerator<Payment>(this.router, paymentCollection);
 		
 		blCollectionGenerator.generate();
 	}

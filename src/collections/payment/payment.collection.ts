@@ -9,7 +9,13 @@ export class PaymentCollection implements BlCollection {
 	public mongooseSchema = paymentSchema;
 	public endpoints: BlEndpoint[] = [
 		{
-			method: 'get',
+			method: "post",
+			restriction: {
+				permissions: ["customer", "employee", "admin"]
+			}
+		},
+		{
+			method: 'getAll',
 			restriction: {
 				permissions: ["admin"],
 				restricted: true
@@ -23,15 +29,16 @@ export class PaymentCollection implements BlCollection {
 			}
 		},
 		{
-			method: "post",
-			restriction: {
-				permissions: ["customer", "employee", "admin"]
-			}
-		},
-		{
 			method: "patch",
 			restriction: {
 				permissions: ["customer", "employee", "admin"],
+				restricted: true
+			}
+		},
+		{
+			method: "delete",
+			restriction: {
+				permissions: ["admin"],
 				restricted: true
 			}
 		}
