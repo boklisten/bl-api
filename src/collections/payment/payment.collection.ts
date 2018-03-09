@@ -3,6 +3,8 @@
 import {Schema} from "mongoose";
 import {BlCollection, BlEndpoint} from "../bl-collection";
 import {paymentSchema} from "./payment.schema";
+import {BlDocument} from "bl-model";
+import {PaymentPostHook} from "./hooks/payment.post.hook";
 
 export class PaymentCollection implements BlCollection {
 	public collectionName = 'testpayments';
@@ -10,6 +12,7 @@ export class PaymentCollection implements BlCollection {
 	public endpoints: BlEndpoint[] = [
 		{
 			method: "post",
+			hook: new PaymentPostHook(),
 			restriction: {
 				permissions: ["customer", "employee", "admin"]
 			}

@@ -68,13 +68,23 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 	
 	remove(id: string): Promise<T> {
 		return new Promise((resolve, reject) => {
-			reject(new BlError('not implemented'));
+			this.mongoDbHandler.remove(id).then((deletedDoc: T) => {
+				resolve(deletedDoc);
+			}).catch((blError: BlError) => {
+				reject(blError);
+			});
 		});
 	}
 	
 	removeMany(ids: string[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			reject(new BlError('not implemented'));
+		});
+	}
+	
+	exists(id: string): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+		
 		});
 	}
 }

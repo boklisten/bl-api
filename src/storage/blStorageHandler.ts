@@ -21,4 +21,6 @@ export interface BlStorageHandler<T extends BlDocument> {
 	remove(id: string): Promise<T>;
 	
 	removeMany(ids: string[]): Promise<T[]>;
+	
+	exists(id: string): Promise<boolean>;
 }

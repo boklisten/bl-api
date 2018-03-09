@@ -8,6 +8,7 @@ import * as passport from "passport";
 import {SEResponseHandler} from "../response/se.response.handler";
 import chalk from "chalk";
 import {BlDocumentStorage} from "../storage/blDocumentStorage";
+import {Hook} from "../hook/hook";
 
 export class BlCollectionGenerator<T extends BlDocument>{
 	private apiPath: ApiPath;
@@ -22,6 +23,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		this.authStrategy = 'jwt';
 		this.resHandler = new SEResponseHandler();
 		this.documentStorage = new BlDocumentStorage(collection.collectionName, collection.mongooseSchema);
+		
 	}
 	
 	public generate() {
@@ -31,6 +33,11 @@ export class BlCollectionGenerator<T extends BlDocument>{
 	private generateEndpoints() {
 		console.log('\t\t' + chalk.dim.green('/' + this.collection.collectionName));
 		for (let endpoint of this.collection.endpoints) {
+			
+			if (!endpoint.hook) {
+				endpoint.hook = new Hook(); //a default hook that always resolves to true
+			}
+			
 			switch (endpoint.method) {
 				case "getAll":
 					this.generateGetAll(endpoint);
@@ -185,13 +192,39 @@ export class BlCollectionGenerator<T extends BlDocument>{
 					if (!req.body || (Object.keys(req.body).length === 0 && req.body.constructor === Object)) {
 						return this.resHandler.sendErrorResponse(res, new BlError('no data provided').code(701));
 					}
-				
-					this.documentStorage.add(req.body).then((doc: T) => {
-						return this.resHandler.sendResponse(res, new BlapiResponse([doc]));
+					
+					
+					endpoint.hook.before(req.body).then(() => {
+						this.documentStorage.add(req.body).then((doc: T) => {
+							
+							endpoint.hook.after([doc.id]).then((returnVal: boolean | T) => {
+								
+								if (returnVal !== true){
+									return this.resHandler.sendResponse(res, new BlapiResponse([returnVal]));
+								}
+								
+								return this.resHandler.sendResponse(res, new BlapiResponse([doc]));
+							}).catch((blError: BlError) => {
+								
+								this.documentStorage.remove(doc.id).then(() => {
+									return this.resHandler.sendErrorResponse(res, new BlError(`hook.after failed and the document with id ${doc.id} was deleted`)
+										.store('document', doc)
+										.add(blError));
+								}).catch((blError: BlError) => {
+									return this.resHandler.sendErrorResponse(res, new BlError(`hook.after failed, and the document with id ${doc.id} could not be deleted`)
+										.store('document', doc)
+										.add(blError));
+								});
+								
+							});
+						}).catch((blError: BlError) => {
+							return this.resHandler.sendErrorResponse(res, blError);
+						});
 					}).catch((blError: BlError) => {
-						return this.resHandler.sendErrorResponse(res, blError);
+						return this.resHandler.sendErrorResponse(res, new BlError('hook.before failed')
+							.add(blError)
+							.store('document', req.body));
 					});
-				
 				}).catch((blError: BlError) => {
 					return this.resHandler.sendErrorResponse(res, blError);
 				});

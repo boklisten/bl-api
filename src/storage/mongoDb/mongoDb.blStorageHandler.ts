@@ -1,10 +1,6 @@
 
 
-import {SESchema} from "../../config/schema/se.schema";
-import {SEDbQuery} from "../../query/se.db-query";
-import {SEDocument} from "../../db/model/se.document";
 import {BlDocument, BlError} from "bl-model";
-import * as mongoose from "mongoose";
 import {BlStorageHandler} from "../blStorageHandler";
 import {MongooseModelCreator} from "./mongoose-schema-creator";
 
@@ -106,13 +102,32 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 	
 	remove(id: string): Promise<T> {
 		return new Promise((resolve, reject) => {
-			reject(new BlError('not implemented'));
+			this.mongooseModel.findByIdAndRemove(id, (error, doc) => {
+				if (error) {
+					return reject(this.handleError(new BlError(`could not remove document with id "${id}"`), error));
+				}
+
+				if (doc === null) {
+					return reject(new BlError('not found').code(702).store('id', id));
+				}
+				resolve(doc);
+			});
 		});
 	}
 	
 	removeMany(ids: string[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			reject(new BlError('not implemented'));
+		});
+	}
+	
+	exists(id: string): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+		    this.get(id).then(() => {
+		    	resolve(true);
+			}).catch(() => {
+		    	reject(new BlError(`document with id ${id} does not exist`).code(702));
+			});
 		});
 	}
 	

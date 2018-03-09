@@ -10,6 +10,7 @@ import {DibsPayment} from "../payment/dibs/dibs-payment";
 import {BlError, Order, Payment} from "bl-model";
 import {PaymentCollection} from "../collections/payment/payment.collection";
 import {BlCollectionGenerator} from "../collections/bl-collection-generator";
+import {BlEndpointCreator} from "../collections/bl-endpoint-creator";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
 const packageJson = require('../../package.json');
@@ -97,11 +98,8 @@ export class Server {
 	}
 	
 	private generateEndpoints() {
-		console.log('\t' + chalk.blue('# ') + chalk.gray('endpoints:'));
-		const paymentCollection = new PaymentCollection();
-		const blCollectionGenerator = new BlCollectionGenerator<Payment>(this.router, paymentCollection);
-		
-		blCollectionGenerator.generate();
+		const endpointCreator = new BlEndpointCreator(this.router);
+		endpointCreator.createAll();
 	}
 	
 	private initModules() {

@@ -81,6 +81,9 @@ export class BlErrorHandler {
 			case 701:
 				blapiErrorResponse.msg = 'bad format';
 				break;
+			case 702:
+				blapiErrorResponse.msg = 'not found';
+				break;
 		}
 		return blapiErrorResponse;
 	}
