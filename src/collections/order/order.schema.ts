@@ -1,8 +1,7 @@
 
-
 import {Schema} from 'mongoose';
 
-export let OrderSchema = {
+export let orderSchema = {
 	employee: {
 		type: Schema.Types.ObjectId
 	},

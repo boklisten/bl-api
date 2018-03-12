@@ -38,6 +38,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 				endpoint.hook = new Hook(); //a default hook that always resolves to true
 			}
 			
+			
 			switch (endpoint.method) {
 				case "getAll":
 					this.generateGetAll(endpoint);
@@ -95,7 +96,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 			}
 		});
 		
-		this.printEndpointInfo('get', '/:id', endpoint.restriction.permissions);
+		this.printEndpointInfo('get', '/:id', endpoint);
 	}
 	
 	private generatePatch(endpoint: BlEndpoint) {
@@ -117,7 +118,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 			})(req, res, next);
 		});
 		
-		this.printEndpointInfo('patch', '/:id', endpoint.restriction.permissions);
+		this.printEndpointInfo('patch', '/:id', endpoint);
 	}
 	
 	private getId(id: string, res: Response) {
@@ -145,7 +146,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 			}
 		});
 		
-		this.printEndpointInfo('get', '', endpoint.restriction.permissions);
+		this.printEndpointInfo('get', '', endpoint);
 	}
 	
 	private getAll(res: Response) {
@@ -156,14 +157,16 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		});
 	}
 	
-	private printEndpointInfo(method: string, path: string, permissions?: UserPermission[]) {
+	private printEndpointInfo(method: string, path: string, endpoint: BlEndpoint) {
 		let output = '\t\t\t' + chalk.dim.bold.yellow(method.toUpperCase()) + '\t' + chalk.dim.green(path);
-		if (permissions) {
+		if (endpoint.restriction && endpoint.restriction.permissions) {
 			output += chalk.gray('\t[');
-			for (let permission of permissions) {
+			for (let permission of endpoint.restriction.permissions) {
 				output += chalk.gray(' ' + permission.toString());
 			}
 			output += chalk.gray(' ]');
+		} else {
+			output += chalk.gray('\t[ everyone ]');
 		}
 		console.log(output);
 	}
@@ -181,7 +184,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 			})(req, res, next);
 		});
 		
-		this.printEndpointInfo('delete', '/:id', endpoint.restriction.permissions);
+		this.printEndpointInfo('delete', '/:id', endpoint);
 	}
 	
 	private generatePost(endpoint: BlEndpoint) {
@@ -233,6 +236,6 @@ export class BlCollectionGenerator<T extends BlDocument>{
 			})(req, res, next)
 		});
 		
-		this.printEndpointInfo('post', '', endpoint.restriction.permissions);
+		this.printEndpointInfo('post', '', endpoint);
 	}
 }

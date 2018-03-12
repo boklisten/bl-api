@@ -3,8 +3,6 @@ import {Application, Request, Response, Router} from "express";
 import * as passport from "passport";
 import {APP_CONFIG} from "../application-config";
 import {BlAuth} from "../auth/bl.auth";
-import {BlEndpoint} from "../endpoint/bl.endpoint";
-import {Payment} from "bl-model";
 import {BlEndpointCreator} from "../collections/bl-endpoint-creator";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
@@ -14,7 +12,6 @@ export class Server {
 
 	public app: Application;
 	private router: Router;
-	private blEndpoint: BlEndpoint;
 	private blAuth: BlAuth;
 
 	constructor() {
@@ -23,8 +20,9 @@ export class Server {
 		this.initialServerConfig();
 		this.initialPassportConfig();
 
-		this.blEndpoint = new BlEndpoint(this.router);
 		this.blAuth = new BlAuth(this.router);
+		
+		this.generateEndpoints();
 		
 		this.mongoDbStart();
 		this.serverStart();
@@ -89,7 +87,6 @@ export class Server {
 	}
 	
 	private test() {
-		this.generateEndpoints();
 	}
 	
 	private generateEndpoints() {
@@ -115,7 +112,7 @@ export class Server {
 			console.log(chalk.blue('\t#') + chalk.gray(' server is up and running\n'));
 		});
 	}
-
+	
 	private printServerStartMessage() {
 		console.log(chalk.blue(`\t _     _             _\n`+
 			                   `\t| |__ | | __ _ _ __ (_)\n`+
@@ -123,6 +120,7 @@ export class Server {
 			                   `\t| |_) | | (_| | |_) | |\n`+
 							   `\t|_.__/|_|\\__,_| .__/|_|\n`+
 			                   `\t	      |_| v${packageJson.version}\n`));
+		
 		console.log(chalk.blue('\t# ') + chalk.gray('hostname:\t') + chalk.dim.green(this.getServerPath()));
 		console.log(chalk.blue('\t# ') + chalk.gray('mongoDb: \t') + chalk.dim.green(this.getMongoDbPath()));
 	}
