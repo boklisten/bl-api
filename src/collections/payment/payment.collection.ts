@@ -7,7 +7,7 @@ import {BlDocument} from "bl-model";
 import {PaymentPostHook} from "./hooks/payment.post.hook";
 
 export class PaymentCollection implements BlCollection {
-	public collectionName = 'testpayments';
+	public collectionName = 'payments';
 	public mongooseSchema = paymentSchema;
 	public endpoints: BlEndpoint[] = [
 		{

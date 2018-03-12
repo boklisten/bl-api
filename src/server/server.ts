@@ -4,12 +4,7 @@ import * as passport from "passport";
 import {APP_CONFIG} from "../application-config";
 import {BlAuth} from "../auth/bl.auth";
 import {BlEndpoint} from "../endpoint/bl.endpoint";
-import {PaymentModule} from "../payment/payment.module";
-import {SEResponseHandler} from "../response/se.response.handler";
-import {DibsPayment} from "../payment/dibs/dibs-payment";
-import {BlError, Order, Payment} from "bl-model";
-import {PaymentCollection} from "../collections/payment/payment.collection";
-import {BlCollectionGenerator} from "../collections/bl-collection-generator";
+import {Payment} from "bl-model";
 import {BlEndpointCreator} from "../collections/bl-endpoint-creator";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
@@ -103,7 +98,6 @@ export class Server {
 	}
 	
 	private initModules() {
-		let paymentModule = new PaymentModule(this.router, new SEResponseHandler());
 	}
 
 	private initialPassportConfig() {

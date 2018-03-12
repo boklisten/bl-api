@@ -209,7 +209,8 @@ export class BlCollectionGenerator<T extends BlDocument>{
 								this.documentStorage.remove(doc.id).then(() => {
 									return this.resHandler.sendErrorResponse(res, new BlError(`hook.after failed and the document with id ${doc.id} was deleted`)
 										.store('document', doc)
-										.add(blError));
+										.add(blError)
+										.code(701));
 								}).catch((blError: BlError) => {
 									return this.resHandler.sendErrorResponse(res, new BlError(`hook.after failed, and the document with id ${doc.id} could not be deleted`)
 										.store('document', doc)
@@ -223,7 +224,8 @@ export class BlCollectionGenerator<T extends BlDocument>{
 					}).catch((blError: BlError) => {
 						return this.resHandler.sendErrorResponse(res, new BlError('hook.before failed')
 							.add(blError)
-							.store('document', req.body));
+							.store('document', req.body)
+							.code(701));
 					});
 				}).catch((blError: BlError) => {
 					return this.resHandler.sendErrorResponse(res, blError);

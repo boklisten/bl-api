@@ -15,7 +15,7 @@ export class PaymentPostHook extends Hook {
 	
 	constructor() {
 		super();
-		this.paymentStorage = new BlDocumentStorage('testpayments', paymentSchema);
+		this.paymentStorage = new BlDocumentStorage('payments', paymentSchema);
 		this.orderStorage = new BlDocumentStorage('orders', OrderSchema);
 	}
 	
@@ -31,7 +31,6 @@ export class PaymentPostHook extends Hook {
 				reject(new BlError(`length is undefined or not a single id`).store('ids', ids));
 			}
 			this.paymentStorage.get(ids[0]).then((payment: Payment) => {
-				console.log('the payment', payment);
 				
 				switch (payment.method) {
 					case "dibs":
@@ -62,25 +61,32 @@ export class PaymentPostHook extends Hook {
 					deo = dibsPayment.orderToDibsEasyOrder(order);
 				} catch (e) {
 					if (e instanceof BlError) {
-						reject(e);
+						reject(new BlError('could not create dibsEasyOrder').add(e));
 					}
 					reject(new BlError('unkown error, the order could not be made to a dibs easy order'));
 				}
 				
 				dibsPayment.getPaymentId(deo).then((paymentId: string) => {
-					
-					
 					this.paymentStorage.update(payment.id, {"info": {"paymentId": paymentId}}).then((updatedPayment: Payment) => {
-						resolve(updatedPayment);
+						
+						this.orderStorage.get(updatedPayment.order).then((order) => {
+							order.payments.push(updatedPayment.id);
+							
+							this.orderStorage.update(updatedPayment.order, {"payments": order.payments}).then(() => {
+								resolve(updatedPayment);
+							}).catch((blError: BlError) => {
+								reject(new BlError(`could not update order "${updatedPayment.order}" with the payment "${payment.id}"`).add(blError));
+							});
+							
+						}).catch((blErr: BlError) => {
+							reject(blErr);
+						});
 					}).catch((blError: BlError) => {
-						reject(blError);
+						reject(new BlError(`could not update payment "${payment.id}" with paymentId`))
 					});
-					
 				}).catch((blError: BlError) => {
 					reject(blError);
 				});
-				
-				
 			}).catch((blError: BlError) => {
 				reject(new BlError(`payment.order "${payment.order}" does not exists in database`).add(blError));
 			});
