@@ -18,6 +18,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 	private resHandler: SEResponseHandler;
 	private documentStorage: BlDocumentStorage<T>;
 	private defaultHook: Hook;
+	private permissionService: PermissionService;
 	
 	constructor(private router: Router, private collection: BlCollection) {
 		this.apiPath = new ApiPath();
@@ -26,14 +27,10 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		this.resHandler = new SEResponseHandler();
 		this.documentStorage = new BlDocumentStorage(collection.collectionName, collection.mongooseSchema);
 		this.defaultHook = new Hook();
-		
+		this.permissionService = new PermissionService();
 	}
 	
 	public generate() {
-		this.generateEndpoints();
-	}
-	
-	private generateEndpoints() {
 		console.log('\t\t' + chalk.dim.green('/' + this.collection.collectionName));
 		for (let endpoint of this.collection.endpoints) {
 			
@@ -81,13 +78,20 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		});
 	}
 	
+	private validateDocPermission(endpoint: BlEndpoint, accessToken: AccessToken, doc: BlDocument): boolean {
+		if (endpoint.restriction) {
+			return this.permissionService.haveRestrictedPermission(accessToken.sub, accessToken.permission, doc);
+		}
+		return true;
+	}
+	
 	private genereateGetId(endpoint: BlEndpoint) {
 		this.router.get(this.url + '/:id', (req: Request, res: Response, next: NextFunction) => {
 			if (endpoint.restriction) {
 				passport.authenticate(this.authStrategy, (err, accessToken: {accessToken: AccessToken}, info) => {
 					this.validateAuth(endpoint, accessToken.accessToken, err, info).then((accessToken: AccessToken) => {
 						
-						this.getId(req.params.id, res);
+						this.getId(req.params.id, res, endpoint, accessToken);
 				
 					
 					}).catch((blError: BlError) => {
@@ -102,6 +106,22 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		this.printEndpointInfo('get', '/:id', endpoint);
 	}
 	
+	
+	private getId(id: string, res: Response, endpoint?: BlEndpoint, accessToken?: AccessToken) {
+		this.documentStorage.get(id).then((doc: T) => {
+			
+			if (accessToken) {
+				if (!this.validateDocPermission(endpoint,  accessToken, doc)) {
+					return this.resHandler.sendErrorResponse(res, new BlError(`user "${accessToken.sub}" does not have permission to get document "${id}"`).code(904));
+				}
+			}
+			
+			return this.resHandler.sendResponse(res, new BlapiResponse([doc]));
+		}).catch((blError: BlError) => {
+			return this.resHandler.sendErrorResponse(res, blError);
+		});
+	}
+	
 	private generatePatch(endpoint: BlEndpoint) {
 		this.router.patch(this.url + '/:id', (req: Request, res: Response, next: NextFunction) => {
 			passport.authenticate(this.authStrategy, (err, aToken: {accessToken: AccessToken}, info) => {
@@ -111,7 +131,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 						return this.resHandler.sendErrorResponse(res, new BlError('no data provided').code(701));
 					}
 					
-					this.documentStorage.update(req.params.id, req.body).then((doc: T) => {
+					this.documentStorage.update(req.params.id, req.body, {id: accessToken.sub, permission: accessToken.permission}).then((doc: T) => {
 						return this.resHandler.sendResponse(res, new BlapiResponse([doc]));
 					}).catch((blError: BlError) => {
 						return this.resHandler.sendErrorResponse(res, blError);
@@ -122,14 +142,6 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		});
 		
 		this.printEndpointInfo('patch', '/:id', endpoint);
-	}
-	
-	private getId(id: string, res: Response) {
-		this.documentStorage.get(id).then((doc: T) => {
-			return this.resHandler.sendResponse(res, new BlapiResponse([doc]));
-		}).catch((blError: BlError) => {
-			return this.resHandler.sendErrorResponse(res, blError);
-		});
 	}
 	
 	private generateGetAll(endpoint: BlEndpoint) {
@@ -160,40 +172,11 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		});
 	}
 	
-	private printEndpointInfo(method: string, path: string, endpoint: BlEndpoint) {
-		let output = '\t\t\t' + chalk.dim.bold.yellow(method.toUpperCase()) + '\t' + chalk.dim.green(path);
-		let permissionService: PermissionService = new PermissionService();
-		
-		output += '\t';
-		
-		if (endpoint.restriction && endpoint.restriction.permissions) {
-			output += chalk.dim.bold.red('[' + permissionService.getLowestPermission(endpoint.restriction.permissions) + '] ');
-		} else {
-			output += chalk.dim.green('[everyone] ');
-		}
-		
-		output += '\t';
-		
-		if (endpoint.restriction && endpoint.restriction.restricted) {
-			output += chalk.red.dim('user');
-		}
-		
-		output += '\t';
-		
-		if (endpoint.hook) {
-			if (endpoint.hook !== this.defaultHook) {
-				output += chalk.dim.gray('<hooked>');
-			}
-		}
-		
-		console.log(output);
-	}
-	
 	private generateDelete(endpoint: BlEndpoint) {
 		this.router.delete(this.url + '/:id', (req: Request, res: Response, next: NextFunction) => {
 			passport.authenticate(this.authStrategy, (err, aToken: {accessToken: AccessToken}, info) => {
 				this.validateAuth(endpoint, aToken.accessToken, err, info).then((accessToken: AccessToken) => {
-					this.documentStorage.remove(req.params.id).then((doc: T) => {
+					this.documentStorage.remove(req.params.id, {id: accessToken.sub, permission: accessToken.permission}).then((doc: T) => {
 						return this.resHandler.sendResponse(res, new BlapiResponse([doc]));
 					}).catch((blError: BlError) => {
 						return this.resHandler.sendErrorResponse(res, blError);
@@ -216,7 +199,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 					
 					
 					endpoint.hook.before(req.body).then(() => {
-						this.documentStorage.add(req.body).then((doc: T) => {
+						this.documentStorage.add(req.body, {id: accessToken.sub, permission: accessToken.permission}).then((doc: T) => {
 							
 							endpoint.hook.after([doc.id]).then((returnVal: boolean | T) => {
 								
@@ -227,7 +210,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 								return this.resHandler.sendResponse(res, new BlapiResponse([doc]));
 							}).catch((blError: BlError) => {
 								
-								this.documentStorage.remove(doc.id).then(() => {
+								this.documentStorage.remove(doc.id, {id: accessToken.sub, permission: accessToken.permission}).then(() => {
 									return this.resHandler.sendErrorResponse(res, new BlError(`hook.after failed and the document with id ${doc.id} was deleted`)
 										.store('document', doc)
 										.add(blError)
@@ -255,5 +238,34 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		});
 		
 		this.printEndpointInfo('post', '', endpoint);
+	}
+	
+	private printEndpointInfo(method: string, path: string, endpoint: BlEndpoint) {
+		let output = '\t\t\t' + chalk.dim.bold.yellow(method.toUpperCase()) + '\t' + chalk.dim.green(path);
+		let permissionService: PermissionService = new PermissionService();
+		
+		output += '\t';
+		
+		if (endpoint.restriction && endpoint.restriction.permissions) {
+			output += chalk.dim.bold.red('[' + permissionService.getLowestPermission(endpoint.restriction.permissions) + '] ');
+		} else {
+			output += chalk.dim.green('[everyone] ');
+		}
+		
+		output += '\t';
+		
+		if (endpoint.restriction && endpoint.restriction.restricted) {
+			output += chalk.red.dim('user');
+		}
+		
+		output += '\t';
+		
+		if (endpoint.hook) {
+			if (endpoint.hook !== this.defaultHook) {
+				output += chalk.dim.gray('<hooked>');
+			}
+		}
+		
+		console.log(output);
 	}
 }

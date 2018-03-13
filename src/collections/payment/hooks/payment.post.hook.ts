@@ -7,6 +7,7 @@ import {paymentSchema} from "../payment.schema";
 import {OrderSchema} from "../../../schema/order/order.schema";
 import {DibsPayment} from "../../../payment/dibs/dibs-payment";
 import {DibsEasyOrder} from "../../../payment/dibs/dibs-easy-order/dibs-easy-order";
+import {SystemUser} from "../../../auth/permission/permission.service";
 
 export class PaymentPostHook extends Hook {
 	
@@ -67,12 +68,12 @@ export class PaymentPostHook extends Hook {
 				}
 				
 				dibsPayment.getPaymentId(deo).then((paymentId: string) => {
-					this.paymentStorage.update(payment.id, {"info": {"paymentId": paymentId}}).then((updatedPayment: Payment) => {
+					this.paymentStorage.update(payment.id, {"info": {"paymentId": paymentId}}, new SystemUser()).then((updatedPayment: Payment) => {
 						
 						this.orderStorage.get(updatedPayment.order).then((order) => {
 							order.payments.push(updatedPayment.id);
 							
-							this.orderStorage.update(updatedPayment.order, {"payments": order.payments}).then(() => {
+							this.orderStorage.update(updatedPayment.order, {"payments": order.payments}, new SystemUser()).then(() => {
 								resolve(updatedPayment);
 							}).catch((blError: BlError) => {
 								reject(new BlError(`could not update order "${updatedPayment.order}" with the payment "${payment.id}"`).add(blError));

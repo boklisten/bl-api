@@ -1,17 +1,14 @@
 import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import * as sinon from 'sinon';
 import {expect} from 'chai';
-import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
-import {SESchema} from "../../config/schema/se.schema";
 import {UserSchema} from "../../config/schema/user/user.schema";
-import {UserDetailSchema} from "../../config/schema/user/user-detail.schema";
 import {UserHandler} from "./user.handler";
-import {BlError} from "bl-model";
-import {SEDbQuery} from "../../query/se.db-query";
+import {BlError, UserDetail} from "bl-model";
 import {Promise} from 'es6-promise';
-import {SEDocument} from "../../db/model/se.document";
 import {User} from "../../config/schema/user/user";
+import {BlDocumentStorage} from "../../storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 
@@ -27,40 +24,11 @@ let testUser = {
 	valid: false
 };
 
-class EndpointMongoDbMock extends EndpointMongodb {
-	exists(dbQuery: SEDbQuery): Promise<boolean> {
-		return new Promise((resolve, reject) => {
-			if (dbQuery.stringFilters[0].value === testUser.login.provider && dbQuery.stringFilters[1].value === testUser.login.providerId) {
-				resolve(true);
-			}
-			reject(new BlError('user does not exists').code(404));
-		});
-	}
-	
-	get(dbQuery: SEDbQuery): Promise<SEDocument[]> {
-		return new Promise((resolve, reject) => {
-		    if (dbQuery.stringFilters[0].value === testUser.login.provider && dbQuery.stringFilters[1].value === testUser.login.providerId) {
-				resolve([new SEDocument('user', testUser)])
-			} else if (dbQuery.stringFilters[0].fieldName === 'username' && dbQuery.stringFilters[0].value === testUser.username) {
-				resolve([new SEDocument('user', testUser)]);
-			} else {
-		    	reject(new BlError('could not find user').code(404));
-			}
-		});
-	}
-	
-	post(seDocument: SEDocument): Promise<SEDocument[]> {
-		return new Promise((resolve, reject) => {
-		    resolve([seDocument]);
-		});
-	}
-	
-}
 
 describe('UserHandler', () => {
-	let userMongoHandlerMock = new EndpointMongoDbMock(new SESchema('users', UserSchema));
-	let userDetailMongoHandlerMock = new EndpointMongoDbMock(new SESchema('userDetails', UserDetailSchema));
-	let userHandler = new UserHandler(userMongoHandlerMock, userDetailMongoHandlerMock);
+	const userStorage: BlDocumentStorage<User> = new BlDocumentStorage('users', UserSchema);
+	const userDetailStorage: BlDocumentStorage<UserDetail> = new BlDocumentStorage('userdetails', UserDetail);
+	let userHandler = new UserHandler(userDetailStorage, userStorage);
 	let testProvider = '';
 	let testProviderId = '';
 	let testUsername = '';
@@ -102,6 +70,18 @@ describe('UserHandler', () => {
 		});
 	});
 	
+	
+	sinon.stub(userStorage, 'getByQuery').callsFake((query: any) => {
+		return new Promise((resolve, reject) => {
+			if (query.value !== testUser.username) {
+				return reject(new BlError('not found').code(702));
+			}
+			
+			resolve([{username: testUser.username}]);
+			
+		});
+	});
+	
 	describe('getByUsername()', () => {
 		context('when username is undefined', () => {
 			it('should reject with BlError', () => {
@@ -112,8 +92,12 @@ describe('UserHandler', () => {
 		});
 		
 		context('when username is not found', () => {
+			
 			it('should reject with BlError code 702 not found', (done) => {
+				
 				let username = 'thisis@notfound.com';
+				
+				
 				userHandler.getByUsername(username).catch(
 					(error: BlError) => {
 						error.getCode().should.be.eq(702);
@@ -124,11 +108,11 @@ describe('UserHandler', () => {
 		
 		context('when username is found', () => {
 			it('should resolve with a User object', (done) => {
-				userHandler.getByUsername(testUser.username).then(
-					(user: User) => {
-						user.username.should.be.eq(testUser.username);
-						done();
-					});
+				
+				userHandler.getByUsername(testUser.username).then((user: User) => {
+					user.username.should.be.eq(testUser.username);
+					done();
+				});
 			});
 		});
 	});
@@ -156,6 +140,21 @@ describe('UserHandler', () => {
 		});
 		
 		it('should resolve with a user when username, provider and providerId is valid', () => {
+			
+			sinon.stub(userDetailStorage, 'add').callsFake(() => {
+				return new Promise((resolve, reject) => {
+				    resolve({id: testUser.userDetail, user: {id: testUser.blid}});
+				});
+			});
+				
+			sinon.stub(userStorage, 'add').callsFake((data: any, user: any) => {
+				return new Promise((resolve, reject) => {
+					resolve(testUser);
+				});
+			});
+			
+			
+			
 			return userHandler.create(testUsername, testProvider, testProviderId).then(
 				(user: User) => {
 					user.username.should.be.eql(testUser.username);
@@ -168,6 +167,7 @@ describe('UserHandler', () => {
 	});
 	
 	describe('exists()', () => {
+		/*
 		describe('should reject with BlError when', () => {
 			it('provider is undefined', () => {
 				let provider = undefined;
@@ -181,5 +181,6 @@ describe('UserHandler', () => {
 					.should.be.rejectedWith(BlError);
 			});
 		});
+		*/
 	});
 });

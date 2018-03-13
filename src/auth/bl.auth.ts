@@ -37,7 +37,7 @@ export class BlAuth {
 		let userDetailSchema = new SESchema('userDetails', UserDetailSchema);
 		let userMongoHandler = new EndpointMongodb(userSchema);
 		let userDetailMongoHanlder = new EndpointMongodb(userDetailSchema);
-		let userHandler = new UserHandler(userMongoHandler, userDetailMongoHanlder);
+		let userHandler = new UserHandler();
 		
 		let localLoginMongoHandler = new EndpointMongodb(new SESchema('localLogins', LocalLoginSchema));
 		let localLoginPasswordValidator = new LocalLoginPasswordValidator(new SeCrypto())

@@ -34,6 +34,13 @@ export class MongooseModelCreator {
     }
 
     createMongooseSchema(mschema: any): mongoose.Schema {
+		
+		mschema['user'] = {
+			type: {
+				id: mongoose.Schema.Types.String,
+				permission: mongoose.Schema.Types.String
+			}
+		};
 
         mschema['lastUpdated'] = {
         	type: mongoose.Schema.Types.Date,

@@ -1,33 +1,46 @@
 
 
-import {BlDocument, BlError} from "bl-model";
+import {BlDocument, BlError, UserPermission} from "bl-model";
 import {BlStorageHandler} from "../blStorageHandler";
 import {MongooseModelCreator} from "./mongoose-schema-creator";
+import {PermissionService} from "../../auth/permission/permission.service";
 
 export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageHandler<T>{
 
 	private mongooseModel: any;
+	private permissionService: PermissionService;
 
 	constructor(collectionName: string, schema: any) {
 		let mongoose = require('mongoose');
 		mongoose.Promise = require('bluebird');
 		const mongooseModelCreator = new MongooseModelCreator(collectionName, schema);
 		this.mongooseModel = mongooseModelCreator.create();
+		this.permissionService = new PermissionService();
 	}
 	
 	get(id: string): Promise<T> {
 		return new Promise((resolve, reject) => {
 		    this.mongooseModel.findOne({_id: id}, (error, doc) => {
 				if (error) {
-					reject(this.handleError(new BlError(`error when trying to find document with id "${id}"`), error));
+					return reject(this.handleError(new BlError(`error when trying to find document with id "${id}"`), error));
 				}
 				
 				if (doc === null) {
-					reject(new BlError('not found').code(702));
-					return;
+					return reject(new BlError('not found').code(702));
 				}
 
 				resolve(doc);
+			});
+		});
+	}
+	
+	getByQuery(query: any): Promise<T[]> {
+		return new Promise((resolve, reject) => {
+		    this.mongooseModel.find(query, (error, docs) => {
+		    	if (error || docs=== null) {
+		    		return reject(this.handleError(new BlError(`could not find document by the provided query`), error));
+				}
+				resolve(docs)
 			});
 		});
 	}
@@ -50,9 +63,15 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		});
 	}
 	
-	add(doc: T): Promise<T> {
+	add(doc: T, user?: {id: string, permission: UserPermission}): Promise<T> {
 		return new Promise((resolve, reject) => {
 			doc.creationTime = new Date();
+			doc.lastUpdated = new Date();
+			
+			
+			if (user) {
+				doc.user = user;
+			}
 			
 			let newDocument = new this.mongooseModel(doc);
 
@@ -72,20 +91,27 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		});
 	}
 	
-	update(id: string, data: any): Promise<T> {
+	update(id: string, data: any, user: {id: string, permission: UserPermission}): Promise<T> {
 		return new Promise((resolve, reject) => {
 			this.mongooseModel.findById(id, (error, document) => {
 				if (error) {
 					return reject(this.handleError(new BlError(`failed to find document with id ${id}`), error));
 				}
-
+				
 				if (document === null) {
 					return reject(new BlError(`could not find document with id "${id}"`).code(702));
+				}
+			
+				if (!this.permissionService.haveRestrictedPermission(user.id, user.permission, document)) {
+					return reject(new BlError(`user "${user.id} does not have the right permission to update document "${document}"`));
+				}
+				
+				if (data['user']) {
+					return reject(new BlError('can not change user restrictions after creation').code(701));
 				}
 
 				document.set(data);
 				document.set({lastUpdated: new Date()});
-				
 				
 
 				document.save((error, updatedDocument) => {
@@ -106,18 +132,29 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		});
 	}
 	
-	remove(id: string): Promise<T> {
+	remove(id: string, user: {id: string, permission: UserPermission}): Promise<T> {
 		return new Promise((resolve, reject) => {
-			this.mongooseModel.findByIdAndRemove(id, (error, doc) => {
-				if (error) {
+			this.mongooseModel.findById(id, (error, doc) => {
+				if (error || doc === null) {
 					return reject(this.handleError(new BlError(`could not remove document with id "${id}"`), error));
 				}
-
-				if (doc === null) {
-					return reject(new BlError('not found').code(702).store('id', id));
+				
+				if (!this.permissionService.haveRestrictedPermission(user.id, user.permission, doc)) {
+					return reject(new BlError(`user "${user.id}" does not have permission to delete document "${id}"`));
 				}
-				resolve(doc);
-			});
+				
+				this.mongooseModel.findByIdAndRemove(id, (error, doc) => {
+					if (error) {
+						return reject(this.handleError(new BlError(`could not remove document with id "${id}"`), error));
+					}
+
+					if (doc === null) {
+						return reject(new BlError('not found').code(702).store('id', id));
+					}
+					
+					resolve(doc);
+				});
+			})
 		});
 	}
 	

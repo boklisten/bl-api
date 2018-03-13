@@ -21,8 +21,13 @@ export class BlErrorHandler {
 	}
 	
 	private printBlError(blError: BlError) {
+		if (!(blError instanceof BlError)) {
+			console.log(chalk.blue('\t#' + chalk.bold.red(' unkown error') + ' ' + chalk.green(blError)));
+			return;
+		}
 		
 		console.log(chalk.blue('\t# [' + blError.getCode() + '] ') + chalk.red(blError.getMsg()))
+		
 		//console.log('\t\t\t ' + chalk.dim(blError.stack));
 		
 		if (blError.getStore() && blError.getStore().length > 0) {
