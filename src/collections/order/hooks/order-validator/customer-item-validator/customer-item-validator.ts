@@ -1,5 +1,4 @@
 
-import {EndpointMongodb} from "../../../../../endpoint/endpoint.mongodb";
 import {BlError, CustomerItem, OrderItem} from "bl-model";
 import * as moment from 'moment';
 import {APP_CONFIG} from "../../../../../application-config";

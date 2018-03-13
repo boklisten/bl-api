@@ -1,20 +1,22 @@
 
 
 import {Hook} from "../../../hook/hook";
-import {BlError, CustomerItem, Item, Order, OrderItem, UserDetail} from "bl-model";
+import {BlError, Order, UserDetail} from "bl-model";
 import {SEDocument} from "../../../db/model/se.document";
-import {EndpointMongodb} from "../../../endpoint/endpoint.mongodb";
 import {OrderValidator} from "./order-validator/order-validator";
 import {UserDetailSchema} from "../../../config/schema/user/user-detail.schema";
 import {SESchema} from "../../../config/schema/se.schema";
-import {User} from "../../../config/schema/user/user";
+import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
+import {userDetailSchema} from "../../user-detail/user-detail.schema";
 
 export class OrderHook extends Hook {
 	private orderValidator: OrderValidator;
+	private userDetailStorage: BlDocumentStorage<UserDetail>;
 	
 	constructor() {
 		super();
 		this.orderValidator = new OrderValidator();
+		this.userDetailStorage = new BlDocumentStorage('userdetails', userDetailSchema);
 	}
 
 	public run(docs: SEDocument[]): Promise<boolean> {
@@ -35,7 +37,6 @@ export class OrderHook extends Hook {
 	
 	private updateUserDetails(userDetailId: string, orders: Order[]): Promise<boolean> {
 		return new Promise((resolve, reject) => {
-		    let userDetailMongoDb: EndpointMongodb = new EndpointMongodb(new SESchema('userdetails', UserDetailSchema));
 		    let userDetailsPromiseArr: Promise<boolean>[] = [];
 		    let orderIds: string[] = [];
 		    
@@ -43,7 +44,7 @@ export class OrderHook extends Hook {
 		    	orderIds.push(order.id);
 			}
 			
-			userDetailsPromiseArr.push(this.patchUserDetails(userDetailMongoDb, userDetailId, orderIds));
+			userDetailsPromiseArr.push(this.patchUserDetails(userDetailId, orderIds));
 		    
 		    Promise.all(userDetailsPromiseArr).then((updated) => {
 		    	resolve(true);
@@ -53,23 +54,20 @@ export class OrderHook extends Hook {
 		});
 	}
 	
-	private patchUserDetails(userDetailMongo: EndpointMongodb, userDetailId: string, orderIds: string[]): Promise<boolean> {
+	private patchUserDetails(userDetailId: string, orderIds: string[]): Promise<boolean> {
 		return new Promise((resolve, reject) => {
-			userDetailMongo.getById(userDetailId).then((doc: SEDocument[]) => {
-		    		let userDetail = doc[0].data as UserDetail;
+			this.userDetailStorage.get(userDetailId).then((userDetail: UserDetail) => {
 		    		
 		    		let orders = (userDetail.orders) ? userDetail.orders : [];
 		    		for (let orderId of orderIds) {
 						orders.push(orderId);
 					}
 		    		
-		    		userDetailMongo.patch(userDetail.id, new SEDocument('userdetails', {orders: orders})).then(() => {
+		    		this.userDetailStorage.update(userDetail.id,{orders: orders}, {id: userDetail.user.id, permission: userDetail.user.permission}).then(() => {
 		    			resolve(true);
 					}).catch((patchError: BlError) => {
 		   				reject(new BlError('could not update userDetails with the new orders array').add(patchError));
 					});
-		   
-		   
 			}).catch((getByIdError: BlError) => {
 				reject(new BlError('could not get userDetails based on userId when trying to update userDetails').add(getByIdError));
 			})

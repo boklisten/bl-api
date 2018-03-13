@@ -1,6 +1,6 @@
 
 
-import {LocalLogin} from "../../../config/schema/login-local/local-login";
+import {LocalLogin} from "../../../collections/local-login/local-login";
 import isEmail = require("validator/lib/isEmail");
 import {BlError} from "bl-model";
 import {HashedPasswordGenerator} from "../password/hashed-password-generator";

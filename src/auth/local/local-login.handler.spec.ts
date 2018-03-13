@@ -4,11 +4,8 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import {expect} from 'chai';
 import {LocalLoginHandler} from "./local-login.handler";
-import {SESchema} from "../../config/schema/se.schema";
-import {LocalLoginSchema} from "../../config/schema/login-local/local-login.schema";
-import {LocalLogin} from "../../config/schema/login-local/local-login";
-import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
-import {SEDocument} from "../../db/model/se.document";
+import {localLoginSchema} from "../../collections/local-login/local-login.schema";
+import {LocalLogin} from "../../collections/local-login/local-login";
 import {SEDbQuery} from "../../query/se.db-query";
 import {Promise} from 'es6-promise';
 import {BlError} from "bl-model";
@@ -27,7 +24,7 @@ const dummyLocalLogin = {
 
 describe('LocalLoginHandler', () => {
 	
-	let localLoginStorage = new BlDocumentStorage<LocalLogin>('locallogins', LocalLoginSchema);
+	let localLoginStorage = new BlDocumentStorage<LocalLogin>('locallogins', localLoginSchema);
 	
 	let localLoginHandler = new LocalLoginHandler(localLoginStorage);
 	
@@ -140,9 +137,9 @@ describe('LocalLoginHandler', () => {
 			
 		});
 		
-		sinon.stub(localLoginStorage, 'getByQuery').callsFake((query: any) => {
+		sinon.stub(localLoginStorage, 'getByQuery').callsFake((query: SEDbQuery) => {
 			return new Promise((resolve, reject) => {
-			    if (query['username']['$eq'] === testUsername) {
+			    if (query.stringFilters[0].value === testUsername) {
 			    	resolve([dummyLocalLogin]);
 				}
 				reject(new BlError('not found').code(702));

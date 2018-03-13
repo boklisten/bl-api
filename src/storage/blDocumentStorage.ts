@@ -3,6 +3,7 @@ import {BlCollection} from "../collections/bl-collection";
 import {BlDocument, BlError, UserDetail, UserPermission} from "bl-model";
 import {BlStorageHandler} from "./blStorageHandler";
 import {MongoDbBlStorageHandler} from "./mongoDb/mongoDb.blStorageHandler";
+import {SEDbQuery} from "../query/se.db-query";
 
 export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler<T> {
 	
@@ -22,9 +23,9 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 		});
 	}
 	
-	getByQuery(query: any): Promise<T[]> {
+	getByQuery(dbQuery: SEDbQuery): Promise<T[]> {
 		return new Promise((resolve, reject) => {
-		    this.mongoDbHandler.getByQuery(query).then((docs: T[]) => {
+		    this.mongoDbHandler.getByQuery(dbQuery).then((docs: T[]) => {
 		    	resolve(docs);
 			}).catch((blError: BlError) => {
 		    	reject(blError);

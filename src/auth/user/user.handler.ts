@@ -27,7 +27,13 @@ export class UserHandler {
 			if (!username) return reject(new BlError('username is empty or undefined'));
 			
 			
-			this.userStorage.getByQuery({fieldName: 'username', value: username}).then(
+			let dbQuery = new SEDbQuery();
+			dbQuery.stringFilters = [
+				{fieldName: 'username', value: username}
+			];
+			
+			
+			this.userStorage.getByQuery(dbQuery).then(
 				(docs: User[]) => {
 					if (docs.length > 1) {
 						reject(new BlError(`there was more than one user with username "${username}"`));
@@ -40,7 +46,6 @@ export class UserHandler {
 						.code(702));
 				});
 		});
-	
 	}
 
 	public get(provider: string, providerId: string): Promise<User> {
@@ -51,17 +56,18 @@ export class UserHandler {
 			if (!provider || provider.length <= 0) reject(blError.msg('provider is empty or undefined'));
 			if (!providerId || providerId.length <= 0) reject(blError.msg('providerId is empty of undefined'));
 			
-			let providerQuery = [
+			let dbQuery = new SEDbQuery();
+			dbQuery.stringFilters = [
 				{fieldName: 'login.provider', value: provider},
 				{fieldName: 'login.providerId', value: providerId}
 			];
 			
-			this.userStorage.getByQuery(providerQuery).then((users: User[]) => {
+			this.userStorage.getByQuery(dbQuery).then((users: User[]) => {
 				resolve(users[0]);
 			}).catch((error: BlError) => {
 				reject(new BlError('an error occured when getting user')
 					.store('provider', provider)
-					.store('providerId', providerId));
+					.store('providerId', providerId).add(error));
 			});
 		});
 	}
@@ -100,6 +106,26 @@ export class UserHandler {
 				reject(new BlError(`failed to create user with username "${username}"`).add(blError));
 			});
 			
+		});
+	}
+	
+	public exists(provider: string, providerId: string): Promise<boolean> {
+		if (!provider || !providerId) {
+			return Promise.reject(new BlError('provider or providerId is empty or undefinedl'));
+		}
+		
+		let dbQuery = new SEDbQuery();
+		dbQuery.stringFilters = [
+			{fieldName: "login.provider", value: provider},
+			{fieldName: "login.providerId", value: providerId}
+		];
+		
+		return new Promise((resolve, reject) => {
+			this.userStorage.getByQuery(dbQuery).then((users: User[]) => {
+				resolve(true);
+			}).catch((blError: BlError) => {
+				reject(new BlError('does not exist').add(blError));
+			});
 		});
 	}
 }

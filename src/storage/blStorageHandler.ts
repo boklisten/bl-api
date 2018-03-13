@@ -1,6 +1,7 @@
 
 
 import {BlDocument, UserPermission} from "bl-model";
+import {SEDbQuery} from "../query/se.db-query";
 
 export interface BlStorageHandler<T extends BlDocument> {
 	
@@ -8,7 +9,7 @@ export interface BlStorageHandler<T extends BlDocument> {
 	
 	getMany(ids: string[]): Promise<T[]>;
 	
-	getByQuery(query: any): Promise<T[]>;
+	getByQuery(dbQuery: SEDbQuery): Promise<T[]>;
 	
 	getAll(): Promise<T[]>;
 	

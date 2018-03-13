@@ -1,12 +1,9 @@
 
 import {BlError, Branch, CustomerItem, Item, Order, OrderItem} from "bl-model";
-import {EndpointMongodb} from "../../../../endpoint/endpoint.mongodb";
-import {SEDocument} from "../../../../db/model/se.document";
 import {CustomerItemValidator} from "./customer-item-validator/customer-item-validator";
 import {PriceValidator} from "./price-validator/price-validator";
 import {BranchValidator} from "./branch-validator/branch-validator";
 import {ItemValidator} from "./item-validator/item-validator";
-import {SESchema} from "../../../../config/schema/se.schema";
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
 import {itemSchema} from "../../../item/item.schema";
 import {branchSchema} from "../../../branch/branch.schema";

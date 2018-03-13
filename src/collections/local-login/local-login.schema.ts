@@ -3,7 +3,7 @@
 
 import {Schema} from "mongoose";
 
-export let LocalLoginSchema = {
+export let localLoginSchema = {
 	username: {
 		type: Schema.Types.String,
 		required: true

@@ -9,6 +9,8 @@ import {BlError, UserDetail} from "bl-model";
 import {Promise} from 'es6-promise';
 import {User} from "../../config/schema/user/user";
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
+import {SEDbQueryBuilder} from "../../query/se.db-query-builder";
+import {SEDbQuery} from "../../query/se.db-query";
 
 chai.use(chaiAsPromised);
 
@@ -71,9 +73,9 @@ describe('UserHandler', () => {
 	});
 	
 	
-	sinon.stub(userStorage, 'getByQuery').callsFake((query: any) => {
+	sinon.stub(userStorage, 'getByQuery').callsFake((query: SEDbQuery) => {
 		return new Promise((resolve, reject) => {
-			if (query.value !== testUser.username) {
+			if (query.stringFilters[0].value !== testUser.username) {
 				return reject(new BlError('not found').code(702));
 			}
 			
@@ -167,7 +169,6 @@ describe('UserHandler', () => {
 	});
 	
 	describe('exists()', () => {
-		/*
 		describe('should reject with BlError when', () => {
 			it('provider is undefined', () => {
 				let provider = undefined;
@@ -181,6 +182,5 @@ describe('UserHandler', () => {
 					.should.be.rejectedWith(BlError);
 			});
 		});
-		*/
 	});
 });

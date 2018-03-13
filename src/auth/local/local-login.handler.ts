@@ -1,21 +1,15 @@
-import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
-import {LocalLogin} from "../../config/schema/login-local/local-login";
+import {LocalLogin} from "../../collections/local-login/local-login";
 import {SEDbQuery} from "../../query/se.db-query";
-import {SEDocument} from "../../db/model/se.document";
 import {BlapiErrorResponse, BlError} from "bl-model";
 import {isEmail} from 'validator';
-import {LocalLoginConfig} from "../../config/schema/login-local/local-login.config";
-import {BlStorageHandler} from "../../storage/blStorageHandler";
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
-import {LocalLoginSchema} from "../../config/schema/login-local/local-login.schema";
+import {localLoginSchema} from "../../collections/local-login/local-login.schema";
 
 export class LocalLoginHandler {
-	private localLoginConfig: LocalLoginConfig;
 	private localLoginStorage: BlDocumentStorage<LocalLogin>;
 	
 	constructor(localLoginStorage?: BlDocumentStorage<LocalLogin>) {
-		this.localLoginConfig = new LocalLoginConfig();
-		this.localLoginStorage = (localLoginStorage) ? localLoginStorage : new BlDocumentStorage('locallogins', LocalLoginSchema);
+		this.localLoginStorage = (localLoginStorage) ? localLoginStorage : new BlDocumentStorage('locallogins', localLoginSchema);
 	}
 	
 	public get(username: string): Promise<LocalLogin> {
@@ -23,7 +17,12 @@ export class LocalLoginHandler {
 		return new Promise((resolve, reject) => {
 			if (!username || !isEmail(username)) return reject(new BlError(`username "${username}" is not a valid email`));
 			
-			this.localLoginStorage.getByQuery({username: {$eq: username}}).then((localLogins: LocalLogin[]) => {
+			let dbQuery = new SEDbQuery();
+			dbQuery.stringFilters = [
+				{fieldName: 'username', value: username}
+			];
+			
+			this.localLoginStorage.getByQuery(dbQuery).then((localLogins: LocalLogin[]) => {
 				
 					if (localLogins.length !== 1) {
 						return reject(new BlError('could not get LocalLogin by the provided username "' + username + '"').store('username', username));

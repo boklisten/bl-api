@@ -4,6 +4,7 @@ import {BlDocument, BlError, UserPermission} from "bl-model";
 import {BlStorageHandler} from "../blStorageHandler";
 import {MongooseModelCreator} from "./mongoose-schema-creator";
 import {PermissionService} from "../../auth/permission/permission.service";
+import {SEDbQuery} from "../../query/se.db-query";
 
 export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageHandler<T>{
 
@@ -34,14 +35,19 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		});
 	}
 	
-	getByQuery(query: any): Promise<T[]> {
+	getByQuery(dbQuery: SEDbQuery): Promise<T[]> {
 		return new Promise((resolve, reject) => {
-		    this.mongooseModel.find(query, (error, docs) => {
-		    	if (error || docs=== null) {
-		    		return reject(this.handleError(new BlError(`could not find document by the provided query`), error));
-				}
-				resolve(docs)
-			});
+		    this.mongooseModel
+				.find(dbQuery.getFilter(), dbQuery.getOgFilter())
+				.limit(dbQuery.getLimitFilter())
+				.skip(dbQuery.getSkipFilter())
+				.sort(dbQuery.getSortFilter())
+				.exec((error, docs) => {
+		    		if (error || docs=== null) {
+		    			return reject(this.handleError(new BlError(`could not find document by the provided query`), error));
+					}
+					resolve(docs)
+		    });
 		});
 	}
 	
