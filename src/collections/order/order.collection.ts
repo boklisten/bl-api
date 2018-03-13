@@ -14,7 +14,8 @@ export class OrderCollection implements BlCollection {
 			method: 'post',
 			hook: new OrderHook(),
 			restriction: {
-				permissions: ["customer", "employee", "admin"]
+				permissions: ["customer", "employee", "admin"],
+				restricted: true
 			}
 		},
 		{

@@ -5,10 +5,13 @@ export const APP_CONFIG = {
 	},
 	dev: {
 		server: {
-			host: 'localhost',
+			host: 'https://localhost',
 			port: 1337,
 			path: 'api',
 			version: 'v1'
+		},
+		client: {
+			base: 'https://localhost:4200/#/'
 		},
 		mongoDb: {
 			basePath: 'mongodb://',

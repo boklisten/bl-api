@@ -5,6 +5,7 @@ import {BlapiResponse} from "bl-model";
 import {BlapiErrorResponse} from "bl-model";
 import {BlError} from "bl-model";
 import {BlErrorHandler} from "../bl-error/bl-error-handler";
+import {APP_CONFIG} from "../application-config";
 
 export class SEResponseHandler {
 	errorHandler: BlErrorHandler;
@@ -20,7 +21,7 @@ export class SEResponseHandler {
 	}
 	
 	public sendAuthTokens(res: Response, accessToken: string, refreshToken: string) {
-		res.redirect('http://localhost:4200/#/auth/token;accessToken=' + accessToken + ';refreshToken=' + refreshToken);
+		res.redirect(APP_CONFIG.dev.client.base + 'auth/token;accessToken=' + accessToken + ';refreshToken=' + refreshToken);
 	}
 	
 	public sendAuthErrorResponse(res: Response, info: any, err: any) {

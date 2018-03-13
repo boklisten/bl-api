@@ -48,8 +48,8 @@ export class DibsPayment {
 		
 		
 		dibsEasyOrder.checkout = {
-			url: "http://localhost:1337/checkout",
-			termsUrl: "http://localhost:1337/terms",
+			url: "https://localhost:1337/checkout",
+			termsUrl: "https://localhost:1337/terms",
 			ShippingCountries: [
 				{countryCode: "NOR"}
 			]

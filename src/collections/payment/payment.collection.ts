@@ -14,7 +14,8 @@ export class PaymentCollection implements BlCollection {
 			method: "post",
 			hook: new PaymentPostHook(),
 			restriction: {
-				permissions: ["customer", "employee", "admin"]
+				permissions: ["customer", "employee", "admin"],
+				restricted: true
 			}
 		},
 		{

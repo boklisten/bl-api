@@ -9,6 +9,7 @@ import {SEResponseHandler} from "../response/se.response.handler";
 import chalk from "chalk";
 import {BlDocumentStorage} from "../storage/blDocumentStorage";
 import {Hook} from "../hook/hook";
+import {PermissionService} from "../auth/permission/permission.service";
 
 export class BlCollectionGenerator<T extends BlDocument>{
 	private apiPath: ApiPath;
@@ -16,6 +17,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 	private authStrategy: string;
 	private resHandler: SEResponseHandler;
 	private documentStorage: BlDocumentStorage<T>;
+	private defaultHook: Hook;
 	
 	constructor(private router: Router, private collection: BlCollection) {
 		this.apiPath = new ApiPath();
@@ -23,6 +25,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		this.authStrategy = 'jwt';
 		this.resHandler = new SEResponseHandler();
 		this.documentStorage = new BlDocumentStorage(collection.collectionName, collection.mongooseSchema);
+		this.defaultHook = new Hook();
 		
 	}
 	
@@ -35,7 +38,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		for (let endpoint of this.collection.endpoints) {
 			
 			if (!endpoint.hook) {
-				endpoint.hook = new Hook(); //a default hook that always resolves to true
+				endpoint.hook = this.defaultHook; //a default hook that always resolves to true
 			}
 			
 			
@@ -159,15 +162,30 @@ export class BlCollectionGenerator<T extends BlDocument>{
 	
 	private printEndpointInfo(method: string, path: string, endpoint: BlEndpoint) {
 		let output = '\t\t\t' + chalk.dim.bold.yellow(method.toUpperCase()) + '\t' + chalk.dim.green(path);
+		let permissionService: PermissionService = new PermissionService();
+		
+		output += '\t';
+		
 		if (endpoint.restriction && endpoint.restriction.permissions) {
-			output += chalk.gray('\t[');
-			for (let permission of endpoint.restriction.permissions) {
-				output += chalk.gray(' ' + permission.toString());
-			}
-			output += chalk.gray(' ]');
+			output += chalk.dim.bold.red('[' + permissionService.getLowestPermission(endpoint.restriction.permissions) + '] ');
 		} else {
-			output += chalk.gray('\t[ everyone ]');
+			output += chalk.dim.green('[everyone] ');
 		}
+		
+		output += '\t';
+		
+		if (endpoint.restriction && endpoint.restriction.restricted) {
+			output += chalk.red.dim('user');
+		}
+		
+		output += '\t';
+		
+		if (endpoint.hook) {
+			if (endpoint.hook !== this.defaultHook) {
+				output += chalk.dim.gray('<hooked>');
+			}
+		}
+		
 		console.log(output);
 	}
 	

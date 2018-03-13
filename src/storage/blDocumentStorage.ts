@@ -30,7 +30,11 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 	
 	getAll(): Promise<T[]> {
 		return new Promise((resolve, reject) => {
-			reject(new BlError('not implemented'));
+			this.mongoDbHandler.getAll().then((docs: T[]) => {
+				resolve(docs);
+			}).catch((blError: BlError) => {
+				reject(blError);
+			})
 		});
 	}
 	

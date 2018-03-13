@@ -4,9 +4,11 @@ import * as passport from "passport";
 import {APP_CONFIG} from "../application-config";
 import {BlAuth} from "../auth/bl.auth";
 import {BlEndpointCreator} from "../collections/bl-endpoint-creator";
+import * as https from "https";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
 const packageJson = require('../../package.json');
+const fs = require('fs');
 
 export class Server {
 
@@ -42,7 +44,7 @@ export class Server {
 
 		let cors = require('cors');
 		
-		let whitelist = ['http://localhost:4200', '*', '127.0.0.1'];
+		let whitelist = ['https://localhost:4200', '*', '127.0.0.1'];
 		let allowedMethods = ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'];
 		let allowedHeaders = ['Content-Type', 'Authorization', 'X-Requested-With'];
 	
@@ -51,7 +53,7 @@ export class Server {
 			origin: whitelist,
 			methods: allowedMethods,
 			allowedHeaders: allowedHeaders,
-			preflightContinue: false,
+			preflightContinue: true,
 			optionsSuccessStatus: 204
 		};
 		
@@ -108,9 +110,25 @@ export class Server {
 	}
 
 	private serverStart() {
+		const privateKey = fs.readFileSync('localhost_bl-api.key');
+		const cert = fs.readFileSync('localhost_bl-api.crt');
+		
+		const credentials = {key: privateKey, cert: cert};
+		
+		
+		const httpsServer = https.createServer(credentials, this.app);
+		
+		httpsServer.on('listening', () => {
+			console.log(chalk.blue('\t#') + chalk.gray(' server is up and running'));
+		});
+		
+		httpsServer.listen(APP_CONFIG.dev.server.port);
+		
+		/*
 		this.app.listen(APP_CONFIG.dev.server.port, () => {
 			console.log(chalk.blue('\t#') + chalk.gray(' server is up and running\n'));
 		});
+		*/
 	}
 	
 	private printServerStartMessage() {

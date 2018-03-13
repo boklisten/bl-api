@@ -40,7 +40,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 	
 	getAll(): Promise<T[]> {
 		return new Promise((resolve, reject) => {
-			reject(new BlError('not implemented'));
+			this.mongooseModel.find({}, (error, docs) => {
+				if (error || docs === null) {
+					reject(this.handleError(new BlError('failed to get all documnts'), error));
+				}
+				
+				resolve(docs);
+			});
 		});
 	}
 	
