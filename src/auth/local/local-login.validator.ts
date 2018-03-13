@@ -2,7 +2,7 @@
 
 import {LocalLoginHandler} from "./local-login.handler";
 import {isEmail} from "validator";
-import {LocalLogin} from "../../config/schema/login-local/local-login";
+import {LocalLogin} from "../../collections/local-login/local-login";
 import {BlError} from "bl-model";
 import {LocalLoginPasswordValidator} from "./password/local-login-password.validator";
 import {LocalLoginCreator} from "./local-login-creator/local-login-creator";

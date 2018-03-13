@@ -3,29 +3,28 @@ import {Application, Request, Response, Router} from "express";
 import * as passport from "passport";
 import {APP_CONFIG} from "../application-config";
 import {BlAuth} from "../auth/bl.auth";
-import {BlEndpoint} from "../endpoint/bl.endpoint";
-import {PaymentModule} from "../payment/payment.module";
-import {SEResponseHandler} from "../response/se.response.handler";
-import {DibsPayment} from "../payment/dibs/dibs-payment";
-import {BlError, Order} from "bl-model";
+import {BlEndpointCreator} from "../collections/bl-endpoint-creator";
+import * as https from "https";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
 const packageJson = require('../../package.json');
+const fs = require('fs');
 
 export class Server {
 
 	public app: Application;
 	private router: Router;
-	private blEndpoint: BlEndpoint;
 	private blAuth: BlAuth;
 
 	constructor() {
-
+		this.printServerStartMessage();
+		
 		this.initialServerConfig();
 		this.initialPassportConfig();
 
-		this.blEndpoint = new BlEndpoint(this.router);
 		this.blAuth = new BlAuth(this.router);
+		
+		this.generateEndpoints();
 		
 		this.mongoDbStart();
 		this.serverStart();
@@ -45,7 +44,7 @@ export class Server {
 
 		let cors = require('cors');
 		
-		let whitelist = ['http://localhost:4200', '*', '127.0.0.1'];
+		let whitelist = ['https://localhost:4200', '*', '127.0.0.1'];
 		let allowedMethods = ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'];
 		let allowedHeaders = ['Content-Type', 'Authorization', 'X-Requested-With'];
 	
@@ -54,7 +53,7 @@ export class Server {
 			origin: whitelist,
 			methods: allowedMethods,
 			allowedHeaders: allowedHeaders,
-			preflightContinue: false,
+			preflightContinue: true,
 			optionsSuccessStatus: 204
 		};
 		
@@ -90,62 +89,14 @@ export class Server {
 	}
 	
 	private test() {
-		let orderJson: any = {
-			"id": "o1",
-			"amount": 370,
-			"application": "bl-web",
-			"orderItems": [
-				{
-					"type": "rent",
-					"amount": 370,
-					"item": "5a1d67cdf14cbe78ff047d02",
-					"title": "Signatur 3",
-					"rentRate": 0,
-					"taxRate": 0,
-					"taxAmount": 0,
-					"unitPrice": 370,
-					"rentInfo": {
-						"oneSemester": true,
-						"twoSemesters": false
-					}
-				}
-			],
-			"branch": "5a1d67cdf14cbe78ff047d00",
-			"byCustomer": true,
-			"payments": [
-				{
-					"method": "dibs",
-					"amount": 370,
-					"confirmed": false,
-					"byBranch": false,
-					"time": "1"
-				}
-			],
-			"comments": [],
-			"active": false,
-			"user": {
-				"id": "u1"
-			},
-			"lastUpdated": '1',
-			"creationTime": '1'
-		};
-		
-		let dibsPayment = new DibsPayment();
-		let deo = dibsPayment.orderToDibsEasyOrder(orderJson as Order)
+	}
 	
-		/*
-		dibsPayment.getPaymentId(deo).then((paymentId: string) => {
-			console.log(`it worked? "${paymentId}"`);
-		}).catch((blError: BlError) => {
-			console.log('got error when requesting payment id', blError);
-		})
-		*/
-		
-		
+	private generateEndpoints() {
+		const endpointCreator = new BlEndpointCreator(this.router);
+		endpointCreator.createAll();
 	}
 	
 	private initModules() {
-		let paymentModule = new PaymentModule(this.router, new SEResponseHandler());
 	}
 
 	private initialPassportConfig() {
@@ -159,11 +110,27 @@ export class Server {
 	}
 
 	private serverStart() {
-		this.app.listen(APP_CONFIG.dev.server.port, () => {
-			this.printServerStartMessage();
+		const privateKey = fs.readFileSync('localhost_bl-api.key');
+		const cert = fs.readFileSync('localhost_bl-api.crt');
+		
+		const credentials = {key: privateKey, cert: cert};
+		
+		
+		const httpsServer = https.createServer(credentials, this.app);
+		
+		httpsServer.on('listening', () => {
+			console.log(chalk.blue('\t#') + chalk.gray(' server is up and running'));
 		});
+		
+		httpsServer.listen(APP_CONFIG.dev.server.port);
+		
+		/*
+		this.app.listen(APP_CONFIG.dev.server.port, () => {
+			console.log(chalk.blue('\t#') + chalk.gray(' server is up and running\n'));
+		});
+		*/
 	}
-
+	
 	private printServerStartMessage() {
 		console.log(chalk.blue(`\t _     _             _\n`+
 			                   `\t| |__ | | __ _ _ __ (_)\n`+
@@ -171,8 +138,9 @@ export class Server {
 			                   `\t| |_) | | (_| | |_) | |\n`+
 							   `\t|_.__/|_|\\__,_| .__/|_|\n`+
 			                   `\t	      |_| v${packageJson.version}\n`));
+		
 		console.log(chalk.blue('\t# ') + chalk.gray('hostname:\t') + chalk.dim.green(this.getServerPath()));
-		console.log(chalk.blue('\t# ') + chalk.gray('mongoDb: \t') + chalk.dim.green(this.getMongoDbPath()) + '\n');
+		console.log(chalk.blue('\t# ') + chalk.gray('mongoDb: \t') + chalk.dim.green(this.getMongoDbPath()));
 	}
 
 	private getMongoDbPath(): string {

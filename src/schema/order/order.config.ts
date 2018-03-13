@@ -2,12 +2,12 @@ import {EndpointConfig, Path} from "../../endpoint/endpoint.express";
 import {SESchema} from "../../config/schema/se.schema";
 import {OrderSchema} from "./order.schema";
 import {ValidParam} from "../../query/valid-param/db-query-valid-params";
-import {OrderHook} from "./order.hook";
+import {OrderHook} from "../../collections/order/hooks/order.hook";
 import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
-import {ItemSchema} from "../item/item.schema";
+import {itemSchema} from "../../collections/item/item.schema";
 import {CustomerItemSchema} from "../customer-item/customer-item.schema";
-import {BranchSchema} from "../branch/branch.schema";
-import {OrderValidator} from "./order-validator/order-validator";
+import {branchSchema} from "../../collections/branch/branch.schema";
+import {OrderValidator} from "../../collections/order/hooks/order-validator/order-validator";
 
 export class OrderConfig implements EndpointConfig {
 	basePath: string = 'api';
@@ -32,8 +32,8 @@ export class OrderConfig implements EndpointConfig {
 						permissions: ["customer", "employee", "admin"]
 					},
 					hook: new OrderHook(new OrderValidator(
-						new EndpointMongodb(new SESchema('items', ItemSchema)),
-						new EndpointMongodb(new SESchema('branches', BranchSchema))))
+						new EndpointMongodb(new SESchema('items', itemSchema)),
+						new EndpointMongodb(new SESchema('branches', branchSchema))))
 				}
 			]
 		},

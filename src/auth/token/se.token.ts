@@ -1,8 +1,6 @@
 
 
 import {UserPermission} from "../user/user-permission";
-import {User} from "../../config/schema/user/user";
-import {LoginOption} from "../../endpoint/endpoint.express";
 import {BlError} from "bl-model";
 
 export type JwtPayload = {
@@ -63,7 +61,7 @@ export class SEToken  {
 		});
 	}
 
-	public validateToken(token: string, validLoginOptions?: LoginOption): Promise<JwtPayload> {
+	public validateToken(token: string, validLoginOptions?: any): Promise<JwtPayload> {
 		let blError = new BlError('').className('SeToken').methodName('validateToken');
 		if (token.length <= 0) return Promise.reject(blError.msg('token is empty'));
 
@@ -92,7 +90,7 @@ export class SEToken  {
 		});
 	}
 
-	public validatePayload(jwtPayload: JwtPayload, validLoginOptions?: LoginOption): Promise<JwtPayload> {
+	public validatePayload(jwtPayload: JwtPayload, validLoginOptions?: any): Promise<JwtPayload> {
 		return new Promise((resolve, reject) => {
 
 			if (validLoginOptions) {

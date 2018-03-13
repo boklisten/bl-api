@@ -34,16 +34,9 @@ describe('DibsPayment', () => {
 					customerItem: 'ci1'
 				}
 			],
-			payments: [
-				{
-					method: "dibs",
-					amount: 100,
-					confirmed: true,
-					byBranch: false,
-					time: new Date()
-				}
-			],
+			payments: [],
 			comments: [],
+			delivery: '',
 			active: false,
 			user: {
 				id: 'u1'
@@ -92,50 +85,11 @@ describe('DibsPayment', () => {
 		});
 		
 		it('should throw error if order.payments include more than one payment with method "dibs"', () => {
-			testOrder.payments = [
-				{
-					method: "dibs",
-					amount: 50,
-					confirmed: true,
-					byBranch: false,
-					time: new Date()
-				},
-				{
-					method: "dibs",
-					amount: 50,
-					confirmed: true,
-					byBranch: false,
-					time: new Date()
-				}
-			];
-			
-			expect(() => {
-				dibsPayment.orderToDibsEasyOrder(testOrder);
-			}).to.throw(BlError, /order.payments include more than one payment with method "dibs"/);
 		});
 		
 		
 		it('should throw error if none of the order.payments is of type "dibs"', () => {
-			testOrder.payments = [
-				{
-					method: "cash",
-					amount: 50,
-					confirmed: true,
-					byBranch: false,
-					time: new Date()
-				},
-				{
-					method: "card",
-					amount: 50,
-					confirmed: true,
-					byBranch: false,
-					time: new Date()
-				}
-			];
-			
-			expect(() => {
-				dibsPayment.orderToDibsEasyOrder(testOrder);
-			}).to.throw(BlError, /order.payments does not include a payment with method "dibs"/);
+		
 		});
 		
 		it('should throw error if order.amount is 0', () => {
@@ -225,10 +179,7 @@ describe('DibsPayment', () => {
 				expect(deo.order.items.length).to.eql(testOrder.orderItems.length);
 			});
 		});
-		
-		
-		
-		
+	
 		
 	});
 });

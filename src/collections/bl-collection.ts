@@ -11,7 +11,7 @@ export interface BlCollection {
 }
 
 export interface BlEndpoint {
-	method: "get" | "getId" | "getQuery" | "post" | "put" | "patch" | "delete",
+	method: "getAll" | "getId" | "getQuery" | "post" | "put" | "patch" | "delete",
 	hook?: Hook //an optional hook for this endpoint
 	restriction?: { //what type of user can access this endpoint, if set a user must login at minimum
 		permissions: [UserPermission], //a list of the permission the user needs

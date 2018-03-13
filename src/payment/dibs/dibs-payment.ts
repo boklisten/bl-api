@@ -1,6 +1,6 @@
 
 
-import {BlError, Order, OrderItem, OrderPayment} from "bl-model";
+import {BlError, Order, OrderItem} from "bl-model";
 import {DibsEasyItem} from "./dibs-easy-item/dibs-easy-item";
 import {DibsEasyOrder} from "./dibs-easy-order/dibs-easy-order";
 import {HttpHandler} from "../../http/http.handler";
@@ -48,8 +48,8 @@ export class DibsPayment {
 		
 		
 		dibsEasyOrder.checkout = {
-			url: "http://localhost:1337/checkout",
-			termsUrl: "http://localhost:1337/terms",
+			url: "https://localhost:1337/checkout",
+			termsUrl: "https://localhost:1337/terms",
 			ShippingCountries: [
 				{countryCode: "NOR"}
 			]
@@ -65,7 +65,8 @@ export class DibsPayment {
 		if (order.amount == 0) throw new BlError('order.amount is zero');
 	}
 	
-	private validateOrderPayments(payments: OrderPayment[]) {
+	private validateOrderPayments(payments: string[]) {
+		/*
 		let numOfDibsPayments = 0;
 		
 		for (let payment of payments) {
@@ -81,6 +82,7 @@ export class DibsPayment {
 		if (numOfDibsPayments < 1) {
 			throw new BlError('order.payments does not include a payment with method "dibs"');
 		}
+		*/
 	}
 	
 	

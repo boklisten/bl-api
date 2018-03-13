@@ -1,17 +1,16 @@
 import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-
+import * as sinon from 'sinon';
 import {expect} from 'chai';
 import {LocalLoginHandler} from "./local-login.handler";
-import {SESchema} from "../../config/schema/se.schema";
-import {LocalLoginSchema} from "../../config/schema/login-local/local-login.schema";
-import {LocalLogin} from "../../config/schema/login-local/local-login";
-import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
-import {SEDocument} from "../../db/model/se.document";
+import {localLoginSchema} from "../../collections/local-login/local-login.schema";
+import {LocalLogin} from "../../collections/local-login/local-login";
 import {SEDbQuery} from "../../query/se.db-query";
 import {Promise} from 'es6-promise';
 import {BlError} from "bl-model";
+import {BlDocumentStorage} from "../../storage/blDocumentStorage";
+import * as local from "commander";
 
 chai.use(chaiAsPromised);
 
@@ -23,43 +22,25 @@ const dummyLocalLogin = {
 	salt: "car"
 };
 
-class LocalLoginMongoHandlerMock extends EndpointMongodb {
-	
-	constructor(schema: SESchema) {
-		super(schema);
-	}
-
-	post(document: SEDocument): Promise<SEDocument[]> {
-		if (document.documentName === 'localLogins') return Promise.resolve([new SEDocument(document.documentName,document.data)]);
-		return Promise.reject('there is a error run amock');
-	}
-	
-	get(dbQuery: SEDbQuery): Promise<SEDocument[]> {
-		
-		for (let filter of dbQuery.stringFilters) {
-			if (filter.fieldName === "username" && filter.value === dummyLocalLogin.username) {
-				return Promise.resolve([new SEDocument('localLogins', dummyLocalLogin)]);
-			}
-		}
-	
-		return Promise.reject(new BlError('').code(404));
-	}
-}
-
 describe('LocalLoginHandler', () => {
 	
-	let localLoginSchema = new SESchema('localLogins', LocalLoginSchema);
-	let localLoginMongoHandlerMock = new LocalLoginMongoHandlerMock(localLoginSchema);
+	let localLoginStorage = new BlDocumentStorage<LocalLogin>('locallogins', localLoginSchema);
 	
-	let localLoginHandler = new LocalLoginHandler(localLoginMongoHandlerMock);
+	let localLoginHandler = new LocalLoginHandler(localLoginStorage);
 	
 	describe('create()', () => {
-		let baseLocalLogin = {username: 'a', providerId: '1', hashedPassword: 'b', provider: 'c', salt: 'h'};
+		let baseLocalLogin = {id: '1', username: 'a', providerId: '1', hashedPassword: 'b', provider: 'c', salt: 'h'};
 		let testLocalLogin: LocalLogin = baseLocalLogin;
 		
 		beforeEach((done) => {
-			testLocalLogin = {username: 'albert@gmail.com', provider: 'local', providerId: 'i', hashedPassword: 'abc', salt: 'l'};
+			testLocalLogin = {id: 'abc', username: 'albert@gmail.com', provider: 'local', providerId: 'i', hashedPassword: 'abc', salt: 'l'};
 			done();
+		});
+		
+		sinon.stub(localLoginStorage, 'add').callsFake((localLogin: any, user: any) => {
+			return new Promise((resolve, reject) => {
+				resolve(testLocalLogin);
+			});
 		});
 		
 		describe('should reject with TypeError when', () => {
@@ -129,9 +110,8 @@ describe('LocalLoginHandler', () => {
 	describe('get()', () => {
 		let testUsername = "";
 		
-		beforeEach((done) => {
+		beforeEach(() => {
 			testUsername = "albert@protonmail.com";
-			done();
 		});
 		
 		
@@ -157,13 +137,20 @@ describe('LocalLoginHandler', () => {
 			
 		});
 		
-		it('should reject with blError.code 404 when username is not found in db', () => {
-			testUsername = 'bill@mail.com';
-			return expect(localLoginHandler.get(testUsername))
-				.to.be.rejected
-				.then((error) => {
-					expect(error.getCode()).to.eq(404);
-				});
+		sinon.stub(localLoginStorage, 'getByQuery').callsFake((query: SEDbQuery) => {
+			return new Promise((resolve, reject) => {
+			    if (query.stringFilters[0].value === testUsername) {
+			    	resolve([dummyLocalLogin]);
+				}
+				reject(new BlError('not found').code(702));
+			});
+		});
+		
+		it('should reject with blError.code 702 when username is not found in db', (done) => {
+			localLoginHandler.get('notFound@mail.com').catch((blError: BlError) => {
+				expect(blError.getCode()).to.eql(702);
+				done();
+			});
 		});
 		
 		it('should resolve with LocalLogin object when username is found', () => {

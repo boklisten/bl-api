@@ -1,57 +1,44 @@
 
 
-import {User} from "../../config/schema/user/user";
-import {SESchema} from "../../config/schema/se.schema";
-import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
 import {SEDbQuery} from "../../query/se.db-query";
 import {SEDocument} from "../../db/model/se.document";
 
-import {UserDetail} from "../../config/schema/user/user-detail";
 import {Blid} from "../blid/blid";
-import {BlapiResponse, BlapiErrorResponse} from 'bl-model';
+import {BlapiResponse, BlapiErrorResponse, UserDetail}  from 'bl-model';
 import {BlError} from "bl-model";
+import {BlDocumentStorage} from "../../storage/blDocumentStorage";
+import {userDetailSchema} from "../../collections/user-detail/user-detail.schema";
+import {User} from "../../config/schema/user/user";
+import {UserSchema} from "../../config/schema/user/user.schema";
 
 export class UserHandler {
-	private userMongoHandler: EndpointMongodb;
-	private userDetailMongoHandler: EndpointMongodb;
 	private blid: Blid;
+	private userDetailStorage: BlDocumentStorage<UserDetail>;
+	private userStorage: BlDocumentStorage<User>;
 
-	constructor(userMongoHandler: EndpointMongodb, userDetailMongoHandler: EndpointMongodb) {
-		this.userMongoHandler = userMongoHandler;
-		this.userDetailMongoHandler = userDetailMongoHandler;
+	constructor(userDetailStorage?: BlDocumentStorage<UserDetail>, userStorage?: BlDocumentStorage<User>) {
 		this.blid = new Blid();
-	}
-
-	public exists(provider: string, providerId: string): Promise<boolean> {
-		let blError = new BlError('').className('userHandler').methodName('exists');
-		
-		return new Promise((resolve, reject) => {
-			if (!provider || provider.length <= 0) reject(blError.msg('provider is empty or undefined'));
-			if (!providerId || providerId.length <= 0) reject(blError.msg('providerId is empty or undefined'));
-			
-			this.userMongoHandler.exists(this.getProviderQuery(provider, providerId)).then(
-				(exists: boolean) => {
-					resolve(exists);
-				},
-				(existsError: BlError) => {
-					reject(new BlError('there was an error when searching for user')
-						.store('provider', provider)
-						.store('providerId', providerId)
-						.add(existsError));
-				});
-		});
+		this.userDetailStorage = (userDetailStorage) ? userDetailStorage : new BlDocumentStorage('userdetails', userDetailSchema);
+		this.userStorage = (userStorage) ? userStorage : new BlDocumentStorage('users', UserSchema);
 	}
 	
 	public getByUsername(username: string): Promise<User> {
 		return new Promise((resolve, reject) => {
 			if (!username) return reject(new BlError('username is empty or undefined'));
 			
-			let dbQuery = new SEDbQuery();
-			dbQuery.stringFilters = [{fieldName: 'username', value: username}];
 			
-			this.userMongoHandler.get(dbQuery).then(
-				(docs: SEDocument[]) => {
-					resolve(docs[0].data as User);
+			let dbQuery = new SEDbQuery();
+			dbQuery.stringFilters = [
+				{fieldName: 'username', value: username}
+			];
+			
+			
+			this.userStorage.getByQuery(dbQuery).then(
+				(docs: User[]) => {
+					if (docs.length > 1) {
+						reject(new BlError(`there was more than one user with username "${username}"`));
+					}
+					resolve(docs[0]);
 				},
 				(error: BlError) => {
 					reject(new BlError('could not find user with username "' + username + '"')
@@ -59,84 +46,86 @@ export class UserHandler {
 						.code(702));
 				});
 		});
-	
 	}
 
 	public get(provider: string, providerId: string): Promise<User> {
 		let blError = new BlError('').className('userHandler').methodName('exists')
 		
+		
 		return new Promise((resolve, reject) => {
 			if (!provider || provider.length <= 0) reject(blError.msg('provider is empty or undefined'));
 			if (!providerId || providerId.length <= 0) reject(blError.msg('providerId is empty of undefined'));
 			
-			this.userMongoHandler.get(this.getProviderQuery(provider, providerId)).then(
-				(docs: SEDocument[]) => {
-					resolve(docs[0].data as User);
-				},
-				(error: BlError) => {
-					reject(error.add(blError.msg('there was an error getting the user')
-							.store('provider', provider)
-							.store('providerId', providerId)));
-				});
+			let dbQuery = new SEDbQuery();
+			dbQuery.stringFilters = [
+				{fieldName: 'login.provider', value: provider},
+				{fieldName: 'login.providerId', value: providerId}
+			];
+			
+			this.userStorage.getByQuery(dbQuery).then((users: User[]) => {
+				resolve(users[0]);
+			}).catch((error: BlError) => {
+				reject(new BlError('an error occured when getting user')
+					.store('provider', provider)
+					.store('providerId', providerId).add(error));
+			});
 		});
 	}
 
 	public create(username: string, provider: string, providerId: string): Promise<User> {
 		return new Promise((resolve, reject) => {
-			let blError =  new BlError('').className('UserHandler').methodName('create');
+			let blError = new BlError('').className('UserHandler').methodName('create');
 			
 			if (!username || username.length <= 0) reject(blError.msg('username is empty or undefined'));
 			if (!provider || provider.length <= 0) reject(blError.msg('provider is empty or undefined'));
 			if (!providerId || providerId.length <= 0) reject(blError.msg('providerId is empty or undefined'));
-	
-			let userDetail: UserDetail = {
+			
+			let userDetail: any = {
 				email: username
 			};
 			
-
-			this.userDetailMongoHandler.post(new SEDocument('userDetail', userDetail)).then(
-				(docs: SEDocument[]) => {
-					this.blid.createUserBlid(provider, providerId).then(
-						(userBlid: string) => {
-
-							let user: User = {
-								userDetail: docs[0].data._id,
-								permission: "customer",
-								blid: userBlid,
-								username: username,
-								valid: false, //customer needs to register minimal information to rent items
-								login: {
-									provider: provider,
-									providerId: providerId
-								}
-							};
-
-							this.userMongoHandler.post(new SEDocument('user', user)).then(
-								(docs: SEDocument[]) => {
-									resolve(docs[0].data);
-								},
-								(error: BlError) => {
-									reject(error.add(blError.msg('there was an error creating user document').store('user', user)));
-								});
-							},
-						(error: BlError) => {
-							reject(error.add(blError.msg('there was an error creating the blid').store('provider', provider).store('providerId', providerId)));
-						});
-				},
-				(error: BlError) => {
-					reject(error.add(blError.msg('could not create userDetail document').store('username', username).store('provider', provider).store('providerId', providerId)));
-				});
+			this.blid.createUserBlid(provider, providerId).then((userId) => {
+				return this.userDetailStorage.add(userDetail, {id: userId, permission: "customer"});
+			}).then(addedUserDetail => {
+				let user: User = {
+					id: '',
+					userDetail: addedUserDetail.id,
+					permission: "customer",
+					blid: addedUserDetail.user.id,
+					username: username,
+					valid: false,
+					login: {
+						provider: provider,
+						providerId: providerId
+					}
+				};
+				return this.userStorage.add(user, {id: addedUserDetail.user.id, permission: user.permission});
+			}).then(user => {
+				resolve(user);
+			}).catch((blError: BlError) => {
+				reject(new BlError(`failed to create user with username "${username}"`).add(blError));
+			});
+			
 		});
 	}
-
-	private getProviderQuery(provider: string, providerId: string): SEDbQuery {
+	
+	public exists(provider: string, providerId: string): Promise<boolean> {
+		if (!provider || !providerId) {
+			return Promise.reject(new BlError('provider or providerId is empty or undefinedl'));
+		}
+		
 		let dbQuery = new SEDbQuery();
-
 		dbQuery.stringFilters = [
-			{fieldName: 'login.provider', value: provider},
-			{fieldName: 'login.providerId', value: providerId}
+			{fieldName: "login.provider", value: provider},
+			{fieldName: "login.providerId", value: providerId}
 		];
-
-		return dbQuery;
+		
+		return new Promise((resolve, reject) => {
+			this.userStorage.getByQuery(dbQuery).then((users: User[]) => {
+				resolve(true);
+			}).catch((blError: BlError) => {
+				reject(new BlError('does not exist').add(blError));
+			});
+		});
 	}
 }

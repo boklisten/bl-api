@@ -78,34 +78,8 @@ export let OrderSchema = {
 		default: []
 	},
 	payments: {
-		type: [
-			{
-				method: {
-					type: Schema.Types.String,
-					required: true
-				},
-				amount: {
-					type: Schema.Types.Number,
-					required: true
-				},
-				confirmed: {
-					type: Schema.Types.Boolean,
-					required: true
-				},
-				byBranch: {
-					type: Schema.Types.Boolean,
-					required: true
-				},
-				branch: {
-					type: Schema.Types.ObjectId
-				},
-				time: {
-					type: Schema.Types.Date,
-					required: true
-				}
-			}
-		],
-		required: true
+		type: [Schema.Types.String],
+		default: []
 	},
 	user: {
 		type: {
