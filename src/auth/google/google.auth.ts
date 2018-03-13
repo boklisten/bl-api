@@ -6,10 +6,8 @@ import {Router} from 'express';
 import {OAuth2Strategy} from 'passport-google-oauth';
 import * as passport from "passport";
 import {ApiPath} from "../../config/api-path";
-import {BlError} from "../../bl-error/bl-error";
 import {SEResponseHandler} from "../../response/se.response.handler";
-import {BlapiResponse} from "bl-model";
-import {SEDocument} from "../../db/model/se.document";
+import {BlError} from "bl-model";
 import {TokenHandler} from "../token/token.handler";
 import * as blConfig from '../../application-config';
 import {UserHandler} from "../user/user.handler";
@@ -92,10 +90,7 @@ export class GoogleAuth {
 		router.get(this.apiPath.createPath('auth/google/callback'),
 			passport.authenticate(blConfig.APP_CONFIG.login.google.name, {failureRedirect: this.apiPath.createPath('login') }),
 			(req: any, res: any) => {
-				this.resHandler.sendResponse(res, new BlapiResponse([
-					new SEDocument('accessToken', req.user.accessToken),
-					new SEDocument('refreshToken', req.user.refreshToken),
-				]));
+				this.resHandler.sendAuthTokens(res, req.user.accessToken, req.user.refreshToken);
 			});
 	}
 }

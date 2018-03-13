@@ -6,9 +6,8 @@ import {Request, Response, Router} from "express";
 import {ApiPath} from "../../config/api-path";
 import {AccessTokenAuth} from "../token/access-token/access-token.auth";
 import {LocalLoginValidator} from "./local-login.validator";
-import {BlError} from "../../bl-error/bl-error";
 import {SEResponseHandler} from "../../response/se.response.handler";
-import {BlapiResponse} from "bl-model";
+import {BlapiResponse, BlError} from "bl-model";
 import {SEDocument} from "../../db/model/se.document";
 import {TokenHandler} from "../token/token.handler";
 
@@ -50,6 +49,15 @@ export class LocalAuth {
 				passport.authenticate('local', (error,
 												jwTokens: {accessToken: string, refreshToken: string},
 												blError: BlError) => {
+					
+					if (blError) {
+						if (!(blError instanceof BlError)) {
+							blError = new BlError('unknown error').code(500);
+							return this.resHandler.sendErrorResponse(res, blError);
+						}
+						console.log('there was an unkown error...', blError);
+					}
+					
 					if (error) {
 						return next(error);
 					}

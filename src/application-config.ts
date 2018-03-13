@@ -1,11 +1,17 @@
 
 export const APP_CONFIG = {
+	server: {
+		basePath: 'http://localhost:1337/api/v1/'
+	},
 	dev: {
 		server: {
-			host: 'localhost',
+			host: 'https://localhost',
 			port: 1337,
 			path: 'api',
 			version: 'v1'
+		},
+		client: {
+			base: 'https://localhost:4200/#/'
 		},
 		mongoDb: {
 			basePath: 'mongodb://',
@@ -56,12 +62,15 @@ export const APP_CONFIG = {
 		refresh: {
 			iss: 'boklisten.co',
 			aud: 'boklisten.co',
-			expiresIn: "12 hours"
+			expiresIn: "100 years"
 		},
 		access: {
 			iss: 'boklisten.co',
 			aud: 'boklisten.co',
-			expiresIn: "30 seconds"
+			expiresIn: "100 years"
 		}
+	},
+	date: {
+		cancelDays: 14
 	}
 };

@@ -2,11 +2,7 @@
 import {SEToken} from "../se.token";
 import * as passport from 'passport';
 import {Strategy, ExtractJwt} from "passport-jwt";
-import {Router} from "express";
 import {UserHandler} from "../../user/user.handler";
-import {User} from "../../../config/schema/user/user";
-import {BlError} from "../../../bl-error/bl-error";
-import isEmail = require("validator/lib/isEmail");
 import {AccessTokenSecret} from "./access-token.secret";
 import {TokenConfig} from "../token.config";
 import {AccessToken} from "./access-token";
@@ -25,7 +21,7 @@ export class AccessTokenAuth {
 		this.tokenConfig = new TokenConfig(appTokenConfig.access, appTokenConfig.refresh);
 
 
-		passport.use(new Strategy(this.getOptions(), (accessToken: AccessToken, done: any) => {
+		passport.use(new Strategy(this.getOptions(), (accessToken: AccessToken, done) => {
 			done(null, {accessToken: accessToken});
 		}));
 	}

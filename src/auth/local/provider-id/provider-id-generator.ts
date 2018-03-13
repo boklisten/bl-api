@@ -1,6 +1,6 @@
 
 
-import {BlError} from "../../../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {SeCrypto} from "../../../crypto/se.crypto";
 const crypto = require('crypto');
 

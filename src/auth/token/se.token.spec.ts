@@ -4,7 +4,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {JwtPayload, SEToken} from "./se.token";
 import {Promise} from 'es6-promise';
-import {BlError} from "../../bl-error/bl-error";
+import {BlError} from "bl-model";
 
 chai.use(chaiAsPromised);
 

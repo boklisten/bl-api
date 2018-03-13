@@ -26,42 +26,64 @@ export let OrderSchema = {
 		required: true
 	},
 	orderItems: {
-		type: [Schema.Types.ObjectId],
-		default: []
-	},
-	payments: {
 		type: [
 			{
-				method: {
-					type: Schema.Types.String,
+				item: {
+					type: Schema.Types.ObjectId,
 					required: true
+				},
+				title: {
+					type: Schema.Types.String,
+					required: true,
 				},
 				amount: {
 					type: Schema.Types.Number,
 					required: true
 				},
-				confirmed: {
-					type: Schema.Types.Boolean,
+				unitPrice: {
+					type: Schema.Types.Number,
 					required: true
 				},
-				byBranch: {
-					type: Schema.Types.Boolean,
+				taxAmount: {
+					type: Schema.Types.Number,
 					required: true
 				},
-				branch: {
-					type: Schema.Types.ObjectId
-				},
-				time: {
-					type: Schema.Types.Date,
+				taxRate: {
+					type: Schema.Types.Number,
 					required: true
+				},
+				type: {
+					type: Schema.Types.String,
+					required: true
+				},
+				customerItem: {
+					type: Schema.Types.String
+				},
+				discount: {
+					type: Schema.Types.Number
+				},
+				rentInfo: {
+					oneSemester: {
+						type: Schema.Types.Boolean
+					},
+					twoSemesters: {
+						type: Schema.Types.Boolean
+					}
+				},
+				lastOrderItem: {
+					type: Schema.Types.Mixed
 				}
 			}
 		],
-		required: true
+		default: []
+	},
+	payments: {
+		type: [Schema.Types.String],
+		default: []
 	},
 	user: {
 		type: {
-			blid: {
+			id: {
 				type: Schema.Types.String
 			}
 		},

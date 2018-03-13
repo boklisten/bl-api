@@ -1,7 +1,7 @@
 
 
 import {SaltGenerator} from "../salt/salt-generator";
-import {BlError} from "../../../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {SeCrypto} from "../../../crypto/se.crypto";
 
 export class HashedPasswordGenerator {

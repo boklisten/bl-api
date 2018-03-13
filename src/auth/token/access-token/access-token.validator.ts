@@ -1,6 +1,6 @@
 
 
-import {BlError} from "../../../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {AccessTokenSecret} from "./access-token.secret";
 import {AccessToken} from "./access-token";
 

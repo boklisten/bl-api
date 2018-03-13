@@ -3,20 +3,18 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {LocalLoginHandler} from "./local-login.handler";
-import {LocalLogin} from "../../config/schema/login-local/local-login";
+import {LocalLogin} from "../../collections/local-login/local-login";
 import {LocalLoginValidator} from "./local-login.validator";
 import {SESchema} from "../../config/schema/se.schema";
-import {LocalLoginSchema} from "../../config/schema/login-local/local-login.schema";
-import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
+import {localLoginSchema} from "../../collections/local-login/local-login.schema";
 import {LocalLoginPasswordValidator} from "./password/local-login-password.validator";
 import {SeCrypto} from "../../crypto/se.crypto";
 import {Promise} from "es6-promise";
-import {BlError} from "../../bl-error/bl-error";
 import {HashedPasswordGenerator} from "./password/hashed-password-generator";
 import {SaltGenerator} from "./salt/salt-generator";
 import {LocalLoginCreator} from "./local-login-creator/local-login-creator";
 import {ProviderIdGenerator} from "./provider-id/provider-id-generator";
-import {BlapiErrorResponse} from "bl-model";
+import {BlError} from "bl-model";
 import {UserHandler} from "../user/user.handler";
 import {User} from "../../config/schema/user/user";
 import {UserSchema} from "../../config/schema/user/user.schema";
@@ -64,6 +62,7 @@ class UserHandlerMock extends UserHandler {
 	create(username: string, provider: string, providerId: string) {
 		return new Promise((resolve, reject) => {
 			let user: User = {
+				id: '',
 				userDetail: '',
 				permission: 'customer',
 				login: {
@@ -85,15 +84,14 @@ class UserHandlerMock extends UserHandler {
 
 
 describe('LocalLoginValidator', () => {
-	let localLoginEndpointMongoDb = new EndpointMongodb(new SESchema('localLogins', LocalLoginSchema));
-	let localLoginHandler = new LocalLoginHandlerMock(localLoginEndpointMongoDb);
 	let localLoginPasswordValidatorMock = new LocalLoginPasswordValidatorMock(new SeCrypto());
 	let saltGenerator = new SaltGenerator();
 	let seCrypto = new SeCrypto();
 	let hashedPasswordGenerator = new HashedPasswordGenerator(saltGenerator, seCrypto);
 	let providerIdGenerator = new ProviderIdGenerator(seCrypto);
 	let localLoginCreator = new LocalLoginCreator(hashedPasswordGenerator, providerIdGenerator);
-	let userHandlerMock = new UserHandlerMock(new EndpointMongodb(new SESchema('user', UserSchema)),new EndpointMongodb(new SESchema('userDetail', UserDetailSchema)));
+	let userHandlerMock = new UserHandlerMock();
+	let localLoginHandler = new LocalLoginHandlerMock();
 	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidatorMock, localLoginCreator, userHandlerMock);
 	
 	describe('validate()', () => {

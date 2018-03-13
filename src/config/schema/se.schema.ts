@@ -1,6 +1,7 @@
 
 import {SESchemaConfig} from "./se.schema.config";
 import * as mongoose from 'mongoose';
+import {Schema} from "mongoose";
 
 export class SESchema {
     title: string;
@@ -13,6 +14,16 @@ export class SESchema {
 		this.schema = schema;
 		this.mongooseSchema = this.createMongooseSchema(this.schema);
 		this.mongooseModel = this.createMongooseModel(this.mongooseSchema);
+		
+		
+		//to remove the _id field and __v
+		this.mongooseSchema.set('toJSON', {
+			transform: function (doc, ret, options) {
+				ret.id = ret._id;
+				delete ret._id;
+				delete ret.__v;
+			}
+		});
 
     }
 
@@ -30,7 +41,7 @@ export class SESchema {
 		}
     }
 
-    createMongooseSchema(mschema: any): any {
+    createMongooseSchema(mschema: any): mongoose.Schema {
 
         mschema['lastUpdated'] = {
         	type: mongoose.Schema.Types.Date,

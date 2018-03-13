@@ -2,14 +2,11 @@ import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
-import {RedisHandler} from "../../db/redis/redis.handler";
 import {TokenHandler} from "./token.handler";
-import {BlError} from "../../bl-error/bl-error";
-import {UserPermission} from "../user/user-permission";
+import {BlError} from "bl-model";
 import {Promise} from 'es6-promise';
 import {UserHandler} from "../user/user.handler";
 import {User} from "../../config/schema/user/user";
-import {EndpointMongodb} from "../../endpoint/endpoint.mongodb";
 import {SESchema} from "../../config/schema/se.schema";
 import {UserSchema} from "../../config/schema/user/user.schema";
 import {UserDetailSchema} from "../../config/schema/user/user-detail.schema";
@@ -20,6 +17,7 @@ import {RefreshToken} from "./refresh/refresh-token";
 chai.use(chaiAsPromised);
 
 const testUser: User = {
+	id: 'abc',
 	username: 'bill@clintonisugly.com',
 	userDetail: 'abc',
 	permission: 'customer',
@@ -64,8 +62,7 @@ describe('TokenHandler', () => {
 		details: ''
 	};
 	
-	let userHandlerMock = new UserHandlerMock(new EndpointMongodb(new SESchema('user', UserSchema)),
-		new EndpointMongodb(new SESchema('userDetail', UserDetailSchema)));
+	let userHandlerMock = new UserHandlerMock();
 	let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
 	let tokenHandler = new TokenHandler(userHandlerMock, tokenConfig);
 	

@@ -1,6 +1,6 @@
 
 import {RedisClient} from "redis";
-import {BlError} from "../../bl-error/bl-error";
+import {BlError} from "bl-model";
 
 const redis = require('redis');
 const bluebird = require('bluebird');

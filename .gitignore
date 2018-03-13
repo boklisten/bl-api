@@ -2,4 +2,6 @@
 /node_modules
 .tscache
 .idea
-/src/config/secrets.ts
+src/config/secrets.ts
+
+\.nyc_output/

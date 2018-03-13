@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {AccessTokenValidator} from "./access-token.validator";
-import {BlError} from "../../../bl-error/bl-error";
+import {BlError} from "bl-model";
 import {UserPermission} from "../../user/user-permission";
 import {RefreshTokenCreator} from "../refresh/refresh-token.creator";
 import {AccessTokenCreator} from "./access-token.creator";

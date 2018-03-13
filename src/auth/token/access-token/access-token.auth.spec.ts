@@ -9,8 +9,6 @@ import {AccessTokenAuth} from "./access-token.auth";
 import {SESchema} from "../../../config/schema/se.schema";
 import {UserSchema} from "../../../config/schema/user/user.schema";
 import {UserDetailSchema} from "../../../config/schema/user/user-detail.schema";
-import {BlError} from "../../../bl-error/bl-error";
-import {EndpointMongodb} from "../../../endpoint/endpoint.mongodb";
 chai.use(chaiAsPromised);
 
 let testUsername = 'bill@thesite.com';
@@ -18,13 +16,13 @@ let testUsername = 'bill@thesite.com';
 class UserHandlerMock extends UserHandler {
 	
 	constructor() {
-		super(new EndpointMongodb(new SESchema('', UserSchema)),
-			new EndpointMongodb(new SESchema('', UserDetailSchema)));
+		super();
 	}
 	
 	get(provider: string, providerId: string): Promise<User> {
 		return new Promise((resolve, reject) => {
 			let user: User = {
+				id: '',
 				username: testUsername,
 				permission: 'customer',
 				login: {

@@ -1,6 +1,6 @@
 
 
-import {Router} from 'express';
+import {Request, Response, Router} from 'express';
 
 import * as passport from "passport";
 import {SECRETS} from "../../config/secrets";
@@ -8,10 +8,9 @@ import {Strategy} from 'passport-facebook'
 import {UserHandler} from "../user/user.handler";
 import {AccessTokenAuth} from "../token/access-token/access-token.auth";
 import {ApiPath} from "../../config/api-path";
-import {BlError} from "../../bl-error/bl-error";
 import {TokenHandler} from "../token/token.handler";
 import {SEResponseHandler} from "../../response/se.response.handler";
-import {BlapiResponse} from "bl-model";
+import {BlapiResponse, BlError} from "bl-model";
 import {SEDocument} from "../../db/model/se.document";
 import {User} from "../../config/schema/user/user";
 
@@ -27,8 +26,8 @@ export class FacebookAuth {
 				clientID: SECRETS.boklistentest.facebook.clientId,
 				clientSecret: SECRETS.boklistentest.facebook.secret,
 				callbackURL: this.apiPath.createPath('auth/facebook/callback'),
-				profileFields: ['id', 'email', 'name']
-
+				profileFields: ['id', 'email', 'name'],
+				enableProof: true
 			},
 			(accessToken: any, refreshToken: any, profile: any, done: any) => {
 				let provider = 'facebook';
@@ -91,10 +90,7 @@ export class FacebookAuth {
 		router.get(this.apiPath.createPath('auth/facebook/callback'),
 			passport.authenticate('facebook', { failureRedirect: '/login' }),
 			(req: any, res: any) => {
-				this.resHandler.sendResponse(res, new BlapiResponse([
-					new SEDocument('accessToken', req.user.accessToken),
-					new SEDocument('refreshToken', req.user.refreshToken)
-				]));
+				this.resHandler.sendAuthTokens(res, req.user.accessToken, req.user.refreshToken);
 			});
 	}
 

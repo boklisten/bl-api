@@ -1,6 +1,6 @@
 
 
-import {BlError} from "../../../bl-error/bl-error";
+import {BlError} from "bl-model";
 const crypto = require('crypto');
 
 export class SaltGenerator {
