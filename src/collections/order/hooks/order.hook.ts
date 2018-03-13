@@ -2,35 +2,39 @@
 
 import {Hook} from "../../../hook/hook";
 import {BlError, Order, UserDetail} from "bl-model";
-import {SEDocument} from "../../../db/model/se.document";
 import {OrderValidator} from "./order-validator/order-validator";
-import {UserDetailSchema} from "../../../config/schema/user/user-detail.schema";
-import {SESchema} from "../../../config/schema/se.schema";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {userDetailSchema} from "../../user-detail/user-detail.schema";
+import {orderSchema} from "../order.schema";
 
 export class OrderHook extends Hook {
 	private orderValidator: OrderValidator;
 	private userDetailStorage: BlDocumentStorage<UserDetail>;
+	private orderStorage: BlDocumentStorage<Order>;
 	
 	constructor() {
 		super();
 		this.orderValidator = new OrderValidator();
 		this.userDetailStorage = new BlDocumentStorage('userdetails', userDetailSchema);
+		this.orderStorage = new BlDocumentStorage('orders', orderSchema);
 	}
 
-	public run(docs: SEDocument[]): Promise<boolean> {
+	public after(orderIds: string[]): Promise<boolean | Order[]> {
 		return new Promise((resolve, reject) => {
-			if (!docs || docs.length <= 0) return reject(new BlError('no documents provided').code(701));
+			if (!orderIds || orderIds.length <= 0) return reject(new BlError('no documents provided').code(701));
 			
-			this.validateDocs(docs).then((orders: Order[]) => {
-				this.updateUserDetails(orders[0].customer, orders).then(() => {
-					resolve(true);
-				}).catch((updateErr: BlError) => {
-					reject(new BlError('could not update userDetails after order creation').add(updateErr));
-				});
-			}).catch((err: BlError) => {
-				return reject(new BlError('there was an error with the order data provided').code(701).add(err));
+			this.orderStorage.getMany(orderIds).then((orders: Order[]) => {
+				this.validateDocs(orders).then((validatedOrders: Order[]) => {
+					this.updateUserDetails(validatedOrders[0].customer, validatedOrders).then(() => {
+						resolve(validatedOrders);
+					}).catch((updateErr: BlError) => {
+						reject(new BlError(`could not update userDetail "${validatedOrders[0].customer}" after order creation`).add(updateErr));
+					});
+				}).catch((err: BlError) => {
+					return reject(new BlError('there was an error with the order data provided').code(701).add(err));
+				})
+			}).catch((blError: BlError) => {
+				return reject(new BlError('could not find the provided orderIds').store('orderIds', orderIds).add(blError));
 			})
 		});
 	}
@@ -59,6 +63,7 @@ export class OrderHook extends Hook {
 			this.userDetailStorage.get(userDetailId).then((userDetail: UserDetail) => {
 		    		
 		    		let orders = (userDetail.orders) ? userDetail.orders : [];
+		    		
 		    		for (let orderId of orderIds) {
 						orders.push(orderId);
 					}
@@ -69,24 +74,24 @@ export class OrderHook extends Hook {
 		   				reject(new BlError('could not update userDetails with the new orders array').add(patchError));
 					});
 			}).catch((getByIdError: BlError) => {
-				reject(new BlError('could not get userDetails based on userId when trying to update userDetails').add(getByIdError));
+				reject(new BlError(`could not get userDetail "${userDetailId}" when trying to update userDetails`).add(getByIdError));
 			})
 		});
 	}
 	
-	private validateDocs(docs: SEDocument[]): Promise<Order[]> {
+	private validateDocs(orders: Order[]): Promise<Order[]> {
 		return new Promise((resolve, reject) => {
 			
 			try {
-				this.checkForMultiple(docs);
+				this.checkForMultiple(orders);
 			} catch (err) {
 				return reject(err);
 			}
 			
 			let validatedOrders: Promise<Order>[] = [];
 			
-			for (let doc of docs) {
-				validatedOrders.push(this.validateData(doc));
+			for (let order of orders) {
+				validatedOrders.push(this.validateData(order));
 			}
 			
 			Promise.all(validatedOrders).then((validatedOrders: Order[]) => {
@@ -97,16 +102,13 @@ export class OrderHook extends Hook {
 		});
 	}
 	
-	private validateData(doc: SEDocument): Promise<Order> {
+	private validateData(order: Order): Promise<Order> {
 		return new Promise((resolve, reject) => {
 			try {
-				this.validateDocument(doc);
+				this.validateDocument(order);
 			} catch (err) {
 				reject(new BlError('could not validate document'));
 			}
-			
-			const order = doc.data as Order;
-			
 			
 			this.orderValidator.validate(order).then(() => {
 				resolve(order);
@@ -116,11 +118,11 @@ export class OrderHook extends Hook {
 		});
 	}
 	
-	private checkForMultiple(docs: SEDocument[]): boolean {
-		for (let i = 0; i < docs.length; i++) {
-			for (let j = 0; j < docs.length; j++) {
+	private checkForMultiple(orders: Order[]): boolean {
+		for (let i = 0; i < orders.length; i++) {
+			for (let j = 0; j < orders.length; j++) {
 				if (i != j) {
-					if (docs[i].data === docs[j].data) throw new BlError('some of the docs provided are the same');
+					if (orders[i] === orders[j]) throw new BlError('some of the docs provided are the same');
 				}
 			}
 		}
@@ -128,16 +130,7 @@ export class OrderHook extends Hook {
 		return true;
 	}
 	
-	private validateDocument(doc: SEDocument): boolean {
-		if (doc.documentName !== 'order') throw new BlError('document is not of valid type "order", it was "' + doc.documentName);
-		if (!doc.data || this.isEmpty(doc.data)) throw new BlError('no data provided on document');
-		return true;
-	}
-	
-	private isEmpty(obj: any) {
-		for (let x in obj) {
-			return false;
-		}
+	private validateDocument(order: Order): boolean {
 		return true;
 	}
 }

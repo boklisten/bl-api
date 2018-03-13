@@ -2,13 +2,11 @@
 
 import * as passport from 'passport';
 import {Strategy} from 'passport-local';
-import {Request, Response, Router} from "express";
+import {Router} from "express";
 import {ApiPath} from "../../config/api-path";
-import {AccessTokenAuth} from "../token/access-token/access-token.auth";
 import {LocalLoginValidator} from "./local-login.validator";
 import {SEResponseHandler} from "../../response/se.response.handler";
 import {BlapiResponse, BlError} from "bl-model";
-import {SEDocument} from "../../db/model/se.document";
 import {TokenHandler} from "../token/token.handler";
 
 export class LocalAuth {
@@ -55,7 +53,6 @@ export class LocalAuth {
 							blError = new BlError('unknown error').code(500);
 							return this.resHandler.sendErrorResponse(res, blError);
 						}
-						console.log('there was an unkown error...', blError);
 					}
 					
 					if (error) {
@@ -68,10 +65,7 @@ export class LocalAuth {
 					
 					req.login(jwTokens, (error) => {
 						if (error) return next(error);
-						return this.resHandler.sendResponse(res, new BlapiResponse([
-							new SEDocument('refreshToken', jwTokens.refreshToken),
-							new SEDocument('accessToken', jwTokens.accessToken)
-						]));
+						this.respondWithTokens(res, {accessToken: jwTokens.accessToken, refreshToken: jwTokens.refreshToken})
 					});
 					
 				})(req, res, next);
@@ -80,8 +74,8 @@ export class LocalAuth {
 	
 	private respondWithTokens(res, tokens: {accessToken: string, refreshToken: string}) {
 		return this.resHandler.sendResponse(res, new BlapiResponse([
-							new SEDocument('refreshToken', tokens.refreshToken),
-							new SEDocument('accessToken', tokens.accessToken)
+			{documentName: 'refreshToken', data: tokens.refreshToken},
+			{documentName: 'accessToken', data: tokens.accessToken}
 		]));
 	}
 

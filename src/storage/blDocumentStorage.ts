@@ -35,7 +35,11 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 	
 	getMany(ids: string[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
-			reject(new BlError('not implemented'));
+			this.mongoDbHandler.getMany(ids).then((docs: T[]) => {
+				resolve(docs);
+			}).catch((blError: BlError) => {
+				reject(blError);
+			})
 		});
 	}
 	

@@ -1,6 +1,6 @@
 
 
-import {UserPermission} from "../../../auth/user/user-permission";
+import {UserPermission} from "../../auth/user/user-permission";
 
 export type User = {
 	id: string,

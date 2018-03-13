@@ -11,7 +11,7 @@ import {BlError} from "bl-model";
 import {TokenHandler} from "../token/token.handler";
 import * as blConfig from '../../application-config';
 import {UserHandler} from "../user/user.handler";
-import {User} from "../../config/schema/user/user";
+import {User} from "../../collections/user/user";
 
 export class GoogleAuth {
 	private apiPath: ApiPath;

@@ -1,18 +1,16 @@
 
 
-import {Request, Response, Router} from 'express';
+import {Router} from 'express';
 
 import * as passport from "passport";
 import {SECRETS} from "../../config/secrets";
 import {Strategy} from 'passport-facebook'
 import {UserHandler} from "../user/user.handler";
-import {AccessTokenAuth} from "../token/access-token/access-token.auth";
 import {ApiPath} from "../../config/api-path";
 import {TokenHandler} from "../token/token.handler";
 import {SEResponseHandler} from "../../response/se.response.handler";
-import {BlapiResponse, BlError} from "bl-model";
-import {SEDocument} from "../../db/model/se.document";
-import {User} from "../../config/schema/user/user";
+import {BlError} from "bl-model";
+import {User} from "../../collections/user/user";
 
 export class FacebookAuth {
 	private apiPath: ApiPath;

@@ -80,6 +80,9 @@ export let orderSchema = {
 		type: [Schema.Types.String],
 		default: []
 	},
+	delivery: {
+		type: Schema.Types.ObjectId
+	},
 	user: {
 		type: {
 			id: {

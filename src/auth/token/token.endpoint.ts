@@ -7,7 +7,6 @@ import {RefreshTokenValidator} from "./refresh/refresh-token.validator";
 import {TokenHandler} from "./token.handler";
 import {RefreshToken} from "./refresh/refresh-token";
 import {BlapiResponse, BlError} from "bl-model";
-import {SEDocument} from "../../db/model/se.document";
 
 export class TokenEndpoint {
 	private apiPath: ApiPath;
@@ -27,8 +26,8 @@ export class TokenEndpoint {
 						this.tokenHandler.createTokens(refreshToken.username).then(
 							(jwTokens: {accessToken: string, refreshToken: string}) => {
 								this.resHandler.sendResponse(res, new BlapiResponse([
-									new SEDocument('accessToken', jwTokens.accessToken),
-									new SEDocument('refreshToken', jwTokens.refreshToken)
+									{accessToken: jwTokens.accessToken},
+									{refreshToken: jwTokens.refreshToken}
 								]));
 							},
 							(createTokenError: BlError) => {

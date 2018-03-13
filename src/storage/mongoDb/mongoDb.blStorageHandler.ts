@@ -5,6 +5,7 @@ import {BlStorageHandler} from "../blStorageHandler";
 import {MongooseModelCreator} from "./mongoose-schema-creator";
 import {PermissionService} from "../../auth/permission/permission.service";
 import {SEDbQuery} from "../../query/se.db-query";
+import * as mongoose from 'mongoose';
 
 export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageHandler<T>{
 
@@ -53,7 +54,22 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 	
 	getMany(ids: string[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
-			reject(new BlError('not implemented'));
+			const idArr = [];
+			
+			for (let id of ids) {
+				try {
+					idArr.push(mongoose.Types.ObjectId(id));
+				} catch (e) {
+					return Promise.reject(new BlError('id in array is not valid'));
+				}
+			}
+			
+			this.mongooseModel.find({'_id': {$in: idArr}}).exec((error, docs) => {
+				if (error || docs.length <= 0) {
+					return reject(this.handleError(new BlError('error when trying to find document'), error));
+				}
+				resolve(docs);
+			});
 		});
 	}
 	

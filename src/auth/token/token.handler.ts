@@ -3,7 +3,7 @@ import {BlError} from "bl-model";
 import {RefreshTokenCreator} from "./refresh/refresh-token.creator";
 import {AccessTokenCreator} from "./access-token/access-token.creator";
 import {UserHandler} from "../user/user.handler";
-import {User} from "../../config/schema/user/user";
+import {User} from "../../collections/user/user";
 import {TokenConfig} from "./token.config";
 
 export class TokenHandler {

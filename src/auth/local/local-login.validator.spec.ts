@@ -5,8 +5,6 @@ import {expect} from 'chai';
 import {LocalLoginHandler} from "./local-login.handler";
 import {LocalLogin} from "../../collections/local-login/local-login";
 import {LocalLoginValidator} from "./local-login.validator";
-import {SESchema} from "../../config/schema/se.schema";
-import {localLoginSchema} from "../../collections/local-login/local-login.schema";
 import {LocalLoginPasswordValidator} from "./password/local-login-password.validator";
 import {SeCrypto} from "../../crypto/se.crypto";
 import {Promise} from "es6-promise";
@@ -16,9 +14,7 @@ import {LocalLoginCreator} from "./local-login-creator/local-login-creator";
 import {ProviderIdGenerator} from "./provider-id/provider-id-generator";
 import {BlError} from "bl-model";
 import {UserHandler} from "../user/user.handler";
-import {User} from "../../config/schema/user/user";
-import {UserSchema} from "../../config/schema/user/user.schema";
-import {UserDetailSchema} from "../../config/schema/user/user-detail.schema";
+import {User} from "../../collections/user/user";
 
 chai.use(chaiAsPromised);
 

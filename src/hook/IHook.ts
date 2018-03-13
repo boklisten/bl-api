@@ -1,6 +1,7 @@
 
-import {SEDocument} from "../db/model/se.document";
+import {BlDocument} from "bl-model";
 
 export interface IHook {
-	run(docs?: SEDocument[]): Promise<boolean>;
+	before(body?: any): Promise<boolean>;
+	after(ids: string[]): Promise<boolean | BlDocument[]>
 }

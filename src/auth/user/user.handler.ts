@@ -1,15 +1,14 @@
 
 
 import {SEDbQuery} from "../../query/se.db-query";
-import {SEDocument} from "../../db/model/se.document";
 
 import {Blid} from "../blid/blid";
-import {BlapiResponse, BlapiErrorResponse, UserDetail}  from 'bl-model';
+import {UserDetail}  from 'bl-model';
 import {BlError} from "bl-model";
-import {BlDocumentStorage} from "../../storage/blDocumentStorage";
+import {User} from "../../collections/user/user";
+import {UserSchema} from "../../collections/user/user.schema";
 import {userDetailSchema} from "../../collections/user-detail/user-detail.schema";
-import {User} from "../../config/schema/user/user";
-import {UserSchema} from "../../config/schema/user/user.schema";
+import {BlDocumentStorage} from "../../storage/blDocumentStorage";
 
 export class UserHandler {
 	private blid: Blid;

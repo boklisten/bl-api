@@ -7,7 +7,7 @@ import {BlError} from "bl-model";
 import {LocalLoginPasswordValidator} from "./password/local-login-password.validator";
 import {LocalLoginCreator} from "./local-login-creator/local-login-creator";
 import {UserHandler} from "../user/user.handler";
-import {User} from "../../config/schema/user/user";
+import {User} from "../../collections/user/user";
 
 export class LocalLoginValidator {
 	

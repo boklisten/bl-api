@@ -201,10 +201,10 @@ export class BlCollectionGenerator<T extends BlDocument>{
 					endpoint.hook.before(req.body).then(() => {
 						this.documentStorage.add(req.body, {id: accessToken.sub, permission: accessToken.permission}).then((doc: T) => {
 							
-							endpoint.hook.after([doc.id]).then((returnVal: boolean | T) => {
+							endpoint.hook.after([doc.id]).then((returnVal: boolean | T[]) => {
 								
-								if (returnVal !== true){
-									return this.resHandler.sendResponse(res, new BlapiResponse([returnVal]));
+								if (!(returnVal instanceof Boolean)){
+									return this.resHandler.sendResponse(res, new BlapiResponse(returnVal));
 								}
 								
 								return this.resHandler.sendResponse(res, new BlapiResponse([doc]));
