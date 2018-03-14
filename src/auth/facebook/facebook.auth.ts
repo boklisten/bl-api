@@ -3,7 +3,6 @@
 import {Router} from 'express';
 
 import * as passport from "passport";
-import {SECRETS} from "../../config/secrets";
 import {Strategy} from 'passport-facebook'
 import {UserHandler} from "../user/user.handler";
 import {ApiPath} from "../../config/api-path";
