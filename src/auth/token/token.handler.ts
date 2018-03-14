@@ -17,8 +17,7 @@ export class TokenHandler {
 	
 	public createTokens(username: string): Promise<{accessToken: string, refreshToken: string}> {
 		return new Promise((resolve, reject) => {
-			this.userHandler.getByUsername(username).then(
-				(user: User) => {
+			this.userHandler.getByUsername(username).then((user: User) => {
 					this.refreshTokenCreator.create(user.username, user.blid).then(
 						(refreshToken: string) => {
 							this.accessTokenCreator.create(user.username, user.blid, user.permission, user.userDetail, refreshToken).then(

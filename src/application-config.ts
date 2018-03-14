@@ -3,6 +3,14 @@ export const APP_CONFIG = {
 	server: {
 		basePath: 'http://localhost:1337/api/v1/'
 	},
+	url: {
+		bring: {
+			shipmentInfo: 'https://api.bring.com/shippingguide/products/all.json'
+		},
+		blWeb: {
+			base: 'https://localhost:4200'
+		}
+	},
 	dev: {
 		server: {
 			host: 'https://localhost',

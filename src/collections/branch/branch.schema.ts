@@ -1,7 +1,7 @@
 
 import { Schema } from 'mongoose';
 
-export let branchSchema = {
+export const branchSchema = {
 	name: {
 		type: Schema.Types.String,
 		required: true

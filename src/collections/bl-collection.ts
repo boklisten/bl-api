@@ -1,5 +1,4 @@
 
-import {Schema} from "mongoose";
 import {Hook} from "../hook/hook";
 import {UserPermission} from "bl-model";
 
@@ -7,7 +6,7 @@ import {UserPermission} from "bl-model";
 export interface BlCollection {
 	collectionName: string; //the name determines the path to the collection like /api/vi/collectionName
 	mongooseSchema: any; //the mongooseSchema for this collection
-	endpoints: BlEndpoint[] //a list of the valid endpoints for this collection;
+	endpoints: BlEndpoint[]; //a list of the valid endpoints for this collection;
 }
 
 export interface BlEndpoint {

@@ -34,8 +34,8 @@ export class UserHandler {
 			
 			this.userStorage.getByQuery(dbQuery).then(
 				(docs: User[]) => {
-					if (docs.length > 1) {
-						reject(new BlError(`there was more than one user with username "${username}"`));
+					if (docs.length !== 1) {
+						reject(new BlError(`username "${username}" was not found`).code(702));
 					}
 					resolve(docs[0]);
 				},

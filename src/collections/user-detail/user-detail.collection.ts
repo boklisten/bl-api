@@ -2,6 +2,7 @@
 
 import {BlCollection, BlEndpoint} from "../bl-collection";
 import {userDetailSchema} from "./user-detail.schema";
+import {Schema} from "mongoose";
 
 export class UserDetailCollection implements BlCollection {
 	collectionName = 'userdetails';

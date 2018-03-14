@@ -10,7 +10,8 @@
     "dev": "grunt dev",
     "release": "standard-version && grunt pkg",
     "pretest": "tsc",
-    "test": "mocha -r ts-node/register \"src/**/*.spec.ts\" --reporter min --exit"
+    "test": "mocha -r ts-node/register \"src/**/*.spec.ts\" --reporter min --exit",
+    "testwatch": "mocha -r ts-node/register --watch \"src/**/*.spec.ts\" --reporter min --watch-extensions ts \"./src/**/*.spec.ts\""
   },
   "author": "holskil",
   "license": "ISC",
@@ -21,7 +22,7 @@
     "@types/sinon-chai": "^2.7.29",
     "@types/validator": "^6.3.0",
     "bl-email": "^1.0.6",
-    "bl-model": "^0.12.1",
+    "bl-model": "^0.12.2",
     "bluebird": "^3.5.1",
     "chalk": "^2.3.2",
     "commander": "^2.13.0",
@@ -42,6 +43,7 @@
     "qs": "^6.5.1",
     "redis": "^2.8.0",
     "request": "^2.83.0",
+    "request-promise": "^4.2.2",
     "sinon": "^4.1.4",
     "sinon-chai": "^2.14.0",
     "typescript": "^2.6.2",
