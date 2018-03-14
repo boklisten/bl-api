@@ -20,8 +20,8 @@ export class GoogleAuth {
 		this.apiPath = new ApiPath();
 
 		passport.use(new OAuth2Strategy({
-				clientID: SECRETS.boklistentest.google.clientId,
-				clientSecret: SECRETS.boklistentest.google.secret,
+				clientID: process.env.GOOGLE_CLIENT_ID,
+				clientSecret: process.env.GOOGLE_SECRET,
 				callbackURL: this.apiPath.createPath('auth/google/callback')
 			},
 			(accessToken: any, refreshToken: any, profile: any, done: any) => {

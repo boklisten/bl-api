@@ -21,8 +21,8 @@ export class FacebookAuth {
 		
 
 		passport.use(new Strategy({
-				clientID: SECRETS.boklistentest.facebook.clientId,
-				clientSecret: SECRETS.boklistentest.facebook.secret,
+				clientID: process.env.FACEBOOK_CLIENT_ID,
+				clientSecret: process.env.FACEBOOK_SECRET,
 				callbackURL: this.apiPath.createPath('auth/facebook/callback'),
 				profileFields: ['id', 'email', 'name'],
 				enableProof: true

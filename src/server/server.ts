@@ -10,6 +10,7 @@ const chalk = require('chalk');
 const packageJson = require('../../package.json');
 const fs = require('fs');
 
+
 export class Server {
 
 	public app: Application;
@@ -17,6 +18,8 @@ export class Server {
 	private blAuth: BlAuth;
 
 	constructor() {
+		require('dotenv').config(); //adds the .env file to environment variables
+		
 		this.printServerStartMessage();
 		
 		this.initialServerConfig();
@@ -144,11 +147,11 @@ export class Server {
 	}
 
 	private getMongoDbPath(): string {
-		return APP_CONFIG.dev.mongoDb.basePath + APP_CONFIG.dev.mongoDb.host + ':' + APP_CONFIG.dev.mongoDb.port + '/' + APP_CONFIG.dev.mongoDb.dbName;
+		return process.env.MONGODB_HOST;
 	}
 
 	private getServerPath(): string {
-		return APP_CONFIG.dev.server.host + ':' + APP_CONFIG.dev.server.port + '/' + APP_CONFIG.dev.server.path + '/' + APP_CONFIG.dev.server.version;
+		return process.env.SERVER_HOST;
 	}
 }
 
