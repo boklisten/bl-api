@@ -39,6 +39,10 @@ export let orderSchema = {
 					type: Schema.Types.Number,
 					required: true
 				},
+				placed: {
+					type: Schema.Types.Boolean,
+					default: false
+				},
 				unitPrice: {
 					type: Schema.Types.Number,
 					required: true

@@ -10,7 +10,9 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 	private mongoDbHandler: MongoDbBlStorageHandler<T>;
 	
 	constructor(private collectionName: string, private mongooseSchema?: any) {
-		this.mongoDbHandler = new MongoDbBlStorageHandler(collectionName, mongooseSchema);
+		if (mongooseSchema) {
+			this.mongoDbHandler = new MongoDbBlStorageHandler(collectionName, mongooseSchema);
+		}
 	}
 	
 	get(id: string): Promise<T> {

@@ -22,7 +22,6 @@
     "@types/sinon-chai": "^2.7.29",
     "@types/validator": "^6.3.0",
     "bl-email": "^1.0.6",
-    "bl-model": "^0.12.2",
     "bluebird": "^3.5.1",
     "chalk": "^2.3.2",
     "commander": "^2.13.0",

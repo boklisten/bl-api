@@ -2,12 +2,10 @@ import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
-import {Order, BlError, CustomerItem, Item, Branch} from "bl-model";
+import {Order, BlError, CustomerItem, Item, Branch, Payment, Delivery} from "bl-model";
 import {OrderValidator} from "./order-validator";
 import * as sinon from 'sinon';
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
-import {branchSchema} from "../../../branch/branch.schema";
-import {itemSchema} from "../../../item/item.schema";
 
 chai.use(chaiAsPromised);
 
@@ -16,14 +14,16 @@ describe('OrderValidator', () => {
 	
 	let testOrder: Order;
 	
-	const branchStorage: BlDocumentStorage<Branch> = new BlDocumentStorage('branches', branchSchema);
-	const itemStorage: BlDocumentStorage<Item> = new BlDocumentStorage('items', itemSchema);
-	const orderValidator: OrderValidator = new OrderValidator(branchStorage, itemStorage);
+	const branchStorage: BlDocumentStorage<Branch> = new BlDocumentStorage('branches');
+	const itemStorage: BlDocumentStorage<Item> = new BlDocumentStorage('items');
+	const paymentStorage: BlDocumentStorage<Payment> = new BlDocumentStorage('payments');
+	const deliveryStorage: BlDocumentStorage<Delivery> = new BlDocumentStorage('deliveries');
+	const orderValidator: OrderValidator = new OrderValidator(branchStorage, itemStorage, deliveryStorage, paymentStorage);
 	
 	
 	beforeEach(() => {
 		testOrder = {
-			id: 'o1',
+			id: 'order1',
 			amount: 450,
 			orderItems: [
 				{
@@ -52,10 +52,10 @@ describe('OrderValidator', () => {
 					}
 				}
 			],
-			delivery: '',
+			delivery: 'delivery1',
 			branch: 'b1',
 			byCustomer: true,
-			payments: [],
+			payments: ['payment1'],
 			comments: [],
 			active: false,
 			user: {
@@ -172,6 +172,8 @@ describe('OrderValidator', () => {
 				.should.be.rejectedWith(BlError);
 		});
 		
+		
+		
 		context('when order is not valid', () => {
 			it('should throw error when one of the items in order is not found', () => {
 				testOrder.orderItems[0].item = 'notAvalidObjid';
@@ -179,21 +181,132 @@ describe('OrderValidator', () => {
 				return orderValidator.validate(testOrder)
 					.should.be.rejectedWith(BlError);
 			});
+			
+			it('should throw error when the order.amount is not equal to orderItems or payments', () => {
+				testOrder.amount = 0;
+				
+				return orderValidator.validate(testOrder)
+					.should.be.rejectedWith(BlError);
+			});
+			
+			it('should throw error when orderItems is empty', () => {
+				testOrder.orderItems = [];
+				
+				return orderValidator.validate(testOrder)
+					.should.be.rejectedWith(BlError);
+			});
 		});
 		
-		it('should throw error when the order.amount is not equal to orderItems or payments', () => {
-			testOrder.amount = 0;
+		
+		context('when order.placed is set to true', () => {
+			let testPayment: Payment;
+			let testDelivery: Delivery;
 			
-			return orderValidator.validate(testOrder)
-				.should.be.rejectedWith(BlError);
+			beforeEach(() => {
+				testOrder.placed = true;
+				
+				testPayment = {
+					id: 'payment1',
+					method: 'card',
+					order: 'order1',
+					info: {},
+					amount: 450,
+					confirmed: true,
+					customer: 'customer1',
+					branch: 'branch1'
+				};
+				
+				
+				testDelivery = {
+					id: 'delivery1',
+					method: 'branch',
+					info: {},
+					order: 'order1',
+					amount: 0
+				};
+			});
+			
+			sinon.stub(paymentStorage, 'getMany').callsFake((ids: string[]) => {
+				return new Promise((resolve, reject) => {
+				    if (ids[0] !== 'payment1') {
+				    	return reject(new BlError('not found').code(702));
+					}
+					resolve([testPayment]);
+				});
+			
+			
+			});
+			
+			sinon.stub(deliveryStorage, 'get').callsFake((id: string) => {
+				return new Promise((resolve, reject) => {
+				    if (id !== 'delivery1') {
+				    	return reject(new BlError('not found').code(702));
+					}
+					
+					resolve(testDelivery);
+				});
+			});
+			
+			it('should reject with error if delivery is not defined', () => {
+				testOrder.delivery = null;
+				
+				return orderValidator.validate(testOrder)
+					.should.be.rejectedWith(BlError, /order.placed is set but delivery is undefined/);
+			});
+			
+			it('should reject with error if payment is empty', () => {
+				testOrder.payments = [];
+				
+				return orderValidator.validate(testOrder)
+					.should.be.rejectedWith(BlError, /order.placed is set but order.payments is empty or undefined/);
+			});
+			
+			
+			it('should reject with error if delivery is not found', () => {
+				testOrder.delivery = 'notFoundDelivery';
+				
+				return orderValidator.validate(testOrder)
+					.should.be.rejectedWith(BlError, /order.placed is set but delivery was not found/);
+			});
+			
+			it('should reject with error if delivery.order is not equal to order.id', () => {
+				testDelivery.order = 'notAvalidOrder';
+				
+				return orderValidator.validate(testOrder)
+					.should.be.rejectedWith(BlError, /order.id is not equal to delivery.order/);
+			});
+			
+			it('should reject with error if payments is not found', () => {
+				testOrder.payments = ['notFound'];
+				
+				return orderValidator.validate(testOrder)
+					.should.be.rejectedWith(BlError, /order.payments is not found/);
+			});
+			
+			it('should reject with error if payment.confirmed is false', () => {
+				testPayment.confirmed = false;
+				
+				return orderValidator.validate(testOrder)
+					.should.be.rejectedWith(BlError, /payment is not confirmed/);
+			});
+			
+			it('should reject with error if total amount in payments is not equal to order.amount', () => {
+				testPayment.amount = 0;
+				
+				return orderValidator.validate(testOrder)
+					.should.be.rejectedWith(BlError, /total amount of payments is not equal to order.amount/);
+			});
+			
+			it('should reject with error if total amount in order.orderItems + delivery.amount is not equal to order.amount', () => {
+				testDelivery.amount = 100;
+				
+				return orderValidator.validate(testOrder)
+					.should.be.rejectedWith(BlError, /total of order.orderItems amount \+ delivery.amount is not equal to order.amount/);
+			});
+			
 		});
 		
-		it('should throw error when orderItems is empty', () => {
-			testOrder.orderItems = [];
-			
-			return orderValidator.validate(testOrder)
-				.should.be.rejectedWith(BlError);
-		});
+		
 		
 		
 		
