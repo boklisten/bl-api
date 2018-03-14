@@ -44,9 +44,14 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 				.skip(dbQuery.getSkipFilter())
 				.sort(dbQuery.getSortFilter())
 				.exec((error, docs) => {
-		    		if (error || docs=== null) {
+		    		if (error || docs === null) {
 		    			return reject(this.handleError(new BlError(`could not find document by the provided query`), error));
 					}
+					
+					if (docs.length <= 0) {
+		    			return reject(new BlError('not found').code(702));
+					}
+					
 					resolve(docs)
 		    });
 		});
