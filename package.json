@@ -11,7 +11,7 @@
     "release": "standard-version && grunt pkg",
     "pretest": "tsc",
     "test": "mocha -r ts-node/register \"src/**/*.spec.ts\" --reporter min --exit",
-    "testwatch": "mocha -r ts-node/register --watch \"src/**/*.spec.ts\" --reporter min --watch-extensions ts \"./src/**/*.spec.ts\""
+    "testwatch": "mocha -r ts-node/register --reporter min --watch --watch-extensions ts \"./src/**/*.spec.ts\""
   },
   "author": "holskil",
   "license": "ISC",

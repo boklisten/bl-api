@@ -9,12 +9,13 @@ import {itemSchema} from "../../../item/item.schema";
 import {branchSchema} from "../../../branch/branch.schema";
 import {deliverySchema} from "../../../delivery/delivery.schema";
 import {paymentSchema} from "../../../payment/payment.schema";
+import {OrderPlacedValidator} from "./order-placed-validator/order-placed-validator";
 
 type OiAttached = {orderItem: OrderItem, item: Item, branch: Branch};
 
 export class OrderValidator {
-	private customerItemValidator: CustomerItemValidator;
 	private priceValicator: PriceValidator;
+	private orderPlacedValidator: OrderPlacedValidator;
 	private branchValidator: BranchValidator;
 	private itemValidator: ItemValidator;
 	private itemStorage: BlDocumentStorage<Item>;
@@ -30,7 +31,8 @@ export class OrderValidator {
 		this.deliveryStorage = (deliveryStorage) ? deliveryStorage : new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
 		this.paymentStorage = (paymentStorage) ? paymentStorage : new BlDocumentStorage('payments', paymentSchema);
 		
-		this.customerItemValidator = new CustomerItemValidator();
+		
+		this.orderPlacedValidator = new OrderPlacedValidator(deliveryStorage, paymentStorage);
 		this.priceValicator = new PriceValidator();
 		this.branchValidator = new BranchValidator();
 		this.itemValidator = new ItemValidator();
@@ -59,7 +61,7 @@ export class OrderValidator {
 			try {
 				this.validatePrice(order, oiarr);
 				this.validateOrderItems(oiarr);
-				await this.validateOrderPlaced(order);
+				await this.orderPlacedValidator.validate(order);
 				
 			} catch (err) {
 				if (err instanceof BlError) return Promise.reject(err);
@@ -68,65 +70,8 @@ export class OrderValidator {
 			
 			
 			
-			Promise.resolve(true);
+			return Promise.resolve(true); // the order is validated
 	}
-	
-	private validateOrderPlaced(order: Order): Promise<boolean> {
-		return new Promise((resolve, reject) => {
-			
-			if (!order.placed) {
-				resolve(true);
-			}
-			
-			if (!order.delivery || order.delivery.length <= 0) {
-				return reject(new BlError('order.placed is set but delivery is undefined'));
-			}
-			
-			if (!order.payments || order.payments.length <= 0 || !order.payments[0]) {
-				return reject(new BlError('order.placed is set but order.payments is empty or undefined'));
-			}
-			
-			this.deliveryStorage.get(order.delivery).then((delivery: Delivery) => {
-				
-				if (delivery.order !== order.id) {
-					reject(new BlError('order.id is not equal to delivery.order'));
-				}
-				
-				let orderItemAmount = 0;
-				for (let orderItem of order.orderItems) {
-					orderItemAmount += orderItem.amount;
-				}
-				
-				if ((orderItemAmount + delivery.amount) !== order.amount) {
-					reject(new BlError('total of order.orderItems amount + delivery.amount is not equal to order.amount'));
-				}
-				
-				this.paymentStorage.getMany(order.payments).then((payments: Payment[]) => {
-					
-					let paymentTotal = 0;
-					for (let payment of payments) {
-						if (!payment.confirmed) {
-							return reject(new BlError('payment is not confirmed').store('paymentId', payment.id));
-						}
-						paymentTotal += payment.amount;
-					}
-					
-					if (paymentTotal != order.amount) {
-						return reject(new BlError('total amount of payments is not equal to order.amount'));
-					}
-					
-				
-				}).catch((blError: BlError) => {
-					reject(new BlError('order.payments is not found').code(702).add(blError));
-				});
-				
-			
-			}).catch((blError: BlError) => {
-				reject(new BlError('order.placed is set but delivery was not found').add(blError));
-			});
-		});
-	}
-	
 	
 	private validatePrice(order: Order, oiarr: OiAttached[]): boolean {
 		for (let oi of oiarr) {
