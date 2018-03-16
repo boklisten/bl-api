@@ -42,6 +42,7 @@ describe('OrderHook', () => {
 		
 		testOrder = {
 			id: 'order1',
+			customer: 'customer1',
 			amount: 400,
 			orderItems: [
 				{
@@ -58,7 +59,6 @@ describe('OrderHook', () => {
 					type: "rent",
 					amount: 100,
 					item: 'i1',
-					customerItem: 'ci1',
 					title: 'signatur',
 					rentRate: 0,
 					taxRate: 0,

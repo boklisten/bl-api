@@ -30,7 +30,7 @@ describe('OrderPlacedValidator', () => {
 						type: "buy",
 						amount: 300,
 						item: 'i1',
-						title: 'signatur',
+						title: 'Signatur 3',
 						rentRate: 0,
 						taxRate: 0,
 						taxAmount: 0,
@@ -40,29 +40,18 @@ describe('OrderPlacedValidator', () => {
 						type: "rent",
 						amount: 150,
 						item: 'i2',
-						customerItem: 'ci2',
-						title: 'signatur',
+						title: 'Signatur 4',
 						rentRate: 0,
 						taxRate: 0,
 						taxAmount: 0,
 						unitPrice: 300,
-						rentInfo: {
-							oneSemester: true,
-							twoSemesters: false
-						}
 					}
 				],
+				customer: 'customer1',
 				delivery: 'delivery1',
 				branch: 'b1',
 				byCustomer: true,
-				payments: ['payment1'],
-				comments: [],
-				active: false,
-				user: {
-					id: 'u1'
-				},
-				lastUpdated: new Date(),
-				creationTime: new Date()
+				payments: ['payment1']
 			};
 		});
 		

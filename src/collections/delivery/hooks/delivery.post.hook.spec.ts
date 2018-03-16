@@ -48,6 +48,7 @@ describe('DeliveryPostHook', () => {
 		
 		testOrder = {
 			id: 'order1',
+			customer: 'customer1',
 			amount: 100,
 			byCustomer: true,
 			branch: 'branch1',

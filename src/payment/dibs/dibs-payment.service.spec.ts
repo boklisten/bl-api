@@ -18,7 +18,7 @@ describe('DibsPaymentService', () => {
 		testOrder = {
 			id: 'o1',
 			amount: 100,
-			application: 'bl-web',
+			customer: '',
 			byCustomer: true,
 			branch: 'b1',
 			orderItems: [
@@ -30,8 +30,7 @@ describe('DibsPaymentService', () => {
 					rentRate: 0,
 					taxRate: 0,
 					taxAmount: 0,
-					item: 'i1',
-					customerItem: 'ci1'
+					item: 'i1'
 				}
 			],
 			payments: [],
