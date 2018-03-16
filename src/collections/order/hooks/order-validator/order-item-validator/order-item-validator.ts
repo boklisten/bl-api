@@ -2,26 +2,26 @@
 
 import {Order, OrderItem, BlError} from 'bl-model';
 import {isNullOrUndefined, isNumber} from "util";
+import {OrderItemFieldValidator} from "./order-item-field-validator/order-item-field-validator";
 
 export class OrderItemValidator {
+	private orderItemFieldValidator: OrderItemFieldValidator;
 	
-	constructor() {
-	
+	constructor(orderItemFieldValidator?: OrderItemFieldValidator) {
+		this.orderItemFieldValidator = (orderItemFieldValidator) ? orderItemFieldValidator : new OrderItemFieldValidator();
 	}
 	
 	
 	public async validate(order: Order): Promise<boolean> {
-		
-		for (let orderItem of order.orderItems) {
-			try {
-				this.validateFields(orderItem);
-				this.validateAmount(order);
-			} catch (e) {
-				if (e instanceof BlError) {
-					return Promise.reject(e);
-				}
-				return Promise.reject(new BlError('unknown error, orderItem could not be validated').store('error', e));
+	
+		try {
+			await this.orderItemFieldValidator.validate(order);
+			this.validateAmount(order);
+		} catch (e) {
+			if (e instanceof BlError) {
+				return Promise.reject(e);
 			}
+			return Promise.reject(new BlError('unknown error, orderItem could not be validated').store('error', e));
 		}
 	}
 	
@@ -38,39 +38,4 @@ export class OrderItemValidator {
 		
 		return true
 	}
-	
-	private validateFields(orderItem: OrderItem): boolean {
-		if (!orderItem.item) {
-			throw new BlError('orderItem.item is not defined');
-		}
-		
-		if (!orderItem.title) {
-			throw new BlError('orderItem.title is not defined');
-		}
-		
-		if (!isNumber(orderItem.amount)) {
-			throw new BlError('orderItem.amount is not defined');
-		}
-		
-		if (!isNumber(orderItem.unitPrice)) {
-			throw new BlError('orderItem.unitPrice is not defined');
-		}
-		
-		if (!isNumber(orderItem.taxAmount)) {
-			throw new BlError('orderItem.taxAmount is not defined');
-		}
-		
-		if (!isNumber(orderItem.taxRate)) {
-			throw new BlError('orderItem.taxRate is not defined');
-		}
-		
-		if (isNullOrUndefined(orderItem.type)) {
-			throw new BlError('orderItem.type is not defined');
-		}
-		
-		return true;
-	}
-	
-	
-	
 }

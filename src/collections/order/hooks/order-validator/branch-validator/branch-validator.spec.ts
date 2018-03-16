@@ -51,33 +51,4 @@ describe('BranchValidator', () => {
 			creationTime: new Date()
 		}
 	});
-	
-	describe('#validateBranchInOrder()', () => {
-		
-		it('should throw error if branch.active = false', () => {
-			testBranch.active = false;
-			
-			expect(() => {
-				branchValidator.validateBranchInOrderItem(testBranch, testOrderItem);
-			}).to.throw(BlError, /branch.active is false/);
-			
-		});
-		
-		it('should return true when using valid orderItem and valid branch', () => {
-			expect(branchValidator.validateBranchInOrderItem(testBranch, testOrderItem))
-				.to.be.true;
-		});
-		
-		context('when orderItem.type = rent', () => {
-			it('should throw error if branch.payment.branchResponsible is true but orderItem.amount is over 0', () => {
-				testBranch.payment.branchResponsible = true;
-				testOrderItem.amount = 300;
-				testOrderItem.type = 'rent';
-				
-				expect(() => {
-					branchValidator.validateBranchInOrderItem(testBranch, testOrderItem);
-				}).to.throw(BlError, /amount is over 0 when branch.payment.branchResponsible is true/);
-			});
-		});
-	});
 });
