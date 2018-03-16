@@ -1,55 +1,24 @@
 
 
-import {Hook} from "../../../hook/hook";
-import {BlDocument, BlError, Order, Payment} from "bl-model";
-import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
-import {paymentSchema} from "../payment.schema";
-import {DibsPaymentService} from "../../../payment/dibs/dibs-payment.service";
-import {DibsEasyOrder} from "../../../payment/dibs/dibs-easy-order/dibs-easy-order";
-import {SystemUser} from "../../../auth/permission/permission.service";
-import {orderSchema} from "../../order/order.schema";
 
-export class PaymentPostHook extends Hook {
-	
+import {DibsPaymentService} from "../../../../payment/dibs/dibs-payment.service";
+import {DibsEasyOrder} from "../../../../payment/dibs/dibs-easy-order/dibs-easy-order";
+import {BlError, Payment, Order} from 'bl-model';
+import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
+import {paymentSchema} from "../../payment.schema";
+import {orderSchema} from "../../../order/order.schema";
+import {SystemUser} from "../../../../auth/permission/permission.service";
+
+class PaymentDibsHandler {
 	private paymentStorage: BlDocumentStorage<Payment>;
 	private orderStorage: BlDocumentStorage<Order>;
 	
 	constructor(paymentStorage?: BlDocumentStorage<Payment>, orderStorage?: BlDocumentStorage<Order>) {
-		super();
 		this.paymentStorage = (paymentStorage) ? paymentStorage : new BlDocumentStorage('payments', paymentSchema);
 		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage('orders', orderSchema);
 	}
 	
-	public before(): Promise<boolean> {
-		return new Promise((resolve, reject) => {
-			resolve(true);
-		});
-	}
 	
-	public after(ids: string[]): Promise<boolean | BlDocument[]> {
-		return new Promise((resolve, reject) => {
-			if (!ids || ids.length != 1) {
-				reject(new BlError(`length is undefined or not a single id`).store('ids', ids));
-			}
-			this.paymentStorage.get(ids[0]).then((payment: Payment) => {
-				
-				switch (payment.method) {
-					case "dibs":
-						this.dibsPayment(payment).then((updatedPayment: Payment) => {
-							resolve([updatedPayment]);
-						}).catch((blError: BlError) => {
-							reject(blError);
-						});
-						break;
-					default:
-						break;
-				}
-			}).catch((blError: BlError) => {
-				reject(new BlError('hook failed').add(blError));
-			});
-			
-		});
-	}
 	
 	private dibsPayment(payment: Payment) {
 		return new Promise((resolve, reject) => {

@@ -14,7 +14,7 @@ import {OrderPlacedValidator} from "./order-placed-validator/order-placed-valida
 type OiAttached = {orderItem: OrderItem, item: Item, branch: Branch};
 
 export class OrderValidator {
-	private priceValicator: PriceValidator;
+	private priceValidator: PriceValidator;
 	private orderPlacedValidator: OrderPlacedValidator;
 	private branchValidator: BranchValidator;
 	private itemValidator: ItemValidator;
@@ -33,51 +33,51 @@ export class OrderValidator {
 		
 		
 		this.orderPlacedValidator = new OrderPlacedValidator(deliveryStorage, paymentStorage);
-		this.priceValicator = new PriceValidator();
+		this.priceValidator = new PriceValidator();
 		this.branchValidator = new BranchValidator();
 		this.itemValidator = new ItemValidator();
 	}
 	
 	public async validate(order: Order): Promise<boolean> {
-			let oiarr: OiAttached[] = [];
-			
-			let branch: Branch;
-			let items: Item[];
-			
-			if (!order.orderItems || order.orderItems.length <= 0) return Promise.reject(new BlError('order.orderItems is empty or undefined'));
-			
-			try {
-				branch = await this.getBranch(order.branch);
-				
-				items = await this.getItems(order.orderItems);
-				
-				oiarr = this.attachToOrderItems(order.orderItems, branch, items);
-				
-			} catch (err) {
-				if (err instanceof BlError) return Promise.reject(err);
-				return Promise.reject(new BlError('could not get branch, customerItems or items'));
+		
+		
+		try {
+			this.validateFields(order);
+			this.validateOrderItems(order);
+			this.validatePayment(order);
+		} catch (e) {
+			if (e instanceof BlError) {
+				return Promise.reject(e);
 			}
-			
-			try {
-				this.validatePrice(order, oiarr);
-				this.validateOrderItems(oiarr);
-				await this.orderPlacedValidator.validate(order);
-				
-			} catch (err) {
-				if (err instanceof BlError) return Promise.reject(err);
-				return Promise.reject(new BlError('could not validate order'));
-			}
-			
-			
-			
-			return Promise.resolve(true); // the order is validated
+			return Promise.reject(new BlError('order could not be validated'));
+		}
+	}
+	
+	private validateBranch(order: Order) {
+	
+	}
+	
+	private validateFields(order: Order): boolean {
+		if (!order.amount) {
+			throw new BlError('order.amount is undefined');
+		}
+		
+		if (!order.orderItems || order.orderItems.length <= 0) {
+			throw new BlError('order.orderItems is empty or undefined');
+		}
+		
+		return true;
+	}
+	
+	private validatePayment(order: Order): Promise<boolean> {
+		return Promise.reject(false);
 	}
 	
 	private validatePrice(order: Order, oiarr: OiAttached[]): boolean {
 		for (let oi of oiarr) {
 			try {
-				this.priceValicator.validateOrder(order);
-				this.priceValicator.validateOrderItem(oi.orderItem, oi.item, oi.branch);
+				this.priceValidator.validateOrder(order);
+				this.priceValidator.validateOrderItem(oi.orderItem, oi.item, oi.branch);
 				this.branchValidator.validateBranchInOrderItem(oi.branch, oi.orderItem);
 			} catch (err) {
 				if (err instanceof BlError) throw err;
@@ -88,15 +88,13 @@ export class OrderValidator {
 		return true;
 	}
 	
-	private validateOrderItems(oiarr: OiAttached[]) {
-		for (let oi of oiarr) {
-			try {
-				this.branchValidator.validateBranchInOrderItem(oi.branch, oi.orderItem);
-				this.itemValidator.validateItemInOrder(oi.item, oi.orderItem);
-			} catch (err) {
-				if (err instanceof BlError) throw err;
-				throw new BlError('could not validate the orderItems');
-			}
+	private validateOrderItems(order: Order) {
+		try {
+			//this.branchValidator.validateBranchInOrderItem(oi.branch, oi.orderItem);
+			//this.itemValidator.validateItemInOrder(oi.item, oi.orderItem);
+		} catch (err) {
+			if (err instanceof BlError) throw err;
+			throw new BlError('could not validate the orderItems');
 		}
 	}
 	

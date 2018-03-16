@@ -56,7 +56,7 @@ export class Server {
 			origin: whitelist,
 			methods: allowedMethods,
 			allowedHeaders: allowedHeaders,
-			preflightContinue: true,
+			preflightContinue: false,
 			optionsSuccessStatus: 204
 		};
 		

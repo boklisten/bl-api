@@ -5,7 +5,7 @@ import {DibsEasyItem} from "./dibs-easy-item/dibs-easy-item";
 import {DibsEasyOrder} from "./dibs-easy-order/dibs-easy-order";
 import {HttpHandler} from "../../http/http.handler";
 
-export class DibsPayment {
+export class DibsPaymentService {
 	
 	constructor() {
 	

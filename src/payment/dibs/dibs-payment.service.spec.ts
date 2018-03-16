@@ -3,13 +3,13 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {BlError, Order} from "bl-model";
-import {DibsPayment} from "./dibs-payment";
+import {DibsPaymentService} from "./dibs-payment.service";
 import {DibsEasyOrder} from "./dibs-easy-order/dibs-easy-order";
 
 chai.use(chaiAsPromised);
 
-describe('DibsPayment', () => {
-	const dibsPayment: DibsPayment = new DibsPayment();
+describe('DibsPaymentService', () => {
+	const dibsPayment: DibsPaymentService = new DibsPaymentService();
 	let testOrder: Order;
 	let testDibsEasyOrder: DibsEasyOrder;
 	
