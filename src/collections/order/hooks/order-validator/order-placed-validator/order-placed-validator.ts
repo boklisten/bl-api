@@ -4,6 +4,7 @@ import {Order, Delivery, Payment, BlError} from 'bl-model';
 import {BlDocumentStorage} from "../../../../../storage/blDocumentStorage";
 import {deliverySchema} from "../../../../delivery/delivery.schema";
 import {paymentSchema} from "../../../../payment/payment.schema";
+import {isNullOrUndefined} from "util";
 
 export class OrderPlacedValidator {
 	private deliveryStorage: BlDocumentStorage<Delivery>;
@@ -20,11 +21,11 @@ export class OrderPlacedValidator {
 				resolve(true);
 			}
 			
-			if (!order.delivery || order.delivery.length <= 0) {
+			if (isNullOrUndefined(order.delivery)) {
 				return reject(new BlError('order.placed is set but delivery is undefined'));
 			}
 			
-			if (!order.payments || order.payments.length <= 0 || !order.payments[0]) {
+			if (isNullOrUndefined(order.payments) || order.payments.length <= 0) {
 				return reject(new BlError('order.placed is set but order.payments is empty or undefined'));
 			}
 			
