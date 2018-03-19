@@ -41,7 +41,6 @@ describe('ItemValidator', () => {
 			unitPrice: 100,
 			taxRate: 0,
 			taxAmount: 0,
-			rentRate: 0,
 			amount: 100,
 			type: "rent"
 		};

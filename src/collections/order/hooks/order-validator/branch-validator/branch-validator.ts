@@ -25,7 +25,6 @@ export class BranchValidator {
 	}
 	
 	private validateOrderItemTypeRent(branch: Branch, orderItem: OrderItem): boolean {
-		if (branch.payment.branchResponsible && orderItem.amount > 0) throw new BlError('orderItem.amount is over 0 when branch.payment.branchResponsible is true');
 		return true;
 	}
 }

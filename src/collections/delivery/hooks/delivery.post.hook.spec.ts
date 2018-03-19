@@ -60,7 +60,6 @@ describe('DeliveryPostHook', () => {
 					unitPrice: 100,
 					taxAmount: 0,
 					taxRate: 0,
-					rentRate: 0,
 					type: "buy"
 				}
 			],

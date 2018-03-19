@@ -31,7 +31,6 @@ describe('OrderPlacedValidator', () => {
 						amount: 300,
 						item: 'i1',
 						title: 'Signatur 3',
-						rentRate: 0,
 						taxRate: 0,
 						taxAmount: 0,
 						unitPrice: 300
@@ -41,7 +40,6 @@ describe('OrderPlacedValidator', () => {
 						amount: 150,
 						item: 'i2',
 						title: 'Signatur 4',
-						rentRate: 0,
 						taxRate: 0,
 						taxAmount: 0,
 						unitPrice: 300,

@@ -50,7 +50,6 @@ describe('OrderHook', () => {
 					amount: 300,
 					item: 'i1',
 					title: 'signatur',
-					rentRate: 0,
 					taxRate: 0,
 					taxAmount: 0,
 					unitPrice: 300
@@ -60,7 +59,6 @@ describe('OrderHook', () => {
 					amount: 100,
 					item: 'i1',
 					title: 'signatur',
-					rentRate: 0,
 					taxRate: 0,
 					taxAmount: 0,
 					unitPrice: 300

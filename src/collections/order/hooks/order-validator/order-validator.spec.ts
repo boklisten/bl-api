@@ -29,30 +29,29 @@ describe('OrderValidator', () => {
 		return new Promise((resolve, reject) => {
 			if (id === 'b1') {
 				const branch: Branch = {
-						id: 'b1',
-						name: 'testBranch',
-						type: 'school',
-						desc: '',
-						root: true,
-						childBranches: [''],
-						items: [],
-						openingHours: [],
-						itemCategories: [],
-						payment: {
-							branchResponsible: false,
-							rentPricePercentage: {
-								base: 0.70,
-								oneSemester: 0.5,
-								twoSemesters: 0.5,
-								buyout: 100
-							},
-							extendPrice: 100,
-							acceptedMethods: []
+					id: 'branch1',
+					name: 'Sonans',
+					paymentInfo: {
+						responsible: false,
+						rentPeriods: [
+							{
+								type: "semester",
+								maxNumberOfPeriods: 2,
+								percentage: 0.5
+							}
+						],
+						extendPeriods: [
+							{
+								type: "semester",
+								price: 100,
+								maxNumberOfPeriods: 1
+							}
+						],
+						buyout: {
+							percentage: 0.50
 						},
-						comments: [],
-						active: true,
-						lastUpdated: new Date(),
-						creationTime: new Date()
+						acceptedMethods: ['card']
+					}
 				};
 				resolve(branch);
 			} else {
@@ -108,7 +107,6 @@ describe('OrderValidator', () => {
 					unitPrice: 600,
 					taxAmount: 0,
 					taxRate: 0,
-					rentRate: 0.5,
 					type: 'rent',
 					info: {
 						from: new Date(),

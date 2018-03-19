@@ -27,7 +27,6 @@ describe('DibsPaymentService', () => {
 					title: "Signatur 3",
 					amount: 100,
 					unitPrice: 100,
-					rentRate: 0,
 					taxRate: 0,
 					taxAmount: 0,
 					item: 'i1'
@@ -134,7 +133,6 @@ describe('DibsPaymentService', () => {
 			it('should have grossTotalAmount of 15000', () => {
 				testOrder.orderItems[0].amount = 150;
 				testOrder.orderItems[0].unitPrice = 150;
-				testOrder.orderItems[0].rentRate = 0;
 				testOrder.amount = 150;
 				let deo = dibsPayment.orderToDibsEasyOrder(testOrder);
 				

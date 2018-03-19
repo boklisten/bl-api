@@ -25,7 +25,6 @@ describe('OrderItemFieldValidator', () => {
 					unitPrice: 600,
 					taxAmount: 0,
 					taxRate: 0,
-					rentRate: 0.5,
 					type: 'rent',
 					info: {
 						from: new Date(),

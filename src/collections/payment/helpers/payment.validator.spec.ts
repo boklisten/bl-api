@@ -34,27 +34,30 @@ describe('PaymentValidator', () => {
 			id: 'branch1',
 			name: 'testBranch',
 			type: 'school',
-			desc: '',
 			root: true,
-			childBranches: [''],
 			items: [],
 			openingHours: [],
-			payment: {
-				branchResponsible: false,
-				rentPricePercentage: {
-					base: 1.1,
-					oneSemester: 1.1,
-					twoSemesters: 1.2,
-					buyout: 100
+			paymentInfo: {
+				responsible: false,
+				rentPeriods: [
+					{
+						type: "semester",
+						maxNumberOfPeriods: 2,
+						percentage: 0.5
+					}
+				],
+				extendPeriods: [
+					{
+						type: "semester",
+						price: 100,
+						maxNumberOfPeriods: 1
+					}
+				],
+				buyout: {
+					percentage: 0.50
 				},
-				extendPrice: 100,
-				acceptedMethods: []
-			},
-			comments: [],
-			itemCategories: [],
-			active: true,
-			lastUpdated: new Date(),
-			creationTime: new Date()
+				acceptedMethods: ['card']
+			}
 		}
 	});
 	
