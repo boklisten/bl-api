@@ -1,7 +1,6 @@
 
 
 import {BlError, Item, OrderItem, Branch} from 'bl-model';
-import {OrderItemFieldValidator} from "../order-item-field-validator/order-item-field-validator";
 import {BlDocumentStorage} from "../../../../../../storage/blDocumentStorage";
 import {error, isNullOrUndefined} from "util";
 import {PriceService} from "../../../../../../price/price.service";

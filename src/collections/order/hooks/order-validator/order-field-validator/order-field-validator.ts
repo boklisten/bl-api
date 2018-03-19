@@ -2,7 +2,7 @@
 import {Order, OrderItem, BlError} from 'bl-model';
 import {isNullOrUndefined, isNumber} from "util";
 
-export class OrderItemFieldValidator {
+export class OrderFieldValidator {
 	
 	constructor() {
 	

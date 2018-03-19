@@ -6,7 +6,6 @@ import * as sinon from 'sinon';
 import {BlError, Item, Branch, Order} from 'bl-model';
 import {PriceService} from "../../../../../../price/price.service";
 import {BlDocumentStorage} from "../../../../../../storage/blDocumentStorage";
-import {OrderItemFieldValidator} from "../order-item-field-validator/order-item-field-validator";
 import {OrderItemRentValidator} from "./order-item-rent-validator";
 
 chai.use(chaiAsPromised);

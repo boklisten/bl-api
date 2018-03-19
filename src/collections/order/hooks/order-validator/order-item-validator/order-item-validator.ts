@@ -2,39 +2,42 @@
 
 import {Order, OrderItem, BlError, Branch, Item} from 'bl-model';
 import {isNullOrUndefined, isNumber} from "util";
-import {OrderItemFieldValidator} from "./order-item-field-validator/order-item-field-validator";
 import {OrderItemExtendValidator} from "./order-item-extend-validator/order-item-extend-validator";
 import {BlDocumentStorage} from "../../../../../storage/blDocumentStorage";
 import {branchSchema} from "../../../../branch/branch.schema";
 import {itemSchema} from "../../../../item/item.schema";
 import {OrderItemBuyValidator} from "./order-item-buy-validator/order-item-buy-validator";
 import {OrderItemRentValidator} from "./order-item-rent-validator/order-item-rent-validator";
+import {OrderFieldValidator} from "../order-field-validator/order-field-validator";
 
 export class OrderItemValidator {
-	private orderItemFieldValidator: OrderItemFieldValidator;
+	private orderItemFieldValidator: OrderFieldValidator;
 	private orderItemExtendValidator: OrderItemExtendValidator;
 	private orderItemBuyValidator: OrderItemBuyValidator;
 	private orderItemRentValidator: OrderItemRentValidator;
 	private branchStorage: BlDocumentStorage<Branch>;
 	private itemStorage: BlDocumentStorage<Item>;
 	
-	constructor(orderItemFieldValidator?: OrderItemFieldValidator) {
-		this.orderItemFieldValidator = (orderItemFieldValidator) ? orderItemFieldValidator : new OrderItemFieldValidator();
-		this.orderItemExtendValidator = new OrderItemExtendValidator();
-		this.orderItemBuyValidator = new OrderItemBuyValidator();
-		this.orderItemRentValidator = new OrderItemRentValidator();
-		this.branchStorage = new BlDocumentStorage('branches', branchSchema);
-		this.itemStorage = new BlDocumentStorage('items', itemSchema);
+	constructor(branchStorage?: BlDocumentStorage<Branch>, itemStorage?: BlDocumentStorage<Item>, orderItemFieldValidator?: OrderFieldValidator,
+				orderItemRentValidator?: OrderItemRentValidator, orderItemBuyValidator?: OrderItemBuyValidator,
+				orderItemExtendValidator?: OrderItemExtendValidator) {
+		
+		this.branchStorage = (branchStorage) ? branchStorage : new BlDocumentStorage('branches', branchSchema);
+		this.itemStorage = (itemStorage) ? itemStorage : new BlDocumentStorage('items', itemSchema);
+		
+		this.orderItemFieldValidator = (orderItemFieldValidator) ? orderItemFieldValidator : new OrderFieldValidator();
+		this.orderItemRentValidator = (orderItemRentValidator) ? orderItemRentValidator : new OrderItemRentValidator();
+		this.orderItemBuyValidator = (orderItemBuyValidator) ? orderItemBuyValidator : new OrderItemBuyValidator();
+		this.orderItemExtendValidator = (orderItemExtendValidator) ? orderItemExtendValidator : new OrderItemExtendValidator();
 	}
 	
 	
-	public async validate(order: Order): Promise<boolean> {
+	public async validate(branch: Branch, order: Order): Promise<boolean> {
 	
 		try {
 			await this.orderItemFieldValidator.validate(order);
 			this.validateAmount(order);
 			
-			let branch = await this.branchStorage.get(order.id);
 			for (let orderItem of order.orderItems) {
 				let item = await this.itemStorage.get(orderItem.item);
 				await this.validateOrderItemBasedOnType(branch, item, orderItem);

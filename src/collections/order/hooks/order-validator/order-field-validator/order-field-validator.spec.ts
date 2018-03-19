@@ -4,13 +4,13 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 import {BlError, Order} from 'bl-model';
-import {OrderItemFieldValidator} from "./order-item-field-validator";
+import {OrderFieldValidator} from "./order-field-validator";
 
 chai.use(chaiAsPromised);
 
-describe('OrderItemFieldValidator', () => {
+describe('OrderFieldValidator', () => {
 	let testOrder: Order;
-	let orderItemFieldValidator = new OrderItemFieldValidator();
+	let orderItemFieldValidator = new OrderFieldValidator();
 	
 	beforeEach(() => {
 	testOrder = {
