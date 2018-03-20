@@ -84,7 +84,9 @@ describe('OrderPlacedValidator', () => {
 				testDelivery = {
 					id: 'delivery1',
 					method: 'branch',
-					info: {},
+					info: {
+						branch: 'branch1'
+					},
 					order: 'order1',
 					amount: 0
 				};

@@ -4,7 +4,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import {expect} from 'chai';
 import {OrderHook} from "./order.hook";
-import {BlError, Branch, Order, UserDetail} from "bl-model";
+import {BlError, Branch, Order, UserDetail, AccessToken} from "bl-model";
 import {OrderValidator} from "./order-validator/order-validator";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {orderSchema} from "../order.schema";
@@ -12,7 +12,6 @@ import {userDetailSchema} from "../../user-detail/user-detail.schema";
 import {OrderHookBefore} from "./order-hook-before";
 
 chai.use(chaiAsPromised);
-
 
 describe('OrderHook', () => {
 	const orderValidator: OrderValidator = new OrderValidator();
@@ -24,8 +23,20 @@ describe('OrderHook', () => {
 	
 	let testOrder: Order;
 	let testUserDetails: UserDetail;
+	let testAccessToken: AccessToken
 	
 	beforeEach(() => {
+		testAccessToken = {
+			iss: 'boklisten.co',
+			aud: 'boklisten.co',
+			iat: 123,
+			exp: 123,
+			sub: 'user1',
+			username: 'b@a.com',
+			permission: "customer",
+			details: 'user1'
+		};
+		
 		testUserDetails = {
 			id: 'user1',
 			name: 'Olly Molly',
@@ -109,15 +120,15 @@ describe('OrderHook', () => {
 	});
 
 	describe('#after()', () => {
-		it('should reject if userId is empty or undefined', (done) => {
+		it('should reject if accessToken is empty or undefined', (done) => {
 			orderHook.after(['abc']).catch((blError: BlError) => {
-				expect(blError.getMsg()).to.contain('userId was not specified when trying to process order');
+				expect(blError.getMsg()).to.contain('accessToken was not specified when trying to process order');
 				done();
 			});
 		});
 		
 		it('should reject if orderIds includes more than one id', () => {
-			return expect(orderHook.after(['order1', 'order2'], 'user1'))
+			return expect(orderHook.after(['order1', 'order2'], testAccessToken))
 				.to.eventually.be.rejectedWith(BlError, /orderIds included more than one id/);
 		});
 		
@@ -133,7 +144,7 @@ describe('OrderHook', () => {
 		context('when orderValidator rejects', () => {
 			it('should reject if orderValidator.validate rejected with error', () => {
 				testOrder.id = 'orderNotValid';
-				return expect(orderHook.after(['order1'], 'user1'))
+				return expect(orderHook.after(['order1'], testAccessToken))
 					.to.eventually.be.rejectedWith(BlError, /not a valid order/);
 			});
 		});
@@ -142,7 +153,7 @@ describe('OrderHook', () => {
 			it('should resolve with testOrder when orderValidator.validate is resolved', (done) => {
 				testOrder.id = 'orderValid';
 				
-				orderHook.after(['orderValid'], 'user1').then((orders: Order[]) => {
+				orderHook.after(['orderValid'], testAccessToken).then((orders: Order[]) => {
 					expect(orders.length).to.be.eql(1);
 					expect(orders[0]).to.eql(testOrder);
 					done();
@@ -163,7 +174,7 @@ describe('OrderHook', () => {
 				testOrder.id = 'orderValid';
 				testUserDetails.orders = ['orderValid'];
 				
-				orderHook.after(['orderValid'], 'user1').catch((blError: BlError) => {
+				orderHook.after(['orderValid'], testAccessToken).catch((blError: BlError) => {
 					expect(blError.getMsg()).to.contain('the order was already placed');
 					done();
 				});

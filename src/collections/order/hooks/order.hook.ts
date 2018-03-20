@@ -1,12 +1,13 @@
 
 
 import {Hook} from "../../../hook/hook";
-import {BlError, Order, UserDetail, Payment, Delivery, Branch, Item} from "bl-model";
+import {BlError, Order, UserDetail, Payment, Delivery, Branch, Item, AccessToken} from "bl-model";
 import {OrderValidator} from "./order-validator/order-validator";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {userDetailSchema} from "../../user-detail/user-detail.schema";
 import {orderSchema} from "../order.schema";
 import {OrderHookBefore} from "./order-hook-before";
+import {isNullOrUndefined} from "util";
 
 export class OrderHook extends Hook {
 	private orderValidator: OrderValidator;
@@ -27,9 +28,9 @@ export class OrderHook extends Hook {
 		return this.orderHookBefore.validate(requestBody);
 	}
 
-	public after(orderIds: string[], userDetailId?: string): Promise<boolean | Order[]> {
-		if (!userDetailId || userDetailId.length <= 0) {
-			return Promise.reject(new BlError('userId was not specified when trying to process order'))
+	public after(orderIds: string[], accessToken?: AccessToken): Promise<boolean | Order[]> {
+		if (isNullOrUndefined(accessToken) || accessToken.sub.length <= 0) {
+			return Promise.reject(new BlError('accessToken was not specified when trying to process order'))
 		}
 		
 		if (!orderIds || orderIds.length <= 0) {
@@ -44,7 +45,7 @@ export class OrderHook extends Hook {
 		
 		return this.orderStorage.get(orderId).then(order => {
 			return this.validateOrder(order).then((validatedOrder: Order) => {
-				return this.updateUserDetailsIfOrderIsPlaced(userDetailId, validatedOrder).then(order => {
+				return this.updateUserDetailsIfOrderIsPlaced(accessToken, validatedOrder).then(order => {
 					return [order];
 				});
 			});
@@ -53,9 +54,9 @@ export class OrderHook extends Hook {
 		});
 	};
 	
-	private updateUserDetailsIfOrderIsPlaced(userDetailId: string, order: Order): Promise<Order> {
+	private updateUserDetailsIfOrderIsPlaced(accessToken: AccessToken, order: Order): Promise<Order> {
 		if (order.placed) {
-			return this.userDetailStorage.get(userDetailId).then((userDetail: UserDetail) => {
+			return this.userDetailStorage.get(accessToken.details).then((userDetail: UserDetail) => {
 				
 				let orderIds = (userDetail.orders) ? userDetail.orders : [];
 				
@@ -73,7 +74,7 @@ export class OrderHook extends Hook {
 					return Promise.reject(new BlError('could not update userDetails with the new orders array').add(userDetailPatchError));
 				});
 			}, (getUserDetailError: BlError) => {
-				return Promise.reject(new BlError(`could not get userDetail "${userDetailId}" when trying to update userDetail`).add(getUserDetailError));
+				return Promise.reject(new BlError(`could not get userDetail "${accessToken.details}" when trying to update userDetail`).add(getUserDetailError));
 			}).catch((blError: BlError) => {
 				return Promise.reject(blError)
 			});

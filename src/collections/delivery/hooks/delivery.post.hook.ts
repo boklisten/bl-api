@@ -1,12 +1,14 @@
 
 
 import {Hook} from "../../../hook/hook";
-import {BlError, Delivery, DeliveryInfoBring, Item, Order} from "bl-model";
+import {BlError, Delivery, DeliveryInfoBring, Item, Order, AccessToken} from "bl-model";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {orderSchema} from "../../order/order.schema";
 import {itemSchema} from "../../item/item.schema";
-import {BringDeliveryService} from "../helpers/bring/bringDelivery.service";
+import {BringDeliveryService} from "../helpers/deliveryBring/bringDelivery.service";
 import {deliverySchema} from "../delivery.schema";
+import {DeliveryValidator} from "../helpers/deliveryValidator/delivery-validator";
+import {DeliveryHandler} from "../helpers/deliveryHandler/delivery-handler";
 
 export class DeliveryPostHook extends Hook {
 	
@@ -14,63 +16,53 @@ export class DeliveryPostHook extends Hook {
 	private deliveryStorage: BlDocumentStorage<Delivery>;
 	private itemStorage: BlDocumentStorage<Item>;
 	private bringDeliveryService: BringDeliveryService;
+	private deliveryValidator: DeliveryValidator;
+	private deliveryHandler: DeliveryHandler;
 	
-	constructor(deliveryStorage?: BlDocumentStorage<Delivery>, orderStorage?: BlDocumentStorage<Order>,
+	constructor(deliveryValidator?: DeliveryValidator, deliveryHandler?: DeliveryHandler, deliveryStorage?: BlDocumentStorage<Delivery>, orderStorage?: BlDocumentStorage<Order>,
 				itemStorage?: BlDocumentStorage<Item>, bringDeliveryService?: BringDeliveryService) {
 		super();
+		this.deliveryValidator = (deliveryValidator) ? deliveryValidator : new DeliveryValidator();
+		this.deliveryHandler = (deliveryHandler) ? deliveryHandler : new DeliveryHandler();
+		
 		this.deliveryStorage = (deliveryStorage) ? deliveryStorage : new BlDocumentStorage('deliveries', deliverySchema);
 		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage('orders', orderSchema);
 		this.itemStorage = (itemStorage) ? itemStorage : new BlDocumentStorage('items', itemSchema);
 		this.bringDeliveryService = (bringDeliveryService) ? bringDeliveryService : new BringDeliveryService();
 	}
 	
-	public after(deliveryIds: string[]): Promise<boolean | Delivery[]> {
+	public after(deliveryIds: string[], accessToken?: AccessToken): Promise<boolean | Delivery[]> {
 		if (!deliveryIds || deliveryIds.length <= 0) {
 			return Promise.reject(new BlError('deliveryIds is empty or undefined'));
 		}
 		
+		if (deliveryIds.length > 1) {
+			return Promise.reject(new BlError('can not add more than one delivery'));
+		}
+		
 		return new Promise((resolve, reject) => {
-			
-			
-			for (let deliveryId of deliveryIds) {
-				this.deliveryStorage.get(deliveryId)
-					.then(delivery  => this.orderStorage.get(delivery.order))
-					.then(order => {
-						let itemIds = [];
+			this.deliveryStorage.get(deliveryIds[0]).then((delivery: Delivery) => {
+				this.orderStorage.get(delivery.order).then((order: Order) => {
+					this.deliveryValidator.validate(delivery, order).then(() => {
 						
-						for (let orderItem of order.orderItems) {
-							itemIds.push(orderItem.item);
-						}
-						
-						this.itemStorage.getMany(itemIds).then((items: Item[]) => {
-							this.getBringDeliveryInfo(deliveryId, items).then((delivery: Delivery) => {
-								resolve([delivery]);
-							}).catch((blError: BlError) => {
-								reject(new BlError('could not get delivery info for bring').add(blError));
-							})
+						this.deliveryHandler.updateOrderBasedOnMethod(delivery, order, accessToken).then(() => {
+							return resolve([delivery]);
 						}).catch((blError: BlError) => {
-							reject(new BlError('not found').code(702).add(blError));
-						})
+							return reject(blError);
+						});
+						
 					}).catch((blError: BlError) => {
-						return reject(new BlError(`not found`).code(702).add(blError));
+						return reject(blError);
 					});
-				
-			}
+				}).catch((blError: BlError) => {
+					return reject(blError);
+				});
+			}).catch((blError: BlError) => {
+				return reject(blError);
+			})
+		
 		});
 		
 	}
-	
-	private getBringDeliveryInfo(deliveryId: string, items: Item[]): Promise<Delivery> {
-		return new Promise((resolve, reject) => {
-		    this.bringDeliveryService.getDeliveryInfoBring("0560", "7070", items).then((deliveryInfoBring: DeliveryInfoBring) => {
-		    	this.deliveryStorage.update(deliveryId, {info: deliveryInfoBring}, {id: 'SYSTEM', permission: "admin"}).then((delivery: Delivery) => {
-		    		resolve(delivery);
-				}).catch((blError: BlError) => {
-		    		reject(blError);
-				})
-			}).catch((blError) => {
-		    	reject(blError);
-			})
-		});
-	}
+
 }
