@@ -11,10 +11,6 @@ export let itemSchema = {
 		type: Schema.Types.String,
 		required: true
 	},
-	categories: {
-		type: [Schema.Types.String],
-		default: []
-	},
 	info: {
 		type: Schema.Types.Mixed,
 		required: true
@@ -26,6 +22,10 @@ export let itemSchema = {
 	price: {
 		type: Schema.Types.Number,
 		required: true
+	},
+	taxRate: {
+		type: Schema.Types.Number,
+		required: true,
 	},
 	sell: {
 		type: Schema.Types.Boolean,
@@ -42,5 +42,9 @@ export let itemSchema = {
 	buy: {
 		type: Schema.Types.Boolean,
 		required: true
+	},
+	categories: {
+		type: [Schema.Types.String],
+		default: []
 	}
 };

@@ -2,31 +2,17 @@
 import {Schema} from 'mongoose';
 
 export let orderSchema = {
-	employee: {
-		type: Schema.Types.ObjectId
-	},
-	customer: {
-		type: Schema.Types.ObjectId
-	},
 	amount: {
 		type: Schema.Types.Number,
-		required: true
-	},
-	application: {
-		type: Schema.Types.String,
-		required: true
-	},
-	byCustomer: {
-		type: Schema.Types.Boolean,
-		required: true
-	},
-	branch: {
-		type: Schema.Types.ObjectId,
 		required: true
 	},
 	orderItems: {
 		type: [
 			{
+				type: {
+					type: Schema.Types.String,
+					required: true
+				},
 				item: {
 					type: Schema.Types.ObjectId,
 					required: true
@@ -39,15 +25,7 @@ export let orderSchema = {
 					type: Schema.Types.Number,
 					required: true
 				},
-				placed: {
-					type: Schema.Types.Boolean,
-					default: false
-				},
 				unitPrice: {
-					type: Schema.Types.Number,
-					required: true
-				},
-				taxAmount: {
 					type: Schema.Types.Number,
 					required: true
 				},
@@ -55,30 +33,39 @@ export let orderSchema = {
 					type: Schema.Types.Number,
 					required: true
 				},
-				type: {
-					type: Schema.Types.String,
+				taxAmount: {
+					type: Schema.Types.Number,
 					required: true
 				},
-				customerItem: {
-					type: Schema.Types.String
+				info: {
+					type: Schema.Types.Mixed,
+					required: false
 				},
 				discount: {
-					type: Schema.Types.Number
-				},
-				rentInfo: {
-					oneSemester: {
-						type: Schema.Types.Boolean
-					},
-					twoSemesters: {
-						type: Schema.Types.Boolean
-					}
-				},
-				lastOrderItem: {
-					type: Schema.Types.Mixed
+					type: Schema.Types.Number,
+					required: false
 				}
 			}
 		],
 		default: []
+	},
+	branch: {
+		type: Schema.Types.ObjectId,
+		required: true
+	},
+	customer: {
+		type: Schema.Types.ObjectId
+	},
+	byCustomer: {
+		type: Schema.Types.Boolean,
+		required: true
+	},
+	employee: {
+		type: Schema.Types.ObjectId
+	},
+	placed: {
+		type: Schema.Types.Boolean,
+		default: false
 	},
 	payments: {
 		type: [Schema.Types.String],
@@ -86,13 +73,5 @@ export let orderSchema = {
 	},
 	delivery: {
 		type: Schema.Types.ObjectId
-	},
-	user: {
-		type: {
-			id: {
-				type: Schema.Types.String
-			}
-		},
-		required: true
 	}
 };

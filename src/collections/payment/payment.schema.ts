@@ -10,17 +10,9 @@ export const paymentSchema = {
 		type: Schema.Types.ObjectId,
 		required: true
 	},
-	info: {
-		type: Schema.Types.Mixed,
-		required: true
-	},
 	amount: {
 		type: Schema.Types.Number,
 		required: true
-	},
-	confirmed: {
-		type: Schema.Types.Boolean,
-		default: false
 	},
 	customer: {
 		type: Schema.Types.ObjectId,
@@ -29,5 +21,24 @@ export const paymentSchema = {
 	branch: {
 		type: Schema.Types.ObjectId,
 		required: true
+	},
+	taxAmount: {
+		type: Schema.Types.Number,
+		required: true
+	},
+	info: {
+		type: Schema.Types.Mixed,
+		required: true
+	},
+	confirmed: {
+		type: Schema.Types.Boolean,
+		default: false
+	},
+	discount: {
+		amount: {
+			type: Schema.Types.Number,
+			required: true
+		},
+		coupon: Schema.Types.String
 	}
 };

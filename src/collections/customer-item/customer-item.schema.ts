@@ -6,13 +6,9 @@ export const customerItemSchema = {
 		type: Schema.Types.ObjectId,
 		required: true
 	},
-	user: {
-		type: {
-			id: {
-				type: Schema.Types.ObjectId
-			}
-		},
-		required: true
+	sharedItem: {
+		type: Schema.Types.ObjectId,
+		required: false
 	},
 	deadline: {
 		type: Schema.Types.Date,
@@ -23,78 +19,65 @@ export const customerItemSchema = {
 	},
 	handout: {
 		type: Schema.Types.Boolean,
-		required: true
+		default: false
 	},
-	handoutTime: {
-		type: Schema.Types.Date
-	},
-	handoutBranch: {
-		type: Schema.Types.ObjectId
-	},
-	handoutEmployee: {
-		type: Schema.Types.ObjectId
+	handoutInfo: {
+		handoutBy: {
+			type: Schema.Types.String,
+			required: true
+		},
+		handoutById: {
+			type: Schema.Types.ObjectId,
+			required: true
+		},
+		handoutEmployee: Schema.Types.ObjectId,
+		time: {
+			type: Schema.Types.Date,
+			default: false
+		}
 	},
 	returned: {
 		type: Schema.Types.Boolean,
 		required: true
 	},
-	returnTime: {
-		type: Schema.Types.Date
+	returnInfo: {
+		returnedTo: {
+			type: Schema.Types.String,
+			required: true
+		},
+		returnedToId: {
+			type: Schema.Types.ObjectId,
+			required: true
+		},
+		returnEmployee: Schema.Types.ObjectId,
+		time: {
+			type: Schema.Types.Date,
+			required: true
+		}
 	},
-	returnBranch: {
-		type: Schema.Types.ObjectId
-	},
-	returnEmployee: {
-		type: Schema.Types.ObjectId
-	},
-	totalAmount: {
-		type: Schema.Types.Number,
-		required: true
-	},
-	orderItems: {
+	orders: {
 		type: [Schema.Types.ObjectId],
 		default: []
 	},
-	deadlineExtends: {
-		type: [
-			{
-				oldDeadline: {
-					type: Schema.Types.Date,
-					required: true
-				},
-				newDeadline: {
-					type: Schema.Types.Date,
-					required: true
-				},
-				orderItem: {
-					type: Schema.Types.ObjectId,
-					required: true
-				},
-				time: {
-					type: Schema.Types.Date,
-					required: true
-				}
+	periodExtends: {
+		type: [{
+			from: {
+				type: Schema.Types.Date,
+				required: true,
+			},
+			to: {
+				type: Schema.Types.Date,
+				required: true
+			},
+			periodType: {
+				type: Schema.Types.String,
+				required: true
+			},
+			time: {
+				type: Schema.Types.Date,
+				required: true
 			}
-		],
+		}],
 		default: []
 	},
-	comments: {
-		type: [
-			{
-				comment: {
-					type: Schema.Types.String,
-					required: true
-				},
-				employee: {
-					type: Schema.Types.ObjectId,
-					required: true
-				},
-				time: {
-					type: Schema.Types.Date,
-					required: true
-				}
-			}
-		],
-		default: []
-	}
 };
