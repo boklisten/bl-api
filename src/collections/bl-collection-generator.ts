@@ -122,48 +122,6 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		});
 	}
 	
-	private generatePatch(endpoint: BlEndpoint) {
-		this.router.patch(this.url + '/:id', (req: Request, res: Response, next: NextFunction) => {
-			passport.authenticate(this.authStrategy, (err, aToken: {accessToken: AccessToken}, info) => {
-				this.validateAuth(endpoint, aToken.accessToken, err, info).then((accessToken: AccessToken) => {
-					
-					if (!req.body || (Object.keys(req.body).length === 0 && req.body.constructor === Object)) {
-						return this.resHandler.sendErrorResponse(res, new BlError('no data provided').code(701));
-					}
-					
-					this.documentStorage.update(req.params.id, req.body, {id: accessToken.sub, permission: accessToken.permission}).then((doc: T) => {
-						return this.resHandler.sendResponse(res, new BlapiResponse([doc]));
-					}).catch((blError: BlError) => {
-						return this.resHandler.sendErrorResponse(res, blError);
-					});
-				
-				});
-			})(req, res, next);
-		});
-		
-		this.printEndpointInfo('patch', '/:id', endpoint);
-	}
-	
-	private generateGetAll(endpoint: BlEndpoint) {
-		this.router.get(this.url, (req: Request, res: Response, next: NextFunction) => {
-			if (endpoint.restriction) { //if user must be logged in to access
-				passport.authenticate(this.authStrategy, (err, aToken: { accessToken: AccessToken}, info) => {
-					this.validateAuth(endpoint, aToken.accessToken, err, info).then((accessToken: AccessToken) => {
-						
-						this.getAll(res);
-						
-					}).catch((blError: BlError) => {
-						return this.resHandler.sendErrorResponse(res, blError);
-					});
-				})(req, res, next);
-			} else { //no restriction all users can get this endpoint
-				this.getAll(res);
-			}
-		});
-		
-		this.printEndpointInfo('get', '', endpoint);
-	}
-	
 	private getAll(res: Response) {
 		this.documentStorage.getAll().then((docs: T[]) => {
 			this.resHandler.sendResponse(res, new BlapiResponse(docs));
@@ -188,6 +146,67 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		this.printEndpointInfo('delete', '/:id', endpoint);
 	}
 	
+	
+	private generateGetAll(endpoint: BlEndpoint) {
+		this.router.get(this.url, (req: Request, res: Response, next: NextFunction) => {
+			if (endpoint.restriction) { //if user must be logged in to access
+				passport.authenticate(this.authStrategy, (err, aToken: { accessToken: AccessToken}, info) => {
+					this.validateAuth(endpoint, aToken.accessToken, err, info).then((accessToken: AccessToken) => {
+						
+						this.getAll(res);
+						
+					}).catch((blError: BlError) => {
+						return this.resHandler.sendErrorResponse(res, blError);
+					});
+				})(req, res, next);
+			} else { //no restriction all users can get this endpoint
+				this.getAll(res);
+			}
+		});
+		
+		this.printEndpointInfo('get', '', endpoint);
+	}
+	
+	private generatePatch(endpoint: BlEndpoint) {
+		this.router.patch(this.url + '/:id', (req: Request, res: Response, next: NextFunction) => {
+			passport.authenticate(this.authStrategy, (err, aToken: {accessToken: AccessToken}, info) => {
+				this.validateAuth(endpoint, aToken.accessToken, err, info).then((accessToken: AccessToken) => {
+					
+					if (!req.body || (Object.keys(req.body).length === 0 && req.body.constructor === Object)) {
+						return this.resHandler.sendErrorResponse(res, new BlError('no data provided').code(701));
+					}
+					
+					
+					endpoint.hook.before(req.body, accessToken, req.params.id).then(() => {
+						this.documentStorage.update(req.params.id, req.body, {id: accessToken.sub, permission: accessToken.permission}).then((doc: T) => {
+							
+							endpoint.hook.after([doc.id]).then((returnVal: boolean | T[] | any) => {
+								
+								if (Object.prototype.toString.call(returnVal) === '[object Array]'){
+									return this.resHandler.sendResponse(res, new BlapiResponse(returnVal));
+								}
+								
+								return this.resHandler.sendResponse(res, new BlapiResponse([doc]));
+							});
+							
+						}).catch((blError: BlError) => {
+							return this.resHandler.sendErrorResponse(res, blError);
+						});
+					}).catch((blError: BlError) => {
+						return this.resHandler.sendErrorResponse(res, new BlError('hook.before failed')
+							.add(blError)
+							.store('body', req.body)
+							.store('url', req.url)
+							.code(701))
+					})
+				
+				});
+			})(req, res, next);
+		});
+		
+		this.printEndpointInfo('patch', '/:id', endpoint);
+	}
+	
 	private generatePost(endpoint: BlEndpoint) {
 		this.router.post(this.url, (req: Request, res: Response, next: NextFunction) => {
 			passport.authenticate(this.authStrategy, (err, aToken: {accessToken: AccessToken}, info) => {
@@ -198,7 +217,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 					}
 					
 					
-					endpoint.hook.before(req.body).then(() => {
+					endpoint.hook.before(req.body, accessToken).then(() => {
 						this.documentStorage.add(req.body, {id: accessToken.sub, permission: accessToken.permission}).then((doc: T) => {
 							
 							endpoint.hook.after([doc.id], accessToken).then((returnVal: boolean | T[] | any) => {

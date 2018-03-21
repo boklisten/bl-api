@@ -20,7 +20,7 @@ export class DeliveryHandler {
 		this.deliveryStorage = (deliveryStorage) ? deliveryStorage : new BlDocumentStorage('deliveries', deliverySchema);
 	}
 	
-	public updateOrderBasedOnMethod(delivery: Delivery, order: Order, accessToken?: AccessToken): Promise<boolean> {
+	public updateOrderBasedOnMethod(delivery: Delivery, order: Order, accessToken?: AccessToken): Promise<Delivery> {
 		
 		switch (delivery.method) {
 			case "branch":
@@ -30,20 +30,20 @@ export class DeliveryHandler {
 		}
 	}
 	
-	private updateOrderWithDeliveryMethodBranch(delivery: Delivery, order: Order, accessToken: AccessToken): Promise<boolean> {
+	private updateOrderWithDeliveryMethodBranch(delivery: Delivery, order: Order, accessToken: AccessToken): Promise<Delivery> {
 		return this.orderStorage.update(order.id, {delivery: delivery.id}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedOrder: Order) => {
-			return Promise.resolve(true);
+			return Promise.resolve(delivery);
 		}).catch((blError: BlError) => {
 			return Promise.reject(blError);
 		});
 	}
 	
-	private updateOrderWithDeliveryMethodBring(delivery: Delivery, order: Order, accessToken: AccessToken): Promise<boolean> {
+	private updateOrderWithDeliveryMethodBring(delivery: Delivery, order: Order, accessToken: AccessToken): Promise<Delivery> {
 		return new Promise((resolve, reject) => {
 		    this.fetchItems(order).then((items: Item[]) => {
 		    	this.getBringDeliveryInfoAndUpdateDelivery(delivery, items).then((updatedDelivery: Delivery) => {
 		    		this.orderStorage.update(order.id, {delivery: updatedDelivery.id}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedOrder: Order) => {
-		    			return resolve(true);
+		    			return resolve(updatedDelivery);
 					}).catch((blError: BlError) => {
 		   				return reject(blError);
 					});
@@ -71,8 +71,8 @@ export class DeliveryHandler {
 	private getBringDeliveryInfoAndUpdateDelivery(delivery: Delivery, items: Item[]): Promise<Delivery> {
 		return new Promise((resolve, reject) => {
 		    this.bringDeliveryService.getDeliveryInfoBring(delivery.info['from'], delivery.info['to'], items).then((deliveryInfoBring: DeliveryInfoBring) => {
-		    	this.deliveryStorage.update(delivery.id, {info: deliveryInfoBring}, {id: 'SYSTEM', permission: "admin"}).then((delivery: Delivery) => {
-		    		resolve(delivery);
+		    	this.deliveryStorage.update(delivery.id, {info: deliveryInfoBring}, {id: 'SYSTEM', permission: "admin"}).then((updatedDelivery: Delivery) => {
+		    		resolve(updatedDelivery);
 				}).catch((blError: BlError) => {
 		    		reject(blError);
 				})

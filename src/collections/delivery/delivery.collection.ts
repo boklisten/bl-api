@@ -5,6 +5,7 @@ import {BlCollection, BlEndpoint} from "../bl-collection";
 import {deliverySchema} from "./delivery.schema";
 import {Schema} from "mongoose";
 import {DeliveryPostHook} from "./hooks/delivery.post.hook";
+import {DeliveryPatchHook} from "./hooks/delivery.patch.hook";
 
 export class DeliveryCollection implements BlCollection {
 	
@@ -34,6 +35,7 @@ export class DeliveryCollection implements BlCollection {
 		},
 		{
 			method: 'patch',
+			hook: new DeliveryPatchHook(),
 			restriction: {
 				permissions: ['customer', "employee", "admin"],
 				restricted: true

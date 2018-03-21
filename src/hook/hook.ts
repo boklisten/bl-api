@@ -7,7 +7,7 @@ export class Hook implements IHook {
 	
 	constructor() {}
 	
-	public before(body?: any, accessToken?: AccessToken): Promise<boolean> {
+	public before(body?: any, accessToken?: AccessToken, id?: string): Promise<boolean> {
 		return Promise.resolve(true);
 	}
 	
