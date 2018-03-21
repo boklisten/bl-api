@@ -136,10 +136,10 @@ describe('OrderPlacedValidator', () => {
 			});
 			
 			it('should reject with error if delivery.order is not equal to order.id', () => {
-				testDelivery.order = 'notAvalidOrder';
+				testDelivery.order = 'notValidOrder';
 				
 				return orderPlacedValidator.validate(testOrder)
-					.should.be.rejectedWith(BlError, /order.id is not equal to delivery.order/);
+					.should.be.rejectedWith(BlError, /order.id "order1" is not equal to delivery.order/);
 			});
 			
 			it('should reject with error if payments is not found', () => {

@@ -114,7 +114,6 @@ describe('OrderPatchHook', () => {
 				testOrder.placed = true;
 				
 				orderPatchHook.after(['order1'], testAccessToken).catch((blError: BlError) => {
-					expect(blError.getMsg()).to.contain('the patch of order could not be validated, order.placed is set to false');
 					expect(orderStorageUpdateStub.calledWith([{placed: false}]));
 					done();
 				});

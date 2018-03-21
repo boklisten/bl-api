@@ -12,11 +12,11 @@ describe('PaymentValidator', () => {
 	const orderStorage =  new BlDocumentStorage<Order>('orders');
 	const paymentStorage = new BlDocumentStorage<Payment>('payments');
 	const branchStorage = new BlDocumentStorage<Branch>('branches')
-	
 	const paymentValidator = new PaymentValidator(orderStorage, paymentStorage);
 	
 	let testBranch: Branch;
 	let testPayment: Payment;
+	let testOrder: Order;
 	
 	beforeEach(() => {
 		testPayment = {
@@ -26,8 +26,17 @@ describe('PaymentValidator', () => {
 			info: {},
 			amount: 100,
 			confirmed: false,
-			customer: 'user1',
+			customer: 'customer1',
 			branch: 'branch1'
+		};
+		
+		testOrder = {
+			id: 'order1',
+			amount: 100,
+			customer: 'customer1',
+			branch: 'branch1',
+			orderItems: [],
+			byCustomer: true
 		};
 		
 		testBranch = {
@@ -64,10 +73,17 @@ describe('PaymentValidator', () => {
 	
 	
 	sinon.stub(branchStorage, 'get').callsFake((id: string) => {
-		if (id !== 'branch1') {
+		if (id !== testBranch.id) {
 			return Promise.reject(new BlError('not found').code(702));
 		}
 		return Promise.resolve(testBranch);
+	});
+	
+	sinon.stub(orderStorage, 'get').callsFake((id: string) => {
+		if (id !== testOrder.id) {
+			return Promise.reject(new BlError('not found').code(702));
+		}
+		return Promise.resolve(testOrder);
 	});
 	
 	describe('#validate()', () => {
@@ -77,9 +93,12 @@ describe('PaymentValidator', () => {
 		});
 		
 		it('should reject if paymentMethod is not valid', () => {
-			return expect(paymentValidator.validate({method: 'something'} as any))
+			testPayment.method = 'something' as any;
+			return expect(paymentValidator.validate(testPayment))
 				.to.eventually.be.rejectedWith(BlError, /paymentMethod "something" not supported/);
 		});
+		
+		/*
 		
 		it('should reject if branch is not found', () => {
 			testPayment.branch = 'notFoundBranch';
@@ -87,8 +106,28 @@ describe('PaymentValidator', () => {
 			return expect(paymentValidator.validate(testPayment))
 				.to.eventually.be.rejectedWith(BlError, /payment.branch "notFoundBranch" not found/);
 		});
+		*/
+		
+		it('should reject if order is not found', () => {
+			testPayment.order = 'orderNotFound';
+			
+			return expect(paymentValidator.validate(testPayment))
+				.to.be.rejectedWith(BlError, /payment.order "orderNotFound" not found/);
+		});
 		
 		context('when paymentMethod is "dibs"', () => {
+			it('should reject if order.amount is not equal to payment.amount', () => {
+				testOrder.amount = 300;
+				testPayment.amount = 100;
+				testPayment.method = 'dibs';
+				
+				return expect(paymentValidator.validate(testPayment))
+					.to.be.rejectedWith(BlError, /order.amount "300" is not equal to payment.amount "100"/);
+			});
+		
+		});
+		
+		context('when paymentMethod is "later"', () => {
 		
 		});
 	});

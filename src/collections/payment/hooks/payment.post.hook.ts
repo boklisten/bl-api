@@ -40,7 +40,6 @@ export class PaymentPostHook extends Hook {
 						}).catch((blError: BlError) => {
 							reject(blError);
 						});
-						break;
 					default:
 						break;
 				}
