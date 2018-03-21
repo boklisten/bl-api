@@ -22,6 +22,7 @@ export const branchSchema = {
 		type: [Schema.Types.ObjectId],
 		default: []
 	},
+	viewableFor: [Schema.Types.String],
 	contactInfo: {
 		phone: {
 			type: Schema.Types.String,

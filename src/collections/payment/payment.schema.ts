@@ -35,10 +35,13 @@ export const paymentSchema = {
 		default: false
 	},
 	discount: {
-		amount: {
-			type: Schema.Types.Number,
-			required: true
+		type: {
+			amount: {
+				type: Schema.Types.Number,
+				required: true
+			},
+			coupon: Schema.Types.String
 		},
-		coupon: Schema.Types.String
+		required: false
 	}
 };

@@ -37,7 +37,7 @@ export class OrderValidator {
 				return Promise.reject(e);
 			
 			}
-			return Promise.reject(new BlError('order could not be validated'));
+			return Promise.reject(new BlError('order could not be validated').store('error', e));
 		}
 		return Promise.resolve(true);
 	}

@@ -42,7 +42,16 @@ export let orderSchema = {
 					required: false
 				},
 				discount: {
-					type: Schema.Types.Number,
+					type: {
+						amount: {
+							type: Schema.Types.Number,
+							required: true
+						},
+						coupon: {
+							type: Schema.Types.String,
+							required: true
+						}
+					},
 					required: false
 				}
 			}
