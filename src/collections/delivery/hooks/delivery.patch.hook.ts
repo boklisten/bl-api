@@ -7,18 +7,22 @@ import {deliverySchema} from "../../../../dist/collections/delivery/delivery.sch
 import {isNullOrUndefined} from "util";
 import {isEmpty} from "typescript-library-bundler/dist";
 import {orderSchema} from "../../order/order.schema";
+import {DeliveryHandler} from "../helpers/deliveryHandler/delivery-handler";
 
 export class DeliveryPatchHook extends Hook {
 	
 	private deliveryValidator?: DeliveryValidator;
 	private deliveryStorage: BlDocumentStorage<Delivery>;
 	private orderStorage: BlDocumentStorage<Order>;
+	private deliveryHandler: DeliveryHandler;
 	
-	constructor(deliveryValidator?: DeliveryValidator, deliveryStorage?: BlDocumentStorage<Delivery>, orderStorage?: BlDocumentStorage<Order>) {
+	constructor(deliveryValidator?: DeliveryValidator, deliveryStorage?: BlDocumentStorage<Delivery>, orderStorage?: BlDocumentStorage<Order>,
+				deliveryHandler?: DeliveryHandler) {
 		super();
 		this.deliveryValidator = (deliveryValidator) ? deliveryValidator : new DeliveryValidator();
 		this.deliveryStorage = (deliveryStorage) ? deliveryStorage : new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
 		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage<Order>('orders', orderSchema);
+		this.deliveryHandler = (deliveryHandler) ? deliveryHandler : new DeliveryHandler();
 	}
 	
 	before(body: any, accessToken?: AccessToken, id?: string): Promise<boolean> {
@@ -40,6 +44,33 @@ export class DeliveryPatchHook extends Hook {
 		}).catch((blError: BlError) => {
 			return Promise.reject(blError);
 		})
+	}
+	
+	after(deliveryIds: string[], accessToken: AccessToken): Promise<boolean | Delivery[]> {
+		
+		return new Promise((resolve, reject) => {
+			this.deliveryStorage.get(deliveryIds[0]).then((delivery: Delivery) => {
+				this.orderStorage.get(delivery.order).then((order: Order) => {
+					this.deliveryValidator.validate(delivery, order).then(() => {
+						
+						this.deliveryHandler.updateOrderBasedOnMethod(delivery, order, accessToken).then((updatedDelivery: Delivery) => {
+							return resolve([updatedDelivery]);
+						}).catch((blError: BlError) => {
+							return reject(blError);
+						});
+						
+					}).catch((blError: BlError) => {
+						return reject(blError);
+					});
+				}).catch((blError: BlError) => {
+					return reject(blError);
+				});
+			}).catch((blError: BlError) => {
+				return reject(blError);
+			})
+		
+		});
+		
 	}
 	
 	private tryToValidatePatch(body: any, accessToken: AccessToken, id: string): Promise<boolean> {

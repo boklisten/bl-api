@@ -180,8 +180,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 					endpoint.hook.before(req.body, accessToken, req.params.id).then(() => {
 						this.documentStorage.update(req.params.id, req.body, {id: accessToken.sub, permission: accessToken.permission}).then((doc: T) => {
 							
-							endpoint.hook.after([doc.id]).then((returnVal: boolean | T[] | any) => {
-								
+							endpoint.hook.after([doc.id], accessToken).then((returnVal: boolean | T[] | any) => {
 								if (Object.prototype.toString.call(returnVal) === '[object Array]'){
 									return this.resHandler.sendResponse(res, new BlapiResponse(returnVal));
 								}
