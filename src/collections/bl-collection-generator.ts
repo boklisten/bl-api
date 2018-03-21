@@ -186,13 +186,15 @@ export class BlCollectionGenerator<T extends BlDocument>{
 								}
 								
 								return this.resHandler.sendResponse(res, new BlapiResponse([doc]));
-							});
+							}).catch((blError: BlError) => {
+								return this.resHandler.sendErrorResponse(res, new BlError('hook.after on patch failed').add(blError).code(701));
+							})
 							
 						}).catch((blError: BlError) => {
 							return this.resHandler.sendErrorResponse(res, blError);
 						});
 					}).catch((blError: BlError) => {
-						return this.resHandler.sendErrorResponse(res, new BlError('hook.before failed')
+						return this.resHandler.sendErrorResponse(res, new BlError('hook.before on patch failed')
 							.add(blError)
 							.store('body', req.body)
 							.store('url', req.url)
@@ -229,12 +231,12 @@ export class BlCollectionGenerator<T extends BlDocument>{
 							}).catch((blError: BlError) => {
 								
 								this.documentStorage.remove(doc.id, {id: accessToken.sub, permission: accessToken.permission}).then(() => {
-									return this.resHandler.sendErrorResponse(res, new BlError(`hook.after failed and the document with id ${doc.id} was deleted`)
+									return this.resHandler.sendErrorResponse(res, new BlError(`hook.after on post failed and the document with id ${doc.id} was deleted`)
 										.store('document', doc)
 										.add(blError)
 										.code(701));
 								}).catch((blError: BlError) => {
-									return this.resHandler.sendErrorResponse(res, new BlError(`hook.after failed, and the document with id ${doc.id} could not be deleted`)
+									return this.resHandler.sendErrorResponse(res, new BlError(`hook.after on post failed, and the document with id ${doc.id} could not be deleted`)
 										.store('document', doc)
 										.add(blError));
 								});
@@ -244,7 +246,7 @@ export class BlCollectionGenerator<T extends BlDocument>{
 							return this.resHandler.sendErrorResponse(res, blError);
 						});
 					}).catch((blError: BlError) => {
-						return this.resHandler.sendErrorResponse(res, new BlError('hook.before failed')
+						return this.resHandler.sendErrorResponse(res, new BlError('hook.before on post failed')
 							.add(blError)
 							.store('document', req.body)
 							.code(701));

@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {OrderHookBefore} from "./order-hook-before";
-import {OrderValidator} from "./order-validator/order-validator";
+import {OrderValidator} from "../helpers/order-validator/order-validator";
 import {BlError} from 'bl-model';
 
 chai.use(chaiAsPromised);

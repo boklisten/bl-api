@@ -2,7 +2,7 @@
 
 import {Hook} from "../../../hook/hook";
 import {BlError, Order, UserDetail, Payment, Delivery, Branch, Item, AccessToken} from "bl-model";
-import {OrderValidator} from "./order-validator/order-validator";
+import {OrderValidator} from "../helpers/order-validator/order-validator";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {userDetailSchema} from "../../user-detail/user-detail.schema";
 import {orderSchema} from "../order.schema";

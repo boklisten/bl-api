@@ -5,7 +5,7 @@ import * as sinon from 'sinon';
 import {expect} from 'chai';
 import {OrderHook} from "./order.hook";
 import {BlError, Branch, Order, UserDetail, AccessToken} from "bl-model";
-import {OrderValidator} from "./order-validator/order-validator";
+import {OrderValidator} from "../helpers/order-validator/order-validator";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {orderSchema} from "../order.schema";
 import {userDetailSchema} from "../../user-detail/user-detail.schema";
