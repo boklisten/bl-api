@@ -9,7 +9,7 @@ import {orderSchema} from "../order.schema";
 import {OrderHookBefore} from "./order-hook-before";
 import {isNullOrUndefined} from "util";
 
-export class OrderHook extends Hook {
+export class OrderPostHook extends Hook {
 	private orderValidator: OrderValidator;
 	private userDetailStorage: BlDocumentStorage<UserDetail>;
 	private orderStorage: BlDocumentStorage<Order>;
@@ -45,48 +45,24 @@ export class OrderHook extends Hook {
 		
 		return this.orderStorage.get(orderId).then(order => {
 			return this.validateOrder(order).then((validatedOrder: Order) => {
-				return this.updateUserDetailsIfOrderIsPlaced(accessToken, validatedOrder).then(order => {
-					return [order];
-				});
+				return [order];
 			});
 		}).catch((blError: BlError) => {
 			return Promise.reject(blError);
 		});
 	};
 	
-	private updateUserDetailsIfOrderIsPlaced(accessToken: AccessToken, order: Order): Promise<Order> {
-		if (order.placed) {
-			return this.userDetailStorage.get(accessToken.details).then((userDetail: UserDetail) => {
-				
-				let orderIds = (userDetail.orders) ? userDetail.orders : [];
-				
-				for (let orderId of orderIds) {
-					if (order.id === orderId) {
-						return Promise.reject(new BlError('the order was already placed'));
-					}
+	private validateOrder(order: Order): Promise<Order> {
+		return new Promise((resolve, reject) => {
+			this.orderValidator.validate(order).then(() => {
+				if (order.placed) {
+					return reject(new BlError('order.placed is set to true on post of order'));
 				}
 				
-				orderIds.push(order.id);
-				
-				return this.userDetailStorage.update(userDetail.id,{orders: orderIds}, {id: userDetail.user.id, permission: userDetail.user.permission}).then(() => {
-					return order;
-				}, (userDetailPatchError: BlError) => {
-					return Promise.reject(new BlError('could not update userDetails with the new orders array').add(userDetailPatchError));
-				});
-			}, (getUserDetailError: BlError) => {
-				return Promise.reject(new BlError(`could not get userDetail "${accessToken.details}" when trying to update userDetail`).add(getUserDetailError));
+				resolve(order);
 			}).catch((blError: BlError) => {
-				return Promise.reject(blError)
+				return reject(blError);
 			});
-		}
-		return Promise.resolve(order); //if order is not being placed the order are valid
-	}
-	
-	private validateOrder(order: Order): Promise<Order> {
-		return this.orderValidator.validate(order).then(() => {
-			return order;
-		}).catch((blError: BlError) => {
-			return Promise.reject(blError);
 		});
 	}
 }

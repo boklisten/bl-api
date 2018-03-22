@@ -98,6 +98,14 @@ describe('PaymentValidator', () => {
 				.to.eventually.be.rejectedWith(BlError, /paymentMethod "something" not supported/);
 		});
 		
+		it('should resolve when payment is valid', () => {
+			
+			return expect(paymentValidator.validate(testPayment))
+				.to.eventually.be.fulfilled;
+			
+			
+		});
+		
 		/*
 		
 		it('should reject if branch is not found', () => {
@@ -114,6 +122,16 @@ describe('PaymentValidator', () => {
 			return expect(paymentValidator.validate(testPayment))
 				.to.be.rejectedWith(BlError, /payment.order "orderNotFound" not found/);
 		});
+		
+		/*
+		it('should reject if payment.customer is not equal to order.customer', () => {
+			testPayment.customer = 'customer1';
+			testOrder.customer = 'customer2';
+			
+			return expect(paymentValidator.validate(testPayment))
+				.to.be.rejectedWith(BlError, /payment.customer "customer1" is not equal to order.customer "customer2"/);
+		});
+		*/
 		
 		context('when paymentMethod is "dibs"', () => {
 			it('should reject if order.amount is not equal to payment.amount', () => {

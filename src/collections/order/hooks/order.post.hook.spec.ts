@@ -3,27 +3,28 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import {expect} from 'chai';
-import {OrderHook} from "./order.hook";
 import {BlError, Branch, Order, UserDetail, AccessToken} from "bl-model";
 import {OrderValidator} from "../helpers/order-validator/order-validator";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {orderSchema} from "../order.schema";
 import {userDetailSchema} from "../../user-detail/user-detail.schema";
 import {OrderHookBefore} from "./order-hook-before";
+import {OrderPostHook} from "./order.post.hook";
 
 chai.use(chaiAsPromised);
 
-describe('OrderHook', () => {
+describe('OrderPostHook', () => {
 	const orderValidator: OrderValidator = new OrderValidator();
 	const orderStorage: BlDocumentStorage<Order> = new BlDocumentStorage('orders', orderSchema);
 	const userDetailStorage: BlDocumentStorage<UserDetail> = new BlDocumentStorage('userdetails', userDetailSchema);
 	const orderHookBefore: OrderHookBefore = new OrderHookBefore();
-	const orderHook: OrderHook = new OrderHook(orderValidator, orderHookBefore, userDetailStorage, orderStorage);
+	const orderPostHook: OrderPostHook = new OrderPostHook(orderValidator, orderHookBefore, userDetailStorage, orderStorage);
 	
 	
 	let testOrder: Order;
 	let testUserDetails: UserDetail;
-	let testAccessToken: AccessToken
+	let testAccessToken: AccessToken;
+	let orderValidated: boolean;
 	
 	beforeEach(() => {
 		testAccessToken = {
@@ -36,6 +37,8 @@ describe('OrderHook', () => {
 			permission: "customer",
 			details: 'user1'
 		};
+		
+		orderValidated = true;
 		
 		testUserDetails = {
 			id: 'user1',
@@ -88,7 +91,14 @@ describe('OrderHook', () => {
 			creationTime: new Date()
 		};
 	});
-		
+	
+	sinon.stub(orderValidator, 'validate').callsFake((order: any) => {
+		if (!orderValidated) {
+			return Promise.reject(new BlError('not a valid order'));
+		}
+		return Promise.resolve(testOrder);
+	});
+	
 	sinon.stub(orderStorage, 'get').callsFake((orderId: string) => {
 		
 		if (orderId !== 'order1' && orderId !== 'orderValid') {
@@ -97,6 +107,7 @@ describe('OrderHook', () => {
 		return Promise.resolve(testOrder);
 		
 	});
+	
 	
 	describe('#before()', () => {
 		sinon.stub(orderHookBefore, 'validate').callsFake((requestBody: any) => {
@@ -109,7 +120,7 @@ describe('OrderHook', () => {
 		});
 		
 		it('should reject if requestBody is not valid', () => {
-			return expect(orderHook.before({valid: false}))
+			return expect(orderPostHook.before({valid: false}))
 				.to.eventually.be.rejectedWith(BlError, /not a valid order/);
 		});
 		
@@ -118,42 +129,37 @@ describe('OrderHook', () => {
 				.to.eventually.be.fulfilled;
 		});
 	});
-
 	describe('#after()', () => {
+		
 		it('should reject if accessToken is empty or undefined', (done) => {
-			orderHook.after(['abc']).catch((blError: BlError) => {
+			orderPostHook.after(['abc']).catch((blError: BlError) => {
 				expect(blError.getMsg()).to.contain('accessToken was not specified when trying to process order');
 				done();
 			});
 		});
 		
+		
 		it('should reject if orderIds includes more than one id', () => {
-			return expect(orderHook.after(['order1', 'order2'], testAccessToken))
+			return expect(orderPostHook.after(['order1', 'order2'], testAccessToken))
 				.to.eventually.be.rejectedWith(BlError, /orderIds included more than one id/);
-		});
-		
-		
-		
-		sinon.stub(orderValidator, 'validate').callsFake((order: any) => {
-			if (order.id !== 'orderValid') {
-				return Promise.reject(new BlError('not a valid order'));
-			}
-			return Promise.resolve(testOrder);
 		});
 		
 		context('when orderValidator rejects', () => {
 			it('should reject if orderValidator.validate rejected with error', () => {
-				testOrder.id = 'orderNotValid';
-				return expect(orderHook.after(['order1'], testAccessToken))
+				orderValidated = false;
+				
+				testOrder.id = 'order1';
+				return expect(orderPostHook.after(['order1'], testAccessToken))
 					.to.eventually.be.rejectedWith(BlError, /not a valid order/);
 			});
 		});
 		
 		context('when orderValidator resolves', () => {
 			it('should resolve with testOrder when orderValidator.validate is resolved', (done) => {
-				testOrder.id = 'orderValid';
+				orderValidated = true;
+				testOrder.id = 'order1';
 				
-				orderHook.after(['orderValid'], testAccessToken).then((orders: Order[]) => {
+				orderPostHook.after(['order1'], testAccessToken).then((orders: Order[]) => {
 					expect(orders.length).to.be.eql(1);
 					expect(orders[0]).to.eql(testOrder);
 					done();
@@ -161,26 +167,11 @@ describe('OrderHook', () => {
 			});
 		});
 		
-		context('when order is valid and order.placed is set to true', () => {
-			sinon.stub(userDetailStorage, 'get').callsFake((id: string) => {
-				if (id !== 'user1') {
-					return Promise.reject(new BlError('not found').code(702));
-				}
-				return Promise.resolve(testUserDetails);
-			});
+		it('should reject if order.placed is set to true', () => {
+			testOrder.placed = true;
 			
-			it('should reject if user already have the orderId in his userDetails.orders for some reason', (done) => {
-				testOrder.placed = true;
-				testOrder.id = 'orderValid';
-				testUserDetails.orders = ['orderValid'];
-				
-				orderHook.after(['orderValid'], testAccessToken).catch((blError: BlError) => {
-					expect(blError.getMsg()).to.contain('the order was already placed');
-					done();
-				});
-			});
-			
-		 
+			return expect(orderPostHook.after(['orderValid'], testAccessToken))
+				.to.be.rejectedWith(BlError, /order.placed is set to true on post of order/);
 		});
 	});
 });

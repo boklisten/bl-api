@@ -82,13 +82,13 @@ export class OrderPatchHook extends Hook {
 			
 			for (let orderId of orderIds) {
 				if (order.id === orderId) {
-					return Promise.reject(new BlError('the order was already placed'));
+					return Promise.reject(new BlError(`order.id "${order.id}" is already in userDetail.orders`));
 				}
 			}
 			
 			orderIds.push(order.id);
 			
-			return this.userDetailStorage.update(userDetail.id,{orders: orderIds}, {id: userDetail.user.id, permission: userDetail.user.permission}).then(() => {
+			return this.userDetailStorage.update(userDetail.id,{orders: orderIds}, {id: accessToken.sub, permission: accessToken.permission}).then(() => {
 				return true;
 			}, (userDetailPatchError: BlError) => {
 				return Promise.reject(new BlError('could not update userDetails with the new orders array').add(userDetailPatchError));

@@ -5,6 +5,7 @@ import {BlCollection, BlEndpoint} from "../bl-collection";
 import {paymentSchema} from "./payment.schema";
 import {BlDocument} from "bl-model";
 import {PaymentPostHook} from "./hooks/payment.post.hook";
+import {PaymentPatchHook} from "./hooks/payment.patch.hook";
 
 export class PaymentCollection implements BlCollection {
 	public collectionName = 'payments';
@@ -34,6 +35,7 @@ export class PaymentCollection implements BlCollection {
 		},
 		{
 			method: "patch",
+			hook: new PaymentPatchHook(),
 			restriction: {
 				permissions: ["customer", "employee", "admin"],
 				restricted: true

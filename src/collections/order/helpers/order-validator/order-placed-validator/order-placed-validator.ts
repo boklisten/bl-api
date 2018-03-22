@@ -31,11 +31,8 @@ export class OrderPlacedValidator {
 			
 			this.deliveryStorage.get(order.delivery).then((delivery: Delivery) => {
 				
-				if (delivery.order !== order.id) {
-					return reject(new BlError(`order.id "${order.id}" is not equal to delivery.order "${delivery.order}"`));
-				}
-				
 				let orderItemAmount = 0;
+				
 				for (let orderItem of order.orderItems) {
 					orderItemAmount += orderItem.amount;
 				}

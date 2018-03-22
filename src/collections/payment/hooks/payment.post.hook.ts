@@ -1,21 +1,24 @@
 
 
 import {Hook} from "../../../hook/hook";
-import {BlDocument, BlError, Order, Payment} from "bl-model";
+import {BlDocument, BlError, Order, Payment, AccessToken} from "bl-model";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {paymentSchema} from "../payment.schema";
 import {DibsPaymentService} from "../../../payment/dibs/dibs-payment.service";
 import {DibsEasyOrder} from "../../../payment/dibs/dibs-easy-order/dibs-easy-order";
 import {SystemUser} from "../../../auth/permission/permission.service";
 import {orderSchema} from "../../order/order.schema";
+import {PaymentValidator} from "../helpers/payment.validator";
 
 export class PaymentPostHook extends Hook {
 	
 	private paymentStorage: BlDocumentStorage<Payment>;
 	private orderStorage: BlDocumentStorage<Order>;
+	private paymentValidator: PaymentValidator;
 	
-	constructor(paymentStorage?: BlDocumentStorage<Payment>, orderStorage?: BlDocumentStorage<Order>) {
+	constructor(paymentStorage?: BlDocumentStorage<Payment>, orderStorage?: BlDocumentStorage<Order>, paymentValidator?: PaymentValidator) {
 		super();
+		this.paymentValidator = (paymentValidator) ? paymentValidator : new PaymentValidator();
 		this.paymentStorage = (paymentStorage) ? paymentStorage : new BlDocumentStorage('payments', paymentSchema);
 		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage('orders', orderSchema);
 	}
@@ -26,31 +29,49 @@ export class PaymentPostHook extends Hook {
 		});
 	}
 	
-	public after(ids: string[]): Promise<boolean | BlDocument[]> {
+	public after(ids: string[], accessToken: AccessToken): Promise<boolean | BlDocument[]> {
 		return new Promise((resolve, reject) => {
 			if (!ids || ids.length != 1) {
 				reject(new BlError(`length is undefined or not a single id`).store('ids', ids));
 			}
+			
 			this.paymentStorage.get(ids[0]).then((payment: Payment) => {
-				
-				switch (payment.method) {
-					case "dibs":
-						this.dibsPayment(payment).then((updatedPayment: Payment) => {
-							resolve([updatedPayment]);
-						}).catch((blError: BlError) => {
-							reject(blError);
-						});
-					default:
-						break;
-				}
+				console.log('the payment', payment);
+				this.paymentValidator.validate(payment).then(() => {
+					switch (payment.method) {
+						case "later":
+							return this.handleLaterPayment(payment, accessToken).then((payment: Payment) => {
+								return resolve([payment]);
+							}).catch((blError: BlError) => {
+								return reject(blError);
+							});
+						case "dibs":
+							return this.handleDibsPayment(payment).then((payment) => {
+								return resolve([payment]);
+							}).catch((blError: BlError) => {
+								reject(blError);
+							});
+						default:
+							break;
+					}
+				}).catch((blError: BlError) => {
+					reject(new BlError('payment could not be validated').add(blError))
+				})
 			}).catch((blError: BlError) => {
 				reject(new BlError('hook failed').add(blError));
 			});
-			
 		});
 	}
 	
-	private dibsPayment(payment: Payment) {
+	private handleLaterPayment(payment: Payment, accessToken: AccessToken): Promise<Payment> {
+		return this.paymentStorage.update(payment.id, {confirmed: true}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedPayment: Payment) => {
+			return updatedPayment;
+		}).catch((blError: BlError) => {
+			return Promise.reject(new BlError(`could not update payment "${payment.id}" when method is "later"`).add(blError));
+		});
+	}
+
+	private handleDibsPayment(payment: Payment): Promise<Payment> {
 		return new Promise((resolve, reject) => {
 			this.orderStorage.get(payment.order).then((order: Order) => {
 				
@@ -63,7 +84,7 @@ export class PaymentPostHook extends Hook {
 					if (e instanceof BlError) {
 						reject(new BlError('could not create dibsEasyOrder').add(e));
 					}
-					reject(new BlError('unkown error, the order could not be made to a dibs easy order'));
+					reject(new BlError('unknown error, the order could not be made to a dibs easy order'));
 				}
 				
 				dibsPayment.getPaymentId(deo).then((paymentId: string) => {

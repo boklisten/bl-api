@@ -21,6 +21,8 @@ describe('OrderPatchHook', () => {
 	let testOrder: Order;
 	let orderUpdated = true;
 	let orderValidated = true;
+	let userDetailUpdated = true;
+	let testUserDetail: UserDetail;
 	
 	beforeEach(() => {
 		testRequestBody = {
@@ -28,7 +30,22 @@ describe('OrderPatchHook', () => {
 		};
 		
 		orderUpdated = true;
-		orderValidated = false;
+		orderValidated = true;
+		userDetailUpdated = true;
+		
+		testUserDetail = {
+			id: 'userDetail1',
+			name: 'albert',
+			email: 'bill@b.com',
+			phone: '1241234',
+			address: '',
+			postCode: '123',
+			postCity: 'oslo',
+			country: 'norway',
+			dob: new Date(),
+			branch: 'branch1',
+			orders: []
+		};
 		
 		testOrder = {
 			id: 'order1',
@@ -48,7 +65,7 @@ describe('OrderPatchHook', () => {
 			sub: 'user1',
 			username: 'billy@bob.com',
 			permission: "customer",
-			details: 'userDetails1'
+			details: 'userDetail1'
 		};
 	});
 	
@@ -58,6 +75,25 @@ describe('OrderPatchHook', () => {
 			return Promise.reject(new BlError('not found').code(702));
 		}
 		return Promise.resolve(testOrder);
+	});
+	
+	const userDetailStorageUpdateStub = sinon.stub(userDetailStorage, 'update').callsFake((id: string, data: any, user: any) => {
+		if (!userDetailUpdated) {
+			return Promise.reject(new BlError('could not update'));
+		}
+		
+		if (data['orders']) {
+			testUserDetail.orders = data['orders'];
+		}
+		
+		return Promise.resolve(true);
+	});
+	
+	sinon.stub(userDetailStorage, 'get').callsFake((id: string) => {
+		if (id !== testUserDetail.id) {
+			return Promise.reject(new BlError('not found').code(702));
+		}
+		return Promise.resolve(testUserDetail);
 	});
 	
 	const orderStorageUpdateStub = sinon.stub(orderStorage, 'update').callsFake((id: string, data: any, user: any) => {
@@ -117,6 +153,35 @@ describe('OrderPatchHook', () => {
 					expect(orderStorageUpdateStub.calledWith([{placed: false}]));
 					done();
 				});
+			});
+			
+			it('should create userDetail.orders array with the orderId if it was not declared', (done) => {
+				testOrder.placed = true;
+				testUserDetail.orders = null;
+				
+				orderPatchHook.after(['order1'], testAccessToken).then(() => {
+					expect(testUserDetail.orders).to.be.eql(['order1']);
+					done();
+				});
+			});
+			
+			it('should update userDetail.orders array with the newly placed order', () => {
+				testOrder.placed = true;
+				testOrder.id = 'order1';
+				testUserDetail.orders = ['order2', 'order3'];
+				
+				orderPatchHook.after(['order1'], testAccessToken).then(() => {
+					expect(testUserDetail.orders).to.be.eql(['order2', 'order3', 'order1']);
+				});
+			});
+			
+			it('should reject if userDetail.orders array already includes the new orderId', () => {
+				testOrder.placed = true;
+				testOrder.id = 'order1';
+				testUserDetail.orders = ['order1', 'order2'];
+				
+				return expect(orderPatchHook.after(['order1'], testAccessToken))
+					.to.be.rejectedWith(BlError, /order.id "order1" is already in userDetail.orders/);
 			});
 		});
 	});
