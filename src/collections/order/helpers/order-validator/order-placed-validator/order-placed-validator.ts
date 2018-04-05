@@ -31,13 +31,13 @@ export class OrderPlacedValidator {
 			
 			this.deliveryStorage.get(order.delivery).then((delivery: Delivery) => {
 				
-				let orderItemAmount = 0;
+				let orderItemTotalAmount = 0;
 				
 				for (let orderItem of order.orderItems) {
-					orderItemAmount += orderItem.amount;
+					orderItemTotalAmount += orderItem.amount;
 				}
 				
-				if ((orderItemAmount + delivery.amount) !== order.amount) {
+				if ((orderItemTotalAmount + delivery.amount) !== order.amount) {
 					reject(new BlError('total of order.orderItems amount + delivery.amount is not equal to order.amount'));
 				}
 				
@@ -55,10 +55,7 @@ export class OrderPlacedValidator {
 						return reject(new BlError('total amount of payments is not equal to order.amount'));
 					}
 					
-					
 					resolve(true); // order can be placed
-					
-				
 				}).catch((blError: BlError) => {
 					reject(new BlError('order.payments is not found').code(702).add(blError));
 				});

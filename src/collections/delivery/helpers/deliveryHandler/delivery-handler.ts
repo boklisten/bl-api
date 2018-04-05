@@ -31,25 +31,46 @@ export class DeliveryHandler {
 	}
 	
 	private updateOrderWithDeliveryMethodBranch(delivery: Delivery, order: Order, accessToken: AccessToken): Promise<Delivery> {
-		return this.orderStorage.update(order.id, {delivery: delivery.id}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedOrder: Order) => {
-			return Promise.resolve(delivery);
+		return this.updateOrder(order, delivery, accessToken).then(() => {
+			return delivery;
 		}).catch((blError: BlError) => {
 			return Promise.reject(blError);
-		});
+		})
 	}
 	
 	private updateOrderWithDeliveryMethodBring(delivery: Delivery, order: Order, accessToken: AccessToken): Promise<Delivery> {
 		return new Promise((resolve, reject) => {
 		    this.fetchItems(order).then((items: Item[]) => {
-		    	this.getBringDeliveryInfoAndUpdateDelivery(delivery, items).then((updatedDelivery: Delivery) => {
-		    		this.orderStorage.update(order.id, {delivery: updatedDelivery.id}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedOrder: Order) => {
-		    			return resolve(updatedDelivery);
+		    	this.getBringDeliveryInfoAndUpdateDelivery(delivery, items, accessToken).then((updatedDelivery: Delivery) => {
+		    		this.updateOrder(order, updatedDelivery, accessToken).then(() => {
+		    			resolve(updatedDelivery);
 					}).catch((blError: BlError) => {
-		   				return reject(blError);
-					});
+		    			return reject(blError);
+					})
 				});
 			});
 		});
+	}
+	
+	private updateOrder(order: Order, delivery: Delivery, accessToken: AccessToken): Promise<boolean> {
+		let orderAmount = this.calculateOrderAmount(order, delivery);
+		let orderUpdateData = {delivery: delivery.id, amount: orderAmount};
+		
+		return this.orderStorage.update(order.id, orderUpdateData, {id: accessToken.sub, permission: accessToken.permission}).then(() => {
+			return true;
+		}).catch((blError: BlError) => {
+			return Promise.reject(new BlError('could not update order').add(blError));
+		});
+	}
+	
+	private calculateOrderAmount(order: Order, delivery: Delivery): number {
+		let totalOrderItemAmount = 0;
+		
+		for (let orderItem of order.orderItems) {
+			totalOrderItemAmount += orderItem.amount;
+		}
+		
+		return totalOrderItemAmount + delivery.amount;
 	}
 	
 	private fetchItems(order: Order): Promise<Item[]> {
@@ -68,10 +89,10 @@ export class DeliveryHandler {
 		});
 	}
 	
-	private getBringDeliveryInfoAndUpdateDelivery(delivery: Delivery, items: Item[]): Promise<Delivery> {
+	private getBringDeliveryInfoAndUpdateDelivery(delivery: Delivery, items: Item[], accessToken: AccessToken): Promise<Delivery> {
 		return new Promise((resolve, reject) => {
 		    this.bringDeliveryService.getDeliveryInfoBring(delivery.info['from'], delivery.info['to'], items).then((deliveryInfoBring: DeliveryInfoBring) => {
-		    	this.deliveryStorage.update(delivery.id, {info: deliveryInfoBring}, {id: 'SYSTEM', permission: "admin"}).then((updatedDelivery: Delivery) => {
+		    	this.deliveryStorage.update(delivery.id, {amount: deliveryInfoBring.amount, info: deliveryInfoBring}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedDelivery: Delivery) => {
 		    		resolve(updatedDelivery);
 				}).catch((blError: BlError) => {
 		    		reject(blError);

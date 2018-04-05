@@ -9,6 +9,7 @@ import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {userDetailSchema} from "../../user-detail/user-detail.schema";
 import {OrderValidator} from "../helpers/order-validator/order-validator";
 import {orderSchema} from "../order.schema";
+import {deliverySchema} from "../../../../dist/collections/delivery/delivery.schema";
 
 export class OrderPatchHook extends Hook {
 	
@@ -18,7 +19,6 @@ export class OrderPatchHook extends Hook {
 	
 	constructor(userDetailStorage?: BlDocumentStorage<UserDetail>, orderStorage?: BlDocumentStorage<Order>, orderValidator?: OrderValidator) {
 		super();
-		
 		this.userDetailStorage = (userDetailStorage) ? userDetailStorage : new BlDocumentStorage<UserDetail>('userdetails', userDetailSchema)
 		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage('orders', orderSchema);
 		this.orderValidator = (orderValidator) ? orderValidator : new OrderValidator();
@@ -51,30 +51,30 @@ export class OrderPatchHook extends Hook {
 		return new Promise((resolve, reject) => {
 		 
 			this.orderStorage.get(orderIds[0]).then((order: Order) => {
-				this.orderValidator.validate(order).then(() => {
-					this.updateUserDetailsWhenOrderIsPlaced(accessToken, order).then(() => {
-						resolve(true);
-					}).catch((blError: BlError) => {
-						reject(blError);
-					})
-				}).catch((validationError: BlError) => {
-					if (order.placed) {
-						this.orderStorage.update(order.id, {placed: false}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedOrder: Order) => {
-							return reject(new BlError('validation of patch of order failed, order.placed is set to false').add(validationError))
-						}).catch((updateError: BlError) => {
-							return reject(new BlError('could not set order.placed to false when order validation failed').add(updateError).add(validationError))
-						});
-					} else {
-						return reject(new BlError('patch of order could not be validated'));
-					}
-				});
+					this.orderValidator.validate(order).then(() => {
+						this.updateUserDetailsWhenOrderIsPlaced(accessToken, order).then(() => {
+							resolve(true);
+						}).catch((blError: BlError) => {
+							reject(blError);
+						})
+					}).catch((validationError: BlError) => {
+						if (order.placed) {
+							this.orderStorage.update(order.id, {placed: false}, {id: accessToken.sub, permission: accessToken.permission}).then(() => {
+								return reject(new BlError('validation of patch of order failed, order.placed is set to false').add(validationError))
+							}).catch((updateError: BlError) => {
+								return reject(new BlError('could not set order.placed to false when order validation failed').add(updateError).add(validationError))
+							});
+						} else {
+							return reject(new BlError('patch of order could not be validated').add(validationError));
+						}
+					});
 			}).catch((blError: BlError) => {
 				return reject(new BlError(`order "${orderIds[0]}" not found`).add(blError));
-			})
+			});
 		});
 		
 	}
-
+	
 	private updateUserDetailsWhenOrderIsPlaced(accessToken: AccessToken, order: Order): Promise<boolean> {
 		return this.userDetailStorage.get(accessToken.details).then((userDetail: UserDetail) => {
 			

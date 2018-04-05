@@ -2,10 +2,10 @@
 
 import {BlCollection, BlEndpoint} from "../bl-collection";
 import {orderSchema} from "./order.schema";
-import {OrderHook} from "./hooks/order.hook";
 import {OrderValidator} from "./helpers/order-validator/order-validator";
 import {Schema} from "mongoose";
 import {OrderPatchHook} from "./hooks/order.patch.hook";
+import {OrderPostHook} from "./hooks/order.post.hook";
 
 export class OrderCollection implements BlCollection {
 	collectionName = 'orders';
@@ -13,7 +13,7 @@ export class OrderCollection implements BlCollection {
 	endpoints: BlEndpoint[] = [
 		{
 			method: 'post',
-			hook: new OrderHook(),
+			hook: new OrderPostHook(),
 			restriction: {
 				permissions: ["customer", "employee", "admin"],
 				restricted: true

@@ -79,9 +79,11 @@ export class DeliveryPatchHook extends Hook {
 				if (body['info']) {
 					delivery.info = body['info'];
 				}
-				if (body['amount']) {
+				
+				if (body['amount'] >= 0) {
 					delivery.amount = body['amount'];
 				}
+				
 				if (body['order']) {
 					delivery.order = body['order'];
 				}

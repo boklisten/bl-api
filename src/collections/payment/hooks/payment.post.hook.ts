@@ -9,6 +9,7 @@ import {DibsEasyOrder} from "../../../payment/dibs/dibs-easy-order/dibs-easy-ord
 import {SystemUser} from "../../../auth/permission/permission.service";
 import {orderSchema} from "../../order/order.schema";
 import {PaymentValidator} from "../helpers/payment.validator";
+import {isNullOrUndefined} from "util";
 
 export class PaymentPostHook extends Hook {
 	
@@ -32,11 +33,14 @@ export class PaymentPostHook extends Hook {
 	public after(ids: string[], accessToken: AccessToken): Promise<boolean | BlDocument[]> {
 		return new Promise((resolve, reject) => {
 			if (!ids || ids.length != 1) {
-				reject(new BlError(`length is undefined or not a single id`).store('ids', ids));
+				reject(new BlError('ids is empty or undefined').store('ids', ids));
+			}
+			
+			if (isNullOrUndefined(accessToken)) {
+				reject(new BlError('accessToken is undefined'));
 			}
 			
 			this.paymentStorage.get(ids[0]).then((payment: Payment) => {
-				console.log('the payment', payment);
 				this.paymentValidator.validate(payment).then(() => {
 					switch (payment.method) {
 						case "later":
@@ -46,7 +50,7 @@ export class PaymentPostHook extends Hook {
 								return reject(blError);
 							});
 						case "dibs":
-							return this.handleDibsPayment(payment).then((payment) => {
+							return this.handleDibsPayment(payment, accessToken).then((payment) => {
 								return resolve([payment]);
 							}).catch((blError: BlError) => {
 								reject(blError);
@@ -55,23 +59,39 @@ export class PaymentPostHook extends Hook {
 							break;
 					}
 				}).catch((blError: BlError) => {
-					reject(new BlError('payment could not be validated').add(blError))
+					reject(new BlError('payment could not be validated').add(blError));
 				})
 			}).catch((blError: BlError) => {
-				reject(new BlError('hook failed').add(blError));
+				reject(new BlError('payment id not found').add(blError));
 			});
 		});
 	}
 	
 	private handleLaterPayment(payment: Payment, accessToken: AccessToken): Promise<Payment> {
-		return this.paymentStorage.update(payment.id, {confirmed: true}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedPayment: Payment) => {
-			return updatedPayment;
-		}).catch((blError: BlError) => {
-			return Promise.reject(new BlError(`could not update payment "${payment.id}" when method is "later"`).add(blError));
+		return new Promise((resolve, reject) => {
+			this.orderStorage.get(payment.order).then((order: Order) => {
+				if (order.payments && order.payments.length > 0) {
+					return reject(new BlError('there is more than one payment in order.payments'));
+				}
+				
+				order.payments = [payment.id];
+				
+				this.orderStorage.update(order.id, {payments: order.payments}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedOrder: Order) => {
+					this.paymentStorage.update(payment.id, {confirmed: true}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedPayment: Payment) => {
+						resolve(updatedPayment);
+					}).catch((paymentUpdateError) => {
+						reject(new BlError('payment.confirmed could not be updated to "true"').add(paymentUpdateError));
+					});
+				}).catch((orderUpdateError: BlError) => {
+					reject(new BlError('could not update order with the payment id').add(orderUpdateError));
+				});
+			}).catch((orderGetError: BlError) => {
+				reject(orderGetError);
+			});
 		});
 	}
 
-	private handleDibsPayment(payment: Payment): Promise<Payment> {
+	private handleDibsPayment(payment: Payment, accessToken: AccessToken): Promise<Payment> {
 		return new Promise((resolve, reject) => {
 			this.orderStorage.get(payment.order).then((order: Order) => {
 				
@@ -90,18 +110,12 @@ export class PaymentPostHook extends Hook {
 				dibsPayment.getPaymentId(deo).then((paymentId: string) => {
 					this.paymentStorage.update(payment.id, {"info": {"paymentId": paymentId}}, new SystemUser()).then((updatedPayment: Payment) => {
 						
-						this.orderStorage.get(updatedPayment.order).then((order) => {
-							order.payments.push(updatedPayment.id);
-							
-							this.orderStorage.update(updatedPayment.order, {"payments": order.payments}, new SystemUser()).then(() => {
-								resolve(updatedPayment);
-							}).catch((blError: BlError) => {
-								reject(new BlError(`could not update order "${updatedPayment.order}" with the payment "${payment.id}"`).add(blError));
-							});
-							
-						}).catch((blErr: BlError) => {
-							reject(blErr);
+						this.updateOrderWithPaymentId(updatedPayment.order, updatedPayment.id, accessToken).then((updatedOrder: Order) => {
+							resolve(updatedPayment);
+						}).catch((orderUpdateError: BlError) => {
+							reject(orderUpdateError);
 						});
+						
 					}).catch((blError: BlError) => {
 						reject(new BlError(`could not update payment "${payment.id}" with paymentId`))
 					});
@@ -113,4 +127,22 @@ export class PaymentPostHook extends Hook {
 			});
 		});
 	}
+	
+	private updateOrderWithPaymentId(orderId: string, paymentId: string, accessToken: AccessToken): Promise<Order> {
+		return new Promise((resolve, reject) => {
+		    this.orderStorage.get(orderId).then((order: Order) => {
+		    	
+		    	order.payments.push(paymentId);
+		    	
+		    	this.orderStorage.update(orderId, {'payments': order.payments}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedOrder: Order) => {
+		    		resolve(updatedOrder);
+				}).catch((blError: BlError) => {
+		    		reject(blError);
+				});
+			}).catch((orderError: BlError) => {
+		    	reject(orderError);
+			})
+		});
+	}
 }
+

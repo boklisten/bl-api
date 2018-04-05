@@ -8,20 +8,24 @@ import {userDetailSchema} from "../../user-detail/user-detail.schema";
 import {orderSchema} from "../order.schema";
 import {OrderHookBefore} from "./order-hook-before";
 import {isNullOrUndefined} from "util";
+import {deliverySchema} from "../../../../dist/collections/delivery/delivery.schema";
 
 export class OrderPostHook extends Hook {
 	private orderValidator: OrderValidator;
 	private userDetailStorage: BlDocumentStorage<UserDetail>;
 	private orderStorage: BlDocumentStorage<Order>;
 	private orderHookBefore: OrderHookBefore;
+	private deliveryStorage?: BlDocumentStorage<Delivery>;
 	
 	constructor(orderValidator?: OrderValidator, orderHookBefore?: OrderHookBefore,
-				userDetailStorage?: BlDocumentStorage<UserDetail>, orderStorage?: BlDocumentStorage<Order>) {
+				userDetailStorage?: BlDocumentStorage<UserDetail>, orderStorage?: BlDocumentStorage<Order>,
+				deliveryStorage?: BlDocumentStorage<Delivery>) {
 		super();
 		this.orderValidator = (orderValidator) ? orderValidator : new OrderValidator();
 		this.orderHookBefore = (orderHookBefore) ? orderHookBefore : new OrderHookBefore();
 		this.userDetailStorage = (userDetailStorage) ? userDetailStorage : new BlDocumentStorage('userdetails', userDetailSchema);
 		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage('orders', orderSchema);
+		this.deliveryStorage = (deliveryStorage) ? deliveryStorage : new BlDocumentStorage('deliveries', deliverySchema);
 	}
 	
 	public before(requestBody: any): Promise<boolean> {
@@ -44,6 +48,7 @@ export class OrderPostHook extends Hook {
 		let orderId = orderIds[0]; //there should only be one order per request;
 		
 		return this.orderStorage.get(orderId).then(order => {
+			
 			return this.validateOrder(order).then((validatedOrder: Order) => {
 				return [order];
 			});
@@ -51,6 +56,8 @@ export class OrderPostHook extends Hook {
 			return Promise.reject(blError);
 		});
 	};
+	
+	
 	
 	private validateOrder(order: Order): Promise<Order> {
 		return new Promise((resolve, reject) => {
