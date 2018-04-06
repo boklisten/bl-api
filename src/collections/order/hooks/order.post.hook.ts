@@ -8,7 +8,7 @@ import {userDetailSchema} from "../../user-detail/user-detail.schema";
 import {orderSchema} from "../order.schema";
 import {OrderHookBefore} from "./order-hook-before";
 import {isNullOrUndefined} from "util";
-import {deliverySchema} from "../../../../dist/collections/delivery/delivery.schema";
+import {deliverySchema} from "../../delivery/delivery.schema";
 
 export class OrderPostHook extends Hook {
 	private orderValidator: OrderValidator;

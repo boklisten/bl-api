@@ -5,7 +5,7 @@ import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
 import {orderSchema} from "../../../order/order.schema";
 import {itemSchema} from "../../../item/item.schema";
 import {BringDeliveryService} from "../deliveryBring/bringDelivery.service";
-import {deliverySchema} from "../../../../../dist/collections/delivery/delivery.schema";
+import {deliverySchema} from "../../delivery.schema";
 
 export class DeliveryHandler {
 	private orderStorage: BlDocumentStorage<Order>;

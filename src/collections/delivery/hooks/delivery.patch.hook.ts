@@ -3,11 +3,11 @@ import {Delivery, Order, BlError, AccessToken} from '@wizardcoder/bl-model';
 import {Hook} from "../../../hook/hook";
 import {DeliveryValidator} from "../helpers/deliveryValidator/delivery-validator";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
-import {deliverySchema} from "../../../../dist/collections/delivery/delivery.schema";
 import {isNullOrUndefined} from "util";
 import {isEmpty} from "typescript-library-bundler/dist";
 import {orderSchema} from "../../order/order.schema";
 import {DeliveryHandler} from "../helpers/deliveryHandler/delivery-handler";
+import {deliverySchema} from "../delivery.schema";
 
 export class DeliveryPatchHook extends Hook {
 	
