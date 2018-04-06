@@ -125,7 +125,7 @@ export class Server {
 			console.log(chalk.blue('\t#') + chalk.gray(' server is up and running'));
 		});
 		
-		httpsServer.listen(process.env.BL_API_PORT);
+		httpsServer.listen(process.env.PORT || process.env.BL_API_PORT);
 		
 		/*
 		this.app.listen(APP_CONFIG.dev.server.port, () => {
