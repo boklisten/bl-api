@@ -119,6 +119,13 @@ export class Server {
 		const credentials = {key: privateKey, cert: cert};
 		
 		
+		this.app.set('port', (process.env.PORT || process.env.BL_API_PORT || 1337));
+		
+		this.app.listen(this.app.get('port'), () => {
+			console.log(chalk.blue('\t#') + chalk.gray(' server is up and running\n'));
+		});
+		
+		/*
 		const httpsServer = https.createServer(credentials, this.app);
 		
 		httpsServer.on('listening', () => {
