@@ -1,7 +1,7 @@
 
 
 import {Hook} from "../../../hook/hook";
-import {BlDocument, BlError, Order, Payment, AccessToken} from "bl-model";
+import {BlDocument, BlError, Order, Payment, AccessToken} from "@wizardcoder/bl-model";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {paymentSchema} from "../payment.schema";
 import {DibsPaymentService} from "../../../payment/dibs/dibs-payment.service";

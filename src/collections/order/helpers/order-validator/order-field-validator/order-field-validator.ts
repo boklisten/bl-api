@@ -1,5 +1,5 @@
 
-import {Order, OrderItem, BlError} from 'bl-model';
+import {Order, OrderItem, BlError} from '@wizardcoder/bl-model';
 import {isNullOrUndefined, isNumber} from "util";
 
 export class OrderFieldValidator {

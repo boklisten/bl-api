@@ -6,7 +6,7 @@ import {OAuth2Strategy} from 'passport-google-oauth';
 import * as passport from "passport";
 import {ApiPath} from "../../config/api-path";
 import {SEResponseHandler} from "../../response/se.response.handler";
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 import {TokenHandler} from "../token/token.handler";
 import * as blConfig from '../../application-config';
 import {UserHandler} from "../user/user.handler";

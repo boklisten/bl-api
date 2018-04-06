@@ -1,7 +1,7 @@
 
 
 import {BlCollection, BlEndpoint} from "./bl-collection";
-import {AccessToken, BlapiResponse, BlDocument, BlError, UserPermission} from "bl-model";
+import {AccessToken, BlapiResponse, BlDocument, BlError, UserPermission} from "@wizardcoder/bl-model";
 import {NextFunction, Request, Response, Router} from "express";
 import {ApiPath} from "../config/api-path";
 import * as passport from "passport";

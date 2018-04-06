@@ -1,6 +1,6 @@
 
 
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 import {AccessTokenSecret} from "./access-token.secret";
 import {AccessToken} from "./access-token";
 

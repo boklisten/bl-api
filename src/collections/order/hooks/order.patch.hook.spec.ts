@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {BlError, AccessToken, UserDetail, Order} from 'bl-model';
+import {BlError, AccessToken, UserDetail, Order} from '@wizardcoder/bl-model';
 import {OrderPatchHook} from "./order.patch.hook";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {OrderValidator} from "../helpers/order-validator/order-validator";

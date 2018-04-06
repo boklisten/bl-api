@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {TokenHandler} from "./token.handler";
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 import {Promise} from 'es6-promise';
 import {UserHandler} from "../user/user.handler";
 import {User} from "../../collections/user/user";

@@ -6,7 +6,7 @@ import {PaymentValidator} from "./payment.validator";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 chai.use(chaiAsPromised);
 import {expect} from 'chai';
-import {Payment, Order, BlError, Branch} from 'bl-model';
+import {Payment, Order, BlError, Branch} from '@wizardcoder/bl-model';
 
 describe('PaymentValidator', () => {
 	const orderStorage =  new BlDocumentStorage<Order>('orders');

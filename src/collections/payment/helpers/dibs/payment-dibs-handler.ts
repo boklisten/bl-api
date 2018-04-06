@@ -3,7 +3,7 @@
 
 import {DibsPaymentService} from "../../../../payment/dibs/dibs-payment.service";
 import {DibsEasyOrder} from "../../../../payment/dibs/dibs-easy-order/dibs-easy-order";
-import {BlError, Payment, Order} from 'bl-model';
+import {BlError, Payment, Order} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
 import {paymentSchema} from "../../payment.schema";
 import {orderSchema} from "../../../order/order.schema";

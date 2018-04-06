@@ -1,5 +1,5 @@
 
-import {BlDocument} from "bl-model";
+import {BlDocument} from "@wizardcoder/bl-model";
 
 export interface IHook {
 	before(body?: any): Promise<boolean>;

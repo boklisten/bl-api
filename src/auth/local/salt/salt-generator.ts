@@ -1,6 +1,6 @@
 
 
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 const crypto = require('crypto');
 
 export class SaltGenerator {

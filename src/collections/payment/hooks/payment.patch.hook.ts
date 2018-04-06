@@ -1,7 +1,7 @@
 
 
 import {Hook} from "../../../hook/hook";
-import {AccessToken, Payment, BlError} from 'bl-model';
+import {AccessToken, Payment, BlError} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {paymentSchema} from "../../../../dist/collections/payment/payment.schema";
 

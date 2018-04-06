@@ -3,8 +3,7 @@
 import {SEDbQuery} from "../../query/se.db-query";
 
 import {Blid} from "../blid/blid";
-import {UserDetail}  from 'bl-model';
-import {BlError} from "bl-model";
+import {UserDetail, BlError}  from '@wizardcoder/bl-model';
 import {User} from "../../collections/user/user";
 import {UserSchema} from "../../collections/user/user.schema";
 import {userDetailSchema} from "../../collections/user-detail/user-detail.schema";

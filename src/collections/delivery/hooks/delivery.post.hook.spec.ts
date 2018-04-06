@@ -4,7 +4,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
-import {BlError, Delivery, Item, Order, AccessToken} from "bl-model";
+import {BlError, Delivery, Item, Order, AccessToken} from "@wizardcoder/bl-model";
 import {deliverySchema} from "../delivery.schema";
 import {orderSchema} from "../../order/order.schema";
 import {itemSchema} from "../../item/item.schema";

@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {BlError, Order} from 'bl-model';
+import {BlError, Order} from '@wizardcoder/bl-model';
 import {OrderFieldValidator} from "./order-field-validator";
 
 chai.use(chaiAsPromised);

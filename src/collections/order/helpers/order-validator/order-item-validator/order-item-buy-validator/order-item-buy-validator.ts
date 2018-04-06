@@ -1,6 +1,6 @@
 
 
-import {BlError, Item, OrderItem, Branch} from 'bl-model';
+import {BlError, Item, OrderItem, Branch} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../../../../storage/blDocumentStorage";
 import {error, isNullOrUndefined} from "util";
 import {PriceService} from "../../../../../../price/price.service";

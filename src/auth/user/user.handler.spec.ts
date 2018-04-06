@@ -5,7 +5,7 @@ import * as sinon from 'sinon';
 import {expect} from 'chai';
 import {UserSchema} from "../../collections/user/user.schema";
 import {UserHandler} from "./user.handler";
-import {BlError, UserDetail} from "bl-model";
+import {BlError, UserDetail} from "@wizardcoder/bl-model";
 import {Promise} from 'es6-promise';
 import {User} from "../../collections/user/user";
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";

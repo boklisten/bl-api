@@ -1,5 +1,5 @@
 
-import {BlError, Order} from 'bl-model';
+import {BlError, Order} from '@wizardcoder/bl-model';
 export class OrderHookBefore {
 	
 	validate(requestJsonBody: any): Promise<boolean> {

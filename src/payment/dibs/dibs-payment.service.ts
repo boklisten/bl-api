@@ -1,6 +1,7 @@
 
 
-import {BlError, Order, OrderItem} from "bl-model";
+
+import {BlError, Order, OrderItem} from "@wizardcoder/bl-model";
 import {DibsEasyItem} from "./dibs-easy-item/dibs-easy-item";
 import {DibsEasyOrder} from "./dibs-easy-order/dibs-easy-order";
 import {HttpHandler} from "../../http/http.handler";

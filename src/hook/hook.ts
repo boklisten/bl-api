@@ -1,7 +1,7 @@
 
 
 import {IHook} from "./IHook";
-import {BlDocument, AccessToken} from "bl-model";
+import {BlDocument, AccessToken} from "@wizardcoder/bl-model";
 
 export class Hook implements IHook {
 	

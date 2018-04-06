@@ -1,6 +1,6 @@
 
 
-import {BlError, DeliveryInfoBring, Item} from "bl-model";
+import {BlError, DeliveryInfoBring, Item} from "@wizardcoder/bl-model";
 import {HttpHandler} from "../../../../http/http.handler";
 import {BringDelivery} from "./bringDelivery";
 import moment = require("moment");

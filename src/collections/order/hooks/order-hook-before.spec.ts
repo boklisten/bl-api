@@ -4,7 +4,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {OrderHookBefore} from "./order-hook-before";
 import {OrderValidator} from "../helpers/order-validator/order-validator";
-import {BlError} from 'bl-model';
+import {BlError} from '@wizardcoder/bl-model';
 
 chai.use(chaiAsPromised);
 

@@ -4,7 +4,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 import {OrderItemBuyValidator} from "./order-item-buy-validator";
-import {Order, OrderItem, BlError, Item, Branch} from 'bl-model';
+import {Order, OrderItem, BlError, Item, Branch} from '@wizardcoder/bl-model';
 import {PriceService} from "../../../../../../price/price.service";
 
 chai.use(chaiAsPromised);

@@ -8,7 +8,7 @@ import {localLoginSchema} from "../../collections/local-login/local-login.schema
 import {LocalLogin} from "../../collections/local-login/local-login";
 import {SEDbQuery} from "../../query/se.db-query";
 import {Promise} from 'es6-promise';
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
 import * as local from "commander";
 

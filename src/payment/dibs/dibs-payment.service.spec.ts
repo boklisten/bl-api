@@ -2,7 +2,7 @@ import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
-import {BlError, Order} from "bl-model";
+import {BlError, Order} from "@wizardcoder/bl-model";
 import {DibsPaymentService} from "./dibs-payment.service";
 import {DibsEasyOrder} from "./dibs-easy-order/dibs-easy-order";
 

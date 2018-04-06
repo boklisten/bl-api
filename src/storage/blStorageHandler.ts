@@ -1,6 +1,6 @@
 
 
-import {BlDocument, UserPermission} from "bl-model";
+import {BlDocument, UserPermission} from "@wizardcoder/bl-model";
 import {SEDbQuery} from "../query/se.db-query";
 
 export interface BlStorageHandler<T extends BlDocument> {

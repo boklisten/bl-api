@@ -1,6 +1,6 @@
 
 
-import {Order, Delivery, Payment, BlError} from 'bl-model';
+import {Order, Delivery, Payment, BlError} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../../../storage/blDocumentStorage";
 import {deliverySchema} from "../../../../delivery/delivery.schema";
 import {paymentSchema} from "../../../../payment/payment.schema";

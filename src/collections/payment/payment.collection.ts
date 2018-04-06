@@ -3,7 +3,7 @@
 import {Schema} from "mongoose";
 import {BlCollection, BlEndpoint} from "../bl-collection";
 import {paymentSchema} from "./payment.schema";
-import {BlDocument} from "bl-model";
+import {BlDocument} from "@wizardcoder/bl-model";
 import {PaymentPostHook} from "./hooks/payment.post.hook";
 import {PaymentPatchHook} from "./hooks/payment.patch.hook";
 

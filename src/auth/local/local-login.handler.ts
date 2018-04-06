@@ -1,6 +1,6 @@
 import {LocalLogin} from "../../collections/local-login/local-login";
 import {SEDbQuery} from "../../query/se.db-query";
-import {BlapiErrorResponse, BlError} from "bl-model";
+import {BlapiErrorResponse, BlError} from "@wizardcoder/bl-model";
 import {isEmail} from 'validator';
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
 import {localLoginSchema} from "../../collections/local-login/local-login.schema";

@@ -5,7 +5,7 @@ import {expect} from 'chai';
 import {LocalLoginPasswordValidator} from "./local-login-password.validator";
 import {SeCrypto} from "../../../crypto/se.crypto";
 import {Promise} from 'es6-promise';
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 
 chai.use(chaiAsPromised);
 

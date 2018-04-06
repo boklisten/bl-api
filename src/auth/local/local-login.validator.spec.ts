@@ -12,7 +12,7 @@ import {HashedPasswordGenerator} from "./password/hashed-password-generator";
 import {SaltGenerator} from "./salt/salt-generator";
 import {LocalLoginCreator} from "./local-login-creator/local-login-creator";
 import {ProviderIdGenerator} from "./provider-id/provider-id-generator";
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 import {UserHandler} from "../user/user.handler";
 import {User} from "../../collections/user/user";
 

@@ -1,6 +1,6 @@
 
 
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 const querystring = require('querystring');
 const qs = require('qs');
 const request = require('request');

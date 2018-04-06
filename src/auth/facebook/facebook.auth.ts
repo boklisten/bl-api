@@ -8,7 +8,7 @@ import {UserHandler} from "../user/user.handler";
 import {ApiPath} from "../../config/api-path";
 import {TokenHandler} from "../token/token.handler";
 import {SEResponseHandler} from "../../response/se.response.handler";
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 import {User} from "../../collections/user/user";
 
 export class FacebookAuth {

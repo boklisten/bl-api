@@ -2,7 +2,7 @@ import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
-import {Order, BlError, CustomerItem, Item, Branch, Payment, Delivery} from "bl-model";
+import {Order, BlError, CustomerItem, Item, Branch, Payment, Delivery} from "@wizardcoder/bl-model";
 import {OrderValidator} from "./order-validator";
 import * as sinon from 'sinon';
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";

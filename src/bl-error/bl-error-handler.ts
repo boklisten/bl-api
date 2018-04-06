@@ -1,7 +1,6 @@
 
 
-import {BlError} from "bl-model";
-import {BlapiErrorResponse} from "bl-model";
+import {BlError, BlapiErrorResponse} from "@wizardcoder/bl-model";
 const chalk = require('chalk');
 
 

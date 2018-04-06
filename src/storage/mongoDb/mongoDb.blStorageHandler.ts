@@ -1,6 +1,6 @@
 
 
-import {BlDocument, BlError, UserPermission} from "bl-model";
+import {BlDocument, BlError, UserPermission} from "@wizardcoder/bl-model";
 import {BlStorageHandler} from "../blStorageHandler";
 import {MongooseModelCreator} from "./mongoose-schema-creator";
 import {PermissionService} from "../../auth/permission/permission.service";

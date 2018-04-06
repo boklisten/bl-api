@@ -1,6 +1,7 @@
 
 
-import {Delivery, Order, BlError, DeliveryInfoBring} from 'bl-model';
+import {Delivery, Order, BlError, DeliveryInfoBring} from '@wizardcoder/bl-model';
+
 import {isNullOrUndefined} from "util";
 
 export class DeliveryBringHandler {

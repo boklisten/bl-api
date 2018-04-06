@@ -1,5 +1,5 @@
 
-import {BlDocument, UserPermission} from "bl-model";
+import {BlDocument, UserPermission} from "@wizardcoder/bl-model";
 
 
 export class SystemUser {

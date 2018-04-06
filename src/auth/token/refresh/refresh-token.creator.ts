@@ -1,6 +1,6 @@
 
 
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 import isEmail = require("validator/lib/isEmail");
 import {RefreshTokenSecret} from "./refresh-token.secret";
 import {TokenConfig} from "../token.config";

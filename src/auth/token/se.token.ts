@@ -1,7 +1,7 @@
 
 
 import {UserPermission} from "../user/user-permission";
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 
 export type JwtPayload = {
 	iss: string,

@@ -1,6 +1,6 @@
 
 
-import {Payment, Order, BlError, Branch, UserDetail} from 'bl-model';
+import {Payment, Order, BlError, Branch, UserDetail} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {orderSchema} from "../../order/order.schema";
 import {branchSchema} from "../../branch/branch.schema";

@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {BlError} from 'bl-model';
+import {BlError} from '@wizardcoder/bl-model';
 import {PriceService} from "./price.service";
 
 chai.use(chaiAsPromised);

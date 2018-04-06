@@ -1,5 +1,5 @@
 
-import {Delivery, Order, BlError, AccessToken} from 'bl-model';
+import {Delivery, Order, BlError, AccessToken} from '@wizardcoder/bl-model';
 import {Hook} from "../../../hook/hook";
 import {DeliveryValidator} from "../helpers/deliveryValidator/delivery-validator";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";

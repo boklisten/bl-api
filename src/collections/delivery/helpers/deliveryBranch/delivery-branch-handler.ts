@@ -1,6 +1,6 @@
 
 
-import {Delivery, BlError} from 'bl-model';
+import {Delivery, BlError} from '@wizardcoder/bl-model';
 
 export class DeliveryBranchHandler {
 	

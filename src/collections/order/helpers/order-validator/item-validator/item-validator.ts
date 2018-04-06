@@ -1,6 +1,6 @@
 
 
-import {BlError, Item, OrderItem} from "bl-model";
+import {BlError, Item, OrderItem} from "@wizardcoder/bl-model";
 
 export class ItemValidator {
 	

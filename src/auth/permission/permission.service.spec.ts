@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {PermissionService} from "./permission.service";
-import {BlDocument, UserPermission} from "bl-model";
+import {BlDocument, UserPermission} from "@wizardcoder/bl-model";
 
 chai.use(chaiAsPromised);
 

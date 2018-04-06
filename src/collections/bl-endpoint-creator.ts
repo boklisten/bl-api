@@ -4,7 +4,7 @@ import {Router} from "express";
 import {PaymentCollection} from "./payment/payment.collection";
 import {DeliveryCollection} from "./delivery/delivery.collection";
 import {BlCollectionGenerator} from "./bl-collection-generator";
-import {Payment, Delivery, Branch, Item, CustomerItem, OpeningHour, UserDetail, Order} from 'bl-model';
+import {Payment, Delivery, Branch, Item, CustomerItem, OpeningHour, UserDetail, Order} from '@wizardcoder/bl-model';
 import chalk from "chalk";
 import {BranchCollection} from "./branch/branch.collection";
 import {ItemCollection} from "./item/item.collection";

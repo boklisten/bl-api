@@ -2,7 +2,7 @@
 
 import {RefreshTokenValidator} from "../refresh/refresh-token.validator";
 import {UserPermission} from "../../user/user-permission";
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 import {AccessTokenSecret} from "./access-token.secret";
 import {TokenConfig} from "../token.config";
 import {AccessToken} from "./access-token";

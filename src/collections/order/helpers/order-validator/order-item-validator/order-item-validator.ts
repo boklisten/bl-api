@@ -1,6 +1,6 @@
 
 
-import {Order, OrderItem, BlError, Branch, Item} from 'bl-model';
+import {Order, OrderItem, BlError, Branch, Item} from '@wizardcoder/bl-model';
 import {isNullOrUndefined, isNumber} from "util";
 import {OrderItemExtendValidator} from "./order-item-extend-validator/order-item-extend-validator";
 import {BlDocumentStorage} from "../../../../../storage/blDocumentStorage";

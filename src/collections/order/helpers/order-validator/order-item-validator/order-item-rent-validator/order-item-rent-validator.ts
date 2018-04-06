@@ -1,5 +1,5 @@
 
-import {Branch, OrderItem, Item, BlError} from 'bl-model';
+import {Branch, OrderItem, Item, BlError} from '@wizardcoder/bl-model';
 import {isNullOrUndefined} from "util";
 import {PriceService} from "../../../../../../price/price.service";
 

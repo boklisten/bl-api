@@ -1,6 +1,6 @@
 
 
-import {Order} from "bl-model";
+import {Order} from "@wizardcoder/bl-model";
 
 export class OrderPayment {
 	constructor() {

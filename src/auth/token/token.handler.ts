@@ -1,5 +1,5 @@
 
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 import {RefreshTokenCreator} from "./refresh/refresh-token.creator";
 import {AccessTokenCreator} from "./access-token/access-token.creator";
 import {UserHandler} from "../user/user.handler";

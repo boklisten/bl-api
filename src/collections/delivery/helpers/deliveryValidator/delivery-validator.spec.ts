@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {BlError, Delivery, Order, Branch} from 'bl-model';
+import {BlError, Delivery, Order, Branch} from '@wizardcoder/bl-model';
 import {DeliveryValidator} from "./delivery-validator";
 import {DeliveryBranchHandler} from "../deliveryBranch/delivery-branch-handler";
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";

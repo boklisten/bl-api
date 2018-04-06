@@ -4,7 +4,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import {expect} from 'chai';
 import {OrderItemValidator} from "./order-item-validator";
-import {Order, BlError, Branch, Item} from 'bl-model';
+import {Order, BlError, Branch, Item} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../../../storage/blDocumentStorage";
 import {OrderItemRentValidator} from "./order-item-rent-validator/order-item-rent-validator";
 import {OrderItemBuyValidator} from "./order-item-buy-validator/order-item-buy-validator";

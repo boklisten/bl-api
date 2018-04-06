@@ -6,7 +6,7 @@ import {SEResponseHandler} from "../../response/se.response.handler";
 import {RefreshTokenValidator} from "./refresh/refresh-token.validator";
 import {TokenHandler} from "./token.handler";
 import {RefreshToken} from "./refresh/refresh-token";
-import {BlapiResponse, BlError} from "bl-model";
+import {BlapiResponse, BlError} from "@wizardcoder/bl-model";
 
 export class TokenEndpoint {
 	private apiPath: ApiPath;

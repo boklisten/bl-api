@@ -1,5 +1,5 @@
 
-import {BlError, Branch, CustomerItem, Item, Order, OrderItem, Payment, Delivery} from "bl-model";
+import {BlError, Branch, CustomerItem, Item, Order, OrderItem, Payment, Delivery} from "@wizardcoder/bl-model";
 import {BranchValidator} from "./branch-validator/branch-validator";
 import {ItemValidator} from "./item-validator/item-validator";
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";

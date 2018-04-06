@@ -1,5 +1,5 @@
 
-import {Order, CustomerItem, OrderItem, BlError} from 'bl-model';
+import {Order, CustomerItem, OrderItem, BlError} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
 import {customerItemSchema} from "../../../customer-item/customer-item.schema";
 import {SystemUser} from "../../../../auth/permission/permission.service";

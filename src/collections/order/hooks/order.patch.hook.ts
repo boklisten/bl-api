@@ -2,7 +2,7 @@
 
 
 import {Hook} from "../../../hook/hook";
-import {AccessToken, BlError, Order, UserDetail, Delivery} from 'bl-model';
+import {AccessToken, BlError, Order, UserDetail, Delivery} from '@wizardcoder/bl-model';
 import {isEmpty} from "typescript-library-bundler/dist";
 import {isNullOrUndefined} from "util";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";

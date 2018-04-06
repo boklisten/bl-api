@@ -1,6 +1,7 @@
 
 
 import {AccessTokenAuth} from "./token/access-token/access-token.auth";
+
 import {GoogleAuth} from "./google/google.auth";
 import {FacebookAuth} from "./facebook/facebook.auth";
 import {Router} from "express";

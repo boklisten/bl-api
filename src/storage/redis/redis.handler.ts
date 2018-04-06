@@ -1,6 +1,6 @@
 
 import {RedisClient} from "redis";
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 
 const redis = require('redis');
 const bluebird = require('bluebird');

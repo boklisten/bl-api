@@ -4,7 +4,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
-import {Payment, Order, BlError, AccessToken} from 'bl-model';
+import {Payment, Order, BlError, AccessToken} from '@wizardcoder/bl-model';
 import {PaymentPostHook} from "./payment.post.hook";
 import {PaymentValidator} from "../helpers/payment.validator";
 

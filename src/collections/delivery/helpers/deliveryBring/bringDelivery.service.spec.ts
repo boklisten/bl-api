@@ -5,7 +5,7 @@ import * as sinon from 'sinon';
 import {expect} from 'chai';
 import {BringDeliveryService} from "./bringDelivery.service";
 import {HttpHandler} from "../../../../http/http.handler";
-import {BlError, Item, DeliveryInfoBring} from "bl-model";
+import {BlError, Item, DeliveryInfoBring} from "@wizardcoder/bl-model";
 import {APP_CONFIG} from "../../../../application-config";
 
 chai.use(chaiAsPromised);

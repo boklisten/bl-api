@@ -1,5 +1,5 @@
 
-import {Delivery, BlError, Order} from 'bl-model';
+import {Delivery, BlError, Order} from '@wizardcoder/bl-model';
 import {DeliveryBranchHandler} from "../deliveryBranch/delivery-branch-handler";
 import {isNullOrUndefined} from "util";
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";

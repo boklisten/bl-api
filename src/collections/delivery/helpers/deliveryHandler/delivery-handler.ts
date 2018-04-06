@@ -1,6 +1,6 @@
 
 
-import {Delivery, Order, BlError, AccessToken, Item, DeliveryInfoBring} from 'bl-model';
+import {Delivery, Order, BlError, AccessToken, Item, DeliveryInfoBring} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
 import {orderSchema} from "../../../order/order.schema";
 import {itemSchema} from "../../../item/item.schema";

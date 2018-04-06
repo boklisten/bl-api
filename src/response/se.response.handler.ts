@@ -1,9 +1,7 @@
 
 
 import {Response} from 'express';
-import {BlapiResponse} from "bl-model";
-import {BlapiErrorResponse} from "bl-model";
-import {BlError} from "bl-model";
+import {BlapiResponse, BlapiErrorResponse, BlError} from "@wizardcoder/bl-model";
 import {BlErrorHandler} from "../bl-error/bl-error-handler";
 import {APP_CONFIG} from "../application-config";
 

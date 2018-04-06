@@ -1,6 +1,6 @@
 
 
-import {BlError} from "bl-model";
+import {BlError} from "@wizardcoder/bl-model";
 import {RefreshTokenSecret} from "./refresh-token.secret";
 
 export class RefreshTokenValidator {

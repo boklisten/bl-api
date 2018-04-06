@@ -6,7 +6,7 @@ import {Router} from "express";
 import {ApiPath} from "../../config/api-path";
 import {LocalLoginValidator} from "./local-login.validator";
 import {SEResponseHandler} from "../../response/se.response.handler";
-import {BlapiResponse, BlError} from "bl-model";
+import {BlapiResponse, BlError} from "@wizardcoder/bl-model";
 import {TokenHandler} from "../token/token.handler";
 
 export class LocalAuth {
