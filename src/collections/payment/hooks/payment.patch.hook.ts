@@ -3,7 +3,7 @@
 import {Hook} from "../../../hook/hook";
 import {AccessToken, Payment, BlError} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
-import {paymentSchema} from "../../../../dist/collections/payment/payment.schema";
+import {paymentSchema} from "../payment.schema";
 
 export class PaymentPatchHook extends Hook {
 	private paymentStorage: BlDocumentStorage<Payment>;
