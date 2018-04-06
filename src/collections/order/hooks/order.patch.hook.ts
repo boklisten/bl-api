@@ -9,7 +9,6 @@ import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {userDetailSchema} from "../../user-detail/user-detail.schema";
 import {OrderValidator} from "../helpers/order-validator/order-validator";
 import {orderSchema} from "../order.schema";
-import {deliverySchema} from "../../../../dist/collections/delivery/delivery.schema";
 
 export class OrderPatchHook extends Hook {
 	
