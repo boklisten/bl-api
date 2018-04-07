@@ -154,7 +154,7 @@ export class Server {
 	}
 
 	private getMongoDbPath(): string {
-		return process.env.MONGODB_HOST;
+		return process.env.MONGODB_URI;
 	}
 
 	private getServerPath(): string {
