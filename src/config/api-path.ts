@@ -7,7 +7,7 @@ export class ApiPath {
 	}
 	
 	private getBasePath(): string {
-		return process.env.BL_API_PATH + '/';
+		return process.env.SERVER_PATH;
 	}
 	
 	public createPath(customPath: string): string {
