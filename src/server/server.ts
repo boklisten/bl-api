@@ -148,9 +148,9 @@ export class Server {
 			                   `\t| |_) | | (_| | |_) | |\n`+
 							   `\t|_.__/|_|\\__,_| .__/|_|\n`+
 			                   `\t	      |_| v${packageJson.version}\n`));
-		
-		console.log(chalk.blue('\t# ') + chalk.gray('hostname:\t') + chalk.dim.green(this.getServerPath()));
-		console.log(chalk.blue('\t# ') + chalk.gray('mongoDb: \t') + chalk.dim.green(this.getMongoDbPath()));
+		console.log(chalk.blue('\t# ') + chalk.gray('port:\t\t') + chalk.dim.green(process.env.PORT));
+		console.log(chalk.blue('\t# ') + chalk.gray('path:\t\t') + chalk.dim.green(this.getServerPath()));
+		console.log(chalk.blue('\t# ') + chalk.gray('mongoDb:\t') + chalk.dim.green(this.getMongoDbPath()));
 	}
 
 	private getMongoDbPath(): string {
@@ -158,7 +158,7 @@ export class Server {
 	}
 
 	private getServerPath(): string {
-		return process.env.SERVER_HOST;
+		return process.env.SERVER_PATH;
 	}
 }
 
