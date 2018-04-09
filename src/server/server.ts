@@ -47,7 +47,7 @@ export class Server {
 
 		let cors = require('cors');
 		
-		let whitelist = ['https://localhost:4200', '*', '127.0.0.1'];
+		let whitelist = ['http://localhost:4200', 'http://web.boklisten.co'];
 		let allowedMethods = ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'];
 		let allowedHeaders = ['Content-Type', 'Authorization', 'X-Requested-With'];
 	
@@ -56,7 +56,7 @@ export class Server {
 			origin: whitelist,
 			methods: allowedMethods,
 			allowedHeaders: allowedHeaders,
-			preflightContinue: false,
+			preflightContinue: true,
 			optionsSuccessStatus: 204
 		};
 		
@@ -101,7 +101,9 @@ export class Server {
 	
 	private initModules() {
 	}
+	
 
+	
 	private initialPassportConfig() {
 		passport.serializeUser((user: any, done: any) => {
 			done(null, user);
@@ -113,15 +115,16 @@ export class Server {
 	}
 
 	private serverStart() {
-		const privateKey = fs.readFileSync('localhost_bl-api.key');
-		const cert = fs.readFileSync('localhost_bl-api.crt');
+		// const privateKey = fs.readFileSync('localhost_bl-api.key');
+		// const cert = fs.readFileSync('localhost_bl-api.crt');
 		
-		const credentials = {key: privateKey, cert: cert};
+		// const credentials = {key: privateKey, cert: cert};
 		
 		
-		this.app.set('port', (process.env.PORT || process.env.BL_API_PORT || 1337));
+		this.app.set('port', (process.env.PORT || 1337));
 		
 		this.app.listen(this.app.get('port'), () => {
+			
 			console.log(chalk.blue('\t#') + chalk.gray(' server is up and running\n'));
 		});
 		
