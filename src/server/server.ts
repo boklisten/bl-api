@@ -77,8 +77,10 @@ export class Server {
 		let debugLogPath = (req: Request, res: Response, next: any) => {
 			let d = new Date();
 			let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-			console.log(chalk.blue('> ') + chalk.gray.bold('[' + d.toISOString() + ']' + chalk.gray('(' + ip + ')')));
-			console.log(chalk.bold.dim.yellow('\t' + req.method + ' ') + chalk.green(req.url));
+			if (req.method !== 'OPTIONS') { // no point in showing all the preflight requests
+				console.log(chalk.blue('> ') + chalk.gray.bold('[' + d.toISOString() + ']' + chalk.gray('(' + ip + ')')));
+				console.log(chalk.bold.dim.yellow('\t' + req.method + ' ') + chalk.green(req.url));
+			}
 			next();
 		};
 		
