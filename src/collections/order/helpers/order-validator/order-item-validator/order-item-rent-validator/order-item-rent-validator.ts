@@ -50,7 +50,7 @@ export class OrderItemRentValidator {
 			}
 		}
 		
-		throw new BlError('rent price could not be validated');
+		throw new BlError(`orderItem.info.periodType "${orderItem.info.periodType}" is not valid on branch`);
 	}
 	
 	private validateOrderItemInfoFields(orderItem: OrderItem): boolean {

@@ -128,6 +128,14 @@ export class Server {
 			console.log(chalk.blue('\t#') + chalk.gray(' server is up and running\n'));
 		});
 		
+		this.app.on('uncaughtException', () => {
+			console.log('an error occured');
+		});
+		
+		this.app.on('SIGTERM', () => {
+			console.log('user quit the program');
+		});
+		
 		/*
 		const httpsServer = https.createServer(credentials, this.app);
 		

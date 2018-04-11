@@ -1,5 +1,6 @@
 
 import {BlError, Order} from '@wizardcoder/bl-model';
+import {isNullOrUndefined} from "util";
 export class OrderHookBefore {
 	
 	validate(requestJsonBody: any): Promise<boolean> {
@@ -24,7 +25,7 @@ export class OrderHookBefore {
 	}
 	
 	private checkMinimumRequiredFields(requestBody: any): boolean {
-		if (!requestBody['amount']) {
+		if (isNullOrUndefined(requestBody['amount'])) {
 			throw new BlError('required field amount in order is not specified');
 		}
 		

@@ -135,7 +135,7 @@ describe('OrderItemRentValidator', () => {
 				testOrder.orderItems[0].info.periodType = "semester";
 				
 				return expect(orderItemRentValidator.validate(testBranch, testOrder.orderItems[0], testItem))
-					.to.be.rejectedWith(BlError, /rent price could not be validated/);
+					.to.be.rejectedWith(BlError, /orderItem.info.periodType "semester" is not valid on branch/);
 			});
 		});
 		
@@ -249,6 +249,10 @@ describe('OrderItemRentValidator', () => {
 				return expect(orderItemRentValidator.validate(testBranch, testOrder.orderItems[0], testItem))
 					.to.be.fulfilled;
 			});
+		});
+		
+		context('', () => {
+		    
 		});
 	});
 });

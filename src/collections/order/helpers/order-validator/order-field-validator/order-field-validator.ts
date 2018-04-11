@@ -21,9 +21,15 @@ export class OrderFieldValidator {
 				}
 				return Promise.reject(new BlError('unknown error, orderItem could not be validated').store('error', e));
 			}
+			
+			return Promise.resolve(true);
 	}
 	
 	private validateOrderFields(order: Order): boolean {
+		if (isNullOrUndefined(order.amount)) {
+			throw new BlError('order.amount is undefined');
+		}
+		
 		if (isNullOrUndefined(order.orderItems) || order.orderItems.length <= 0) {
 			throw new BlError('order.orderItems is empty or undefined');
 		}

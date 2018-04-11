@@ -6,6 +6,7 @@ import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
 import {OrderPlacedValidator} from "./order-placed-validator/order-placed-validator";
 import {OrderItemValidator} from "./order-item-validator/order-item-validator";
 import {branchSchema} from "../../../branch/branch.schema";
+import {OrderFieldValidator} from "./order-field-validator/order-field-validator";
 
 
 export class OrderValidator {
@@ -13,20 +14,22 @@ export class OrderValidator {
 	private orderItemValidator: OrderItemValidator;
 	private branchValidator: BranchValidator;
 	private branchStorage: BlDocumentStorage<Branch>;
+	private orderFieldValidator: OrderFieldValidator;
 	
 	constructor(orderItemValidator?: OrderItemValidator, orderPlacedValidator?: OrderPlacedValidator,
-				branchValidator?: BranchValidator, branchStorage?: BlDocumentStorage<Branch>) {
+				branchValidator?: BranchValidator, branchStorage?: BlDocumentStorage<Branch>, orderFieldValidator?: OrderFieldValidator) {
 		
 		this.orderItemValidator = (orderItemValidator) ? orderItemValidator : new OrderItemValidator();
 		this.orderPlacedValidator = (orderPlacedValidator) ? orderPlacedValidator : new OrderPlacedValidator();
 		this.branchValidator = (branchValidator) ? branchValidator : new BranchValidator();
 		this.branchStorage = (branchStorage) ? branchStorage : new BlDocumentStorage<Branch>('branches', branchSchema);
+		this.orderFieldValidator = (orderFieldValidator) ? orderFieldValidator : new OrderFieldValidator();
 	}
 	
 	public async validate(order: Order): Promise<boolean> {
 		
 		try {
-			this.validateFields(order);
+			await this.orderFieldValidator.validate(order);
 			let branch = await this.branchStorage.get(order.branch);
 			
 			await this.orderItemValidator.validate(branch, order);
@@ -40,17 +43,5 @@ export class OrderValidator {
 			return Promise.reject(new BlError('order could not be validated').store('error', e));
 		}
 		return Promise.resolve(true);
-	}
-	
-	private validateFields(order: Order): boolean {
-		if (!order.amount) {
-			throw new BlError('order.amount is undefined');
-		}
-		
-		if (!order.orderItems || order.orderItems.length <= 0) {
-			throw new BlError('order.orderItems is empty or undefined');
-		}
-		
-		return true;
 	}
 }
