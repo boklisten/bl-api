@@ -251,8 +251,78 @@ describe('OrderItemRentValidator', () => {
 			});
 		});
 		
-		context('', () => {
-		    
+		context('when branch is responsible for payment', () => {
+			beforeEach(() => {
+				testBranch.paymentInfo = {
+					responsible: true,
+					rentPeriods: [
+						{
+							type: "year",
+							maxNumberOfPeriods: 1,
+							percentage: 0.5
+						}
+					],
+					extendPeriods: [{
+						type: "semester",
+						maxNumberOfPeriods: 1,
+						price: 100
+					}],
+					buyout: {
+						percentage: 1.0
+					},
+					acceptedMethods: ['dibs']
+				};
+			});
+			
+			it('should resolve with true when orderItem.amount is 0', () => {
+				testBranch.paymentInfo = {
+					responsible: true,
+					rentPeriods: [
+						{
+							type: "year",
+							maxNumberOfPeriods: 1,
+							percentage: 0.5
+						}
+					],
+					extendPeriods: [{
+						type: "semester",
+						maxNumberOfPeriods: 1,
+						price: 100
+					}],
+					buyout: {
+						percentage: 1.0
+					},
+					acceptedMethods: ['dibs']
+				};
+				
+				testOrder.orderItems[0].amount = 0;
+				testOrder.orderItems[0].taxAmount = 0;
+				testOrder.orderItems[0].type = 'rent';
+				testOrder.orderItems[0].info = {
+					from: new Date(),
+					to: new Date(),
+					periodType: 'year',
+					numberOfPeriods: 1
+				};
+				
+				return expect(orderItemRentValidator.validate(testBranch, testOrder.orderItems[0], testItem))
+					.to.be.fulfilled;
+			});
+			
+			it('should reject if orderItem.amount is not 0', () => {
+				testOrder.orderItems[0].amount = 100;
+				testOrder.orderItems[0].taxAmount = 100;
+				testOrder.orderItems[0].type = 'rent';
+				testOrder.orderItems[0].info = {
+					from: new Date(),
+					to: new Date(),
+					periodType: 'year',
+					numberOfPeriods: 1
+				};
+				
+				return expect(orderItemRentValidator.validate(testBranch, testOrder.orderItems[0], testItem))
+					.to.be.rejectedWith(BlError, /orderItem.amount is "100" when branch.paymentInfo.responsible is true/);
+			});
 		});
 	});
 });

@@ -13,6 +13,7 @@ export class OrderItemRentValidator {
 	public async validate(branch: Branch, orderItem: OrderItem, item: Item): Promise<boolean> {
 		try {
 			await this.validateOrderItemPriceTypeRent(orderItem, item, branch);
+			return Promise.resolve(true);
 		} catch (e) {
 			if (e instanceof BlError) {
 				return Promise.reject(e);
@@ -30,6 +31,13 @@ export class OrderItemRentValidator {
 		
 		if (isNullOrUndefined(branch.paymentInfo.rentPeriods)) {
 			throw new BlError('branch.paymentInfo.rentPeriods is undefined');
+		}
+		
+		if (branch.paymentInfo.responsible) {
+			if (orderItem.amount !== 0) {
+				throw new BlError(`orderItem.amount is "${orderItem.amount}" when branch.paymentInfo.responsible is true`);
+			}
+			return true;
 		}
 		
 		for (let rentPeriod of branch.paymentInfo.rentPeriods) {
