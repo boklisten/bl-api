@@ -19,7 +19,7 @@ export class SEResponseHandler {
 	}
 	
 	public sendAuthTokens(res: Response, accessToken: string, refreshToken: string) {
-		res.redirect(APP_CONFIG.dev.client.base + 'auth/token;accessToken=' + accessToken + ';refreshToken=' + refreshToken);
+		res.redirect(process.env.CLIENT_URI + 'auth/token;accessToken=' + accessToken + ';refreshToken=' + refreshToken);
 	}
 	
 	public sendAuthErrorResponse(res: Response, info: any, err: any) {

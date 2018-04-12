@@ -130,7 +130,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 				}
 			
 				if (!this.permissionService.haveRestrictedPermission(user.id, user.permission, document)) {
-					return reject(new BlError(`user "${user.id} does not have the right permission to update document "${document}"`));
+					return reject(new BlError(`user "${user.id} does not have the right permission to update document "${document.id}"`).store('document', document));
 				}
 				
 				if (data['user']) {

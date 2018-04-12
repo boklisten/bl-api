@@ -47,7 +47,9 @@ export class DeliveryHandler {
 					}).catch((blError: BlError) => {
 		    			return reject(blError);
 					})
-				});
+				}).catch((bringDeliveryInfoError) => {
+		    		reject(new BlError('failed to get bring delivery info').add(bringDeliveryInfoError));
+				})
 			});
 		});
 	}
