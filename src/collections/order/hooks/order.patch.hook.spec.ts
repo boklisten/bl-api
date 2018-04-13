@@ -7,6 +7,7 @@ import {BlError, AccessToken, UserDetail, Order} from '@wizardcoder/bl-model';
 import {OrderPatchHook} from "./order.patch.hook";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {OrderValidator} from "../helpers/order-validator/order-validator";
+import {OrderPlacedHandler} from "../helpers/order-placed-handler/order-placed-handler";
 
 chai.use(chaiAsPromised);
 
@@ -14,7 +15,8 @@ describe('OrderPatchHook', () => {
 	const userDetailStorage = new BlDocumentStorage<UserDetail>('userdetails');
 	const orderStorage = new BlDocumentStorage<Order>('orders');
 	const orderValidator = new OrderValidator();
-	const orderPatchHook = new OrderPatchHook(userDetailStorage, orderStorage, orderValidator);
+	const orderPlacedHandler = new OrderPlacedHandler();
+	const orderPatchHook = new OrderPatchHook(userDetailStorage, orderStorage, orderValidator, orderPlacedHandler);
 	
 	let testAccessToken: AccessToken;
 	let testRequestBody: any;
@@ -23,6 +25,7 @@ describe('OrderPatchHook', () => {
 	let orderValidated = true;
 	let userDetailUpdated = true;
 	let testUserDetail: UserDetail;
+	let orderPlacedConfirmed: boolean;
 	
 	beforeEach(() => {
 		testRequestBody = {
@@ -32,6 +35,7 @@ describe('OrderPatchHook', () => {
 		orderUpdated = true;
 		orderValidated = true;
 		userDetailUpdated = true;
+		orderPlacedConfirmed = true;
 		
 		testUserDetail = {
 			id: 'userDetail1',
@@ -75,6 +79,13 @@ describe('OrderPatchHook', () => {
 			return Promise.reject(new BlError('not found').code(702));
 		}
 		return Promise.resolve(testOrder);
+	});
+	
+	sinon.stub(orderPlacedHandler, 'placeOrder').callsFake((order: Order) => {
+		if (!orderPlacedConfirmed) {
+			return Promise.reject(new BlError('could not place order'));
+		}
+		return Promise.resolve(true);
 	});
 	
 	const userDetailStorageUpdateStub = sinon.stub(userDetailStorage, 'update').callsFake((id: string, data: any, user: any) => {
@@ -145,43 +156,15 @@ describe('OrderPatchHook', () => {
 		});
 		
 		context('when order.placed is true', () => {
-			it('should set order.placed to false if orderValidation.validate rejects', (done) => {
-				orderValidated = false;
+			beforeEach(() => {
 				testOrder.placed = true;
-				
-				orderPatchHook.after(['order1'], testAccessToken).catch((blError: BlError) => {
-					expect(orderStorageUpdateStub.calledWith([{placed: false}]));
-					done();
-				});
 			});
 			
-			it('should create userDetail.orders array with the orderId if it was not declared', (done) => {
-				testOrder.placed = true;
-				testUserDetail.orders = null;
-				
-				orderPatchHook.after(['order1'], testAccessToken).then(() => {
-					expect(testUserDetail.orders).to.be.eql(['order1']);
-					done();
-				});
-			});
-			
-			it('should update userDetail.orders array with the newly placed order', () => {
-				testOrder.placed = true;
-				testOrder.id = 'order1';
-				testUserDetail.orders = ['order2', 'order3'];
-				
-				orderPatchHook.after(['order1'], testAccessToken).then(() => {
-					expect(testUserDetail.orders).to.be.eql(['order2', 'order3', 'order1']);
-				});
-			});
-			
-			it('should reject if userDetail.orders array already includes the new orderId', () => {
-				testOrder.placed = true;
-				testOrder.id = 'order1';
-				testUserDetail.orders = ['order1', 'order2'];
+			it('should reject if OrderPlaced.placeOrder rejects', () => {
+				orderPlacedConfirmed = false;
 				
 				return expect(orderPatchHook.after(['order1'], testAccessToken))
-					.to.be.rejectedWith(BlError, /order.id "order1" is already in userDetail.orders/);
+					.to.be.rejectedWith(BlError, /order could not be placed/);
 			});
 		});
 	});

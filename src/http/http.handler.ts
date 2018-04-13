@@ -48,7 +48,7 @@ export class HttpHandler {
 			
 			let options = {
 				uri: url + '?' + queryString,
-				json: true
+				json: true,
 			};
 			
 			rp(options).then((jsonResponse) => {
@@ -57,6 +57,27 @@ export class HttpHandler {
 				reject(new BlError('could not get page with query').store('responseError', error).store('uri', url + '?' + queryString));
 			})
 		
+		});
+	}
+	
+	public get(url: string, authorization?: string): Promise<any> {
+		return new Promise((resolve, reject) => {
+		 	let options = {
+		 		uri: url,
+				json: true,
+				headers: {}
+			};
+		 	
+		 	if (authorization) {
+				options['headers']['Authorization'] = authorization;
+			}
+			
+			rp(options).then((jsonResponse) => {
+		 		resolve(jsonResponse);
+			}).catch((error) => {
+		 		reject(new BlError(`could not get the requested resorce at "${url}"`).store('error', error));
+			})
+			
 		});
 	}
 	

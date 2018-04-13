@@ -6,6 +6,7 @@ import {DibsEasyItem} from "./dibs-easy-item/dibs-easy-item";
 import {DibsEasyOrder} from "./dibs-easy-order/dibs-easy-order";
 import {HttpHandler} from "../../http/http.handler";
 import {APP_CONFIG} from "../../application-config";
+import {DibsEasyPayment} from "./dibs-easy-payment/dibs-easy-payment";
 
 export class DibsPaymentService {
 	
@@ -13,12 +14,22 @@ export class DibsPaymentService {
 	
 	}
 	
+	public getDibsPayment(dibsPaymentId: string): Promise<DibsEasyPayment> {
+		return new Promise((resolve, reject) => {
+		    let httpHandler: HttpHandler = new HttpHandler();
+		    
+		    httpHandler.get(process.env.DIBS_URI + APP_CONFIG.path.dibs.payment + '/' + dibsPaymentId, process.env.DIBS_SECRET_KEY).then((jsonRepsonse) => {
+		    	resolve(jsonRepsonse['payment'] as DibsEasyPayment);
+			}).catch((getError: BlError)  => {
+		    	reject(new BlError('could not get payment from dibs api from dibs api').add(getError))
+			})
+		});
+	}
 	
 	public getPaymentId(dibsEasyOrder: DibsEasyOrder): Promise<string> {
 		return new Promise((resolve, reject) => {
 			let httpHandler: HttpHandler = new HttpHandler();
-			httpHandler.post('https://test.api.dibspayment.eu/v1/payments', dibsEasyOrder, 'test-secret-key-f82b1743410b4f91adcc6420390096d4').then((responseData: string) => {
-				
+			httpHandler.post(process.env.DIBS_URI + APP_CONFIG.path.dibs.payment, dibsEasyOrder, process.env.DIBS_SECRET_KEY).then((responseData: string) => {
 				if (responseData) {
 					if (responseData['paymentId']) {
 						return resolve(responseData['paymentId']);
@@ -49,8 +60,8 @@ export class DibsPaymentService {
 		dibsEasyOrder.order.currency = "NOK";
 		
 		dibsEasyOrder.checkout = {
-			url: process.env.CLIENT_URI + APP_CONFIG.client.path.checkout,
-			termsUrl: process.env.CLIENT_URI + APP_CONFIG.client.path.agreement.rent,
+			url: process.env.CLIENT_URI + APP_CONFIG.path.client.checkout,
+			termsUrl: process.env.CLIENT_URI + APP_CONFIG.path.client.agreement.rent,
 			ShippingCountries: [
 				{countryCode: "NOR"}
 			]

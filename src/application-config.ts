@@ -1,11 +1,14 @@
 
 export const APP_CONFIG = {
-	client: {
-		path: {
+	path: {
+		client: {
 			checkout: 'cart',
 			agreement: {
 				rent: 'info/agreement/rent'
-			}
+			},
+		},
+		dibs: {
+			payment: 'payments'
 		}
 	},
 	server: {

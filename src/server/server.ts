@@ -5,6 +5,8 @@ import {APP_CONFIG} from "../application-config";
 import {BlAuth} from "../auth/bl.auth";
 import {BlEndpointCreator} from "../collections/bl-endpoint-creator";
 import * as https from "https";
+import {DibsPaymentService} from "../payment/dibs/dibs-payment.service";
+import {BlError} from "@wizardcoder/bl-model";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
 const packageJson = require('../../package.json');
@@ -94,6 +96,7 @@ export class Server {
 	}
 	
 	private test() {
+	
 	}
 	
 	private generateEndpoints() {
