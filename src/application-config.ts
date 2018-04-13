@@ -1,5 +1,13 @@
 
 export const APP_CONFIG = {
+	client: {
+		path: {
+			checkout: 'cart',
+			agreement: {
+				rent: 'info/agreement/rent'
+			}
+		}
+	},
 	server: {
 		basePath: 'http://localhost:1337/api/v1/'
 	},

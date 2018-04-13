@@ -5,6 +5,7 @@ import {BlError, Order, OrderItem} from "@wizardcoder/bl-model";
 import {DibsEasyItem} from "./dibs-easy-item/dibs-easy-item";
 import {DibsEasyOrder} from "./dibs-easy-order/dibs-easy-order";
 import {HttpHandler} from "../../http/http.handler";
+import {APP_CONFIG} from "../../application-config";
 
 export class DibsPaymentService {
 	
@@ -47,10 +48,9 @@ export class DibsPaymentService {
 		dibsEasyOrder.order.amount = this.getTotalGrossAmount(items);
 		dibsEasyOrder.order.currency = "NOK";
 		
-		
 		dibsEasyOrder.checkout = {
-			url: "https://localhost:1337/checkout",
-			termsUrl: "https://localhost:1337/terms",
+			url: process.env.CLIENT_URI + APP_CONFIG.client.path.checkout,
+			termsUrl: process.env.CLIENT_URI + APP_CONFIG.client.path.agreement.rent,
 			ShippingCountries: [
 				{countryCode: "NOR"}
 			]
