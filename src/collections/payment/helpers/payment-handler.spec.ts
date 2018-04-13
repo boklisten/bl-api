@@ -145,7 +145,7 @@ describe('PaymentHandler', () => {
 				testDibsEasyPayment = {
 					paymentId: 'dibsEasyPayment1',
 					summary: {
-						reservedAmount: 200
+						reservedAmount: 20000
 					},
 					consumer: {},
 					orderDetails: {
@@ -209,12 +209,12 @@ describe('PaymentHandler', () => {
 			
 			it('should reject if summary.reservedAmount is not equal to payment.amount', () => {
 				testDibsEasyPayment.summary = {
-					reservedAmount: 100
+					reservedAmount: 10000
 				};
 				testPayment1.amount = 200;
 				
 				return expect(paymentHandler.confirmPayments(testOrder, testAccessToken))
-					.to.be.rejectedWith(BlError, /dibsEasyPayment.summary.reservedAmount "100" is not equal to payment.amount "200"/);
+					.to.be.rejectedWith(BlError, /dibsEasyPayment.summary.reservedAmount "10000" is not equal to payment.amount "20000"/);
 			});
 			
 			it('should update payment with confirmed true if dibsEasyPayment is valid', (done) => {
