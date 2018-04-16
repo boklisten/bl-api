@@ -1,17 +1,20 @@
 
 
 
-import {BlError, Order, OrderItem} from "@wizardcoder/bl-model";
+import {BlError, Delivery, Order, OrderItem} from "@wizardcoder/bl-model";
 import {DibsEasyItem} from "./dibs-easy-item/dibs-easy-item";
 import {DibsEasyOrder} from "./dibs-easy-order/dibs-easy-order";
 import {HttpHandler} from "../../http/http.handler";
 import {APP_CONFIG} from "../../application-config";
 import {DibsEasyPayment} from "./dibs-easy-payment/dibs-easy-payment";
+import {BlDocumentStorage} from "../../storage/blDocumentStorage";
+import {deliverySchema} from "../../collections/delivery/delivery.schema";
 
 export class DibsPaymentService {
+	private deliveryStorage: BlDocumentStorage<Delivery>;
 	
-	constructor() {
-	
+	constructor(deliveryStorage?: BlDocumentStorage<Delivery>) {
+		this.deliveryStorage = (deliveryStorage) ? deliveryStorage : new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
 	}
 	
 	public getDibsPayment(dibsPaymentId: string): Promise<DibsEasyPayment> {
@@ -42,7 +45,7 @@ export class DibsPaymentService {
 		});
 	}
 	
-	public orderToDibsEasyOrder(order: Order): DibsEasyOrder {
+	public orderToDibsEasyOrder(order: Order, delivery?: Delivery): DibsEasyOrder {
 		this.validateOrder(order);
 		this.validateOrderPayments(order.payments);
 		
@@ -50,6 +53,10 @@ export class DibsPaymentService {
 		
 		for (let orderItem of order.orderItems) {
 			items.push(this.orderItemToEasyItem(orderItem));
+		}
+		
+		if (order.delivery && delivery && delivery.amount > 0) {
+			items.push(this.deliveryToDibsEasyItem(delivery));
 		}
 		
 		let dibsEasyOrder: DibsEasyOrder = new DibsEasyOrder();
@@ -69,6 +76,20 @@ export class DibsPaymentService {
 		
 		return dibsEasyOrder;
 		
+	}
+	
+	private deliveryToDibsEasyItem(delivery: Delivery): DibsEasyItem {
+		return {
+			reference: delivery.id,
+			name: 'delivery',
+			quantity: 1,
+			unit: 'delivery',
+			unitPrice: this.toEars(delivery.amount),
+			taxRate: 0,
+			taxAmount: (delivery.taxAmount) ? this.toEars(delivery.taxAmount) : 0,
+			grossTotalAmount: this.toEars(delivery.amount),
+			netTotalAmount: this.toEars(delivery.amount)
+		}
 	}
 	
 	private validateOrder(order: Order) {

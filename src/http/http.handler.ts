@@ -25,8 +25,6 @@ export class HttpHandler {
 				options['headers']['Authorization'] = authorization;
 			}
 			
-			
-			
 		    request.post(options, (err, res, body) => {
 		    	if (err) {
 		    		return reject(new BlError(`error on request to "${url}"`));
@@ -37,7 +35,7 @@ export class HttpHandler {
 		    			return resolve(body);
 					}
 					
-					return reject(new BlError(`the request to "${url} responded with status ${res.statusCode}`).store('body', body));
+					return reject(new BlError(`the request to "${url}" responded with status ${res.statusCode}`).store('body', body));
 				}
 			});
 		});

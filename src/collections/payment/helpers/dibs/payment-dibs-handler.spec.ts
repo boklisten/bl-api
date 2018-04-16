@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {AccessToken, BlError, Order, Payment} from '@wizardcoder/bl-model';
+import {AccessToken, BlError, Delivery, Order, Payment} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
 import {DibsPaymentService} from "../../../../payment/dibs/dibs-payment.service";
 import {DibsEasyOrder} from "../../../../payment/dibs/dibs-easy-order/dibs-easy-order";
@@ -16,8 +16,9 @@ describe('PaymentDibsHandler', () => {
 	const orderStorage = new BlDocumentStorage<Order>('orders');
 	const paymentStorage = new BlDocumentStorage<Payment>('payments');
 	const dibsPaymentService = new DibsPaymentService();
+	const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
 	
-	const paymentDibsHandler = new PaymentDibsHandler(paymentStorage, orderStorage, dibsPaymentService);
+	const paymentDibsHandler = new PaymentDibsHandler(paymentStorage, orderStorage, dibsPaymentService, deliveryStorage);
 	
 	describe('handleDibsPayment()', () => {
 		let testOrder: Order;
@@ -29,6 +30,7 @@ describe('PaymentDibsHandler', () => {
 		let getDibsEasyOrderConfirm: boolean;
 		let testPaymentId: string;
 		let orderUpdated: boolean;
+		let testDelivery: Delivery;
 		
 		
 		beforeEach(() => {
@@ -91,6 +93,16 @@ describe('PaymentDibsHandler', () => {
 				}
 			};
 			
+			testDelivery = {
+				id: 'delivery1',
+				method: 'bring',
+				info: {
+					branch: 'branch1'
+				},
+				order: 'order1',
+				amount: 100,
+			};
+			
 			orderUpdated = true;
 			paymentUpdated = true;
 			getPaymentIdConfirm = true;
@@ -138,6 +150,7 @@ describe('PaymentDibsHandler', () => {
 			return expect(paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken))
 				.to.be.rejectedWith(BlError, /order not found/);
 		});
+		
 		
 		it('should reject if dibsPaymentService.orderToDibsEasyOrder rejects', () => {
 			getDibsEasyOrderConfirm = false;
