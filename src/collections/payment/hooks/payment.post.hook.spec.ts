@@ -7,6 +7,7 @@ import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {Payment, Order, BlError, AccessToken} from '@wizardcoder/bl-model';
 import {PaymentPostHook} from "./payment.post.hook";
 import {PaymentValidator} from "../helpers/payment.validator";
+import {PaymentDibsHandler} from "../helpers/dibs/payment-dibs-handler";
 
 chai.use(chaiAsPromised);
 
@@ -14,12 +15,14 @@ describe('PaymentPostHook', () => {
 	const paymentValidator = new PaymentValidator();
 	const orderStorage = new BlDocumentStorage<Order>('orders');
 	const paymentStorage: BlDocumentStorage<Payment> = new BlDocumentStorage('payments');
-	const paymentPostHook = new PaymentPostHook(paymentStorage, orderStorage, paymentValidator);
+	const paymentDibsHandler = new PaymentDibsHandler();
+	const paymentPostHook = new PaymentPostHook(paymentStorage, orderStorage, paymentValidator, paymentDibsHandler);
 	
 	let testOrder: Order;
 	let testPayment: Payment;
 	let testAccessToken;
 	let paymentValidated: boolean;
+	let handleDibsPaymentValid: boolean;
 	
 	beforeEach(() => {
 		testOrder = {
@@ -47,6 +50,7 @@ describe('PaymentPostHook', () => {
 		};
 		
 		paymentValidated = true;
+		handleDibsPaymentValid = true;
 	});
 	
 	sinon.stub(paymentStorage, 'get').callsFake((id: string) => {
@@ -58,6 +62,13 @@ describe('PaymentPostHook', () => {
 	});
 	
 	sinon.stub(paymentStorage, 'update').callsFake((id: string, data: any, accessToken: AccessToken) => {
+		return Promise.resolve(testPayment);
+	});
+	
+	sinon.stub(paymentDibsHandler, 'handleDibsPayment').callsFake((payment, accessToken) => {
+		if (!handleDibsPaymentValid) {
+			return Promise.reject(new BlError('could not create dibs payment'));
+		}
 		return Promise.resolve(testPayment);
 	});
 	
@@ -125,13 +136,21 @@ describe('PaymentPostHook', () => {
 						.to.be.eql(['order1', {payments: ['payment1']}, {id: testAccessToken.sub, permission: testAccessToken.permission}]);
 					
 					done();
-					
-				}).catch((blError) => {
-					console.log('there was an erro when trying to post payment', blError);
-				})
-				
+				});
 			});
 		});
 		
+		context('when paymentMethod is "dibs"', () => {
+			beforeEach(() => {
+				testPayment.method = 'dibs';
+			});
+			
+			it('should reject if paymentDibsHandler.handleDibsPayment rejects', () => {
+				handleDibsPaymentValid = false;
+				
+				return expect(paymentPostHook.after(['payment1'], testAccessToken))
+					.to.be.rejectedWith(BlError, /could not create dibs payment/);
+			});
+		});
 	});
 });

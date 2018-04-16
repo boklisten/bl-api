@@ -10,18 +10,22 @@ import {SystemUser} from "../../../auth/permission/permission.service";
 import {orderSchema} from "../../order/order.schema";
 import {PaymentValidator} from "../helpers/payment.validator";
 import {isNullOrUndefined} from "util";
+import {PaymentDibsHandler} from "../helpers/dibs/payment-dibs-handler";
 
 export class PaymentPostHook extends Hook {
 	
 	private paymentStorage: BlDocumentStorage<Payment>;
 	private orderStorage: BlDocumentStorage<Order>;
 	private paymentValidator: PaymentValidator;
+	private paymentDibsHandler: PaymentDibsHandler;
 	
-	constructor(paymentStorage?: BlDocumentStorage<Payment>, orderStorage?: BlDocumentStorage<Order>, paymentValidator?: PaymentValidator) {
+	constructor(paymentStorage?: BlDocumentStorage<Payment>, orderStorage?: BlDocumentStorage<Order>, paymentValidator?: PaymentValidator,
+				paymentDibsHandler?: PaymentDibsHandler) {
 		super();
 		this.paymentValidator = (paymentValidator) ? paymentValidator : new PaymentValidator();
 		this.paymentStorage = (paymentStorage) ? paymentStorage : new BlDocumentStorage('payments', paymentSchema);
 		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage('orders', orderSchema);
+		this.paymentDibsHandler = (paymentDibsHandler) ? paymentDibsHandler : new PaymentDibsHandler();
 	}
 	
 	public before(): Promise<boolean> {
@@ -50,7 +54,7 @@ export class PaymentPostHook extends Hook {
 								return reject(blError);
 							});
 						case "dibs":
-							return this.handleDibsPayment(payment, accessToken).then((payment) => {
+							return this.paymentDibsHandler.handleDibsPayment(payment, accessToken).then((payment) => {
 								return resolve([payment]);
 							}).catch((blError: BlError) => {
 								reject(blError);
@@ -88,60 +92,6 @@ export class PaymentPostHook extends Hook {
 			}).catch((orderGetError: BlError) => {
 				reject(orderGetError);
 			});
-		});
-	}
-
-	private handleDibsPayment(payment: Payment, accessToken: AccessToken): Promise<Payment> {
-		return new Promise((resolve, reject) => {
-			this.orderStorage.get(payment.order).then((order: Order) => {
-				
-				const dibsPayment = new DibsPaymentService();
-				let deo: DibsEasyOrder;
-				
-				try {
-					deo = dibsPayment.orderToDibsEasyOrder(order);
-				} catch (e) {
-					if (e instanceof BlError) {
-						reject(new BlError('could not create dibsEasyOrder').add(e));
-					}
-					reject(new BlError('unknown error, the order could not be made to a dibs easy order'));
-				}
-				
-				dibsPayment.getPaymentId(deo).then((paymentId: string) => {
-					this.paymentStorage.update(payment.id, {"info": {"paymentId": paymentId}}, new SystemUser()).then((updatedPayment: Payment) => {
-						
-						this.updateOrderWithPaymentId(updatedPayment.order, updatedPayment.id, accessToken).then((updatedOrder: Order) => {
-							resolve(updatedPayment);
-						}).catch((orderUpdateError: BlError) => {
-							reject(orderUpdateError);
-						});
-						
-					}).catch((blError: BlError) => {
-						reject(new BlError(`could not update payment "${payment.id}" with paymentId`))
-					});
-				}).catch((blError: BlError) => {
-					reject(blError);
-				});
-			}).catch((blError: BlError) => {
-				reject(new BlError(`payment.order "${payment.order}" does not exists in database`).add(blError));
-			});
-		});
-	}
-	
-	private updateOrderWithPaymentId(orderId: string, paymentId: string, accessToken: AccessToken): Promise<Order> {
-		return new Promise((resolve, reject) => {
-		    this.orderStorage.get(orderId).then((order: Order) => {
-		    	
-		    	order.payments.push(paymentId);
-		    	
-		    	this.orderStorage.update(orderId, {'payments': order.payments}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedOrder: Order) => {
-		    		resolve(updatedOrder);
-				}).catch((blError: BlError) => {
-		    		reject(blError);
-				});
-			}).catch((orderError: BlError) => {
-		    	reject(orderError);
-			})
 		});
 	}
 }
