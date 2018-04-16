@@ -55,24 +55,13 @@ export class DeliveryHandler {
 	}
 	
 	private updateOrder(order: Order, delivery: Delivery, accessToken: AccessToken): Promise<boolean> {
-		let orderAmount = this.calculateOrderAmount(order, delivery);
-		let orderUpdateData = {delivery: delivery.id, amount: orderAmount};
+		let orderUpdateData = {delivery: delivery.id};
 		
 		return this.orderStorage.update(order.id, orderUpdateData, {id: accessToken.sub, permission: accessToken.permission}).then(() => {
 			return true;
 		}).catch((blError: BlError) => {
 			return Promise.reject(new BlError('could not update order').add(blError));
 		});
-	}
-	
-	private calculateOrderAmount(order: Order, delivery: Delivery): number {
-		let totalOrderItemAmount = 0;
-		
-		for (let orderItem of order.orderItems) {
-			totalOrderItemAmount += orderItem.amount;
-		}
-		
-		return totalOrderItemAmount + delivery.amount;
 	}
 	
 	private fetchItems(order: Order): Promise<Item[]> {

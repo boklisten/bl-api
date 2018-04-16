@@ -6,17 +6,17 @@ import {PaymentValidator} from "./payment.validator";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 chai.use(chaiAsPromised);
 import {expect} from 'chai';
-import {Payment, Order, BlError, Branch} from '@wizardcoder/bl-model';
+import {Payment, Order, BlError, Branch, Delivery} from '@wizardcoder/bl-model';
 
 describe('PaymentValidator', () => {
 	const orderStorage =  new BlDocumentStorage<Order>('orders');
 	const paymentStorage = new BlDocumentStorage<Payment>('payments');
-	const branchStorage = new BlDocumentStorage<Branch>('branches')
-	const paymentValidator = new PaymentValidator(orderStorage, paymentStorage);
+	const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
+	const paymentValidator = new PaymentValidator(orderStorage, paymentStorage, deliveryStorage);
 	
-	let testBranch: Branch;
 	let testPayment: Payment;
 	let testOrder: Order;
+	let testDelivery: Delivery;
 	
 	beforeEach(() => {
 		testPayment = {
@@ -39,51 +39,28 @@ describe('PaymentValidator', () => {
 			byCustomer: true
 		};
 		
-		testBranch = {
-			id: 'branch1',
-			name: 'testBranch',
-			type: 'school',
-			root: true,
-			items: [],
-			openingHours: [],
-			paymentInfo: {
-				responsible: false,
-				rentPeriods: [
-					{
-						type: "semester",
-						maxNumberOfPeriods: 2,
-						percentage: 0.5
-					}
-				],
-				extendPeriods: [
-					{
-						type: "semester",
-						price: 100,
-						maxNumberOfPeriods: 1
-					}
-				],
-				buyout: {
-					percentage: 0.50
-				},
-				acceptedMethods: ['card']
-			}
+		testDelivery = {
+			id: 'delivery1',
+			method: 'bring',
+			info: {
+				amount: 100,
+				estimatedDelivery: new Date()
+			},
+			order: 'order1',
+			amount: 100
 		}
-	});
-	
-	
-	
-	sinon.stub(branchStorage, 'get').callsFake((id: string) => {
-		if (id !== testBranch.id) {
-			return Promise.reject(new BlError('not found').code(702));
-		}
-		return Promise.resolve(testBranch);
+		
 	});
 	
 	sinon.stub(orderStorage, 'get').callsFake((id: string) => {
 		if (id !== testOrder.id) {
-			return Promise.reject(new BlError('not found').code(702));
+			return Promise.reject(new BlError('order not found').code(702));
 		}
 		return Promise.resolve(testOrder);
+	});
+	
+	sinon.stub(deliveryStorage, 'get').callsFake((id: string) => {
+		return (id === testDelivery.id) ? Promise.resolve(testDelivery) : Promise.reject(new BlError('delivery not found'));
 	});
 	
 	describe('#validate()', () => {
@@ -95,54 +72,43 @@ describe('PaymentValidator', () => {
 		it('should reject if paymentMethod is not valid', () => {
 			testPayment.method = 'something' as any;
 			return expect(paymentValidator.validate(testPayment))
-				.to.eventually.be.rejectedWith(BlError, /paymentMethod "something" not supported/);
+				.to.eventually.be.rejectedWith(BlError, /payment.method "something" not supported/);
 		});
 		
 		it('should resolve when payment is valid', () => {
 			
 			return expect(paymentValidator.validate(testPayment))
 				.to.eventually.be.fulfilled;
-			
-			
 		});
-		
-		/*
-		
-		it('should reject if branch is not found', () => {
-			testPayment.branch = 'notFoundBranch';
-			
-			return expect(paymentValidator.validate(testPayment))
-				.to.eventually.be.rejectedWith(BlError, /payment.branch "notFoundBranch" not found/);
-		});
-		*/
 		
 		it('should reject if order is not found', () => {
 			testPayment.order = 'orderNotFound';
 			
 			return expect(paymentValidator.validate(testPayment))
-				.to.be.rejectedWith(BlError, /payment.order "orderNotFound" not found/);
+				.to.be.rejectedWith(BlError, /order not found/);
 		});
-		
-		/*
-		it('should reject if payment.customer is not equal to order.customer', () => {
-			testPayment.customer = 'customer1';
-			testOrder.customer = 'customer2';
-			
-			return expect(paymentValidator.validate(testPayment))
-				.to.be.rejectedWith(BlError, /payment.customer "customer1" is not equal to order.customer "customer2"/);
-		});
-		*/
 		
 		context('when paymentMethod is "dibs"', () => {
-			it('should reject if order.amount is not equal to payment.amount', () => {
-				testOrder.amount = 300;
-				testPayment.amount = 100;
-				testPayment.method = 'dibs';
+		
+		});
+		
+		context('when order.delivery is set', () => {
+			it('should reject if order.delivery is not found', () => {
+				testOrder.delivery = 'notFoundDelivery';
 				
 				return expect(paymentValidator.validate(testPayment))
-					.to.be.rejectedWith(BlError, /order.amount "300" is not equal to payment.amount "100"/);
+					.to.be.rejectedWith(BlError, /delivery not found/);
 			});
-		
+			
+			it('should reject if payment.amount is not equal to order.amount + delivery.amount', () => {
+				testOrder.amount = 200;
+				testPayment.amount = 200;
+				testDelivery.amount = 100;
+				testOrder.delivery = testDelivery.id;
+				
+				return expect(paymentValidator.validate(testPayment))
+					.to.be.rejectedWith(BlError, /payment.amount "200" is not equal to \(order.amount \+ delivery.amount\) "300"/);
+			});
 		});
 		
 		context('when paymentMethod is "later"', () => {
