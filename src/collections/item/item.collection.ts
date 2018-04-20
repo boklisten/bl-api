@@ -9,10 +9,28 @@ export class ItemCollection implements BlCollection {
 	mongooseSchema = itemSchema;
 	endpoints: BlEndpoint[] = [
 		{
-			method: 'getAll'
+			method: 'getId'
 		},
 		{
-			method: 'getId'
+			method: 'getAll',
+			validQueryParams: [
+				{
+					fieldName: 'title',
+					type: 'string'
+				},
+				{
+					fieldName: 'type',
+					type: "string"
+				},
+				{
+					fieldName: 'info',
+					type: 'string'
+				},
+				{
+					fieldName: 'info.isbn',
+					type: 'string',
+				}
+			]
 		}
 	]
 }

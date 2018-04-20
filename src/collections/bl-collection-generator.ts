@@ -10,6 +10,8 @@ import chalk from "chalk";
 import {BlDocumentStorage} from "../storage/blDocumentStorage";
 import {Hook} from "../hook/hook";
 import {PermissionService} from "../auth/permission/permission.service";
+import {SEDbQuery} from "../query/se.db-query";
+import {SEDbQueryBuilder} from "../query/se.db-query-builder";
 
 export class BlCollectionGenerator<T extends BlDocument>{
 	private apiPath: ApiPath;
@@ -122,12 +124,20 @@ export class BlCollectionGenerator<T extends BlDocument>{
 		});
 	}
 	
-	private getAll(res: Response) {
-		this.documentStorage.getAll().then((docs: T[]) => {
-			this.resHandler.sendResponse(res, new BlapiResponse(docs));
-		}).catch((blError: BlError) => {
-			this.resHandler.sendErrorResponse(res, blError);
-		});
+	private getAll(res: Response, query?: SEDbQuery) {
+		if (query) {
+			this.documentStorage.getByQuery(query).then((docs: T[]) => {
+				this.resHandler.sendResponse(res, new BlapiResponse(docs));
+			}).catch((blError: BlError) => {
+				this.resHandler.sendErrorResponse(res, blError);
+			});
+		} else {
+			this.documentStorage.getAll().then((docs: T[]) => {
+				this.resHandler.sendResponse(res, new BlapiResponse(docs));
+			}).catch((blError: BlError) => {
+				this.resHandler.sendErrorResponse(res, blError);
+			});
+		}
 	}
 	
 	private generateDelete(endpoint: BlEndpoint) {
@@ -153,14 +163,26 @@ export class BlCollectionGenerator<T extends BlDocument>{
 				passport.authenticate(this.authStrategy, (err, aToken: { accessToken: AccessToken}, info) => {
 					this.validateAuth(endpoint, aToken.accessToken, err, info).then((accessToken: AccessToken) => {
 						
-						this.getAll(res);
+						if (req.query && endpoint.validQueryParams) {
+							let dbQuery = new SEDbQueryBuilder();
+							let query = dbQuery.getDbQuery(req.query, endpoint.validQueryParams);
+							this.getAll(res, query);
+						} else {
+							this.getAll(res);
+						}
 						
 					}).catch((blError: BlError) => {
 						return this.resHandler.sendErrorResponse(res, blError);
 					});
 				})(req, res, next);
 			} else { //no restriction all users can get this endpoint
-				this.getAll(res);
+				if (req.query && endpoint.validQueryParams) {
+					let dbQuery = new SEDbQueryBuilder();
+					let query = dbQuery.getDbQuery(req.query, endpoint.validQueryParams);
+					this.getAll(res, query);
+				} else {
+					this.getAll(res);
+				}
 			}
 		});
 		

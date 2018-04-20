@@ -49,7 +49,7 @@ export class Server {
 
 		let cors = require('cors');
 		
-		let whitelist = ['http://localhost:4200', 'http://web.boklisten.co'];
+		let whitelist = process.env.URI_WHITELIST.split(' ');
 		let allowedMethods = ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'];
 		let allowedHeaders = ['Content-Type', 'Authorization', 'X-Requested-With'];
 	
