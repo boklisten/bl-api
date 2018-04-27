@@ -21,9 +21,11 @@ describe('PaymentValidator', () => {
 	beforeEach(() => {
 		testPayment = {
 			id: 'payment1',
-			method: 'later',
+			method: 'dibs',
 			order: 'order1',
-			info: {},
+			info: {
+				paymentId: 'dibs1'
+			},
 			amount: 100,
 			confirmed: false,
 			customer: 'customer1',

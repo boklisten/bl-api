@@ -11,7 +11,6 @@ export class PaymentHandler {
 	private paymentStorage: BlDocumentStorage<Payment>;
 	private dibsPaymentService: DibsPaymentService;
 	
-	
 	constructor(paymentStorage?: BlDocumentStorage<Payment>, dibsPaymentService?: DibsPaymentService) {
 		this.paymentStorage = (paymentStorage) ? paymentStorage : new BlDocumentStorage('payments', paymentSchema);
 		this.dibsPaymentService = (dibsPaymentService) ? dibsPaymentService : new DibsPaymentService();
@@ -19,6 +18,10 @@ export class PaymentHandler {
 	
 	public confirmPayments(order: Order, accessToken: AccessToken): Promise<Payment[]> {
 		return new Promise((resolve, reject) => {
+			if (!order.payments || order.payments.length <= 0) {
+				resolve([]);
+			}
+			
 			this.paymentStorage.getMany(order.payments).then((payments: Payment[]) => {
 				
 				for (let payment of payments) {
@@ -51,20 +54,12 @@ export class PaymentHandler {
 		});
 	}
 	
-	private updatePaymentsToConfirmed(payments: Payment[], accessToken: AccessToken): Promise<Payment[]> {
-		let paymentPatches = [];
-		
-		for (let payment of payments) {
-			paymentPatches.push({id: payment.id, data: {confirmed: true}});
-		}
-		
-		return this.paymentStorage.updateMany(paymentPatches)
-	}
-	
 	private confirmMultiplePayments(order: Order, payments: Payment[]) {
-		for (let payment of payments) {
-			if (payment.method === 'dibs' || payment.method === 'later') {
-				return Promise.reject(new BlError(`there was multiple payments but only one is allowed if one has method "${payment.method}"`));
+		if (payments.length > 1) {
+			for (let payment of payments) {
+				if (payment.method === 'dibs') {
+					return Promise.reject(new BlError(`there was multiple payments but only one is allowed if one has method "${payment.method}"`));
+				}
 			}
 		}
 	}
@@ -73,17 +68,9 @@ export class PaymentHandler {
 		switch (payment.method) {
 			case 'dibs':
 				return this.confirmMethodDibs(order, payment);
-			case 'later':
-				return this.confirmMethodLater(order, payment);
 			default:
 				return Promise.reject(new BlError(`payment method "${payment.method}" not supported`));
 		}
-	}
-	
-	private confirmMethodLater(order: Order, payment: Payment): Promise<boolean> {
-		return new Promise((resolve, reject) => {
-			resolve(true);
-		});
 	}
 	
 	

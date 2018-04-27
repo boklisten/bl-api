@@ -47,12 +47,6 @@ export class PaymentPostHook extends Hook {
 			this.paymentStorage.get(ids[0]).then((payment: Payment) => {
 				this.paymentValidator.validate(payment).then(() => {
 					switch (payment.method) {
-						case "later":
-							return this.handleLaterPayment(payment, accessToken).then((payment: Payment) => {
-								return resolve([payment]);
-							}).catch((blError: BlError) => {
-								return reject(blError);
-							});
 						case "dibs":
 							return this.paymentDibsHandler.handleDibsPayment(payment, accessToken).then((payment) => {
 								return resolve([payment]);
@@ -67,30 +61,6 @@ export class PaymentPostHook extends Hook {
 				})
 			}).catch((blError: BlError) => {
 				reject(new BlError('payment id not found').add(blError));
-			});
-		});
-	}
-	
-	private handleLaterPayment(payment: Payment, accessToken: AccessToken): Promise<Payment> {
-		return new Promise((resolve, reject) => {
-			this.orderStorage.get(payment.order).then((order: Order) => {
-				if (order.payments && order.payments.length > 0) {
-					return reject(new BlError('there is more than one payment in order.payments'));
-				}
-				
-				order.payments = [payment.id];
-				
-				this.orderStorage.update(order.id, {payments: order.payments}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedOrder: Order) => {
-					this.paymentStorage.update(payment.id, {confirmed: true}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedPayment: Payment) => {
-						resolve(updatedPayment);
-					}).catch((paymentUpdateError) => {
-						reject(new BlError('payment.confirmed could not be updated to "true"').add(paymentUpdateError));
-					});
-				}).catch((orderUpdateError: BlError) => {
-					reject(new BlError('could not update order with the payment id').add(orderUpdateError));
-				});
-			}).catch((orderGetError: BlError) => {
-				reject(orderGetError);
 			});
 		});
 	}

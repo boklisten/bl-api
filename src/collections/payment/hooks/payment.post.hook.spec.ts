@@ -118,28 +118,7 @@ describe('PaymentPostHook', () => {
 			return expect(paymentPostHook.after(['payment1'], testAccessToken))
 				.to.be.rejectedWith(BlError, /payment could not be validated/);
 		});
-		
-		context('when paymentMethod is "later"', () => {
-			it('should reject if order.payments includes more than one payment', () => {
-				testOrder.payments = ['payment2', 'payment3'];
-				
-				return expect(paymentPostHook.after(['payment1'], testAccessToken))
-					.to.eventually.be.rejectedWith(BlError, /there is more than one payment in order.payments/);
-			});
-			
-			it('should set order.payments to include the posted payment', (done) => {
-				testOrder.payments = [];
-				
-				paymentPostHook.after(['payment1'], testAccessToken).then(() => {
-					
-					expect(orderStorageUpdateStub.getCall(0).args)
-						.to.be.eql(['order1', {payments: ['payment1']}, {id: testAccessToken.sub, permission: testAccessToken.permission}]);
-					
-					done();
-				});
-			});
-		});
-		
+
 		context('when paymentMethod is "dibs"', () => {
 			beforeEach(() => {
 				testPayment.method = 'dibs';

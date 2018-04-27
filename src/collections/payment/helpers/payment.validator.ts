@@ -59,8 +59,6 @@ export class PaymentValidator {
 		switch (payment.method) {
 			case 'dibs':
 				return this.validatePaymentDibs(payment, order);
-			case 'later':
-				return this.validatePaymentLater(payment, order);
 			default:
 				throw new BlError(`payment.method "${payment.method}" not supported`);
 		}

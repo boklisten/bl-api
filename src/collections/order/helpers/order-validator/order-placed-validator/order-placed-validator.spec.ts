@@ -113,18 +113,11 @@ describe('OrderPlacedValidator', () => {
 				});
 			});
 			
-			it('should reject with error if delivery is not defined', () => {
-				testOrder.delivery = null;
-				
-				return orderPlacedValidator.validate(testOrder)
-					.should.be.rejectedWith(BlError, /order.placed is set but delivery is undefined/);
-			});
-			
-			it('should reject with error if payment is empty', () => {
+			it('should resolve with true if there are no payments attached', () => {
 				testOrder.payments = [];
 				
-				return orderPlacedValidator.validate(testOrder)
-					.should.be.rejectedWith(BlError, /order.placed is set but order.payments is empty or undefined/);
+				return expect(orderPlacedValidator.validate(testOrder))
+					.to.be.fulfilled;
 			});
 			
 			
@@ -132,7 +125,7 @@ describe('OrderPlacedValidator', () => {
 				testOrder.delivery = 'notFoundDelivery';
 				
 				return orderPlacedValidator.validate(testOrder)
-					.should.be.rejectedWith(BlError, /order.placed is set but delivery was not found/);
+					.should.be.rejectedWith(BlError, /delivery "notFoundDelivery" not found/);
 			});
 			
 			it('should reject with error if payments is not found', () => {
@@ -149,18 +142,23 @@ describe('OrderPlacedValidator', () => {
 					.should.be.rejectedWith(BlError, /payment is not confirmed/);
 			});
 			
-			it('should reject with error if total amount in payments is not equal to order.amount', () => {
-				testPayment.amount = 0;
+			it('should reject with error if total amount in payments is not equal to order.amount + delivery.amount', () => {
+				testOrder.amount = 450;
+				testDelivery.amount = 40;
+				testPayment.amount = 100;
 				
 				return orderPlacedValidator.validate(testOrder)
-					.should.be.rejectedWith(BlError, /total amount of payments is not equal to order.amount/);
+					.should.be.rejectedWith(BlError, /total amount of payments is not equal to total of order.amount \+ delivery.amount/);
 			});
 			
-			it('should reject with error if total amount in order.orderItems + delivery.amount is not equal to order.amount', () => {
-				testDelivery.amount = 100;
+			
+			it('should reject with error if total amount in order.orderItems is not equal to order.amount', () => {
+				testOrder.payments = [];
+				testOrder.delivery = null;
+				testOrder.amount = 999;
 				
 				return orderPlacedValidator.validate(testOrder)
-					.should.be.rejectedWith(BlError, /total of order.orderItems amount \+ delivery.amount is not equal to order.amount/);
+					.should.be.rejectedWith(BlError, /total of order.orderItems amount is not equal to order.amount/);
 			});
 			
 			it('should resolve if delivery and payments are valid according to order information', (done) => {

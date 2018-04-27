@@ -129,15 +129,6 @@ describe('PaymentHandler', () => {
 				.to.be.rejectedWith(BlError, /there was multiple payments but only one is allowed if one has method "dibs"/);
 		});
 		
-		it('should reject if there are multiple payments and one of them has method "later"', () => {
-			testOrder.payments = ['payment1', 'payment2'];
-			testPayment1.method = 'later';
-			testPayment2.method = 'later';
-			
-			return expect(paymentHandler.confirmPayments(testOrder, testAccessToken))
-				.to.be.rejectedWith(BlError, /there was multiple payments but only one is allowed if one has method "later"/);
-		});
-		
 		describe('when paymentMethod is "dibs"', () => {
 			let testDibsEasyPayment: DibsEasyPayment;
 			
@@ -220,19 +211,6 @@ describe('PaymentHandler', () => {
 			it('should update payment with confirmed true if dibsEasyPayment is valid', (done) => {
 				testPayment1.confirmed = false;
 				
-				paymentHandler.confirmPayments(testOrder, testAccessToken).then((payments: Payment[]) => {
-					expect(payments[0].confirmed).to.be.true;
-					done();
-				});
-			});
-		});
-		
-		describe('when payment.method is "later"', () => {
-			beforeEach(() => {
-				testPayment1.method = 'later';
-			});
-			
-			it('should update payment with confirmed true if payment is valid', (done) => {
 				paymentHandler.confirmPayments(testOrder, testAccessToken).then((payments: Payment[]) => {
 					expect(payments[0].confirmed).to.be.true;
 					done();
