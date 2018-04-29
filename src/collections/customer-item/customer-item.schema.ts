@@ -33,7 +33,6 @@ export const customerItemSchema = {
 		handoutEmployee: Schema.Types.ObjectId,
 		time: {
 			type: Schema.Types.Date,
-			default: false
 		}
 	},
 	returned: {
@@ -41,19 +40,23 @@ export const customerItemSchema = {
 		required: true
 	},
 	returnInfo: {
-		returnedTo: {
-			type: Schema.Types.String,
-			required: true
+		type: {
+
+			returnedTo: {
+				type: Schema.Types.String,
+				required: true
+			},
+			returnedToId: {
+				type: Schema.Types.ObjectId,
+				required: true
+			},
+			returnEmployee: Schema.Types.ObjectId,
+			time: {
+				type: Schema.Types.Date,
+				required: true
+			}
 		},
-		returnedToId: {
-			type: Schema.Types.ObjectId,
-			required: true
-		},
-		returnEmployee: Schema.Types.ObjectId,
-		time: {
-			type: Schema.Types.Date,
-			required: true
-		}
+		required: false
 	},
 	orders: {
 		type: [Schema.Types.ObjectId],
