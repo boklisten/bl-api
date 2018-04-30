@@ -19,16 +19,16 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		this.mongooseModel = mongooseModelCreator.create();
 		this.permissionService = new PermissionService();
 	}
-	
+
 	get(id: string): Promise<T> {
 		return new Promise((resolve, reject) => {
 		    this.mongooseModel.findOne({_id: id}, (error, doc) => {
 				if (error) {
 					return reject(this.handleError(new BlError(`error when trying to find document with id "${id}"`), error));
 				}
-				
+
 				if (doc === null) {
-					return reject(new BlError('not found').code(702));
+					return reject(new BlError(`object "${id}" not found`).code(702));
 				}
 
 				resolve(doc);

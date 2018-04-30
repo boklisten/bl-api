@@ -6,6 +6,10 @@ export const customerItemSchema = {
 		type: Schema.Types.ObjectId,
 		required: true
 	},
+	customer: {
+		type: Schema.Types.ObjectId,
+		require: true
+	},
 	sharedItem: {
 		type: Schema.Types.ObjectId,
 		required: false
