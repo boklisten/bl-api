@@ -23,16 +23,14 @@ export class PaymentPatchHook extends Hook {
 		return Promise.resolve(true);
 	}
 	
-	after(ids: string[], accessToken: AccessToken): Promise<boolean | Payment[]> {
-		if (!ids || ids.length !== 1) {
-			return Promise.reject(new BlError('ids are undefined'));
+	after(payments: Payment[], accessToken: AccessToken): Promise<Payment[]> {
+		if (!payments || payments.length !== 1) {
+			return Promise.reject(new BlError('payments are empty or undefined'));
 		}
 		
-		let payment: Payment;
+		let payment: Payment = payments[0];
 		
-		return this.paymentStorage.get(ids[0]).then((payment: Payment) => {
-			return this.updatePaymentBasedOnMethod(payment, accessToken)
-		}).then((updatedPayment: Payment) => {
+		return this.updatePaymentBasedOnMethod(payment, accessToken).then((updatedPayment: Payment) => {
 			payment = updatedPayment;
 			return this.paymentValidator.validate(updatedPayment);
 		}).then(() => {
@@ -49,7 +47,7 @@ export class PaymentPatchHook extends Hook {
 			case 'dibs':
 				return this.paymentDibsHandler.handleDibsPayment(payment, accessToken);
 			default:
-				throw new BlError(`payment.method "${payment.method}" not supported`)
+				return Promise.reject(new BlError(`payment.method "${payment.method}" not supported`));
 		}
 	}
 	

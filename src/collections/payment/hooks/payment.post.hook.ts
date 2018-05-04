@@ -34,34 +34,32 @@ export class PaymentPostHook extends Hook {
 		});
 	}
 	
-	public after(ids: string[], accessToken: AccessToken): Promise<boolean | BlDocument[]> {
+	public after(payments: Payment[], accessToken: AccessToken): Promise<Payment[]> {
 		return new Promise((resolve, reject) => {
-			if (!ids || ids.length != 1) {
-				return reject(new BlError('ids is empty or undefined').store('ids', ids));
+			if (!payments || payments.length != 1) {
+				return reject(new BlError('payments is empty or undefined'));
 			}
 			
 			if (isNullOrUndefined(accessToken)) {
 				return reject(new BlError('accessToken is undefined'));
 			}
-			
-			this.paymentStorage.get(ids[0]).then((payment: Payment) => {
-				this.paymentValidator.validate(payment).then(() => {
-					this.handlePaymentBasedOnMethod(payment, accessToken).then((updatedPayment: Payment) => {
 
-						this.updateOrderWithPayment(updatedPayment, accessToken).then(() => {
-							resolve([updatedPayment]);
-						}).catch(() => {
-							reject(new BlError('order could not be updated with paymentId'));
-						})
-					}).catch((handlePaymentMethodError: BlError) => {
-						reject(handlePaymentMethodError);
+			let payment = payments[0];
+			
+			this.paymentValidator.validate(payment).then(() => {
+				this.handlePaymentBasedOnMethod(payment, accessToken).then((updatedPayment: Payment) => {
+
+					this.updateOrderWithPayment(updatedPayment, accessToken).then(() => {
+						resolve([updatedPayment]);
+					}).catch(() => {
+						reject(new BlError('order could not be updated with paymentId'));
 					})
-				}).catch((blError: BlError) => {
-					reject(new BlError('payment could not be validated').add(blError));
+				}).catch((handlePaymentMethodError: BlError) => {
+					reject(handlePaymentMethodError);
 				})
 			}).catch((blError: BlError) => {
-				reject(new BlError('payment id not found').add(blError));
-			});
+				reject(new BlError('payment could not be validated').add(blError));
+			})
 		});
 	}
 

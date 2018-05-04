@@ -11,7 +11,7 @@ export class Hook implements IHook {
 		return Promise.resolve(true);
 	}
 	
-	public after(ids: string[], accessToken?: AccessToken): Promise<boolean | BlDocument[]> {
-		return Promise.resolve(true);
+	public after(docs: BlDocument[], accessToken?: AccessToken): Promise<BlDocument[]> {
+		return Promise.resolve([]);
 	}
 }

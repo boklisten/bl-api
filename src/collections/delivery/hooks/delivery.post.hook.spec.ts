@@ -137,28 +137,15 @@ describe('DeliveryPostHook', () => {
 		it('should reject if deliveryIds is empty or undefined', (done) => {
 			deliveryPostHook.after([]).catch((blError) => {
 				expect(blError.getMsg())
-					.to.contain('deliveryIds is empty or undefined');
+					.to.contain('deliveries is empty or undefined');
 				done();
 			})
 		});
-		
-		it('should reject if deliveryIds is more than one', () => {
-			return expect(deliveryPostHook.after(['delivery1', 'delivery2'], testAccessToken))
-				.to.be.rejectedWith(BlError, /can not add more than one delivery/)
-		});
-		
-		it('should reject if delivery is not found', (done) => {
-			deliveryPostHook.after(['notFoundDeliveryId']).catch((blError) => {
-				expect(blError.getCode())
-					.to.be.eql(702);
-				done();
-			});
-		});
-		
+
 		it('should reject if delivery.order is not found', (done) => {
 			testDelivery.order = 'notFoundOrder';
 			
-			deliveryPostHook.after([testDelivery.id], testAccessToken).catch((blError: BlError) => {
+			deliveryPostHook.after([testDelivery], testAccessToken).catch((blError: BlError) => {
 				expect(blError.getCode())
 					.to.be.eql(702);
 				
@@ -172,14 +159,14 @@ describe('DeliveryPostHook', () => {
 		it('should reject if deliveryValidator.validate rejects', () => {
 			deliveryValidated = false;
 			
-			return expect(deliveryPostHook.after(['delivery1'], testAccessToken))
+			return expect(deliveryPostHook.after([testDelivery], testAccessToken))
 				.to.be.rejectedWith(BlError, /delivery could not be validated/);
 		});
 		
 		it('should reject if DeliveryHandler.updateOrderBasedOnMethod rejects', () => {
 			orderUpdated = false;
 			
-			return expect(deliveryPostHook.after(['delivery1'], testAccessToken))
+			return expect(deliveryPostHook.after([testDelivery], testAccessToken))
 				.to.be.rejectedWith(BlError, /order could not be updated/);
 		});
 	});

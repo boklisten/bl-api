@@ -42,43 +42,42 @@ export class OrderPatchHook extends Hook {
 		return Promise.resolve(true);
 	}
 	
-	after(orderIds: string[], accessToken: AccessToken): Promise<boolean | Order[]> {
-		if (orderIds.length > 1) {
+	after(orders: Order[], accessToken: AccessToken): Promise<Order[]> {
+		if (orders.length > 1) {
 			return Promise.reject(new BlError('can only patch one order at a time'));
 		}
 		
 		if (isEmpty(accessToken) || isNullOrUndefined(accessToken)) {
 			return Promise.reject(new BlError('accessToken not defined'));
 		}
+
+		let order = orders[0];
+
 		return new Promise((resolve, reject) => {
-			this.orderStorage.get(orderIds[0]).then((order: Order) => {
-				if (order.placed) {
-					this.orderPlacedHandler.placeOrder(order, accessToken).then((placedOrder) => {
-						resolve([placedOrder]);
-					}).catch((orderPlacedError: BlError) => {
-						reject(new BlError('order could not be placed').add(orderPlacedError));
-					})
-				} else {
-					this.orderValidator.validate(order).then(() => {
-						resolve(true);
-					}).catch((validationError: BlError) => {
-						if (order.placed) {
-							this.orderStorage.update(order.id, {placed: false}, {
-								id: accessToken.sub,
-								permission: accessToken.permission
-							}).then(() => {
-								return reject(new BlError('validation of patch of order failed, order.placed is set to false').add(validationError))
-							}).catch((updateError: BlError) => {
-								return reject(new BlError('could not set order.placed to false when order validation failed').add(updateError).add(validationError))
-							});
-						} else {
-							return reject(new BlError('patch of order could not be validated').add(validationError));
-						}
-					});
-				}
-			}).catch((blError: BlError) => {
-				return reject(new BlError(`order "${orderIds[0]}" not found`).add(blError));
-			});
+			if (order.placed) {
+				this.orderPlacedHandler.placeOrder(order, accessToken).then((placedOrder) => {
+					resolve([placedOrder]);
+				}).catch((orderPlacedError: BlError) => {
+					reject(new BlError('order could not be placed').add(orderPlacedError));
+				})
+			} else {
+				this.orderValidator.validate(order).then(() => {
+					resolve([order]);
+				}).catch((validationError: BlError) => {
+					if (order.placed) {
+						this.orderStorage.update(order.id, {placed: false}, {
+							id: accessToken.sub,
+							permission: accessToken.permission
+						}).then(() => {
+							return reject(new BlError('validation of patch of order failed, order.placed is set to false').add(validationError))
+						}).catch((updateError: BlError) => {
+							return reject(new BlError('could not set order.placed to false when order validation failed').add(updateError).add(validationError))
+						});
+					} else {
+						return reject(new BlError('patch of order could not be validated').add(validationError));
+					}
+				});
+			}
 		});
 	}
 	

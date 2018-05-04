@@ -32,29 +32,25 @@ export class OrderPostHook extends Hook {
 		return this.orderHookBefore.validate(requestBody);
 	}
 
-	public after(orderIds: string[], accessToken?: AccessToken): Promise<boolean | Order[]> {
+	public after(orders: Order[], accessToken?: AccessToken): Promise<Order[]> {
 		if (isNullOrUndefined(accessToken) || accessToken.sub.length <= 0) {
 			return Promise.reject(new BlError('accessToken was not specified when trying to process order'))
 		}
 		
-		if (!orderIds || orderIds.length <= 0) {
-			return Promise.reject(new BlError('no documents provided').code(701));
+		if (!orders || orders.length <= 0) {
+			return Promise.reject(new BlError('no orders provided').code(701));
 		}
 		
-		if (orderIds.length > 1) {
-			return Promise.reject(new BlError('orderIds included more than one id').store('orderIds', orderIds));
+		if (orders.length > 1) {
+			return Promise.reject(new BlError('orderIds included more than one id'));
 		}
-		
-		let orderId = orderIds[0]; //there should only be one order per request;
-		
-		return this.orderStorage.get(orderId).then(order => {
-			
-			return this.validateOrder(order).then((validatedOrder: Order) => {
-				return [order];
-			});
-		}).catch((blError: BlError) => {
-			return Promise.reject(blError);
+
+		let order = orders[0];
+
+		return this.validateOrder(order).then((validatedOrder: Order) => {
+			return [order];
 		});
+
 	};
 	
 	

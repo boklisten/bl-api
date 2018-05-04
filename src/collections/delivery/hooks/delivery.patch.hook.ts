@@ -46,29 +46,25 @@ export class DeliveryPatchHook extends Hook {
 		})
 	}
 	
-	after(deliveryIds: string[], accessToken: AccessToken): Promise<boolean | Delivery[]> {
-		
+	after(deliveries: Delivery[], accessToken: AccessToken): Promise<Delivery[]> {
+		let delivery = deliveries[0];
+
 		return new Promise((resolve, reject) => {
-			this.deliveryStorage.get(deliveryIds[0]).then((delivery: Delivery) => {
-				this.orderStorage.get(delivery.order).then((order: Order) => {
-					this.deliveryValidator.validate(delivery, order).then(() => {
-						
-						this.deliveryHandler.updateOrderBasedOnMethod(delivery, order, accessToken).then((updatedDelivery: Delivery) => {
-							return resolve([updatedDelivery]);
-						}).catch((blError: BlError) => {
-							return reject(blError);
-						});
-						
+			this.orderStorage.get(delivery.order).then((order: Order) => {
+				this.deliveryValidator.validate(delivery, order).then(() => {
+
+					this.deliveryHandler.updateOrderBasedOnMethod(delivery, order, accessToken).then((updatedDelivery: Delivery) => {
+						return resolve([updatedDelivery]);
 					}).catch((blError: BlError) => {
 						return reject(blError);
 					});
+
 				}).catch((blError: BlError) => {
 					return reject(blError);
 				});
 			}).catch((blError: BlError) => {
 				return reject(blError);
-			})
-		
+			});
 		});
 		
 	}

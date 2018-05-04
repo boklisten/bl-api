@@ -140,19 +140,10 @@ describe('OrderPatchHook', () => {
 	});
 	
 	describe('after()', () => {
-		it('should reject if there are more than one id', () => {
-			return expect(orderPatchHook.after(['order1', 'order2'], testAccessToken))
-				.to.be.rejectedWith(BlError, /can only patch one order at a time/);
-		});
-		
+
 		it('should reject if accessToken is not defined', () => {
-			return expect(orderPatchHook.after(['order1'], undefined))
+			return expect(orderPatchHook.after([testOrder], undefined))
 				.to.be.rejectedWith(BlError, /accessToken not defined/);
-		});
-		
-		it('should reject if order is not found', () => {
-			return expect(orderPatchHook.after(['notFoundOrder'], testAccessToken))
-				.to.be.rejectedWith(BlError, /order "notFoundOrder" not found/);
 		});
 		
 		context('when order.placed is true', () => {
@@ -163,7 +154,7 @@ describe('OrderPatchHook', () => {
 			it('should reject if OrderPlaced.placeOrder rejects', () => {
 				orderPlacedConfirmed = false;
 				
-				return expect(orderPatchHook.after(['order1'], testAccessToken))
+				return expect(orderPatchHook.after([testOrder], testAccessToken))
 					.to.be.rejectedWith(BlError, /order could not be placed/);
 			});
 		});

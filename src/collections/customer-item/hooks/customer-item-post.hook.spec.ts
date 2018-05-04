@@ -142,20 +142,15 @@ describe('CustomerItemPostHook', () => {
 	});
 
 	describe('after()', () => {
-		it('should reject if ids are empty', () => {
+		it('should reject if customerItems are empty', () => {
 			return expect(customerItemPostHook.after([], testAccessToken))
-				.to.be.rejectedWith(BlError, /ids is empty or undefined/);
-		});
-
-		it('should reject if ids are more than one', () => {
-			return expect(customerItemPostHook.after(['ci1', 'ci2'], testAccessToken))
-				.to.be.rejectedWith(BlError, /there are more than one customerItem/);
+				.to.be.rejectedWith(BlError, /customerItems is empty or undefined/);
 		});
 
 		it('should reject if customerItem.customer is not defined', () => {
 			testCustomerItem.customer = 'notFoundCustomer';
 
-			return expect(customerItemPostHook.after(['customerItem1'], testAccessToken))
+			return expect(customerItemPostHook.after([testCustomerItem], testAccessToken))
 				.to.be.rejectedWith(BlError, /userDetail not found/);
 		});
 
@@ -163,7 +158,7 @@ describe('CustomerItemPostHook', () => {
 			testUserDetail.customerItems = [];
 			let ids = ['customerItem1'];
 
-			customerItemPostHook.after(ids, testAccessToken).then(() => {
+			customerItemPostHook.after([testCustomerItem], testAccessToken).then(() => {
 				expect(userDetailStub.calledWithMatch('userDetail1', {customerItems: ['customerItem1']})).to.be.true;
 				done();
 			});
@@ -173,7 +168,7 @@ describe('CustomerItemPostHook', () => {
 			testUserDetail.customerItems = ['customerItem2'];
 			let ids = ['customerItem1'];
 
-			customerItemPostHook.after(ids, testAccessToken).then(() => {
+			customerItemPostHook.after([testCustomerItem], testAccessToken).then(() => {
 				userDetailStub.should.have.been.calledWith('userDetail1', {customerItems: ['customerItem2', 'customerItem1']});
 				done();
 			})
@@ -182,7 +177,7 @@ describe('CustomerItemPostHook', () => {
 		it('should reject with error if customerItems.orders.length is over 1', () => {
 			testCustomerItem.orders = ['order1', 'order2'];
 
-			expect(customerItemPostHook.after(['customerItem1'], testAccessToken))
+			expect(customerItemPostHook.after([testCustomerItem], testAccessToken))
 				.to.be.rejectedWith(BlError, /customerItem.orders.length is "2" but should be "1"/)
 		});
 
@@ -224,7 +219,7 @@ describe('CustomerItemPostHook', () => {
 				}
 			];
 
-			customerItemPostHook.after(['customerItem1'], testAccessToken).then(() => {
+			customerItemPostHook.after([testCustomerItem], testAccessToken).then(() => {
 				orderUpdateStub.should.have.been.calledWith('order1', {orderItems: expectedOrderUpdateParameter});
 				done();
 			});

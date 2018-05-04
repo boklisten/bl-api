@@ -35,35 +35,29 @@ export class CustomerItemPostHook extends Hook {
 		});
 	}
 
-	public after(ids: string[], accessToken: AccessToken): Promise<boolean | CustomerItem[]> {
+	public after(customerItems: CustomerItem[], accessToken: AccessToken): Promise<CustomerItem[]> {
 		// we know that the customerItem that is sent here are valid, we can just update the userDetail
 
-		if (isNullOrUndefined(ids) || ids.length <= 0) {
-			return Promise.reject(new BlError('ids is empty or undefined'));
+		if (isNullOrUndefined(customerItems) || customerItems.length <= 0) {
+			return Promise.reject(new BlError('customerItems is empty or undefined'));
 		}
 
-		if (ids.length > 1) {
+		if (customerItems.length > 1) {
 			return Promise.reject(new BlError('there are more than one customerItem'));
 		}
 
-		let customerItem: CustomerItem;
+		let customerItem: CustomerItem = customerItems[0];
 
-		return this._customerItemStorage.get(ids[0])
-			.then((retrievedCustomerItem: CustomerItem) => { // get correct order from customerItem
+		if (isNullOrUndefined(customerItem.orders)) {
+			return Promise.reject(new BlError('customerItem.orders is not defined'));
+		}
 
-				if (isNullOrUndefined(retrievedCustomerItem.orders)) {
-					throw new BlError('customerItem.orders is not defined');
-				}
+		if (customerItem.orders.length !== 1) {
+			return Promise.reject(new BlError(`customerItem.orders.length is "${customerItem.orders.length}" but should be "1"`));
+		}
 
-				if (retrievedCustomerItem.orders.length !== 1) {
-					throw  new BlError(`customerItem.orders.length is "${retrievedCustomerItem.orders.length}" but should be "1"`);
-				}
-
-				customerItem = retrievedCustomerItem;
-
-				return this._orderStorage.get(retrievedCustomerItem.orders[0]);
-			}).then((order: Order) => { //update the corresponding orderItem with customerItem
-
+		return this._orderStorage.get(customerItem.orders[0])
+			.then((order: Order) => { //update the corresponding orderItem with customerItem
 				for (let orderItem of order.orderItems) {
 
 					if (orderItem.item.toString() === customerItem.item.toString()) {
@@ -71,7 +65,6 @@ export class CustomerItemPostHook extends Hook {
 						break;
 					}
 				}
-
 				return this._orderStorage.update(order.id, {orderItems: order.orderItems}, {id: accessToken.sub, permission: accessToken.permission})
 			}).then((updatedOrder: Order) => {
 				return this._userDetailStorage.get(customerItem.customer);
@@ -79,19 +72,19 @@ export class CustomerItemPostHook extends Hook {
 				let newCustomerItems = [];
 
 				if (isNullOrUndefined(userDetail.customerItems) || (userDetail.customerItems && userDetail.customerItems.length === 0)) {
-					newCustomerItems.push(ids[0]);
+					newCustomerItems.push(customerItem.id);
 				} else if (userDetail.customerItems && userDetail.customerItems.length > 0) {
 					newCustomerItems = userDetail.customerItems;
-					newCustomerItems.push(ids[0]);
+					newCustomerItems.push(customerItem.id);
 				}
 
 				return this._userDetailStorage.update(userDetail.id, {customerItems: newCustomerItems}, {id: accessToken.sub, permission: accessToken.permission});
 			}).then((updatedUserDetail: UserDetail) => {
-				return true;
+				return [customerItem];
 			}).catch((blError: BlError) => {
 				throw blError
 					.store('userDetail', accessToken.sub)
-					.store('customerItemIds', ids)
+					.store('customerItemId', customerItem.id)
 			});
 	}
 

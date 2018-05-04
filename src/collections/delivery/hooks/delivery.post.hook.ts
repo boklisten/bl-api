@@ -31,36 +31,31 @@ export class DeliveryPostHook extends Hook {
 		this.bringDeliveryService = (bringDeliveryService) ? bringDeliveryService : new BringDeliveryService();
 	}
 	
-	public after(deliveryIds: string[], accessToken?: AccessToken): Promise<boolean | Delivery[]> {
-		if (!deliveryIds || deliveryIds.length <= 0) {
-			return Promise.reject(new BlError('deliveryIds is empty or undefined'));
+	public after(deliveries: Delivery[], accessToken?: AccessToken): Promise<Delivery[]> {
+		if (!deliveries || deliveries.length <= 0) {
+			return Promise.reject(new BlError('deliveries is empty or undefined'));
 		}
 		
-		if (deliveryIds.length > 1) {
+		if (deliveries.length > 1) {
 			return Promise.reject(new BlError('can not add more than one delivery'));
 		}
-		
+		let delivery = deliveries[0];
 		return new Promise((resolve, reject) => {
-			this.deliveryStorage.get(deliveryIds[0]).then((delivery: Delivery) => {
-				this.orderStorage.get(delivery.order).then((order: Order) => {
-					this.deliveryValidator.validate(delivery, order).then(() => {
-						
-						this.deliveryHandler.updateOrderBasedOnMethod(delivery, order, accessToken).then((updatedDelivery: Delivery) => {
-							return resolve([updatedDelivery]);
-						}).catch((blError: BlError) => {
-							return reject(blError);
-						});
-						
+			this.orderStorage.get(delivery.order).then((order: Order) => {
+				this.deliveryValidator.validate(delivery, order).then(() => {
+
+					this.deliveryHandler.updateOrderBasedOnMethod(delivery, order, accessToken).then((updatedDelivery: Delivery) => {
+						return resolve([updatedDelivery]);
 					}).catch((blError: BlError) => {
 						return reject(blError);
 					});
+
 				}).catch((blError: BlError) => {
 					return reject(blError);
 				});
 			}).catch((blError: BlError) => {
 				return reject(blError);
-			})
-		
+			});
 		});
 		
 	}

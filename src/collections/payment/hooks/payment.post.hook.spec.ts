@@ -95,26 +95,22 @@ describe('PaymentPostHook', () => {
 	describe('#before()', () => {
 	
 	});
+
 	describe('#after()', () => {
 		it('should reject if ids is empty or undefined', () => {
 			return expect(paymentPostHook.after([], testAccessToken))
-				.to.eventually.be.rejectedWith(BlError, /ids is empty or undefined/);
+				.to.eventually.be.rejectedWith(BlError, /payments is empty or undefined/);
 		});
 
 		it('should reject if accessToken is undefined', () => {
-			return expect(paymentPostHook.after(['payment1'], undefined))
+			return expect(paymentPostHook.after([testPayment], undefined))
 				.to.be.rejectedWith(BlError, /accessToken is undefined/);
 		});
 
-		it('should reject when the paymentId is not found', () => {
-			return expect(paymentPostHook.after(['notFoundPayment'], testAccessToken))
-				.to.eventually.be.rejectedWith(BlError, /payment id not found/);
-		});
-		
 		it('should reject if paymentValidator.validate rejects', () => {
 			paymentValidated = false;
 			
-			return expect(paymentPostHook.after(['payment1'], testAccessToken))
+			return expect(paymentPostHook.after([testPayment], testAccessToken))
 				.to.be.rejectedWith(BlError, /payment could not be validated/);
 		});
 
@@ -126,7 +122,7 @@ describe('PaymentPostHook', () => {
 			it('should reject if paymentDibsHandler.handleDibsPayment rejects', () => {
 				handleDibsPaymentValid = false;
 				
-				return expect(paymentPostHook.after(['payment1'], testAccessToken))
+				return expect(paymentPostHook.after([testPayment], testAccessToken))
 					.to.be.rejectedWith(BlError, /could not create dibs payment/);
 			});
 		});

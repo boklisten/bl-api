@@ -66,12 +66,12 @@ describe('PaymentPatchHook', () => {
 		it('should reject if paymentValidator.validate rejects', () => {
 			paymentValidated = false;
 			
-			return expect(paymentPatchHook.after(['payment1'], testAccessToken))
+			return expect(paymentPatchHook.after([testPayment], testAccessToken))
 				.to.be.rejectedWith(BlError, /could not validate payment/);
 		});
 		
 		it('should resolve when given a valid payment', () => {
-			return expect(paymentPatchHook.after(['payment1'], testAccessToken))
+			return expect(paymentPatchHook.after([testPayment], testAccessToken))
 				.to.be.fulfilled;
 		});
 		
@@ -79,7 +79,7 @@ describe('PaymentPatchHook', () => {
 			 it('should reject if paymentDibsHandler.handleDibsPayment rejects', () => {
 				 dibsPaymentCreated = false;
 				 
-				 return expect(paymentPatchHook.after(['payment1'], testAccessToken))
+				 return expect(paymentPatchHook.after([testPayment], testAccessToken))
 					 .to.be.rejectedWith(BlError, /could not create dibs payment/);
 			 });
 		 });
@@ -88,7 +88,7 @@ describe('PaymentPatchHook', () => {
 			 it('should reject with error', () => {
 				 testPayment.method = 'something' as any;
 				 
-				 return expect(paymentPatchHook.after(['payment1'], testAccessToken))
+				 return expect(paymentPatchHook.after([testPayment], testAccessToken))
 					 .to.be.rejectedWith(BlError, /payment.method "something" not supported/);
 			 });
 		 });

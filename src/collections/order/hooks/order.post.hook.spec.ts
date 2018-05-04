@@ -132,24 +132,18 @@ describe('OrderPostHook', () => {
 	describe('#after()', () => {
 		
 		it('should reject if accessToken is empty or undefined', (done) => {
-			orderPostHook.after(['abc']).catch((blError: BlError) => {
+			orderPostHook.after([testOrder]).catch((blError: BlError) => {
 				expect(blError.getMsg()).to.contain('accessToken was not specified when trying to process order');
 				done();
 			});
 		});
-		
-		
-		it('should reject if orderIds includes more than one id', () => {
-			return expect(orderPostHook.after(['order1', 'order2'], testAccessToken))
-				.to.eventually.be.rejectedWith(BlError, /orderIds included more than one id/);
-		});
-		
+
 		context('when orderValidator rejects', () => {
 			it('should reject if orderValidator.validate rejected with error', () => {
 				orderValidated = false;
 				
 				testOrder.id = 'order1';
-				return expect(orderPostHook.after(['order1'], testAccessToken))
+				return expect(orderPostHook.after([testOrder], testAccessToken))
 					.to.eventually.be.rejectedWith(BlError, /not a valid order/);
 			});
 		});
@@ -159,7 +153,7 @@ describe('OrderPostHook', () => {
 				orderValidated = true;
 				testOrder.id = 'order1';
 				
-				orderPostHook.after(['order1'], testAccessToken).then((orders: Order[]) => {
+				orderPostHook.after([testOrder], testAccessToken).then((orders: Order[]) => {
 					expect(orders.length).to.be.eql(1);
 					expect(orders[0]).to.eql(testOrder);
 					done();
@@ -170,7 +164,7 @@ describe('OrderPostHook', () => {
 		it('should reject if order.placed is set to true', () => {
 			testOrder.placed = true;
 			
-			return expect(orderPostHook.after(['orderValid'], testAccessToken))
+			return expect(orderPostHook.after([testOrder], testAccessToken))
 				.to.be.rejectedWith(BlError, /order.placed is set to true on post of order/);
 		});
 	});
