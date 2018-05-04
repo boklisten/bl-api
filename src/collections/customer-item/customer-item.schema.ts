@@ -62,6 +62,18 @@ export const customerItemSchema = {
 		},
 		required: false
 	},
+	buyout: {
+		type: Schema.Types.Boolean,
+		default: false
+	},
+	buyoutInfo: {
+		type: {
+			order: {
+				type: Schema.Types.ObjectId,
+			}
+		},
+		required: false
+	},
 	orders: {
 		type: [Schema.Types.ObjectId],
 		default: []

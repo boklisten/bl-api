@@ -128,7 +128,7 @@ describe('OrderPlacedHandler', () => {
 		};
 		
 		testUserDetail = {
-			id: 'userDetail1',
+			id: 'customer1',
 			name: '',
 			email: '',
 			phone: '',
@@ -140,7 +140,7 @@ describe('OrderPlacedHandler', () => {
 			branch: 'branch1',
 		}
 	});
-	
+
 	describe('#placeOrder()', () => {
 		it('should reject if order could not be updated with confirm true', () => {
 			orderUpdate = false;
@@ -156,11 +156,11 @@ describe('OrderPlacedHandler', () => {
 				.to.be.rejectedWith(BlError, /order.payments could not be confirmed/);
 		});
 		
-		it('should reject if userDetailStorage.get rejects', () => {
-			testAccessToken.details = 'notFoundUserDetails';
+		it('should reject if order.customer is not found', () => {
+			testOrder.customer = 'notFoundUserDetails';
 			
 			return expect(orderPlacedHandler.placeOrder(testOrder, testAccessToken))
-				.to.be.rejectedWith(BlError, /userDetail "notFoundUserDetails" not found/);
+				.to.be.rejectedWith(BlError, /customer "notFoundUserDetails" not found/);
 		});
 		
 		it('should reject if userDetailStorage.updates rejects', () => {

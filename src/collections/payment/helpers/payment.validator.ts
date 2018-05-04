@@ -59,12 +59,24 @@ export class PaymentValidator {
 		switch (payment.method) {
 			case 'dibs':
 				return this.validatePaymentDibs(payment, order);
+			case 'card':
+				return this.validatePaymentCard(payment, order);
+			case 'cash':
+				return this.validatePaymentCash(payment, order);
 			default:
 				throw new BlError(`payment.method "${payment.method}" not supported`);
 		}
 	}
 	
 	private validatePaymentDibs(payment: Payment, order: Order): Promise<boolean> {
+		return Promise.resolve(true);
+	}
+
+	private validatePaymentCard(payment: Payment, order: Order): Promise<boolean> {
+		return Promise.resolve(true);
+	}
+
+	private validatePaymentCash(payment: Payment, order: Order): Promise<boolean> {
 		return Promise.resolve(true);
 	}
 	

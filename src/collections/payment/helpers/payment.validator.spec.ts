@@ -93,6 +93,11 @@ describe('PaymentValidator', () => {
 		context('when paymentMethod is "dibs"', () => {
 		
 		});
+
+		context('when paymentMethod is "card"', () => {
+
+
+		});
 		
 		context('when order.delivery is set', () => {
 			it('should reject if order.delivery is not found', () => {

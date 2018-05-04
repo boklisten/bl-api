@@ -19,7 +19,7 @@ describe('PaymentDibsHandler', () => {
 	const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
 	
 	const paymentDibsHandler = new PaymentDibsHandler(paymentStorage, orderStorage, dibsPaymentService, deliveryStorage);
-	
+
 	describe('handleDibsPayment()', () => {
 		let testOrder: Order;
 		let testPayment: Payment;
@@ -173,29 +173,6 @@ describe('PaymentDibsHandler', () => {
 				expect(payment.info['paymentId']).to.eql(testPaymentId);
 				done();
 			});
-		});
-		
-		it('should update the order.payments with the payment', (done) => {
-			paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken).then((payment: Payment) => {
-				expect(testOrder.payments).to.eql([payment.id]);
-				done();
-			});
-		});
-		
-		it('should not update order.payments if the payment is already added', (done) => {
-			testOrder.payments = [testPayment.id];
-			
-			paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken).then((payment: Payment) => {
-				expect(testOrder.payments).to.eql([payment.id]);
-				done();
-			});
-		});
-		
-		it('should reject if the order.payments.length is not 1', () => {
-			testOrder.payments = ['testPayment2', 'testPayment3'];
-			
-			return expect(paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken))
-				.to.be.rejectedWith(BlError, /order.payments includes more than one payment/);
 		});
 	});
 });

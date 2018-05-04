@@ -18,7 +18,7 @@ describe('OrderItemExtendValidator', () => {
 	let testItem: Item;
 	let testBranch: Branch;
 	let testCustomerItem: CustomerItem;
-	
+
 	describe('validate()', () => {
 		
 		sinon.stub(customerItemStorage, 'get').callsFake((id: string) => {
@@ -112,6 +112,7 @@ describe('OrderItemExtendValidator', () => {
 			item: 'item1',
 			deadline: new Date(),
 			handout: true,
+			customer: 'customer1',
 			handoutInfo: {
 				handoutBy: "branch",
 				handoutById: 'branch1',

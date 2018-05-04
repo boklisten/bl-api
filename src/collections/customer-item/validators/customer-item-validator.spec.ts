@@ -11,7 +11,7 @@ chai.use(chaiAsPromised);
 
 describe('CustomerItemValidator', () => {
 	const customerItemStorage = new BlDocumentStorage<CustomerItem>('customeritems');
-	const customerItemValidator  = new CustomerItemValidator(customerItemStorage);
+	const customerItemValidator = new CustomerItemValidator(customerItemStorage);
 
 	let testCustomerItem: CustomerItem;
 
@@ -21,6 +21,7 @@ describe('CustomerItemValidator', () => {
 			item: 'item1',
 			deadline: new Date(),
 			handout: true,
+			customer: 'customer1',
 			handoutInfo: {
 				handoutBy: 'branch',
 				handoutById: 'branch1',
@@ -30,6 +31,7 @@ describe('CustomerItemValidator', () => {
 			returned: false
 		}
 	});
+
 
 	it('should reject if sent customerItem is undefined', () => {
 		return expect(customerItemValidator.validate(undefined))

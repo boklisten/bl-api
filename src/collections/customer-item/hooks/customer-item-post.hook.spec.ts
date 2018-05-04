@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {AccessToken, BlError, CustomerItem, Order, UserDetail} from '@wizardcoder/bl-model';
+import {AccessToken, BlError, CustomerItem, Order, OrderItem, UserDetail} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {CustomerItemValidator} from "../validators/customer-item-validator";
 import {CustomerItemPostHook} from "./customer-item-post.hook";
@@ -20,8 +20,9 @@ describe('CustomerItemPostHook', () => {
 	let testUserDetail: UserDetail;
 	const customerItemStorage = new BlDocumentStorage<CustomerItem>('customeritems');
 	const userDetailStorage = new BlDocumentStorage<UserDetail>('userdetails');
+	const orderStorage = new BlDocumentStorage<Order>('orders');
 	const customerItemValidator = new CustomerItemValidator(customerItemStorage);
-	const customerItemPostHook = new CustomerItemPostHook(customerItemValidator, customerItemStorage, userDetailStorage);
+	const customerItemPostHook = new CustomerItemPostHook(customerItemValidator, customerItemStorage, userDetailStorage, orderStorage);
 
 	beforeEach(() => {
 		testAccessToken = {
@@ -54,7 +55,7 @@ describe('CustomerItemPostHook', () => {
 		};
 
 		testOrder = {
-			id: '',
+			id: 'order1',
 			amount: 100,
 			orderItems: [
 				{
@@ -84,6 +85,17 @@ describe('CustomerItemPostHook', () => {
 		validateCustomerItem = true;
 	});
 
+	sinon.stub(orderStorage, 'get').callsFake((id: string) => {
+		if (id !== testOrder.id) {
+			return Promise.reject(new BlError('order not found'));
+		}
+		return Promise.resolve(testOrder);
+	});
+
+	const orderUpdateStub = sinon.stub(orderStorage, 'update').callsFake((id: string, data: any) => {
+		return Promise.resolve(testOrder);
+	});
+
 	sinon.stub(customerItemValidator, 'validate').callsFake((customerItem: CustomerItem) => {
 		if (!validateCustomerItem) {
 			return Promise.reject('could not validate');
@@ -109,7 +121,6 @@ describe('CustomerItemPostHook', () => {
 	const userDetailStub = sinon.stub(userDetailStorage, 'update').callsFake((id: string, data: any) => {
 		return Promise.resolve(testUserDetail);
 	});
-
 
 	describe('before()', () => {
 		it('should reject if customerItem parameter is undefined', () => {
@@ -168,6 +179,56 @@ describe('CustomerItemPostHook', () => {
 			})
 		});
 
+		it('should reject with error if customerItems.orders.length is over 1', () => {
+			testCustomerItem.orders = ['order1', 'order2'];
+
+			expect(customerItemPostHook.after(['customerItem1'], testAccessToken))
+				.to.be.rejectedWith(BlError, /customerItem.orders.length is "2" but should be "1"/)
+		});
+
+		it('should update order.orderItems with the customerItem', (done) => {
+			testOrder.orderItems = [
+				{
+					type: 'rent',
+					item: 'item1',
+					title: 'Signatur 1',
+					amount: 100,
+					unitPrice: 400,
+					taxRate: 0,
+					taxAmount: 0,
+					info: {
+						from: new Date(),
+						to: new Date(),
+						numberOfPeriods: 1,
+						periodType: 'semester'
+					}
+				}
+			];
+
+			const expectedOrderUpdateParameter = [
+				{
+					type: 'rent',
+					item: 'item1',
+					title: 'Signatur 1',
+					amount: 100,
+					unitPrice: 400,
+					taxRate: 0,
+					taxAmount: 0,
+					info: {
+						from: new Date(),
+						to: new Date(),
+						numberOfPeriods: 1,
+						periodType: 'semester',
+						customerItem: 'customerItem1' // expect to have this set
+					}
+				}
+			];
+
+			customerItemPostHook.after(['customerItem1'], testAccessToken).then(() => {
+				orderUpdateStub.should.have.been.calledWith('order1', {orderItems: expectedOrderUpdateParameter});
+				done();
+			});
+		});
 	});
 });
 

@@ -28,7 +28,7 @@ export const paymentSchema = {
 	},
 	info: {
 		type: Schema.Types.Mixed,
-		required: true
+		required: false
 	},
 	confirmed: {
 		type: Schema.Types.Boolean,

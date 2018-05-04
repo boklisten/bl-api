@@ -35,9 +35,6 @@ export class PaymentDibsHandler {
 			}).then((paymentId: string) => {
 				return this.paymentStorage.update(payment.id, {info: {paymentId: paymentId}}, {id: accessToken.sub, permission: accessToken.permission});
 			}).then((updatedPayment: Payment) => {
-				payment = updatedPayment;
-				return this.updateOrderWithPayment(order, updatedPayment, accessToken);
-			}).then((updatedOrder: Order) => {
 				return payment;
 			}).catch((createDibsPaymentError: BlError) => {
 				throw createDibsPaymentError;

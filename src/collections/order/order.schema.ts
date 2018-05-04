@@ -37,6 +37,10 @@ export let orderSchema = {
 					type: Schema.Types.Number,
 					required: true
 				},
+				customerItem: {
+					type: Schema.Types.ObjectId,
+					required: false
+				},
 				info: {
 					type: Schema.Types.Mixed,
 					required: false

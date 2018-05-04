@@ -68,9 +68,21 @@ export class PaymentHandler {
 		switch (payment.method) {
 			case 'dibs':
 				return this.confirmMethodDibs(order, payment);
+			case 'card':
+				return this.confirmMethodCard(order, payment);
+			case 'cash':
+				return this.confirmMethodCash(order, payment);
 			default:
 				return Promise.reject(new BlError(`payment method "${payment.method}" not supported`));
 		}
+	}
+
+	private confirmMethodCard(order: Order, payment: Payment): Promise<boolean> {
+		return Promise.resolve(true);
+	}
+
+	private confirmMethodCash(order: Order, payment: Payment): Promise<boolean> {
+		return Promise.resolve(true);
 	}
 	
 	

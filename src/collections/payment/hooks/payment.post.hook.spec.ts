@@ -95,18 +95,17 @@ describe('PaymentPostHook', () => {
 	describe('#before()', () => {
 	
 	});
-	
 	describe('#after()', () => {
 		it('should reject if ids is empty or undefined', () => {
 			return expect(paymentPostHook.after([], testAccessToken))
 				.to.eventually.be.rejectedWith(BlError, /ids is empty or undefined/);
 		});
-		
+
 		it('should reject if accessToken is undefined', () => {
 			return expect(paymentPostHook.after(['payment1'], undefined))
-				.to.eventually.be.rejectedWith(BlError, /accessToken is undefined/);
+				.to.be.rejectedWith(BlError, /accessToken is undefined/);
 		});
-		
+
 		it('should reject when the paymentId is not found', () => {
 			return expect(paymentPostHook.after(['notFoundPayment'], testAccessToken))
 				.to.eventually.be.rejectedWith(BlError, /payment id not found/);
@@ -132,4 +131,5 @@ describe('PaymentPostHook', () => {
 			});
 		});
 	});
+
 });
