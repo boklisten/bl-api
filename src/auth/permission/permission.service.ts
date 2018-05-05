@@ -22,21 +22,36 @@ export class PermissionService {
 		for (let permission of userPermissions) {
 			if (permission === "employee") return "employee";
 		}
+
+		for (let permission of userPermissions) {
+			if (permission === "admin") return "admin";
+		}
 		
-		return "admin";
+		return "super";
 	}
 	
 	public haveRestrictedPermission(userId: string, userPermission: UserPermission, document: BlDocument): boolean {
 		if (document.user.id === userId) return true; //the user who created the document always have access to it
-		if (this.isPermissionOver(userPermission, document.user.permission)) return true;
-		
-		return false;
+		return (this.isPermissionOver(userPermission, document.user.permission));
 	}
 	
 	private isPermissionOver(permission: UserPermission, restrictedPermission: UserPermission): boolean {
 		if (!restrictedPermission || !permission) return false;
-		if (permission === "admin") return true; //admin is always the highest permission
-		if (permission === "employee" && restrictedPermission === "customer") return true;
+
+		if (permission === 'super') return true;
+
+		if (permission === 'admin') {
+			if (restrictedPermission === 'employee' || restrictedPermission === 'customer') {
+				return true;
+			}
+		}
+
+		if (permission === "employee") {
+			if (restrictedPermission === "customer") {
+				return true;
+			}
+		}
+
 		return false;
 	}
 }
