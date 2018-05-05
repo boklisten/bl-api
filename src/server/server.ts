@@ -1,16 +1,11 @@
 import * as express from 'express';
 import {Application, Request, Response, Router} from "express";
 import * as passport from "passport";
-import {APP_CONFIG} from "../application-config";
 import {BlAuth} from "../auth/bl.auth";
-import {BlEndpointCreator} from "../collections/bl-endpoint-creator";
-import * as https from "https";
-import {DibsPaymentService} from "../payment/dibs/dibs-payment.service";
-import {BlError} from "@wizardcoder/bl-model";
+import {CollectionEndpointCreator} from "../collection-endpoint/collection-endpoint-creator";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
 const packageJson = require('../../package.json');
-const fs = require('fs');
 
 
 export class Server {
@@ -80,8 +75,8 @@ export class Server {
 			let d = new Date();
 			let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 			if (req.method !== 'OPTIONS') { // no point in showing all the preflight requests
-				console.log(chalk.blue('> ') + chalk.gray.bold('[' + d.toISOString() + ']' + chalk.gray('(' + ip + ')')));
-				console.log(chalk.bold.dim.yellow('\t' + req.method + ' ') + chalk.green(req.url));
+				//console.log(chalk.blue('> ') + chalk.gray.bold('[' + d.toISOString() + ']' + chalk.gray('(' + ip + ')')));
+				console.log(`${chalk.blue('> ')} ${chalk.bold.dim.yellow(req.method)} ${chalk.green(req.url)}`);
 			}
 			next();
 		};
@@ -100,8 +95,8 @@ export class Server {
 	}
 	
 	private generateEndpoints() {
-		const endpointCreator = new BlEndpointCreator(this.router);
-		endpointCreator.createAll();
+		const collectionEndpointCreator = new CollectionEndpointCreator(this.router);
+		collectionEndpointCreator.create();
 	}
 	
 	private initModules() {
@@ -130,7 +125,7 @@ export class Server {
 		
 		this.app.listen(this.app.get('port'), () => {
 			
-			console.log(chalk.blue('\t#') + chalk.gray(' server is up and running\n'));
+			console.log(chalk.blue('#') + chalk.gray(' server is up and running\n'));
 		});
 		
 		this.app.on('uncaughtException', () => {
@@ -164,9 +159,9 @@ export class Server {
 			                   `\t| |_) | | (_| | |_) | |\n`+
 							   `\t|_.__/|_|\\__,_| .__/|_|\n`+
 			                   `\t	      |_| v${packageJson.version}\n`));
-		console.log(chalk.blue('\t# ') + chalk.gray('port:\t\t') + chalk.dim.green(process.env.PORT));
-		console.log(chalk.blue('\t# ') + chalk.gray('path:\t\t') + chalk.dim.green(this.getServerPath()));
-		console.log(chalk.blue('\t# ') + chalk.gray('mongoDb:\t') + chalk.dim.green(this.getMongoDbPath()));
+		console.log(chalk.blue('# ') + chalk.gray('port:\t\t') + chalk.dim.green(process.env.PORT));
+		console.log(chalk.blue('# ') + chalk.gray('path:\t\t') + chalk.dim.green(this.getServerPath()));
+		console.log(chalk.blue('# ') + chalk.gray('mongoDb:\t') + chalk.dim.green(this.getMongoDbPath()));
 	}
 
 	private getMongoDbPath(): string {

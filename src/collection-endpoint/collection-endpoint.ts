@@ -6,6 +6,12 @@ import {SEResponseHandler} from "../response/se.response.handler";
 import {PermissionService} from "../auth/permission/permission.service";
 import {ApiPath} from "../config/api-path";
 import {CollectionEndpointGetAll} from "./collection-endpoint-get-all/collection-endpoint-get-all";
+import {CollectionEndpointGetId} from "./collection-endpoint-get-id/collection-endpoint-get-id";
+import {CollectionEndpointPost} from "./collection-endpoint-post/collection-endpoint-post";
+import {CollectionEndpointDelete} from "./collection-endpoint-delete/collection-endpoint-delete";
+import {CollectionEndpointPatch} from "./collection-endpoint-patch/collection-endpoint-patch";
+import chalk from "chalk";
+import {Hook} from "../hook/hook";
 
 
 export class CollectionEndpoint<T extends BlDocument> {
@@ -19,6 +25,7 @@ export class CollectionEndpoint<T extends BlDocument> {
 		this._apiPath = new ApiPath();
 	}
 
+
 	public create() {
 		for (const endpoint of this._collection.endpoints) {
 			switch (endpoint.method) {
@@ -26,12 +33,16 @@ export class CollectionEndpoint<T extends BlDocument> {
 					this.createGetAll(endpoint);
 					break;
 				case 'getId':
+					this.createGetId(endpoint);
 					break;
 				case 'post':
+					this.createPost(endpoint);
 					break;
 				case 'patch':
+					this.createPatch(endpoint);
 					break;
 				case 'delete':
+					this.createDelete(endpoint);
 					break;
 				default:
 					throw new BlError(`the collection endpoint method "${endpoint.method}" is not supported`);
@@ -39,8 +50,63 @@ export class CollectionEndpoint<T extends BlDocument> {
 		}
 	}
 
+	public printEndpoints() {
+		for (const endpoint of this._collection.endpoints) {
+			let method: string = endpoint.method;
+			let uri = this._collection.collectionName;
+
+			if (method === 'getAll' || method === 'getId') {
+				method = 'get';
+			}
+
+			if (endpoint.method === 'getId' || endpoint.method === 'patch' || endpoint.method === 'delete' || endpoint.method === 'put') {
+				uri += '/:id'
+			}
+
+
+			let output = '\t\t' + chalk.dim.bold.yellow(method.toUpperCase()) + '\t' + chalk.dim.green(uri);
+			let permissionService: PermissionService = new PermissionService();
+
+			output += '\t';
+
+			if (endpoint.restriction && endpoint.restriction.permissions) {
+				output += chalk.dim.bold.red('[' + permissionService.getLowestPermission(endpoint.restriction.permissions) + ']');
+			} else {
+				output += chalk.dim.green('[everyone]');
+			}
+
+			output += '\t';
+
+			if (endpoint.restriction && endpoint.restriction.restricted) {
+				output += chalk.red.dim('user');
+			}
+
+			console.log(output);
+		}
+	}
+
 	private createGetAll(endpoint: BlEndpoint) {
-		const collectionEndpointGetAll = new CollectionEndpointGetAll<T>(this._router, endpoint, this._documentStorage, this._collection.collectionName);
+		const collectionEndpointGetAll = new CollectionEndpointGetAll<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);
 		collectionEndpointGetAll.create();
+	}
+
+	private createGetId(endpoint: BlEndpoint) {
+		const collectionEndpointGetId = new CollectionEndpointGetId<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);
+		collectionEndpointGetId.create();
+	}
+
+	private createPost(endpoint: BlEndpoint) {
+		const collectionEndpointPost = new CollectionEndpointPost<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);
+		collectionEndpointPost.create();
+	}
+
+	private createDelete(endpoint: BlEndpoint) {
+		const collectionEndpointDelete = new CollectionEndpointDelete<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);
+		collectionEndpointDelete.create();
+	}
+
+	private createPatch(endpoint: BlEndpoint) {
+		const collectionEndpointPatch = new CollectionEndpointPatch<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);
+		collectionEndpointPatch.create();
 	}
 }
