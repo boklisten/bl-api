@@ -22,6 +22,8 @@ import {LocalLogin} from "../collections/local-login/local-login";
 import {OpeningHourCollection} from "../collections/opening-hour/opening-hour.collection";
 import {OrderCollection} from "../collections/order/order.collection";
 import {PaymentCollection} from "../collections/payment/payment.collection";
+import {BlErrorLog} from "../collections/bl-error-log/bl-error-log";
+import {BlErrorLogCollection} from "../collections/bl-error-log/bl-error-log.collection";
 
 export class TestingClass {
 	private hello: string;
@@ -43,7 +45,8 @@ export class CollectionEndpointCreator {
 			new CollectionEndpoint<OpeningHour>(this._router, new OpeningHourCollection(), this._responseHandler),
 			new CollectionEndpoint<Order>(this._router, new OrderCollection(), this._responseHandler),
 			new CollectionEndpoint<Payment>(this._router, new PaymentCollection(), this._responseHandler),
-			new CollectionEndpoint<UserDetail>(this._router, new UserDetailCollection(), this._responseHandler)
+			new CollectionEndpoint<UserDetail>(this._router, new UserDetailCollection(), this._responseHandler),
+			new CollectionEndpoint<BlErrorLog>(this._router, new BlErrorLogCollection(), this._responseHandler)
 		];
 
 		console.log(`\t${chalk.blue('#')} ${chalk.gray('endpoints:')}`);

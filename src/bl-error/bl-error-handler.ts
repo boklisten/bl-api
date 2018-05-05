@@ -1,16 +1,33 @@
 
 
 import {BlError, BlapiErrorResponse} from "@wizardcoder/bl-model";
+import {BlDocumentStorage} from "../storage/blDocumentStorage";
+import {BlErrorLog} from "../collections/bl-error-log/bl-error-log";
+import {blErrorLogSchema} from "../collections/bl-error-log/bl-error-log.schema";
 const chalk = require('chalk');
 
 
 export class BlErrorHandler {
+	private _errorLogStorage: BlDocumentStorage<BlErrorLog>;
+
+	constructor() {
+		this._errorLogStorage = new BlDocumentStorage<BlErrorLog>('blerrorlogs', blErrorLogSchema);
+	}
 	
 	public createBlapiErrorResponse(blError: BlError): BlapiErrorResponse {
 		this.printErrorStack(blError);
-		
+		this.storeError(blError);
+
 		let blErrorResponse = this.getErrorResponse(blError);
 		return new BlapiErrorResponse(blErrorResponse.httpStatus, blErrorResponse.code, blErrorResponse.msg);
+	}
+
+	private storeError(blError: BlError) {
+		this._errorLogStorage.add(new BlErrorLog(blError), {id: 'SYSTEM', permission: 'admin'}).then((addedErrorLog) => {
+
+		}).catch((blErrorAddError) => {
+			console.log('blErrorHandler: there was a error saving the BlErrorLog: ' + blErrorAddError);
+		});
 	}
 	
 	private printErrorStack(blError: BlError) {
