@@ -7,12 +7,14 @@ import {AccessToken, BlapiResponse, BlDocument, BlError} from "@wizardcoder/bl-m
 import {Hook} from "../hook/hook";
 import {BlDocumentStorage} from "../storage/blDocumentStorage";
 import {BlApiRequest} from "../request/bl-api-request";
+import {CollectionEndpointDocumentAuth} from "./collection-endpoint-document/collection-endpoint-document-auth";
 declare var onRequest: any;
 
 export class CollectionEndpointMethod<T extends BlDocument> {
 	protected _collectionUri: string;
 	protected _collectionEndpointAuth: CollectionEndpointAuth;
 	protected _responseHandler: SEResponseHandler;
+	protected _collectionEndpointDocumentAuth: CollectionEndpointDocumentAuth<T>;
 
 
 	constructor(protected _router: Router, protected _endpoint: BlEndpoint, protected _collectionName: string, protected _documentStorage: BlDocumentStorage<T>) {
@@ -20,6 +22,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 		this._collectionUri = apiPath.createPath(this._collectionName);
 		this._collectionEndpointAuth = new CollectionEndpointAuth();
 		this._responseHandler = new SEResponseHandler();
+		this._collectionEndpointDocumentAuth = new CollectionEndpointDocumentAuth<T>();
 
 		if (!_endpoint.hook) {
 			this._endpoint.hook = new Hook();
@@ -53,13 +56,15 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 
 	private handleRequest(req: Request, res: Response, next: NextFunction) {
 		let userAccessToken: AccessToken;
+		let blApiRequest: BlApiRequest;
+
 		this._collectionEndpointAuth.authenticate(this._endpoint, req, res, next)
 			.then((accessToken?: AccessToken) => {
 				userAccessToken = accessToken;
 				return this._endpoint.hook.before(req.body, accessToken, req.params.id)
 			})
 			.then(() => { // this is the endpoint specific request handler
-				return this.onRequest({
+				blApiRequest = {
 					documentId: req.params.id,
 					query: req.query,
 					data: req.body,
@@ -67,8 +72,11 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 						id: userAccessToken.sub,
 						permission: userAccessToken.permission
 					}
-				});
-			}) // this is the endpoint specific request handler
+				};
+
+				return this.onRequest(blApiRequest);
+			})
+			.then((docs: T[]) => this._collectionEndpointDocumentAuth.validate(this._endpoint, docs, blApiRequest))
 			.then((docs: T[]) => this._endpoint.hook.after(docs, userAccessToken))
 			.then((docs: T[]) => this._responseHandler.sendResponse(res, new BlapiResponse(docs)))
 			.catch((blError: BlError) => this._responseHandler.sendErrorResponse(res, blError));

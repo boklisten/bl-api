@@ -128,11 +128,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 				if (document === null) {
 					return reject(new BlError(`could not find document with id "${id}"`).code(702));
 				}
-			
-				if (!this.permissionService.haveRestrictedPermission(user.id, user.permission, document)) {
-					return reject(new BlError(`user "${user.id} does not have the right permission to update document "${document.id}"`).store('document', document));
-				}
-				
+
 				if (data['user']) {
 					return reject(new BlError('can not change user restrictions after creation').code(701));
 				}
@@ -165,11 +161,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 				if (error || doc === null) {
 					return reject(this.handleError(new BlError(`could not remove document with id "${id}"`), error));
 				}
-				
-				if (!this.permissionService.haveRestrictedPermission(user.id, user.permission, doc)) {
-					return reject(new BlError(`user "${user.id}" does not have permission to delete document "${id}"`));
-				}
-				
+
 				this.mongooseModel.findByIdAndRemove(id, (error, doc) => {
 					if (error) {
 						return reject(this.handleError(new BlError(`could not remove document with id "${id}"`), error));

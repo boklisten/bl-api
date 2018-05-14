@@ -43,6 +43,13 @@ export class MongooseModelCreator {
 			}
 		};
 
+		mschema['viewableFor'] = {
+			type: {
+				id: [mongoose.Schema.Types.String],
+				default: []
+			}
+		};
+
         mschema['lastUpdated'] = {
         	type: mongoose.Schema.Types.Date,
 			default: Date.now()

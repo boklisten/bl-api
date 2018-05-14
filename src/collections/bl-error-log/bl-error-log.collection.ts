@@ -21,6 +21,4 @@ export class BlErrorLogCollection implements BlCollection {
 			]
 		}
 	]
-
-
 }

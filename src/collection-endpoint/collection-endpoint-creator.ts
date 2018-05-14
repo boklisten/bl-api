@@ -11,6 +11,7 @@ import {
 	Payment,
 	UserDetail
 } from "@wizardcoder/bl-model";
+
 import {ItemCollection} from "../collections/item/item.collection";
 import {CustomerItemCollection} from "../collections/customer-item/customer-item.collection";
 import {CollectionEndpoint} from "./collection-endpoint";
@@ -18,16 +19,11 @@ import chalk from "chalk";
 import {BranchCollection} from "../collections/branch/branch.collection";
 import {UserDetailCollection} from "../collections/user-detail/user-detail.collection";
 import {DeliveryCollection} from "../collections/delivery/delivery.collection";
-import {LocalLogin} from "../collections/local-login/local-login";
 import {OpeningHourCollection} from "../collections/opening-hour/opening-hour.collection";
 import {OrderCollection} from "../collections/order/order.collection";
 import {PaymentCollection} from "../collections/payment/payment.collection";
 import {BlErrorLog} from "../collections/bl-error-log/bl-error-log";
 import {BlErrorLogCollection} from "../collections/bl-error-log/bl-error-log.collection";
-
-export class TestingClass {
-	private hello: string;
-}
 
 export class CollectionEndpointCreator {
 	private _responseHandler: SEResponseHandler;

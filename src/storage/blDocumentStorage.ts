@@ -105,7 +105,11 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 	
 	exists(id: string): Promise<boolean> {
 		return new Promise((resolve, reject) => {
-		
+			this.mongoDbHandler.exists(id).then(() => {
+				resolve(true);
+			}).catch((existsError: BlError) => {
+				reject(existsError);
+			});
 		});
 	}
 }
