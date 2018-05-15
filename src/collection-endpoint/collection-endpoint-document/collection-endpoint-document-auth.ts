@@ -10,7 +10,6 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
 
 	constructor() {
 		this._permissionService = new PermissionService();
-
 	}
 
 	public validate(endpoint: BlEndpoint, docs: T[], blApiRequest: BlApiRequest): Promise<T[]> {

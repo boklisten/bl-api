@@ -80,34 +80,4 @@ export class OrderPatchHook extends Hook {
 			}
 		});
 	}
-	
-	private updatePaymentOnPlacedOrder(order: Order) {
-	
-	}
-	
-	private updateUserDetailsWhenOrderIsPlaced(accessToken: AccessToken, order: Order): Promise<boolean> {
-		return this.userDetailStorage.get(accessToken.details).then((userDetail: UserDetail) => {
-			
-			let orderIds = (userDetail.orders) ? userDetail.orders : [];
-			
-			for (let orderId of orderIds) {
-				if (order.id === orderId) {
-					return Promise.reject(new BlError(`order.id "${order.id}" is already in userDetail.orders`));
-				}
-			}
-			
-			orderIds.push(order.id);
-			
-			return this.userDetailStorage.update(userDetail.id,{orders: orderIds}, {id: accessToken.sub, permission: accessToken.permission}).then(() => {
-				return true;
-			}, (userDetailPatchError: BlError) => {
-				return Promise.reject(new BlError('could not update userDetails with the new orders array').add(userDetailPatchError));
-			});
-			
-		}, (getUserDetailError: BlError) => {
-			return Promise.reject(new BlError(`could not get userDetail "${accessToken.details}" when trying to update userDetail`).add(getUserDetailError));
-		}).catch((blError: BlError) => {
-			return Promise.reject(blError)
-		});
-	}
 }
