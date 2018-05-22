@@ -99,6 +99,7 @@ module.exports = function (grunt) {
                     {cwd: ".", src: ["dist/" + packageJson.name + '-' + packageJson.version + '.tgz'], dest: "~/.bl-dist/" + packageJson.name + '/', filter: 'isFile'}
                 ]
             }
+
         },
         compress: {
             prod: {

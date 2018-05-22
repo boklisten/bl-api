@@ -3,6 +3,8 @@ import {Application, Request, Response, Router} from "express";
 import * as passport from "passport";
 import {BlAuth} from "../auth/bl.auth";
 import {CollectionEndpointCreator} from "../collection-endpoint/collection-endpoint-creator";
+import {EmailHandler, EmailLog} from "@wizardcoder/bl-email";
+import {EmailService} from "../messenger/email/email-service";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
 const packageJson = require('../../package.json');
@@ -91,7 +93,6 @@ export class Server {
 	}
 	
 	private test() {
-	
 	}
 	
 	private generateEndpoints() {
