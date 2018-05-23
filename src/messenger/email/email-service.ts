@@ -7,6 +7,8 @@ import {type} from "os";
 import {OrderEmailHandler} from "./order-email/order-email-handler";
 import {MessengerService} from "../messenger-service";
 import {Message} from "../message";
+import {EmailSetting} from "@wizardcoder/bl-email/dist/ts/template/email-setting";
+import {EMAIL_SETTINGS} from "./email-settings";
 
 
 export class EmailService implements MessengerService {
@@ -48,10 +50,32 @@ export class EmailService implements MessengerService {
 	}
 
 	public emailConfirmation(customerDetail: UserDetail, confirmationCode: string) {
+		let emailSetting: EmailSetting = {
+			toEmail: customerDetail.email,
+			fromEmail: EMAIL_SETTINGS.types.emailConfirmation.fromEmail,
+			subject: EMAIL_SETTINGS.types.emailConfirmation.subject,
+			userId: customerDetail.id
+		};
 
+		this._emailHandler.sendEmailVerification(emailSetting, EMAIL_SETTINGS.types.emailConfirmation.uri + confirmationCode).then((emailLog) => {
+
+		}).catch((emailError) => {
+
+		});
 	}
 
 	public passwordReset(customerDetail: UserDetail, passwordResetCode: string) {
+		let emailSetting: EmailSetting = {
+			toEmail: customerDetail.email,
+			fromEmail: EMAIL_SETTINGS.types.passwordReset.fromEmail,
+			subject: EMAIL_SETTINGS.types.passwordReset.subject,
+			userId: customerDetail.id
+		};
 
+		this._emailHandler.sendPasswordReset(emailSetting, EMAIL_SETTINGS.types.passwordReset.uri + passwordResetCode).then((emailLog) => {
+
+		}).catch((emailError) => {
+
+		})
 	}
 }
