@@ -80,7 +80,7 @@ export class OrderEmailHandler {
 
 				let total = 0;
 
-				for (let i = 1; i <= values.length; i++) {
+				for (let i = 1; i < values.length; i++) {
 					emailOrder.payment.payments.push(this.paymentToEmailPayment(values[i] as Payment));
 					total += values[i].amount;
 				}

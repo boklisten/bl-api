@@ -23,16 +23,18 @@ export class OrderPlacedHandler {
 	private orderStorage: BlDocumentStorage<Order>;
 	private paymentHandler: PaymentHandler;
 	private userDetailStorage: BlDocumentStorage<UserDetail>;
-	private deliveryStorage: BlDocumentStorage<Delivery>;
 	private _messenger: Messenger;
 	
-	constructor(customerItemStorage?: BlDocumentStorage<CustomerItem>, orderStorage?: BlDocumentStorage<Order>, paymentHandler?: PaymentHandler, userDetailStorage?: BlDocumentStorage<UserDetail>) {
+	constructor(customerItemStorage?: BlDocumentStorage<CustomerItem>,
+				orderStorage?: BlDocumentStorage<Order>,
+				paymentHandler?: PaymentHandler,
+				userDetailStorage?: BlDocumentStorage<UserDetail>,
+				messenger?: Messenger) {
 		this.customerItemStorage = (customerItemStorage) ? customerItemStorage : new BlDocumentStorage('customeritems', customerItemSchema);
 		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage('orders', orderSchema);
 		this.paymentHandler = (paymentHandler) ? paymentHandler : new PaymentHandler();
 		this.userDetailStorage = (userDetailStorage) ? userDetailStorage : new BlDocumentStorage('userdetails', userDetailSchema);
-		this.deliveryStorage = new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
-		this._messenger = new Messenger();
+		this._messenger = (messenger) ? messenger : new Messenger();
 	}
 	
 	public placeOrder(order: Order, accessToken: AccessToken): Promise<Order> {

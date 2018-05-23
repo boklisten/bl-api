@@ -47,12 +47,13 @@ describe('OrderEmailHandler', () => {
 		return Promise.resolve(true);
 	});
 
+
 	describe('sendOrderReceipt()', () => {
-		it('should reject if emailHandler.sendWithAgreement rejects', () => {
+		it('should reject if emailHandler.sendOrderReceipt rejects', () => {
 			emailSendSuccessful = false;
 
 			return expect(orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder))
-				.to.be.rejectedWith(BlError, /could not send order-receipt email/);
+				.to.be.rejectedWith(Error, /could not send email/);
 		});
 
 		it('should resolve with EmailLog if emailHandler.sendWithAgreement resolves', () => {
@@ -60,7 +61,6 @@ describe('OrderEmailHandler', () => {
 				.to.be.fulfilled;
 		});
 	});
-
 
 
 
@@ -97,7 +97,8 @@ describe('OrderEmailHandler', () => {
 			branch: 'branch1',
 			info: {
 				paymentId: 'dibsPayment1'
-			}
+			},
+			creationTime: new Date()
 		};
 
 		testOrder = {

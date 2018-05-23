@@ -7,6 +7,7 @@ import {BlError, Order, OrderItem, CustomerItem, Payment, AccessToken, UserDetai
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
 import {OrderPlacedHandler} from "./order-placed-handler";
 import {PaymentHandler} from "../../../payment/helpers/payment-handler";
+import {Messenger} from "../../../../messenger/messenger";
 
 chai.use(chaiAsPromised);
 
@@ -23,8 +24,9 @@ describe('OrderPlacedHandler', () => {
 	const orderStorage = new BlDocumentStorage<Order>('orders');
 	const paymentHandler = new PaymentHandler();
 	const userDetailStorage = new BlDocumentStorage<UserDetail>('userdetails');
-	const orderPlacedHandler = new OrderPlacedHandler(customerItemStorage, orderStorage, paymentHandler, userDetailStorage);
-	
+	const messenger = new Messenger();
+	const orderPlacedHandler = new OrderPlacedHandler(customerItemStorage, orderStorage, paymentHandler, userDetailStorage, messenger);
+
 	sinon.stub(customerItemStorage, 'add').callsFake((customerItem: CustomerItem) => {
 		if (customerItem.item === 'item1') {
 			customerItem.id = 'customerItem1';
@@ -68,6 +70,10 @@ describe('OrderPlacedHandler', () => {
 			return Promise.reject(new BlError('could not update'))
 		}
 		return Promise.resolve(testOrder);
+	});
+
+	sinon.stub(messenger, 'orderPlaced').callsFake(() => {
+		return true;
 	});
 	
 	beforeEach(() => {
