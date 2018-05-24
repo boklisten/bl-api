@@ -4,6 +4,7 @@ import {BlCollection, BlEndpoint} from "../bl-collection";
 import {itemSchema} from "./item.schema";
 import {Schema} from "mongoose";
 import {ItemPostHook} from "./hook/item-post.hook";
+import {ItemPatchHook} from "./hook/item-patch.hook";
 
 export class ItemCollection implements BlCollection {
 	collectionName = 'items';
@@ -36,6 +37,13 @@ export class ItemCollection implements BlCollection {
 		{
 			method: 'post',
 			hook: new ItemPostHook(),
+			restriction: {
+				permissions: ['admin']
+			}
+		},
+		{
+			method: 'patch',
+			hook: new ItemPatchHook(),
 			restriction: {
 				permissions: ['admin']
 			}
