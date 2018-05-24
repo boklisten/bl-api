@@ -29,8 +29,12 @@ export class PermissionService {
 		
 		return "super";
 	}
+
+	public haveDocumentPermission(userPermission: UserPermission, document: BlDocument) {
+		return (this.isPermissionOver(userPermission, document.user.permission) || userPermission === document.user.permission);
+	}
 	
-	public haveRestrictedPermission(userId: string, userPermission: UserPermission, document: BlDocument): boolean {
+	public haveRestrictedDocumentPermission(userId: string, userPermission: UserPermission, document: BlDocument): boolean {
 		if (document.user.id === userId) return true; //the user who created the document always have access to it
 		return (this.isPermissionOver(userPermission, document.user.permission));
 	}

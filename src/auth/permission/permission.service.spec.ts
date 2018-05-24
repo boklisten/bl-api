@@ -39,12 +39,12 @@ describe('PermissionSerivice', () => {
 		});
 	});
 	
-	describe('#haveRestrictedPermission()', () => {
+	describe('#haveRestrictedDocumentPermission()', () => {
 		it('should return true if document.user.id is the same as userId even if UserPermission is not correct', () => {
 			let userId = 'aabc';
 			let doc: BlDocument = {id: 'doc1', user: {id: userId, permission: "admin"}};
 			
-			expect(permissionService.haveRestrictedPermission(userId, "customer", doc))
+			expect(permissionService.haveRestrictedDocumentPermission(userId, "customer", doc))
 				.to.be.true;
 		});
 		
@@ -52,7 +52,7 @@ describe('PermissionSerivice', () => {
 			let userId = 'abc';
 			let doc: BlDocument = {id: 'doc1', user: {id: '123', permission: "admin"}};
 			
-			expect(permissionService.haveRestrictedPermission(userId, "employee", doc))
+			expect(permissionService.haveRestrictedDocumentPermission(userId, "employee", doc))
 				.to.be.false;
 		});
 		
@@ -61,7 +61,7 @@ describe('PermissionSerivice', () => {
 			let userId = 'abc';
 			let doc: BlDocument = {id: 'doc1', user: {id: '123', permission: "admin"}};
 			
-			expect(permissionService.haveRestrictedPermission(userId, "employee", doc))
+			expect(permissionService.haveRestrictedDocumentPermission(userId, "employee", doc))
 				.to.be.false;
 		});
 		
@@ -69,7 +69,7 @@ describe('PermissionSerivice', () => {
 			let userId = 'abc';
 			let doc: BlDocument = {id: '123', user: {id: '123', permission: "employee"}};
 			
-			expect(permissionService.haveRestrictedPermission(userId, "admin", doc))
+			expect(permissionService.haveRestrictedDocumentPermission(userId, "admin", doc))
 				.to.be.true;
 		});
 	});

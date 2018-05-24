@@ -24,13 +24,19 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
 
 			for (let doc of docs) {
 				if (isNullOrUndefined(doc.viewableFor) || doc.viewableFor.length <= 0) {
-					if (!this._permissionService.haveRestrictedPermission(blApiRequest.user.id, blApiRequest.user.permission, doc)) {
-						return Promise.reject(new BlError('user does not have the permission to view the document').code(904));
+					if (endpoint.restriction.restricted) {
+						if (!this._permissionService.haveRestrictedDocumentPermission(blApiRequest.user.id, blApiRequest.user.permission, doc)) {
+							return Promise.reject(new BlError('lacking restricted permission to view or edit the document').code(904));
+						}
+					} else {
+						if (!this._permissionService.haveDocumentPermission(blApiRequest.user.permission, doc)) {
+							return Promise.reject(new BlError('lacking document permission to view or edit the document').code(904));
+						}
 					}
 				} else {
 					let permissionValid = false;
 
-					if (!this._permissionService.haveRestrictedPermission(blApiRequest.user.id, blApiRequest.user.permission, doc)) {
+					if (!this._permissionService.haveRestrictedDocumentPermission(blApiRequest.user.id, blApiRequest.user.permission, doc)) {
 						for (let id of doc.viewableFor) {
 							if (id.toString() === blApiRequest.user.id.toString()) {
 								permissionValid = true;
