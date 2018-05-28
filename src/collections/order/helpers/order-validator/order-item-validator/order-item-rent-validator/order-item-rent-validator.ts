@@ -24,11 +24,7 @@ export class OrderItemRentValidator {
 	
 	private validateOrderItemPriceTypeRent(orderItem: OrderItem, item: Item, branch: Branch): boolean {
 		this.validateOrderItemInfoFields(orderItem);
-		
-		if (!item.rent) {
-			throw new BlError('orderItem.type is "rent" but item.rent is false');
-		}
-		
+
 		if (isNullOrUndefined(branch.paymentInfo.rentPeriods)) {
 			throw new BlError('branch.paymentInfo.rentPeriods is undefined');
 		}

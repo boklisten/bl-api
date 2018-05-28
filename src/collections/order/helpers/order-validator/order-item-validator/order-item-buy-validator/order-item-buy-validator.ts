@@ -34,11 +34,7 @@ export class OrderItemBuyValidator {
 		if (orderItem.taxRate != item.taxRate) {
 			throw new BlError(`orderItem.taxRate "${orderItem.taxRate}" is not equal to item.taxRate "${item.taxRate}"`);
 		}
-		
-		if (!item.buy) {
-			throw new BlError('item.buy is false when orderItem.type is buy');
-		}
-	
+
 		let expectedTaxAmount = orderItem.amount * item.taxRate;
 		
 		if (orderItem.taxAmount != expectedTaxAmount) {

@@ -11,14 +11,6 @@ export let itemSchema = {
 		type: Schema.Types.String,
 		required: true
 	},
-	info: {
-		type: Schema.Types.Mixed,
-		required: true
-	},
-	desc: {
-		type: Schema.Types.String,
-		required: false
-	},
 	price: {
 		type: Schema.Types.Number,
 		required: true
@@ -27,21 +19,13 @@ export let itemSchema = {
 		type: Schema.Types.Number,
 		required: true,
 	},
-	sell: {
-		type: Schema.Types.Boolean,
-		required: true
+	info: {
+		type: Schema.Types.Mixed,
+		required: false
 	},
-	sellPrice: {
-		type: Schema.Types.Number,
-		required: true
-	},
-	rent: {
-		type: Schema.Types.Boolean,
-		required: true
-	},
-	buy: {
-		type: Schema.Types.Boolean,
-		required: true
+	desc: {
+		type: Schema.Types.String,
+		required: false
 	},
 	categories: {
 		type: [Schema.Types.String],

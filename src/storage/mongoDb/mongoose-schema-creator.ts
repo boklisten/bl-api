@@ -37,20 +37,6 @@ export class MongooseModelCreator {
 
     createMongooseSchema(mschema: any): mongoose.Schema {
 		
-		mschema['user'] = {
-			type: {
-				id: mongoose.Schema.Types.String,
-				permission: mongoose.Schema.Types.String
-			}
-		};
-
-		mschema['viewableFor'] = {
-			type: {
-				id: [mongoose.Schema.Types.String],
-				default: []
-			}
-		};
-
         mschema['lastUpdated'] = {
         	type: mongoose.Schema.Types.Date,
 			default: Date.now()
@@ -61,9 +47,49 @@ export class MongooseModelCreator {
 			default: Date.now()
 		};
 
+        mschema['comments'] = {
+        	type: [
+				{
+					id: mongoose.Schema.Types.String,
+					msg: mongoose.Schema.Types.String,
+					creationTime: {
+						type: mongoose.Schema.Types.Date,
+						default: Date.now()
+					},
+					user: mongoose.Schema.Types.ObjectId
+				}
+			]
+		};
+
         mschema['active'] = {
         	type: mongoose.Schema.Types.Boolean,
 			default: true
+		};
+
+		mschema['user'] = {
+			type: {
+				id: mongoose.Schema.Types.String,
+				permission: mongoose.Schema.Types.String
+			}
+		};
+
+		mschema['viewableFor'] = {
+			type: [mongoose.Schema.Types.String],
+			default: []
+		};
+
+		mschema['viewableForPermission'] = {
+			type: mongoose.Schema.Types.String
+		};
+
+		mschema['editableFor'] = {
+			type: [mongoose.Schema.Types.String],
+			default: []
+		};
+
+        mschema['archived'] = {
+        	type: mongoose.Schema.Types.Boolean,
+			default: false
 		};
 
         return new mongoose.Schema(mschema);

@@ -71,7 +71,7 @@ describe('CollectionEndpointDocumentAuth', () => {
 				testDocs[0].user.permission = 'employee';
 
 				return expect(collectionEndpointDocumentAuth.validate(testBlEndpoint, testDocs, testBlApiRequest))
-					.to.be.rejectedWith(BlError, /user does not have the permission to view the document/);
+					.to.be.rejectedWith(BlError, /lacking restricted permission to view or edit the document/);
 			});
 
 			it('should resolve if blApiRequest.user.permission is higher than document.user.permission', () => {

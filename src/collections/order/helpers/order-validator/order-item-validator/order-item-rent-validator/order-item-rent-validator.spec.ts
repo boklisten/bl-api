@@ -76,14 +76,8 @@ describe('OrderItemRentValidator', () => {
 			id: 'item1',
 			title: 'Signatur 3',
 			type: 'book',
-			info: '',
-			desc: '',
 			price: 600,
-			taxRate: 0,
-			sell: false,
-			sellPrice: 0,
-			rent: true,
-			buy: true
+			taxRate: 0
 		}
 	});
 	
@@ -114,15 +108,7 @@ describe('OrderItemRentValidator', () => {
 			return expect(orderItemRentValidator.validate(testBranch, testOrder.orderItems[0], testItem))
 				.to.be.rejectedWith(BlError, /orderItem.info is not set when orderItem.type is "rent"/);
 		});
-		
-		it('should reject if item.rent is false', () => {
-			testItem.rent = false;
-			testOrder.orderItems[0].type = 'rent';
-			
-			return expect(orderItemRentValidator.validate(testBranch, testOrder.orderItems[0], testItem))
-				.to.be.rejectedWith(BlError, /orderItem.type is "rent" but item.rent is false/);
-		});
-		
+
 		context('when periodType is not allowed at branch', () => {
 			it('should reject if branch.payment.periods does not include "semester"', () => {
 				testBranch.paymentInfo.rentPeriods = [
@@ -243,7 +229,6 @@ describe('OrderItemRentValidator', () => {
 						percentage: 0.5
 					}
 				];
-				testItem.rent = true;
 				testItem.price = 1000;
 				
 				return expect(orderItemRentValidator.validate(testBranch, testOrder.orderItems[0], testItem))

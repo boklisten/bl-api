@@ -24,11 +24,7 @@ describe('ItemValidator', () => {
 			desc: '',
 			taxRate: 0,
 			price: 100,
-			sell: true,
-			sellPrice: 100,
-			rent: true,
 			categories: [],
-			buy: true,
 			creationTime: new Date(),
 			lastUpdated: new Date(),
 			comments: [],
@@ -67,29 +63,6 @@ describe('ItemValidator', () => {
 			expect(() => {
 				itemValidator.validateItemInOrder(testItem, testOrderItem);
 			}).to.throw(BlError, /item.active is false/);
-		});
-		
-		context('when orderItem.type = rent', () => {
-			
-			it('should throw error if item.rent is false', () => {
-				testItem.rent = false;
-				testOrderItem.type = 'rent';
-				
-				expect(() => {
-					itemValidator.validateItemInOrder(testItem, testOrderItem)
-				}).to.throw(BlError, /item.rent is false/)
-			});
-		});
-		
-		context('when orderItem.type = sell', () => {
-			it('should throw error if item.sell is false', () => {
-				testItem.sell = false;
-				testOrderItem.type = 'sell';
-				
-				expect(() => {
-					itemValidator.validateItemInOrder(testItem, testOrderItem)
-				}).to.throw(BlError, /item.sell is false/);
-			});
 		});
 	});
 });

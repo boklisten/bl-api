@@ -75,14 +75,8 @@ describe('OrderItemBuyValidator', () => {
 			id: 'item1',
 			title: 'Signatur 3',
 			type: 'book',
-			info: '',
-			desc: '',
 			price: 600,
-			taxRate: 0,
-			sell: false,
-			sellPrice: 0,
-			rent: true,
-			buy: true
+			taxRate: 0
 		}
 	});
 	

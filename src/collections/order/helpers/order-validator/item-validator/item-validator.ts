@@ -30,12 +30,10 @@ export class ItemValidator {
 	}
 	
 	private validateOrderItemTypeRent(item: Item): boolean {
-		if (!item.rent) throw new BlError('item.rent is false, but orderItem.type is "rent"');
 		return true;
 	}
 	
 	private validateOrderItemTypeSell(item: Item): boolean {
-		if (!item.sell) throw new BlError('item.sell is false, but orderItem.type is "sell"');
 		return true;
 	}
 	

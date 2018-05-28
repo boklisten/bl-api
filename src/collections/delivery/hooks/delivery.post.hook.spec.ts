@@ -60,14 +60,8 @@ describe('DeliveryPostHook', () => {
 			id: 'item1',
 			title: 'signatur 3',
 			type: 'book',
-			info: {},
-			desc: '',
 			price: 100,
-			taxRate: 0,
-			sell: false,
-			sellPrice: 0,
-			rent: true,
-			buy: true
+			taxRate: 0
 		};
 		
 		testOrder = {
