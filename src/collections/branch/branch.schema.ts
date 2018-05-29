@@ -64,24 +64,54 @@ export const branchSchema = {
 		type: {
 			responsible: {
 				type: Schema.Types.Boolean,
+				default: false,
 				required: true
 			},
-			rentPeriods: [{
-				type: Schema.Types.String,
-				maxNumberOfPeriods: Schema.Types.Number,
-				percentage: Schema.Types.Number
-			}],
-			extendPeriods: [{
-				type: Schema.Types.String,
-				maxNumberOfPeriods: Schema.Types.Number,
-				price: Schema.Types.Number,
-				percentage: {
-					type: Schema.Types.Number,
-					required: false
-				}
-			}]
+			rentPeriods: {
+				type: [{
+					type: Schema.Types.String,
+					maxNumberOfPeriods: Schema.Types.Number,
+					percentage: Schema.Types.Number
+				}],
+				default: [],
+				required: true
+			},
+			extendPeriods: {
+				type: [{
+					type: Schema.Types.String,
+					maxNumberOfPeriods: Schema.Types.Number,
+					price: Schema.Types.Number,
+					percentage: {
+						type: Schema.Types.Number,
+						required: false
+					}
+				}],
+				default: [],
+				required: true
+			},
+			buyout: {
+				type: {
+					percentage: Schema.Types.Boolean
+				},
+				default: 1,
+				required: true
+			},
+			acceptedMethods: {
+				type: [Schema.Types.String],
+				default: [],
+				required: true
+			}
 		},
-		required: true
+		required: true,
+		default: {
+			responsible: false,
+			rentPeriods: [],
+			extendPeriods: [],
+			buyout: {
+				percentage: 1
+			},
+			acceptedMethods: []
+		}
 	},
 	items: {
 		type: [Schema.Types.ObjectId],

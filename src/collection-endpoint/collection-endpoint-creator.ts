@@ -2,7 +2,7 @@ import {Request, Router} from "express";
 import {SEResponseHandler} from "../response/se.response.handler";
 import {
 	BlDocument,
-	Branch,
+	Branch, BranchItem,
 	CustomerItem,
 	Delivery,
 	Item,
@@ -24,6 +24,7 @@ import {OrderCollection} from "../collections/order/order.collection";
 import {PaymentCollection} from "../collections/payment/payment.collection";
 import {BlErrorLog} from "../collections/bl-error-log/bl-error-log";
 import {BlErrorLogCollection} from "../collections/bl-error-log/bl-error-log.collection";
+import {BranchItemCollection} from "../collections/branch-item/branch-item.collection";
 
 export class CollectionEndpointCreator {
 	private _responseHandler: SEResponseHandler;
@@ -35,6 +36,7 @@ export class CollectionEndpointCreator {
 	create() {
 		const collectionEndpoints: CollectionEndpoint<BlDocument>[] = [
 			new CollectionEndpoint<Branch>(this._router, new BranchCollection(), this._responseHandler),
+			new CollectionEndpoint<BranchItem>(this._router, new BranchItemCollection(), this._responseHandler),
 			new CollectionEndpoint<CustomerItem>(this._router, new CustomerItemCollection(), this._responseHandler),
 			new CollectionEndpoint<Delivery>(this._router, new DeliveryCollection(), this._responseHandler),
 			new CollectionEndpoint<Item>(this._router, new ItemCollection(), this._responseHandler),
