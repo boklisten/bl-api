@@ -48,6 +48,7 @@ describe('OrderItemBuyValidator', () => {
 		testBranch = {
 			id: 'branch1',
 			name: 'Sonans',
+			branchItems: [],
 			paymentInfo: {
 				responsible: false,
 				rentPeriods: [
