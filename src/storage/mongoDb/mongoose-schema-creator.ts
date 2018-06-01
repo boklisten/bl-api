@@ -36,7 +36,10 @@ export class MongooseModelCreator {
     }
 
     createMongooseSchema(mschema: any): mongoose.Schema {
-		
+		mschema['blid'] = {
+        	type: mongoose.Schema.Types.String
+		};
+
         mschema['lastUpdated'] = {
         	type: mongoose.Schema.Types.Date,
 			default: Date.now()

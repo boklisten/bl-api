@@ -78,11 +78,13 @@ export class UserHandler {
 			if (!provider || provider.length <= 0) reject(blError.msg('provider is empty or undefined'));
 			if (!providerId || providerId.length <= 0) reject(blError.msg('providerId is empty or undefined'));
 			
-			let userDetail: any = {
-				email: username
-			};
-			
+
 			this.blid.createUserBlid(provider, providerId).then((userId) => {
+				let userDetail: any = {
+					email: username,
+					blid: userId
+				};
+
 				return this.userDetailStorage.add(userDetail, {id: userId, permission: "customer"});
 			}).then(addedUserDetail => {
 				let user: User = {

@@ -2,16 +2,21 @@
 
 export class PriceService {
 	private up: boolean;
+	private down: boolean;
 	
-	constructor(roundUp?: boolean) {
-		this.up = (roundUp) ? roundUp : false;
+	constructor(config?: {roundUp?: boolean, roundDown?: boolean}) {
+		this.up = (config && config.roundUp) ? config.roundUp : false;
+		this.down = (config && config.roundDown) ? config.roundDown : false;
 	}
 	
 	public sanitize(price: number): number {
 		if (this.up) {
 			return this.roundUp(price);
+		} else if (this.down) {
+			return this.roundDown(price);
+		} else {
+			return price;
 		}
-		return this.roundDown(price);
 	}
 	
 	private roundDown(num: number): number {

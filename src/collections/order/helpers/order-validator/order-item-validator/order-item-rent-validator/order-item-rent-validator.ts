@@ -7,7 +7,7 @@ export class OrderItemRentValidator {
 	private priceService: PriceService;
 	
 	constructor() {
-		this.priceService = new PriceService();
+		this.priceService = new PriceService({roundDown: true});
 	}
 	
 	public async validate(branch: Branch, orderItem: OrderItem, item: Item): Promise<boolean> {

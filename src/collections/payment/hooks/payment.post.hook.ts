@@ -83,13 +83,15 @@ export class PaymentPostHook extends Hook {
 		return new Promise((resolve, reject) => {
 			this.orderStorage.get(payment.order).then((order: Order) => {
 
-				order.payments = (order.payments) ? order.payments : [];
+				let paymentIds = (order.payments) ? order.payments : [];
 
-				if (order.payments.indexOf(payment.id) <= -1) {
-					order.payments.push(payment.id);
+				if (paymentIds.indexOf(payment.id) <= -1) {
+					paymentIds.push(payment.id);
+				} else {
+					reject(new BlError(`order.payments already includes payment "${payment.id}"`))
 				}
 
-				if (order.payments.length > 1) {
+				if (paymentIds.length > 1) {
 					reject(new BlError(`order.payments includes more than one payment`));
 				}
 
@@ -98,7 +100,9 @@ export class PaymentPostHook extends Hook {
 				}).catch((blError: BlError) => {
 					reject(new BlError('could not update orders').add(blError));
 				});
-			});
+			}).catch((getOrder) => {
+				reject(new BlError('could not get order when adding payment id'));
+			})
 		});
 	}
 

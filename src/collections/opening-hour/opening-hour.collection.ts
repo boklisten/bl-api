@@ -10,6 +10,18 @@ export class OpeningHourCollection implements BlCollection {
 	endpoints: BlEndpoint[] = [
 		{
 			method: 'getId'
+		},
+		{
+			method: 'post',
+			restriction: {
+				permissions: ['admin', 'super']
+			}
+		},
+		{
+			method: 'patch',
+			restriction: {
+				permissions: ['admin', 'super']
+			}
 		}
 	]
 }

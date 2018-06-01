@@ -9,6 +9,7 @@ import {itemSchema} from "../../../../item/item.schema";
 import {OrderItemBuyValidator} from "./order-item-buy-validator/order-item-buy-validator";
 import {OrderItemRentValidator} from "./order-item-rent-validator/order-item-rent-validator";
 import {OrderFieldValidator} from "../order-field-validator/order-field-validator";
+import {PriceService} from "../../../../../price/price.service";
 
 export class OrderItemValidator {
 	private orderItemFieldValidator: OrderFieldValidator;
@@ -17,6 +18,7 @@ export class OrderItemValidator {
 	private orderItemRentValidator: OrderItemRentValidator;
 	private branchStorage: BlDocumentStorage<Branch>;
 	private itemStorage: BlDocumentStorage<Item>;
+	private priceService: PriceService;
 	
 	constructor(branchStorage?: BlDocumentStorage<Branch>, itemStorage?: BlDocumentStorage<Item>, orderItemFieldValidator?: OrderFieldValidator,
 				orderItemRentValidator?: OrderItemRentValidator, orderItemBuyValidator?: OrderItemBuyValidator,
@@ -29,6 +31,8 @@ export class OrderItemValidator {
 		this.orderItemRentValidator = (orderItemRentValidator) ? orderItemRentValidator : new OrderItemRentValidator();
 		this.orderItemBuyValidator = (orderItemBuyValidator) ? orderItemBuyValidator : new OrderItemBuyValidator();
 		this.orderItemExtendValidator = (orderItemExtendValidator) ? orderItemExtendValidator : new OrderItemExtendValidator();
+		this.priceService = new PriceService({roundDown: true});
+
 	}
 	
 	
@@ -70,7 +74,7 @@ export class OrderItemValidator {
 			totAmount += orderItem.amount;
 		}
 		
-		if (totAmount !== order.amount) {
+		if (this.priceService.sanitize(totAmount) !== order.amount) {
 			throw new BlError(`order.amount is "${order.amount}" but total of orderItems amount is "${totAmount}"`)
 		}
 		

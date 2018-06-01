@@ -10,7 +10,7 @@ export class OrderItemBuyValidator {
 	
 	constructor(priceService?: PriceService) {
 		
-		this.priceService = (priceService) ? priceService : new PriceService();
+		this.priceService = (priceService) ? priceService : new PriceService({roundDown: true});
 	}
 	
 	public async validate(branch: Branch, orderItem: OrderItem, item: Item): Promise<boolean> {
@@ -54,7 +54,7 @@ export class OrderItemBuyValidator {
 			price = this.priceService.sanitize(item.price - orderItem.discount.amount);
 			
 		} else {
-			price = item.price;
+			price = this.priceService.sanitize(item.price);
 			
 		}
 		

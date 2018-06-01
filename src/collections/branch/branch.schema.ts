@@ -113,22 +113,8 @@ export const branchSchema = {
 			acceptedMethods: []
 		}
 	},
-	items: {
+	branchItems: {
 		type: [Schema.Types.ObjectId],
-		default: []
-	},
-	inventory: {
-		type: [{
-			item: Schema.Types.ObjectId,
-			sharedItems: [Schema.Types.ObjectId]
-		}],
-		default: []
-	},
-	itemCategories: {
-		type: [{
-			name: Schema.Types.String,
-			items: [Schema.Types.ObjectId]
-		}],
 		default: []
 	},
 	openingHours: {

@@ -25,5 +25,9 @@ export const branchItemSchema = {
 	sharedItems: {
 		type: [Schema.Types.ObjectId],
 		default: []
+	},
+	categories: {
+		type: [Schema.Types.String],
+		default: []
 	}
 };
