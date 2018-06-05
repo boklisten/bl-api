@@ -35,7 +35,7 @@ export class PaymentDibsHandler {
 			}).then((paymentId: string) => {
 				return this.paymentStorage.update(payment.id, {info: {paymentId: paymentId}}, {id: accessToken.sub, permission: accessToken.permission});
 			}).then((updatedPayment: Payment) => {
-				return payment;
+				return updatedPayment;
 			}).catch((createDibsPaymentError: BlError) => {
 				throw createDibsPaymentError;
 			});
@@ -48,23 +48,5 @@ export class PaymentDibsHandler {
 			});
 		}
 		return Promise.resolve(this.dibsPaymentService.orderToDibsEasyOrder(order));
-	}
-	
-	private updateOrderWithPayment(order: Order, payment: Payment, accessToken: AccessToken): Promise<Order> {
-		order.payments = (order.payments) ? order.payments : [];
-		
-		if (order.payments.indexOf(payment.id) <= -1) {
-			order.payments.push(payment.id);
-		}
-		
-		if (order.payments.length > 1) {
-			throw new BlError(`order.payments includes more than one payment`);
-		}
-		
-		return this.orderStorage.update(order.id, {'payments': order.payments}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedOrder: Order) => {
-			return updatedOrder;
-		}).catch((blError: BlError) => {
-			throw blError;
-		});
 	}
 }

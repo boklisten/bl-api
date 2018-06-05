@@ -45,14 +45,14 @@ export class PaymentPostHook extends Hook {
 			}
 
 			let payment = payments[0];
-			
+
 			this.paymentValidator.validate(payment).then(() => {
 				this.handlePaymentBasedOnMethod(payment, accessToken).then((updatedPayment: Payment) => {
 
 					this.updateOrderWithPayment(updatedPayment, accessToken).then(() => {
 						resolve([updatedPayment]);
-					}).catch(() => {
-						reject(new BlError('order could not be updated with paymentId'));
+					}).catch((updateOrderError: BlError) => {
+						reject(new BlError('order could not be updated with paymentId').add(updateOrderError));
 					})
 				}).catch((handlePaymentMethodError: BlError) => {
 					reject(handlePaymentMethodError);
@@ -92,7 +92,7 @@ export class PaymentPostHook extends Hook {
 				}
 
 				if (paymentIds.length > 1) {
-					reject(new BlError(`order.payments includes more than one payment`));
+					reject(new BlError(`order.payments includes more than one payment`).store('payments', paymentIds));
 				}
 
 				return this.orderStorage.update(order.id, {'payments': order.payments}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedOrder: Order) => {

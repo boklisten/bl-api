@@ -63,6 +63,7 @@ describe('OrderItemValidator', () => {
 				rentPeriods: [
 					{
 						type: "semester",
+						date: new Date(),
 						maxNumberOfPeriods: 0,
 						percentage: 0.5
 					}
@@ -70,6 +71,7 @@ describe('OrderItemValidator', () => {
 				extendPeriods: [
 					{
 						type: "semester",
+						date: new Date(),
 						maxNumberOfPeriods: 1,
 						price: 100
 					}

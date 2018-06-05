@@ -12,7 +12,7 @@ chai.use(chaiAsPromised);
 
 describe('OrderItemRentValidator', () => {
 	const orderItemRentValidator = new OrderItemRentValidator();
-	const priceService = new PriceService();
+	const priceService = new PriceService({roundDown: true});
 	
 	let testOrder: Order;
 	let testItem: Item;
@@ -55,6 +55,7 @@ describe('OrderItemRentValidator', () => {
 				rentPeriods: [
 					{
 						type: "semester",
+						date: new Date(),
 						maxNumberOfPeriods: 2,
 						percentage: 0.5
 					}
@@ -63,6 +64,7 @@ describe('OrderItemRentValidator', () => {
 					{
 						type: "semester",
 						price: 100,
+						date: new Date(),
 						maxNumberOfPeriods: 1
 					}
 				],
@@ -116,7 +118,8 @@ describe('OrderItemRentValidator', () => {
 					{
 						type: "year",
 						maxNumberOfPeriods: 1,
-						percentage: 0.5
+						percentage: 0.5,
+						date: new Date()
 					}
 				];
 				testOrder.orderItems[0].info.periodType = "semester";
@@ -134,6 +137,7 @@ describe('OrderItemRentValidator', () => {
 						{
 							type: "semester",
 							maxNumberOfPeriods: 1,
+							date: new Date(),
 							percentage: 0.5
 						}
 					];
@@ -145,16 +149,18 @@ describe('OrderItemRentValidator', () => {
 				
 				it('should reject if orderItem amount is 50 but (item.price * branch.paymentInfo.percentage) is 20', () => {
 					testOrder.orderItems[0].amount = 100;
+					testOrder.orderItems[0].discount  = null;
 					testBranch.paymentInfo.rentPeriods = [
 						{
 							type: "semester",
 							maxNumberOfPeriods: 1,
+							date: new Date(),
 							percentage: 0.234
 						}
 					];
 					testItem.price = 110;
 					
-					let expectedAmount = priceService.sanitize(110 * 0.234);
+					let expectedAmount = priceService.sanitize( 110 * 0.234);
 					
 					return expect(orderItemRentValidator.validate(testBranch, testOrder.orderItems[0], testItem))
 						.to.be.rejectedWith(BlError, `orderItem.amount "100" is not equal to the rental price "${expectedAmount}"`);
@@ -199,6 +205,7 @@ describe('OrderItemRentValidator', () => {
 						{
 							type: "semester",
 							maxNumberOfPeriods: 1,
+							date: new Date(),
 							percentage: 0.5
 						}
 					];
@@ -227,6 +234,7 @@ describe('OrderItemRentValidator', () => {
 					{
 						type: "semester",
 						maxNumberOfPeriods: 1,
+						date: new Date(),
 						percentage: 0.5
 					}
 				];
@@ -245,12 +253,14 @@ describe('OrderItemRentValidator', () => {
 						{
 							type: "year",
 							maxNumberOfPeriods: 1,
+							date: new Date(),
 							percentage: 0.5
 						}
 					],
 					extendPeriods: [{
 						type: "semester",
 						maxNumberOfPeriods: 1,
+						date: new Date(),
 						price: 100
 					}],
 					buyout: {
@@ -267,12 +277,14 @@ describe('OrderItemRentValidator', () => {
 						{
 							type: "year",
 							maxNumberOfPeriods: 1,
+							date: new Date(),
 							percentage: 0.5
 						}
 					],
 					extendPeriods: [{
 						type: "semester",
 						maxNumberOfPeriods: 1,
+						date: new Date(),
 						price: 100
 					}],
 					buyout: {

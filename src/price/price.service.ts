@@ -24,6 +24,6 @@ export class PriceService {
 	}
 	
 	private roundUp(num: number): number {
-		return parseInt((num / 10).toString(), 10) + 10;
+		return parseInt((num / 10).toString(), 10) * 10 + 10;
 	}
 }

@@ -40,6 +40,7 @@ describe('OrderItemExtendValidator', () => {
 				{
 					type: "semester",
 					price: 100,
+					date: new Date(),
 					maxNumberOfPeriods: 1
 				}
 			];
@@ -54,6 +55,7 @@ describe('OrderItemExtendValidator', () => {
 				{
 					type: "semester",
 					price: 100,
+					date: new Date(),
 					maxNumberOfPeriods: 1
 				}
 			]
@@ -79,6 +81,7 @@ describe('OrderItemExtendValidator', () => {
 				{
 					type: "semester",
 					price: 100,
+					date: new Date(),
 					maxNumberOfPeriods: 1
 				}
 			];
@@ -167,6 +170,7 @@ describe('OrderItemExtendValidator', () => {
 					{
 						type: "semester",
 						maxNumberOfPeriods: 2,
+						date: new Date(),
 						percentage: 0.5
 					}
 				],
@@ -174,6 +178,7 @@ describe('OrderItemExtendValidator', () => {
 					{
 						type: "semester",
 						maxNumberOfPeriods: 1,
+						date: new Date(),
 						price: 100
 					}
 				],
