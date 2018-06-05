@@ -71,6 +71,7 @@ export const branchSchema = {
 				type: [{
 					type: Schema.Types.String,
 					maxNumberOfPeriods: Schema.Types.Number,
+					date: Schema.Types.Date,
 					percentage: Schema.Types.Number
 				}],
 				default: [],
@@ -81,6 +82,7 @@ export const branchSchema = {
 					type: Schema.Types.String,
 					maxNumberOfPeriods: Schema.Types.Number,
 					price: Schema.Types.Number,
+					date: Schema.Types.Date,
 					percentage: {
 						type: Schema.Types.Number,
 						required: false
