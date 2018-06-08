@@ -5,6 +5,20 @@ import {HttpHandler} from "../../../../http/http.handler";
 import {BringDelivery} from "./bringDelivery";
 import moment = require("moment");
 import {APP_CONFIG} from "../../../../application-config";
+import {isNullOrUndefined} from "util";
+
+export type ShipmentAddress = {
+	name: string;
+	postalCode: string;
+	postalCity: string;
+	address: string;
+};
+
+export type FacilityAddress = {
+	address: string;
+	postalCode: string;
+	postalCity: string;
+}
 
 export class BringDeliveryService {
 	private httpHandler: HttpHandler;
@@ -17,22 +31,25 @@ export class BringDeliveryService {
 		this.clientUrl = APP_CONFIG.url.blWeb.base;
 	}
 	
-	public getDeliveryInfoBring(fromPostalCode: string, toPostalCode: string, items: Item[]): Promise<DeliveryInfoBring> {
+	public getDeliveryInfoBring(facilityAddress: FacilityAddress, shipmentAddress: ShipmentAddress, items: Item[]): Promise<DeliveryInfoBring> {
+		if (isNullOrUndefined(facilityAddress) || isNullOrUndefined(shipmentAddress)) {
+			return Promise.reject(new BlError('required fields facilityAddress or shipmentAddress are null or undefined'));
+		}
 		if (!items || items.length <= 0) {
 			return Promise.reject(new BlError('items is empty or undefined'));
 		}
 		
-		if (!fromPostalCode || fromPostalCode.length <= 0) {
+		if (!facilityAddress.postalCode || shipmentAddress.postalCode.length <= 0) {
 			return Promise.reject(new BlError('fromPostalCode is empty or undefined'));
 		}
 		
-		if (!toPostalCode|| toPostalCode.length <= 0) {
+		if (!shipmentAddress.postalCode || shipmentAddress.postalCode.length <= 0) {
 			return Promise.reject(new BlError('toPostalCode is empty or undefined'));
 		}
 		
 		
 		return new Promise((resolve, reject) => {
-		    let bringDelivery = this.createBringDelivery(fromPostalCode, toPostalCode, items);
+		    let bringDelivery = this.createBringDelivery(facilityAddress, shipmentAddress, items);
 		    let queryString = this.httpHandler.createQueryString(bringDelivery);
 		   
 		    this.httpHandler.getWithQuery(this.bringShipmentUrl, queryString).then((responseData: any) => {
@@ -40,7 +57,7 @@ export class BringDeliveryService {
 		    	let deliveryInfoBring: DeliveryInfoBring;
 		    	
 		    	try {
-					deliveryInfoBring = this.getDeliveryInfoBringFromBringResponse(fromPostalCode, toPostalCode, responseData);
+					deliveryInfoBring = this.getDeliveryInfoBringFromBringResponse(facilityAddress, shipmentAddress, responseData);
 				} catch(e) {
 		    		if (e instanceof BlError) {
 		    			return reject(e);
@@ -56,26 +73,38 @@ export class BringDeliveryService {
 		});
 	}
 	
-	private createBringDelivery(fromPostalCode: string, toPostalCode: string, items: Item[]): BringDelivery {
+	private createBringDelivery(facilityAddress: FacilityAddress, shipmentAddress: ShipmentAddress, items: Item[]): BringDelivery {
 		let bringDelivery: BringDelivery;
+
+		let totalWeight = 0;
+
+		for (const item of items) {
+			if (item.info && item.info['weight']) {
+				totalWeight += parseInt(item.info['weight']);
+			} else {
+				totalWeight += 500;
+			}
+		}
 		
 		bringDelivery = {
 			clientUrl: this.clientUrl,
-			weightInGrams: 450 * items.length,
-			from: fromPostalCode,
-			to: toPostalCode
+			weightInGrams: totalWeight,
+			from: facilityAddress.postalCode,
+			to: shipmentAddress.postalCode
 		};
 		
 		return bringDelivery;
 	}
 	
-	private getDeliveryInfoBringFromBringResponse(fromPostalCode: string, toPostalCode: string, responseData: any): DeliveryInfoBring {
+	private getDeliveryInfoBringFromBringResponse(facilityAddress: FacilityAddress, shipmentAddress: ShipmentAddress, responseData: any): DeliveryInfoBring {
 		let deliveryInfoBring: DeliveryInfoBring = {
 			amount: -1,
 			estimatedDelivery: new Date(),
 			taxAmount: 0,
-			to: toPostalCode,
-			from: fromPostalCode
+			facilityAddress: facilityAddress,
+			shipmentAddress: shipmentAddress,
+			from: facilityAddress.postalCode,
+			to: shipmentAddress.postalCode
 		};
 		
 		if (!responseData['Product']) {

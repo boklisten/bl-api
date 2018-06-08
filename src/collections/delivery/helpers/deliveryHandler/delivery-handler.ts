@@ -82,7 +82,7 @@ export class DeliveryHandler {
 	
 	private getBringDeliveryInfoAndUpdateDelivery(delivery: Delivery, items: Item[], accessToken: AccessToken): Promise<Delivery> {
 		return new Promise((resolve, reject) => {
-		    this.bringDeliveryService.getDeliveryInfoBring(delivery.info['from'], delivery.info['to'], items).then((deliveryInfoBring: DeliveryInfoBring) => {
+		    this.bringDeliveryService.getDeliveryInfoBring(delivery.info['facilityAddress'], delivery.info['shipmentAddress'], items).then((deliveryInfoBring: DeliveryInfoBring) => {
 		    	this.deliveryStorage.update(delivery.id, {amount: deliveryInfoBring.amount, info: deliveryInfoBring}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedDelivery: Delivery) => {
 		    		resolve(updatedDelivery);
 				}).catch((blError: BlError) => {

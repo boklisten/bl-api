@@ -39,6 +39,7 @@ export class DeliveryPostHook extends Hook {
 		if (deliveries.length > 1) {
 			return Promise.reject(new BlError('can not add more than one delivery'));
 		}
+
 		let delivery = deliveries[0];
 		return new Promise((resolve, reject) => {
 			this.orderStorage.get(delivery.order).then((order: Order) => {
