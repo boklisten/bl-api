@@ -5,6 +5,7 @@ import {BlAuth} from "../auth/bl.auth";
 import {CollectionEndpointCreator} from "../collection-endpoint/collection-endpoint-creator";
 import {EmailHandler, EmailLog} from "@wizardcoder/bl-email";
 import {EmailService} from "../messenger/email/email-service";
+import * as path from "path";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
 const packageJson = require('../../package.json');
@@ -123,7 +124,9 @@ export class Server {
 		
 		
 		this.app.set('port', (process.env.PORT || 1337));
-		
+
+		this.app.use(express.static(path.join(__dirname, '../public')));
+
 		this.app.listen(this.app.get('port'), () => {
 			
 			console.log(chalk.blue('#') + chalk.gray(' server is up and running\n'));

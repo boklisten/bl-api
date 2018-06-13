@@ -13,7 +13,7 @@
     "pretest": "tsc",
     "test": "mocha -r ts-node/register \"src/**/*.spec.ts\" --reporter min --exit",
     "test:watch": "mocha -r ts-node/register --trace-warnings --reporter min --watch --watch-extensions ts \"./src/**/*.spec.ts\"",
-    "copy": "cp ./src/loaderio-402e4c945771fc86129688cdd95acb9e.txt ./dist/"
+    "copy": "copyfiles \"./src/public/**\" \"./dist/public/\" --flat"
   },
   "author": "holskil",
   "license": "ISC",
