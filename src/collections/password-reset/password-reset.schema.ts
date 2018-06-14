@@ -13,5 +13,10 @@ export const passwordResetSchema = {
 	token: {
 		type: Schema.Types.String,
 		required: true
+	},
+	createdAt: { // IMPORTANT to have expiry
+		type: Date,
+		expires: 900,
+		default: Date.now
 	}
 };
