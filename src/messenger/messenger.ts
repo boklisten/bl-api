@@ -68,6 +68,6 @@ export class Messenger implements MessengerService {
 	 * @param {string} passwordResetCode
 	 */
 	public passwordReset(customerDetail: UserDetail, passwordResetCode: string) {
-
+		this._emailService.passwordReset(customerDetail, passwordResetCode);
 	}
 }

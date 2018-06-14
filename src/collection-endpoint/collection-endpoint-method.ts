@@ -9,6 +9,7 @@ import {BlDocumentStorage} from "../storage/blDocumentStorage";
 import {BlApiRequest} from "../request/bl-api-request";
 import {CollectionEndpointDocumentAuth} from "./collection-endpoint-document/collection-endpoint-document-auth";
 import {CollectionEndpointOperation} from "./collection-endpoint-operation";
+import {isBoolean, isNullOrUndefined} from "util";
 
 declare var onRequest: any;
 
@@ -80,11 +81,17 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 				userAccessToken = accessToken;
 				return this._endpoint.hook.before(req.body, accessToken, req.params.id)
 			})
-			.then(() => { // this is the endpoint specific request handler
+			.then((hookData?: any) => { // this is the endpoint specific request handler
+				let data = req.body;
+
+				if (!isNullOrUndefined(hookData) && !isBoolean(hookData)) {
+					data = hookData;
+				}
+
 				blApiRequest = {
 					documentId: req.params.id,
 					query: req.query,
-					data: req.body,
+					data: data,
 					user: {
 						id: userAccessToken.sub,
 						permission: userAccessToken.permission

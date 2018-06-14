@@ -57,4 +57,8 @@ export class SeCrypto {
 			cryptoHash.end();
 		});
 	}
+
+	public random(): string {
+		return crypto.randomBytes(20).toLocaleString('hex');
+	}
 }

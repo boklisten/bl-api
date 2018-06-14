@@ -25,6 +25,8 @@ import {PaymentCollection} from "../collections/payment/payment.collection";
 import {BlErrorLog} from "../collections/bl-error-log/bl-error-log";
 import {BlErrorLogCollection} from "../collections/bl-error-log/bl-error-log.collection";
 import {BranchItemCollection} from "../collections/branch-item/branch-item.collection";
+import {PasswordReset} from "../collections/password-reset/password-reset";
+import {PasswordResetCollection} from "../collections/password-reset/password-reset.collection";
 
 export class CollectionEndpointCreator {
 	private _responseHandler: SEResponseHandler;
@@ -44,7 +46,8 @@ export class CollectionEndpointCreator {
 			new CollectionEndpoint<Order>(this._router, new OrderCollection(), this._responseHandler),
 			new CollectionEndpoint<Payment>(this._router, new PaymentCollection(), this._responseHandler),
 			new CollectionEndpoint<UserDetail>(this._router, new UserDetailCollection(), this._responseHandler),
-			new CollectionEndpoint<BlErrorLog>(this._router, new BlErrorLogCollection(), this._responseHandler)
+			new CollectionEndpoint<BlErrorLog>(this._router, new BlErrorLogCollection(), this._responseHandler),
+			new CollectionEndpoint<PasswordReset>(this._router, new PasswordResetCollection(), this._responseHandler)
 		];
 
 		console.log(`\t${chalk.blue('#')} ${chalk.gray('endpoints:')}`);
