@@ -6,7 +6,7 @@ import * as sinon from 'sinon';
 import {BlDocument, BlError} from '@wizardcoder/bl-model';
 import {CollectionEndpointDocumentAuth} from "./collection-endpoint-document-auth";
 import {BlApiRequest} from "../../request/bl-api-request";
-import {BlEndpoint} from "../../collections/bl-collection";
+import {BlEndpoint, BlEndpointRestriction} from "../../collections/bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -14,14 +14,12 @@ describe('CollectionEndpointDocumentAuth', () => {
 	const collectionEndpointDocumentAuth = new CollectionEndpointDocumentAuth();
 	let testBlApiRequest: BlApiRequest;
 	let testDocs: BlDocument[];
-	let testBlEndpoint: BlEndpoint;
+	let testRestriction: BlEndpointRestriction;
 
 	beforeEach(() => {
-		testBlEndpoint = {
-			restriction: {
-				restricted: true
-			}
-		} as BlEndpoint;
+		testRestriction =  {
+			restricted: true
+		} as BlEndpointRestriction;
 
 		testBlApiRequest = {
 			user: {
@@ -42,12 +40,12 @@ describe('CollectionEndpointDocumentAuth', () => {
 
 
 	it('should reject if docs is empty', () => {
-		return expect(collectionEndpointDocumentAuth.validate(testBlEndpoint, [], testBlApiRequest))
+		return expect(collectionEndpointDocumentAuth.validate(testRestriction, [], testBlApiRequest))
 			.to.be.rejectedWith(BlError, /docs is empty or undefined/);
 	});
 
 	it('should reject if blApiRequest is null or undefined', () => {
-		return expect(collectionEndpointDocumentAuth.validate(testBlEndpoint, testDocs, null))
+		return expect(collectionEndpointDocumentAuth.validate(testRestriction, testDocs, null))
 			.to.be.rejectedWith(BlError, /blApiRequest is null or undefined/);
 	});
 
@@ -55,7 +53,7 @@ describe('CollectionEndpointDocumentAuth', () => {
 		testBlApiRequest.user.id = 'user1';
 		testDocs[0].user.id = 'user1';
 
-		return expect(collectionEndpointDocumentAuth.validate(testBlEndpoint, testDocs, testBlApiRequest))
+		return expect(collectionEndpointDocumentAuth.validate(testRestriction, testDocs, testBlApiRequest))
 			.to.be.fulfilled;
 	});
 
@@ -70,7 +68,7 @@ describe('CollectionEndpointDocumentAuth', () => {
 				testBlApiRequest.user.permission = 'customer';
 				testDocs[0].user.permission = 'employee';
 
-				return expect(collectionEndpointDocumentAuth.validate(testBlEndpoint, testDocs, testBlApiRequest))
+				return expect(collectionEndpointDocumentAuth.validate(testRestriction, testDocs, testBlApiRequest))
 					.to.be.rejectedWith(BlError, /lacking restricted permission to view or edit the document/);
 			});
 
@@ -78,7 +76,7 @@ describe('CollectionEndpointDocumentAuth', () => {
 				testBlApiRequest.user.permission = 'admin';
 				testDocs[0].user.permission = 'employee';
 
-				return expect(collectionEndpointDocumentAuth.validate(testBlEndpoint, testDocs, testBlApiRequest))
+				return expect(collectionEndpointDocumentAuth.validate(testRestriction, testDocs, testBlApiRequest))
 					.to.be.fulfilled;
 			});
 		});
@@ -100,7 +98,7 @@ describe('CollectionEndpointDocumentAuth', () => {
 					testDocs[0].viewableFor = ['user1'];
 					testBlApiRequest.user.id = 'user2';
 
-					return expect(collectionEndpointDocumentAuth.validate(testBlEndpoint, testDocs, testBlApiRequest))
+					return expect(collectionEndpointDocumentAuth.validate(testRestriction, testDocs, testBlApiRequest))
 						.to.be.rejectedWith(BlError, /document is not viewable for user/);
 				});
 
@@ -108,7 +106,7 @@ describe('CollectionEndpointDocumentAuth', () => {
 					testDocs[0].viewableFor = ['user4'];
 					testBlApiRequest.user.id = 'user4';
 
-					return expect(collectionEndpointDocumentAuth.validate(testBlEndpoint, testDocs, testBlApiRequest))
+					return expect(collectionEndpointDocumentAuth.validate(testRestriction, testDocs, testBlApiRequest))
 						.to.be.fulfilled;
 				});
 			});

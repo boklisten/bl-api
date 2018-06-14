@@ -8,6 +8,8 @@ import {Hook} from "../hook/hook";
 import {BlDocumentStorage} from "../storage/blDocumentStorage";
 import {BlApiRequest} from "../request/bl-api-request";
 import {CollectionEndpointDocumentAuth} from "./collection-endpoint-document/collection-endpoint-document-auth";
+import {CollectionEndpointOperation} from "./collection-endpoint-operation";
+
 declare var onRequest: any;
 
 export class CollectionEndpointMethod<T extends BlDocument> {
@@ -52,13 +54,28 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 			default:
 				throw new BlError(`the endpoint "${this._endpoint.method}" is not supported`);
 		}
+
+		this.createOperations(this._endpoint);
+	}
+
+	public onRequest(blApiRequest: BlApiRequest) {
+		return Promise.resolve([]);
+	}
+
+	private createOperations(endpoint: BlEndpoint) {
+		if (endpoint.operations) {
+			for (let operation of endpoint.operations) {
+				let collectionEndpointOperation = new CollectionEndpointOperation(this._router, this._collectionUri, endpoint.method, operation);
+				collectionEndpointOperation.create();
+			}
+		}
 	}
 
 	private handleRequest(req: Request, res: Response, next: NextFunction) {
 		let userAccessToken: AccessToken;
 		let blApiRequest: BlApiRequest;
 
-		this._collectionEndpointAuth.authenticate(this._endpoint, req, res, next)
+		this._collectionEndpointAuth.authenticate(this._endpoint.restriction, req, res, next)
 			.then((accessToken?: AccessToken) => {
 				userAccessToken = accessToken;
 				return this._endpoint.hook.before(req.body, accessToken, req.params.id)
@@ -76,14 +93,10 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 
 				return this.onRequest(blApiRequest);
 			})
-			.then((docs: T[]) => this._collectionEndpointDocumentAuth.validate(this._endpoint, docs, blApiRequest))
+			.then((docs: T[]) => this._collectionEndpointDocumentAuth.validate(this._endpoint.restriction, docs, blApiRequest))
 			.then((docs: T[]) => this._endpoint.hook.after(docs, userAccessToken))
 			.then((docs: T[]) => this._responseHandler.sendResponse(res, new BlapiResponse(docs)))
 			.catch((blError: BlError) => this._responseHandler.sendErrorResponse(res, blError));
-	}
-
-	public onRequest(blApiRequest: BlApiRequest) {
-		return Promise.resolve([]);
 	}
 
 	private routerGetAll() {
@@ -91,7 +104,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 	}
 
 	private routerGetId() {
-		this._router.get(this._collectionUri + '/:id' , this.handleRequest.bind(this));
+		this._router.get(this._collectionUri + '/:id', this.handleRequest.bind(this));
 	}
 
 	private routerPost() {

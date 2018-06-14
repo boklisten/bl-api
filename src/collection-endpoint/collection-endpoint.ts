@@ -1,6 +1,6 @@
 import {BlDocument, BlError} from "@wizardcoder/bl-model";
 import {Router} from "express";
-import {BlCollection, BlEndpoint} from "../collections/bl-collection";
+import {BlCollection, BlEndpoint, BlEndpointRestriction} from "../collections/bl-collection";
 import {BlDocumentStorage} from "../storage/blDocumentStorage";
 import {SEResponseHandler} from "../response/se.response.handler";
 import {PermissionService} from "../auth/permission/permission.service";
@@ -65,25 +65,39 @@ export class CollectionEndpoint<T extends BlDocument> {
 
 
 			let output = '\t\t' + chalk.dim.bold.yellow(method.toUpperCase()) + '\t' + chalk.dim.green(uri);
-			let permissionService: PermissionService = new PermissionService();
 
-			output += '\t';
 
-			if (endpoint.restriction && endpoint.restriction.permissions) {
-				output += chalk.dim.bold.red('[' + permissionService.getLowestPermission(endpoint.restriction.permissions) + ']');
-			} else {
-				output += chalk.dim.green('[everyone]');
+
+			console.log(output + this.getRestrictionPrintout(endpoint.restriction));
+
+			if (endpoint.operations) {
+				for (let operation of endpoint.operations) {
+					let operationOutput = output + '/' + chalk.dim.green(operation.name) + this.getRestrictionPrintout(operation.restriction);
+					console.log(operationOutput);
+				}
 			}
-
-			output += '\t';
-
-			if (endpoint.restriction && endpoint.restriction.restricted) {
-				output += chalk.red.dim('user');
-			}
-
-			console.log(output);
 		}
 	}
+
+	private getRestrictionPrintout(restriction: BlEndpointRestriction): string {
+		let permissionService: PermissionService = new PermissionService();
+		let output = '\t';
+
+		if (restriction && restriction.permissions) {
+			output += chalk.dim.bold.red('[' + permissionService.getLowestPermission(restriction.permissions) + ']');
+		} else {
+			output += chalk.dim.green('[everyone]');
+		}
+
+		output += '\t';
+
+		if (restriction && restriction.restricted) {
+			output += chalk.red.dim('user');
+		}
+		return output;
+	}
+
+
 
 	private createGetAll(endpoint: BlEndpoint) {
 		const collectionEndpointGetAll = new CollectionEndpointGetAll<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);

@@ -1,8 +1,8 @@
-import {AccessToken, BlDocument, BlError} from "@wizardcoder/bl-model";
+import {BlDocument, BlError} from "@wizardcoder/bl-model";
 import {BlApiRequest} from "../../request/bl-api-request";
 import {isNullOrUndefined} from "util";
 import {PermissionService} from "../../auth/permission/permission.service";
-import {BlEndpoint} from "../../collections/bl-collection";
+import {BlEndpointRestriction} from "../../collections/bl-collection";
 
 
 export class CollectionEndpointDocumentAuth<T extends BlDocument> {
@@ -12,8 +12,8 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
 		this._permissionService = new PermissionService();
 	}
 
-	public validate(endpoint: BlEndpoint, docs: T[], blApiRequest: BlApiRequest): Promise<T[]> {
-		if (endpoint.restriction) {
+	public validate(restriction: BlEndpointRestriction, docs: T[], blApiRequest: BlApiRequest): Promise<T[]> {
+		if (restriction) {
 			if (isNullOrUndefined(docs) || docs.length <= 0) {
 				return Promise.reject(new BlError('docs is empty or undefined'));
 			}
@@ -24,7 +24,7 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
 
 			for (let doc of docs) {
 				if (isNullOrUndefined(doc.viewableFor) || doc.viewableFor.length <= 0) {
-					if (endpoint.restriction.restricted) {
+					if (restriction.restricted) {
 						if (!this._permissionService.haveRestrictedDocumentPermission(blApiRequest.user.id, blApiRequest.user.permission, doc)) {
 							return Promise.reject(new BlError('lacking restricted permission to view or edit the document').code(904));
 						}
