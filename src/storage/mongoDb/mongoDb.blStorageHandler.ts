@@ -20,9 +20,11 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		this.permissionService = new PermissionService();
 	}
 
-	get(id: string): Promise<T> {
+	get(id: string, userPermission?: UserPermission): Promise<T> {
 		return new Promise((resolve, reject) => {
-		    this.mongooseModel.findOne({_id: id}, (error, doc) => {
+			let filter: any = {_id: id};
+
+		    this.mongooseModel.findOne(filter, (error, doc) => {
 				if (error) {
 					return reject(this.handleError(new BlError(`error when trying to find document with id "${id}"`), error));
 				}
@@ -57,7 +59,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		});
 	}
 	
-	getMany(ids: string[]): Promise<T[]> {
+	getMany(ids: string[], userPermission?: UserPermission): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			const idArr = [];
 			
@@ -68,8 +70,14 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 					return Promise.reject(new BlError('id in array is not valid'));
 				}
 			}
-			
-			this.mongooseModel.find({'_id': {$in: idArr}}).exec((error, docs) => {
+
+			let filter: any = {_id: {$in: idArr}, active: true};
+
+			if (userPermission && this.permissionService.isAdmin(userPermission)) {
+				filter = {_id: {$id: idArr}}; // if user have admin privileges, he can also get documents that are inactive
+			}
+
+			this.mongooseModel.find(filter).exec((error, docs) => {
 				if (error || docs.length <= 0) {
 					return reject(this.handleError(new BlError('error when trying to find document'), error));
 				}
@@ -78,9 +86,15 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		});
 	}
 	
-	getAll(): Promise<T[]> {
+	getAll(userPermission?: UserPermission): Promise<T[]> {
 		return new Promise((resolve, reject) => {
-			this.mongooseModel.find({}, (error, docs) => {
+			let filter: any = {active: true};
+
+			if (userPermission && this.permissionService.isAdmin(userPermission)) {
+				filter = {}; // if user have admin privileges, he can also get documents that are inactive
+			}
+
+			this.mongooseModel.find(filter, (error, docs) => {
 				if (error || docs === null) {
 					reject(this.handleError(new BlError('failed to get all documnts'), error));
 				}

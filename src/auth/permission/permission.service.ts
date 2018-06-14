@@ -30,6 +30,10 @@ export class PermissionService {
 		return "super";
 	}
 
+	public isAdmin(userPermission: UserPermission) {
+		return (userPermission === 'admin' || userPermission === 'super');
+	}
+
 	public haveDocumentPermission(userPermission: UserPermission, document: BlDocument) {
 		return (this.isPermissionOver(userPermission, document.user.permission) || userPermission === document.user.permission);
 	}

@@ -35,9 +35,9 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 		});
 	}
 	
-	getMany(ids: string[]): Promise<T[]> {
+	getMany(ids: string[], userPermission?: UserPermission): Promise<T[]> {
 		return new Promise((resolve, reject) => {
-			this.mongoDbHandler.getMany(ids).then((docs: T[]) => {
+			this.mongoDbHandler.getMany(ids, userPermission).then((docs: T[]) => {
 				resolve(docs);
 			}).catch((blError: BlError) => {
 				reject(blError);
@@ -45,9 +45,9 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 		});
 	}
 	
-	getAll(): Promise<T[]> {
+	getAll(userPermission?: UserPermission): Promise<T[]> {
 		return new Promise((resolve, reject) => {
-			this.mongoDbHandler.getAll().then((docs: T[]) => {
+			this.mongoDbHandler.getAll(userPermission).then((docs: T[]) => {
 				resolve(docs);
 			}).catch((blError: BlError) => {
 				reject(blError);

@@ -29,7 +29,7 @@ export class CollectionEndpointGetAll<T extends BlDocument> extends CollectionEn
 			});
 
 		} else { // if no query, give back all objects in collection
-			return this._documentStorage.getAll().then((docs: T[]) => {
+			return this._documentStorage.getAll(accessToken.permission).then((docs: T[]) => {
 				return docs;
 			}).catch((blError: BlError) => {
 				throw blError;
