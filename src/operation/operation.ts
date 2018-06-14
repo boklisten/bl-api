@@ -1,4 +1,5 @@
+import {BlApiRequest} from "../request/bl-api-request";
 
 export interface Operation {
-	run(): void
+	run(blApiRequest: BlApiRequest): void
 }

@@ -24,8 +24,8 @@ export class CollectionEndpointOperation {
 			case 'getId':
 				this._router.get(uri, this.handleRequest.bind(this));
 				break;
-			case 'getAll':
-				this._router.get(uri, this.handleRequest.bind(this));
+			case 'patch':
+				this._router.patch(uri, this.handleRequest.bind(this));
 				break;
 			default:
 				throw new Error(`endpoint operation method "${this._method}" is currently not supported`);
@@ -56,7 +56,7 @@ export class CollectionEndpointOperation {
 					}
 				};
 
-				return this._operation.operation.run();
+				return this._operation.operation.run(blApiRequest);
 			})
 			.then((returnData: any) => this._responseHandler.sendResponse(res, new BlapiResponse(returnData)))
 			.catch((blError: BlError) => this._responseHandler.sendErrorResponse(res, blError));
