@@ -22,22 +22,26 @@ export class LocalLoginValidator {
 			let blError = new BlError('').className('LocalLoginValidator').methodName('validate');
 			if (!username || !isEmail(username)) return reject(blError.msg('username "' + username + '" is not an email'));
 			if (!password || password.length <= 0) return reject(blError.msg('password is empty or undefined'));
-			
-			this.localLoginHandler.get(username).then(
-				(localLogin: LocalLogin) => {
-					
-					this.localLoginPasswordValidator.validate(password, localLogin.salt, localLogin.hashedPassword).then(
-						(validPassword: boolean) => {
-							resolve({provider: localLogin.provider, providerId: localLogin.providerId});
-						},
-						(error: BlError) => {
-							reject(error.add(blError.msg('username or password is not correct')));
-						});
-					
-				},
-				(error: BlError) => {
-					reject(error.add(blError.msg('could not find the user with username "'+ username +'"')));
-				});
+
+			this.userHandler.valid(username).then(() => {
+				this.localLoginHandler.get(username).then(
+					(localLogin: LocalLogin) => {
+
+						this.localLoginPasswordValidator.validate(password, localLogin.salt, localLogin.hashedPassword).then(
+							(validPassword: boolean) => {
+								resolve({provider: localLogin.provider, providerId: localLogin.providerId});
+							},
+							(error: BlError) => {
+								reject(error.add(blError.msg('username or password is not correct')));
+							});
+
+					},
+					(error: BlError) => {
+						reject(error.add(blError.msg('could not find the user with username "' + username + '"')));
+					});
+			}).catch((userValidError) => {
+				reject(new BlError('user not valid').code(902).add(userValidError));
+			});
 		});
 	}
 	

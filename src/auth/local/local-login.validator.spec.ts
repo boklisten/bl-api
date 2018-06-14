@@ -76,6 +76,10 @@ class UserHandlerMock extends UserHandler {
 		    resolve(user);
 		});
 	}
+
+	valid(username: string): Promise<boolean> {
+		return Promise.resolve(true);
+	}
 }
 
 

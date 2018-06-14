@@ -35,8 +35,8 @@ export class LocalAuth {
 						});
 				},
 				(validateError: BlError) => {
-					return done(null, false, new BlError('username or password is incorrect')
-							.code(908)
+					return done(null, false, new BlError('could not login')
+							.code(validateError.getCode())
 							.add(validateError));
 				});
 		}));

@@ -109,6 +109,21 @@ export class UserHandler {
 			
 		});
 	}
+
+	public valid(username: string): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			this.getByUsername(username).then((user: User) => {
+				if (!user.active) {
+					return reject(new BlError('user.active is false').code(913));
+				}
+
+				resolve(true);
+			}).catch((getUserError: BlError) => {
+				reject(getUserError);
+			})
+
+		});
+	}
 	
 	public exists(provider: string, providerId: string): Promise<boolean> {
 		if (!provider || !providerId) {

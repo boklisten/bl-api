@@ -40,10 +40,15 @@ export class GoogleAuth {
 						.store('provider', provider)
 						.store('providerId', providerId));
 				}
-				
+
+
 				userHandler.exists(provider, providerId).then(
 					(exists: boolean) => {
-						this.createTokens(username, done);
+						userHandler.valid(username).then(() => {
+							this.createTokens(username, done);
+						}).catch((userValidError: BlError) => {
+							done(null, null, new BlError('user not valid').code(902).add(userValidError))
+						});
 					},
 					(existsError: BlError) => {
 						userHandler.create(username, provider, providerId).then(
@@ -52,7 +57,7 @@ export class GoogleAuth {
 							},
 							(createError: BlError) => {
 								createError.printStack();
-								done(new BlError('could not create user')
+								done(null, null, new BlError('could not create user')
 									.store('username', username)
 									.store('provider', provider)
 									.store('providerId', providerId)
