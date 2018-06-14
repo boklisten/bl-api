@@ -56,9 +56,8 @@ export class CollectionEndpointOperation {
 					}
 				};
 
-				return this._operation.operation.run(blApiRequest);
+				return this._operation.operation.run(blApiRequest, req, res, next)
 			})
-			.then((returnData: any) => this._responseHandler.sendResponse(res, new BlapiResponse(returnData)))
 			.catch((blError: BlError) => this._responseHandler.sendErrorResponse(res, blError));
 	}
 

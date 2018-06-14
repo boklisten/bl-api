@@ -4,12 +4,19 @@ import {BlapiErrorResponse, BlError} from "@wizardcoder/bl-model";
 import {isEmail} from 'validator';
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
 import {localLoginSchema} from "../../collections/local-login/local-login.schema";
+import {isNullOrUndefined} from "util";
+import {HashedPasswordGenerator} from "./password/hashed-password-generator";
+import {SaltGenerator} from "./salt/salt-generator";
+import {SeCrypto} from "../../crypto/se.crypto";
+import {SystemUser} from "../permission/permission.service";
 
 export class LocalLoginHandler {
 	private localLoginStorage: BlDocumentStorage<LocalLogin>;
+	private _hashedPasswordGenerator: HashedPasswordGenerator;
 	
-	constructor(localLoginStorage?: BlDocumentStorage<LocalLogin>) {
+	constructor(localLoginStorage?: BlDocumentStorage<LocalLogin>, hashedPasswordGenerator?: HashedPasswordGenerator) {
 		this.localLoginStorage = (localLoginStorage) ? localLoginStorage : new BlDocumentStorage('locallogins', localLoginSchema);
+		this._hashedPasswordGenerator = (hashedPasswordGenerator) ? hashedPasswordGenerator : new HashedPasswordGenerator(new SaltGenerator(), new SeCrypto());
 	}
 	
 	public get(username: string): Promise<LocalLogin> {
@@ -31,6 +38,36 @@ export class LocalLoginHandler {
 				}).catch((error: BlError) => {
 					return reject(new BlError(`could not get localLogin with username "${username}"`).code(702).add(error));
 				});
+		});
+	}
+
+	public setPassword(username: string, password: string): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			if (isNullOrUndefined(password) || password.length < 6) {
+				return reject(new BlError('localLogin password to short'));
+			}
+
+			this.get(username).then((localLogin: LocalLogin) => {
+				this._hashedPasswordGenerator.generate(password).then((hashedPasswordAndSalt: {hashedPassword: string, salt: string}) => {
+					localLogin.hashedPassword = hashedPasswordAndSalt.hashedPassword;
+					localLogin.salt = hashedPasswordAndSalt.salt;
+
+					this.localLoginStorage.update(
+						localLogin.id,
+						{hashedPassword: hashedPasswordAndSalt.hashedPassword, salt: hashedPasswordAndSalt.salt},
+						new SystemUser()
+						).then(() => {
+							resolve(true);
+					}).catch((updateLocalLoginError) => {
+						reject(new BlError('localLogin could not be updated').add(updateLocalLoginError));
+					});
+
+				}).catch((hashPasswordError) => {
+					reject(hashPasswordError);
+				})
+			}).catch((getLocalLoginError: BlError) => {
+				reject(new BlError(`localLogin was not found with username "${username}"`).code(702).add(getLocalLoginError));
+			});
 		});
 	}
 	

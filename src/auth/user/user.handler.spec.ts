@@ -11,6 +11,7 @@ import {User} from "../../collections/user/user";
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
 import {SEDbQueryBuilder} from "../../query/se.db-query-builder";
 import {SEDbQuery} from "../../query/se.db-query";
+import {PasswordReset} from "../../collections/password-reset/password-reset";
 
 chai.use(chaiAsPromised);
 

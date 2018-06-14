@@ -188,7 +188,7 @@ describe('PasswordResetPostHook', () => {
 				expect(messengerPasswordResetStub.called)
 					.to.be.true;
 
-				expect(messengerPasswordResetStub.calledWithExactly(testUserDetail, testToken))
+				expect(messengerPasswordResetStub.calledWithExactly(testUserDetail, testPasswordReset.id))
 					.to.be.true;
 
 				done();

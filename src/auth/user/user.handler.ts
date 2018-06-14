@@ -8,6 +8,7 @@ import {User} from "../../collections/user/user";
 import {UserSchema} from "../../collections/user/user.schema";
 import {userDetailSchema} from "../../collections/user-detail/user-detail.schema";
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
+import {PasswordReset} from "../../collections/password-reset/password-reset";
 
 export class UserHandler {
 	private blid: Blid;

@@ -61,7 +61,7 @@ export class PasswordResetPostHook extends Hook {
 
 			this._userDetailStorage.get(passwordReset.userDetail).then((userDetail: UserDetail) => {
 
-				this._messenger.passwordReset(userDetail, passwordReset.token);
+				this._messenger.passwordReset(userDetail, passwordReset.id);
 
 				return resolve([passwordReset]);
 
