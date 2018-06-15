@@ -72,7 +72,7 @@ export class EmailService implements MessengerService {
 			userId: customerDetail.id
 		};
 
-		this._emailHandler.sendPasswordReset(emailSetting, EMAIL_SETTINGS.types.passwordReset.uri + passwordResetCode).then((emailLog) => {
+		this._emailHandler.sendPasswordReset(emailSetting, process.env.CLIENT_URI + EMAIL_SETTINGS.types.passwordReset.path + passwordResetCode).then((emailLog) => {
 
 		}).catch((emailError) => {
 

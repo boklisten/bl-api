@@ -14,7 +14,7 @@ export const EMAIL_SETTINGS = {
 		passwordReset: {
 			fromEmail: 'noreply@boklisten.co',
 			subject: 'Reset your password at Boklisten.co',
-			uri: process.env.BL_API_URI + 'password/reset/'
+			path: 'auth/reset/'
 		}
 	}
 };
