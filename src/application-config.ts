@@ -6,6 +6,10 @@ export const APP_CONFIG = {
 			agreement: {
 				rent: 'info/agreement/rent'
 			},
+			auth: {
+				failure: 'auth/authentication/failure',
+				socialLoginFailure: 'auth/social/failure'
+			}
 		},
 		dibs: {
 			payment: 'payments'

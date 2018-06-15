@@ -18,12 +18,21 @@ export class SEResponseHandler {
 		res.send(blapiRes);
 	}
 	
-	public sendAuthTokens(res: Response, accessToken: string, refreshToken: string) {
-		res.redirect(process.env.CLIENT_URI + 'auth/token;accessToken=' + accessToken + ';refreshToken=' + refreshToken);
+	public sendAuthTokens(res: Response, accessToken: string, refreshToken: string, referer?: string) {
+		let redirectUrl = '';
+
+		if (referer) {
+			redirectUrl += referer;
+		} else {
+			redirectUrl += process.env.CLIENT_URI;
+		}
+
+		redirectUrl +=  '#/auth/token;accessToken=' + accessToken + ';refreshToken=' + refreshToken;
+
+		res.redirect(redirectUrl);
 	}
 	
 	public sendAuthErrorResponse(res: Response, info: any, err: any) {
-		console.log('there was an auth error: info: ', info, 'err: ', err);
 		const blapiErrorResponse = this.getBlapiErrorResponseByAuthError(info);
 		this.setHeaders(res);
 		res.status(blapiErrorResponse.httpStatus);

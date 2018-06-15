@@ -10,6 +10,7 @@ import {TokenHandler} from "../token/token.handler";
 import {SEResponseHandler} from "../../response/se.response.handler";
 import {BlError} from "@wizardcoder/bl-model";
 import {User} from "../../collections/user/user";
+import {APP_CONFIG} from "../../application-config";
 
 export class FacebookAuth {
 	private apiPath: ApiPath;
@@ -89,7 +90,7 @@ export class FacebookAuth {
 
 	private createCallbackGet(router: Router) {
 		router.get(this.apiPath.createPath('auth/facebook/callback'),
-			passport.authenticate('facebook', { failureRedirect: '/login' }),
+			passport.authenticate('facebook', { failureRedirect: process.env.CLIENT_URI + APP_CONFIG.path.client.auth.socialLoginFailure}),
 			(req: any, res: any) => {
 				this.resHandler.sendAuthTokens(res, req.user.accessToken, req.user.refreshToken);
 			});
