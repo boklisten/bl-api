@@ -74,4 +74,21 @@ describe('EmailValidationHelper', () => {
 			})
 		});
 	});
+
+	describe('#sendEmailValidationLink', () => {
+		it('should reject if userDetail is not found', () => {
+			testEmailValidation.userDetail = 'notFound';
+
+			return expect(emailValidationHelper.sendEmailValidationLink(testEmailValidation))
+				.to.be.rejectedWith(BlError, /userDetail "notFound" not found/);
+		});
+
+		it('should call messenger.emailConfirmation', (done) => {
+			emailValidationHelper.sendEmailValidationLink(testEmailValidation).then(() => {
+				expect(messengerEmailConfirmationStub)
+					.to.have.been.calledWith(testUserDetail, testEmailValidation.id);
+				done();
+			})
+		});
+	});
 });

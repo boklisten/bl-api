@@ -40,6 +40,19 @@ export class EmailValidationHelper {
 			});
 		});
 	}
+
+	public sendEmailValidationLink(emailValidation: EmailValidation): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			this._userDetailStorage.get(emailValidation.userDetail).then((userDetail: UserDetail) => {
+
+				this._messenger.emailConfirmation(userDetail, emailValidation.id);
+
+				resolve(true);
+			}).catch((getUserDetailError: BlError) => {
+				reject(new BlError(`userDetail "${emailValidation.userDetail}" not found`).add(getUserDetailError));
+			});
+		});
+	}
 }
 
 
