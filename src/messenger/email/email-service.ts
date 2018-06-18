@@ -43,9 +43,9 @@ export class EmailService implements MessengerService {
 
 	public orderPlaced(customerDetail: UserDetail, order: Order) {
 		this._orderEmailHandler.sendOrderReceipt(customerDetail, order).then((emailLog) => {
-			console.log('we sent the email', emailLog);
+
 		}).catch((emailError) => {
-			console.log('there was a error with sending email', emailError);
+
 		});
 	}
 
@@ -57,7 +57,11 @@ export class EmailService implements MessengerService {
 			userId: customerDetail.id
 		};
 
-		this._emailHandler.sendEmailVerification(emailSetting, EMAIL_SETTINGS.types.emailConfirmation.uri + confirmationCode).then((emailLog) => {
+
+		let emailVerificationUri = (process.env.CLIENT_URI) ? process.env.CLIENT_URI : 'localhost:4200/#/';
+		emailVerificationUri += EMAIL_SETTINGS.types.emailConfirmation.path + confirmationCode;
+
+		this._emailHandler.sendEmailVerification(emailSetting, emailVerificationUri).then((emailLog) => {
 
 		}).catch((emailError) => {
 
@@ -72,7 +76,10 @@ export class EmailService implements MessengerService {
 			userId: customerDetail.id
 		};
 
-		this._emailHandler.sendPasswordReset(emailSetting, process.env.CLIENT_URI + EMAIL_SETTINGS.types.passwordReset.path + passwordResetCode).then((emailLog) => {
+		let passwordResetUri = (process.env.CLIENT_URI) ? process.env.CLIENT_URI : 'localhost:4200/#/';
+		passwordResetUri += EMAIL_SETTINGS.types.passwordReset + passwordResetCode;
+
+		this._emailHandler.sendPasswordReset(emailSetting, passwordResetUri).then((emailLog) => {
 
 		}).catch((emailError) => {
 

@@ -9,7 +9,7 @@ export const EMAIL_SETTINGS = {
 		emailConfirmation: {
 			fromEmail: 'noreply@boklisten.co',
 			subject: 'Confirm your email at Boklisten.co',
-			uri: process.env.BL_API_URI + 'email/confirm/'
+			path: 'auth/email/confirm/'
 		},
 		passwordReset: {
 			fromEmail: 'noreply@boklisten.co',

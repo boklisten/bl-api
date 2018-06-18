@@ -19,7 +19,6 @@ export class CollectionEndpointOperation {
 
 	public create() {
 		let uri = this.createUri(this.collectionUri, this._operation.name, this._method);
-		console.log('the uri: ', uri);
 		switch (this._method) {
 			case 'getId':
 				this._router.get(uri, this.handleRequest.bind(this));

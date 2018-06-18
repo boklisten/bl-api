@@ -9,15 +9,18 @@ import {UserSchema} from "../../collections/user/user.schema";
 import {userDetailSchema} from "../../collections/user-detail/user-detail.schema";
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
 import {PasswordReset} from "../../collections/password-reset/password-reset";
+import {EmailValidationHelper} from "../../collections/email-validation/helpers/email-validation.helper";
 
 export class UserHandler {
 	private blid: Blid;
 	private userDetailStorage: BlDocumentStorage<UserDetail>;
 	private userStorage: BlDocumentStorage<User>;
+	private _emailValidationHelper: EmailValidationHelper;
 
-	constructor(userDetailStorage?: BlDocumentStorage<UserDetail>, userStorage?: BlDocumentStorage<User>) {
+	constructor(userDetailStorage?: BlDocumentStorage<UserDetail>, userStorage?: BlDocumentStorage<User>, emailValidationHelper?: EmailValidationHelper) {
 		this.blid = new Blid();
 		this.userDetailStorage = (userDetailStorage) ? userDetailStorage : new BlDocumentStorage('userdetails', userDetailSchema);
+		this._emailValidationHelper = (emailValidationHelper) ? emailValidationHelper : new EmailValidationHelper();
 		this.userStorage = (userStorage) ? userStorage : new BlDocumentStorage('users', UserSchema);
 	}
 	
@@ -78,7 +81,6 @@ export class UserHandler {
 			if (!username || username.length <= 0) reject(blError.msg('username is empty or undefined'));
 			if (!provider || provider.length <= 0) reject(blError.msg('provider is empty or undefined'));
 			if (!providerId || providerId.length <= 0) reject(blError.msg('providerId is empty or undefined'));
-			
 
 			this.blid.createUserBlid(provider, providerId).then((userId) => {
 				let userDetail: any = {
@@ -87,7 +89,9 @@ export class UserHandler {
 				};
 
 				return this.userDetailStorage.add(userDetail, {id: userId, permission: "customer"});
-			}).then(addedUserDetail => {
+			}).then((addedUserDetail: UserDetail) => {
+				return this.sendEmailValidationLink(addedUserDetail);
+			}).then((addedUserDetail: UserDetail) => {
 				let user: User = {
 					id: '',
 					userDetail: addedUserDetail.id,
@@ -100,13 +104,22 @@ export class UserHandler {
 						providerId: providerId
 					}
 				};
+
 				return this.userStorage.add(user, {id: addedUserDetail.user.id, permission: user.permission});
-			}).then(user => {
+			}).then((user: User) => {
 				resolve(user);
 			}).catch((blError: BlError) => {
 				reject(new BlError(`failed to create user with username "${username}"`).add(blError));
 			});
 			
+		});
+	}
+
+	private sendEmailValidationLink(userDetail: UserDetail): Promise<UserDetail> {
+		return this._emailValidationHelper.createAndSendEmailValidationLink(userDetail.id).then(() => {
+			return userDetail;
+		}).catch((sendEmailValidationLinkError: BlError) => {
+			throw new BlError('could not send out email validation link').add(sendEmailValidationLinkError);
 		});
 	}
 

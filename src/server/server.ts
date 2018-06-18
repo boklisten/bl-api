@@ -19,7 +19,7 @@ export class Server {
 
 	constructor() {
 		require('dotenv').config(); //adds the .env file to environment variables
-		
+
 		this.printServerStartMessage();
 		
 		this.initialServerConfig();

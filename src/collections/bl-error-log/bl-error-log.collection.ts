@@ -9,6 +9,9 @@ export class BlErrorLogCollection implements BlCollection {
 	endpoints: BlEndpoint[] = [
 		{
 			method: 'getAll',
+			restriction: {
+				permissions: ['super']
+			},
 			validQueryParams: [
 				{
 					fieldName: 'msg',

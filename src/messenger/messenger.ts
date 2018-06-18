@@ -59,7 +59,7 @@ export class Messenger implements MessengerService {
 	 * @param {string} confirmationCode
 	 */
 	public emailConfirmation(customerDetail: UserDetail, confirmationCode: string) {
-
+		this._emailService.emailConfirmation(customerDetail, confirmationCode);
 	}
 
 	/**
