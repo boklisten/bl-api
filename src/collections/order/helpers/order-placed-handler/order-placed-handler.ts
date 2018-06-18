@@ -38,27 +38,28 @@ export class OrderPlacedHandler {
 	}
 	
 	public placeOrder(order: Order, accessToken: AccessToken): Promise<Order> {
-		return new Promise((resolve, reject) => {
-			this.paymentHandler.confirmPayments(order, accessToken).then((confirmedPayments: Payment[]) => {
-				this.orderStorage.update(order.id, {placed: true}, {id: accessToken.sub, permission: accessToken.permission}).then((placedOrder: Order) => {
+			let placedOrder: Order;
+			return this.userDetailStorage.get(order.customer)
+				.then((userDetail: UserDetail) => {
+					if (!userDetail.emailConfirmed) {
+						throw new BlError('userDetail.emailConfirmed is not true');
+					}
 
-					this.updateUserDetailWithPlacedOrder(placedOrder, accessToken).then(() => {
-
-						this.sendOrderConfirmationMail(order);
-
-						resolve(placedOrder);
-					}).catch((updateUserDetailError: BlError) => {
-						reject(updateUserDetailError);
+					return this.paymentHandler.confirmPayments(order, accessToken);
+				}).then(() => {
+					return this.orderStorage.update(order.id, {placed: true}, {
+						id: accessToken.sub,
+						permission: accessToken.permission
 					});
-
-				}).catch((orderUpdateError: BlError) => {
-					reject(new BlError('order could not be updated').add(orderUpdateError));
-				});
-
-			}).catch((confirmPaymentsError: BlError) => {
-				reject(new BlError('order.payments could not be confirmed').add(confirmPaymentsError));
+				}).then((updatedOrder: Order) => {
+					placedOrder = updatedOrder;
+					return this.updateUserDetailWithPlacedOrder(placedOrder, accessToken);
+				}).then(() => {
+					this.sendOrderConfirmationMail(placedOrder);
+					return placedOrder;
+				}).catch((placedOrderError: BlError) => {
+					throw new BlError('order could not be placed').add(placedOrderError);
 			});
-		});
 	}
 	
 	private updateUserDetailWithPlacedOrder(order: Order, accessToken: AccessToken): Promise<boolean> {

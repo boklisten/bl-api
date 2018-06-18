@@ -41,7 +41,7 @@ describe('OrderPlacedHandler', () => {
 	
 	sinon.stub(userDetailStorage, 'get').callsFake((id: string) => {
 		if (id !== testUserDetail.id) {
-			return Promise.reject(new BlError('not found'));
+			return Promise.reject(new BlError('user detail not found'));
 		}
 		
 		return Promise.resolve(testUserDetail);
@@ -54,12 +54,12 @@ describe('OrderPlacedHandler', () => {
 				return Promise.resolve(testUserDetail);
 			}
 		}
-		return Promise.reject(new BlError('could not update user details'));
+		return Promise.reject(new BlError('could not update user detail'));
 	});
 	
 	sinon.stub(paymentHandler, 'confirmPayments').callsFake((ids: string[]) => {
 		if (!paymentsConfirmed) {
-			return Promise.reject(new BlError('could not confirm orders'));
+			return Promise.reject(new BlError('could not confirm payments'));
 		}
 		
 		return Promise.resolve([testPayment]);
@@ -67,7 +67,7 @@ describe('OrderPlacedHandler', () => {
 	
 	sinon.stub(orderStorage, 'update').callsFake((id: string, data: any) => {
 		if (!orderUpdate) {
-			return Promise.reject(new BlError('could not update'))
+			return Promise.reject(new BlError('could not update order'))
 		}
 		return Promise.resolve(testOrder);
 	});
@@ -143,37 +143,61 @@ describe('OrderPlacedHandler', () => {
 			postCity: '',
 			country: '',
 			dob: new Date(),
-			branch: 'branch1',
+			emailConfirmed: true,
+			branch: 'branch1'
 		}
 	});
 
 	describe('#placeOrder()', () => {
-		it('should reject if order could not be updated with confirm true', () => {
+		it('should reject if order could not be updated with confirm true', (done) => {
 			orderUpdate = false;
 			
-			return expect(orderPlacedHandler.placeOrder(testOrder, testAccessToken))
-				.to.be.rejectedWith(BlError, /order could not be updated/);
+			orderPlacedHandler.placeOrder(testOrder, testAccessToken).catch((err: BlError) => {
+				expect(err.errorStack[0].getMsg())
+					.to.be.eq('could not update order');
+
+				done();
+			})
 		});
 		
-		it('should reject if paymentHandler.confirmPayments rejects', () => {
+		it('should reject if paymentHandler.confirmPayments rejects', (done) => {
 			paymentsConfirmed = false;
 			
-			return expect(orderPlacedHandler.placeOrder(testOrder, testAccessToken))
-				.to.be.rejectedWith(BlError, /order.payments could not be confirmed/);
+			orderPlacedHandler.placeOrder(testOrder, testAccessToken).catch((err: BlError) => {
+				expect(err.errorStack[0].getMsg())
+					.to.be.eq('could not confirm payments');
+				done();
+			});
 		});
 		
-		it('should reject if order.customer is not found', () => {
+		it('should reject if order.customer is not found', (done) => {
 			testOrder.customer = 'notFoundUserDetails';
 			
-			return expect(orderPlacedHandler.placeOrder(testOrder, testAccessToken))
-				.to.be.rejectedWith(BlError, /customer "notFoundUserDetails" not found/);
+			orderPlacedHandler.placeOrder(testOrder, testAccessToken).catch((err: BlError) => {
+				expect(err.errorStack[0].getMsg())
+					.to.be.eq('user detail not found');
+				done();
+			})
 		});
 		
-		it('should reject if userDetailStorage.updates rejects', () => {
+		it('should reject if userDetailStorage.updates rejects', (done) => {
 			userDeatilUpdate = false;
 			
-			return expect(orderPlacedHandler.placeOrder(testOrder, testAccessToken))
-				.to.be.rejectedWith(BlError, /could not update userDetail with placed order/);
+			orderPlacedHandler.placeOrder(testOrder, testAccessToken).catch((err: BlError) => {
+				expect(err.errorStack[0].getMsg())
+					.to.be.eq('could not update userDetail with placed order');
+				done();
+			})
+		});
+
+		it('should reject if userDetail.emailConfirmed is false', (done) => {
+			testUserDetail.emailConfirmed = false;
+
+			orderPlacedHandler.placeOrder(testOrder, testAccessToken).catch((err: BlError) => {
+				expect(err.errorStack[0].getMsg())
+					.to.be.eq('userDetail.emailConfirmed is not true');
+				done();
+			})
 		});
 		
 		it('should resolve when order was placed', () => {

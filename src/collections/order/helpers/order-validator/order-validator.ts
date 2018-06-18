@@ -7,6 +7,7 @@ import {OrderPlacedValidator} from "./order-placed-validator/order-placed-valida
 import {OrderItemValidator} from "./order-item-validator/order-item-validator";
 import {branchSchema} from "../../../branch/branch.schema";
 import {OrderFieldValidator} from "./order-field-validator/order-field-validator";
+import {OrderUserDetailValidator} from "./order-user-detail-validator/order-user-detail-validator";
 
 
 export class OrderValidator {
@@ -15,20 +16,28 @@ export class OrderValidator {
 	private branchValidator: BranchValidator;
 	private branchStorage: BlDocumentStorage<Branch>;
 	private orderFieldValidator: OrderFieldValidator;
-	
-	constructor(orderItemValidator?: OrderItemValidator, orderPlacedValidator?: OrderPlacedValidator,
-				branchValidator?: BranchValidator, branchStorage?: BlDocumentStorage<Branch>, orderFieldValidator?: OrderFieldValidator) {
+	private orderUserDetailValidator: OrderUserDetailValidator;
+
+
+	constructor(orderItemValidator?: OrderItemValidator,
+				orderPlacedValidator?: OrderPlacedValidator,
+				branchValidator?: BranchValidator,
+				branchStorage?: BlDocumentStorage<Branch>,
+				orderFieldValidator?: OrderFieldValidator,
+				orderUserDetailValidator?: OrderUserDetailValidator) {
 		
 		this.orderItemValidator = (orderItemValidator) ? orderItemValidator : new OrderItemValidator();
 		this.orderPlacedValidator = (orderPlacedValidator) ? orderPlacedValidator : new OrderPlacedValidator();
 		this.branchValidator = (branchValidator) ? branchValidator : new BranchValidator();
 		this.branchStorage = (branchStorage) ? branchStorage : new BlDocumentStorage<Branch>('branches', branchSchema);
 		this.orderFieldValidator = (orderFieldValidator) ? orderFieldValidator : new OrderFieldValidator();
+		this.orderUserDetailValidator = (orderUserDetailValidator) ? orderUserDetailValidator : new OrderUserDetailValidator();
 	}
 	
 	public async validate(order: Order): Promise<boolean> {
 		
 		try {
+			await this.orderUserDetailValidator.validate(order);
 			await this.orderFieldValidator.validate(order);
 			let branch = await this.branchStorage.get(order.branch);
 			
@@ -43,5 +52,11 @@ export class OrderValidator {
 			return Promise.reject(new BlError('order could not be validated').store('error', e));
 		}
 		return Promise.resolve(true);
+	}
+
+	private validateUser(userDetailId: string): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+
+		});
 	}
 }

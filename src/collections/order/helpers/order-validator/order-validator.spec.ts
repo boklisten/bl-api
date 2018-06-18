@@ -9,6 +9,8 @@ import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
 import {OrderItemValidator} from "./order-item-validator/order-item-validator";
 import {OrderPlacedValidator} from "./order-placed-validator/order-placed-validator";
 import {BranchValidator} from "./branch-validator/branch-validator";
+import {OrderUserDetailValidator} from "./order-user-detail-validator/order-user-detail-validator";
+import {OrderFieldValidator} from "./order-field-validator/order-field-validator";
 
 chai.use(chaiAsPromised);
 
@@ -17,20 +19,25 @@ describe('OrderValidator', () => {
 	let testBranch: Branch;
 	
 	const branchStorage: BlDocumentStorage<Branch> = new BlDocumentStorage('branches');
-	const itemStorage: BlDocumentStorage<Item> = new BlDocumentStorage('items');
-	const paymentStorage: BlDocumentStorage<Payment> = new BlDocumentStorage('payments');
-	const deliveryStorage: BlDocumentStorage<Delivery> = new BlDocumentStorage('deliveries');
-	
+	const orderUserDetailValidator = new OrderUserDetailValidator();
+
 	const branchValidator = new BranchValidator();
 	const orderItemValidator = new OrderItemValidator();
 	const orderPlacedValidator = new OrderPlacedValidator();
-	const orderValidator: OrderValidator = new OrderValidator(orderItemValidator, orderPlacedValidator, branchValidator, branchStorage);
+	const orderFieldValidator = new OrderFieldValidator();
+	const orderValidator: OrderValidator = new OrderValidator(orderItemValidator,
+		orderPlacedValidator,
+		branchValidator,
+		branchStorage,
+		orderFieldValidator,
+		orderUserDetailValidator);
 	
 
 	
 	let orderItemShouldResolve;
 	let orderPlacedShouldResolve;
 	let branchValidatorShouldResolve;
+	let orderUserDetailValidatorShouldResolve;
 	
 	
 	sinon.stub(branchStorage, 'get').callsFake((id: string) => {
@@ -61,6 +68,14 @@ describe('OrderValidator', () => {
 		if (!branchValidatorShouldResolve) {
 			return Promise.reject(new BlError('validation of branch failed'))
 		}
+		return Promise.resolve(true);
+	});
+
+	sinon.stub(orderUserDetailValidator, 'validate').callsFake((order: Order) => {
+		if (!orderUserDetailValidatorShouldResolve) {
+			return Promise.reject(new BlError('validation of UserDetail failed'));
+		}
+
 		return Promise.resolve(true);
 	});
 	
@@ -109,8 +124,17 @@ describe('OrderValidator', () => {
 				return expect(orderValidator.validate(testOrder))
 					.to.eventually.be.rejectedWith(BlError, /validation of branch failed/);
 			});
-			
-		 
+
+		});
+
+
+		context('when orderUserDetailValidator rejects', () => {
+			it('should reject with error', () => {
+				orderUserDetailValidatorShouldResolve = false;
+
+				return expect(orderValidator.validate(testOrder))
+					.to.be.rejectedWith(BlError, /validation of UserDetail failed/);
+			});
 		});
 		
 	});
@@ -119,6 +143,7 @@ describe('OrderValidator', () => {
 		orderItemShouldResolve = true;
 		orderPlacedShouldResolve = true;
 		branchValidatorShouldResolve = true;
+		orderUserDetailValidatorShouldResolve = true;
 		
 		testOrder = {
 			id: 'order1',
