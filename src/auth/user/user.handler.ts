@@ -85,12 +85,16 @@ export class UserHandler {
 			this.blid.createUserBlid(provider, providerId).then((userId) => {
 				let userDetail: any = {
 					email: username,
-					blid: userId
+					blid: userId,
+					emailConfirmed: (provider === 'google' || provider === 'facebook') // email is only valid on creation if provider is facebook or google
 				};
 
 				return this.userDetailStorage.add(userDetail, {id: userId, permission: "customer"});
 			}).then((addedUserDetail: UserDetail) => {
-				return this.sendEmailValidationLink(addedUserDetail);
+				if (!addedUserDetail.emailConfirmed) {
+					return this.sendEmailValidationLink(addedUserDetail);
+				}
+				return Promise.resolve(addedUserDetail);
 			}).then((addedUserDetail: UserDetail) => {
 				let user: User = {
 					id: '',
