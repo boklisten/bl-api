@@ -1,88 +1,27 @@
+import {DibsEasyPaymentConsumer} from "./dibs-easy-payment-consumer/dibs-easy-payment-consumer";
+import {DibsEasyPaymentDetails} from "./dibs-easy-payment-details/dibs-easy-payment-details";
+import {DibsEasyPaymentOrderDetails} from "./dibs-easy-payment-order-details/dibs-easy-payment-order-details";
+import {DibsEasyPaymentRefund} from "./dibs-easy-payment-refund/dibs-easy-payment-refund";
+import {DibsEasyPaymentSummary} from "./dibs-easy-payment-summary/dibs-easy-payment-summary";
+import {JsonMember, JsonObject} from "typedjson-npm";
 
+@JsonObject
 export class DibsEasyPayment {
+	@JsonMember({type: String})
 	paymentId: string;
-	summary: {
-		reservedAmount?: number,
-		chargedAmount?: number,
-		refundedAmount?: number,
-		cancelledAmount?: number
-	};
-	consumer: {
-		billingAddress?: {
-			addressLine1: string,
-			addressLine2: string,
-			receiverLine: string,
-			postalCode: string,
-			city: string,
-			country: string
-		},
-		shippingAddress?: {
-			addressLine1: string,
-			addressLine2: string,
-			receiverLine: string,
-			postalCode: string,
-			city: string,
-			country: string
-		},
-		company?: {
-			name: string,
-			organisationNumber: string,
-			email: string,
-			phoneNumber: {
-				prefix: string,
-				number: string
-			},
-			merchantReference: string
-		},
-		privatePerson?: {
-			dateOfBirth: string,
-			firstName: string,
-			lateName: string,
-			email: string,
-			phoneNumber: {
-				prefix: string,
-				number: string
-			},
-			merchantReference: string
-		},
-	};
-	paymentDetails?: {
-		paymentType: string,
-		paymentMethod: string,
-		invoiceDetails?: {
-			invoiceNumber: string,
-			ocr: string,
-			pdfLink: string,
-			dueDate: string
-		},
-		cardDetails: {
-			maskedPan: string,
-			expiryDate: string
-		}
-	};
-	orderDetails: {
-		amount: number,
-		currency: string,
-		reference: string
-	};
+	@JsonMember({type: DibsEasyPaymentSummary})
+	summary: DibsEasyPaymentSummary;
+	@JsonMember({type: DibsEasyPaymentConsumer})
+	consumer: DibsEasyPaymentConsumer;
+	@JsonMember({type: DibsEasyPaymentDetails})
+	paymentDetails?: DibsEasyPaymentDetails;
+	@JsonMember({type: DibsEasyPaymentOrderDetails})
+	orderDetails: DibsEasyPaymentOrderDetails;
 	checkout?: {
 		url: string
 	};
+	@JsonMember({type: String})
 	created: string;
-	refunds?: {
-		refundId: string,
-		amount: number,
-		state: string,
-		lastUpdated: string,
-		orderItems: {
-			name: string,
-			quantity: number,
-			unit: string,
-			unitPrice: number,
-			taxRate: number,
-			taxAmount: number,
-			grossTotalAmount: number,
-			netTotalAmount: number
-		}[]
-	}[]
+	@JsonMember({type: DibsEasyPaymentRefund, elements: Array})
+	refunds?: DibsEasyPaymentRefund[]
 }

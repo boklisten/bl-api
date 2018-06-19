@@ -6,6 +6,9 @@ import {CollectionEndpointCreator} from "../collection-endpoint/collection-endpo
 import {EmailHandler, EmailLog} from "@wizardcoder/bl-email";
 import {EmailService} from "../messenger/email/email-service";
 import * as path from "path";
+import {DibsPaymentService} from "../payment/dibs/dibs-payment.service";
+import {DibsEasyPayment} from "../payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import {BlError} from "@wizardcoder/bl-model";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
 const packageJson = require('../../package.json');
@@ -94,6 +97,16 @@ export class Server {
 	}
 	
 	private test() {
+		const dibsPaymentService = new DibsPaymentService();
+
+		dibsPaymentService.fetchDibsPaymentData('3cc6b8b9a99c48f1b8b4f95cea4a870e').then((dibsEasyPayment: DibsEasyPayment) => {
+			console.log('the payment details', dibsEasyPayment);
+			console.log('private persion', dibsEasyPayment.consumer.privatePerson);
+		}).catch((err: BlError) => {
+			console.log('could not get payment details', err);
+		})
+
+
 	}
 	
 	private generateEndpoints() {

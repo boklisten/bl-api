@@ -9,19 +9,22 @@ import {APP_CONFIG} from "../../application-config";
 import {DibsEasyPayment} from "./dibs-easy-payment/dibs-easy-payment";
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
 import {deliverySchema} from "../../collections/delivery/delivery.schema";
+import {httpify} from "caseless";
+import {TypedJSON} from "typedjson-npm";
 
 export class DibsPaymentService {
 	private deliveryStorage: BlDocumentStorage<Delivery>;
+	private _httpHandler: HttpHandler;
 	
-	constructor(deliveryStorage?: BlDocumentStorage<Delivery>) {
+	constructor(deliveryStorage?: BlDocumentStorage<Delivery>, httpHandler?: HttpHandler) {
 		this.deliveryStorage = (deliveryStorage) ? deliveryStorage : new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
+		this._httpHandler = (httpHandler) ? httpHandler : new HttpHandler();
 	}
 	
 	public getDibsPayment(dibsPaymentId: string): Promise<DibsEasyPayment> {
 		return new Promise((resolve, reject) => {
-		    let httpHandler: HttpHandler = new HttpHandler();
-		    
-		    httpHandler.get(process.env.DIBS_URI + APP_CONFIG.path.dibs.payment + '/' + dibsPaymentId, process.env.DIBS_SECRET_KEY).then((jsonRepsonse) => {
+
+		    this._httpHandler.get(process.env.DIBS_URI + APP_CONFIG.path.dibs.payment + '/' + dibsPaymentId, process.env.DIBS_SECRET_KEY).then((jsonRepsonse) => {
 		    	resolve(jsonRepsonse['payment'] as DibsEasyPayment);
 			}).catch((getError: BlError)  => {
 		    	reject(new BlError('could not get payment from dibs api from dibs api').add(getError))
@@ -31,8 +34,7 @@ export class DibsPaymentService {
 	
 	public getPaymentId(dibsEasyOrder: DibsEasyOrder): Promise<string> {
 		return new Promise((resolve, reject) => {
-			let httpHandler: HttpHandler = new HttpHandler();
-			httpHandler.post(process.env.DIBS_URI + APP_CONFIG.path.dibs.payment, dibsEasyOrder, process.env.DIBS_SECRET_KEY).then((responseData: string) => {
+			this._httpHandler.post(process.env.DIBS_URI + APP_CONFIG.path.dibs.payment, dibsEasyOrder, process.env.DIBS_SECRET_KEY).then((responseData: string) => {
 				if (responseData) {
 					if (responseData['paymentId']) {
 						return resolve(responseData['paymentId']);
@@ -42,6 +44,17 @@ export class DibsPaymentService {
 			}).catch((blError: BlError) => {
 				reject(new BlError('could not get paymentID from dibs').add(blError));
 			});
+		});
+	}
+
+	public fetchDibsPaymentData(paymentId: string): Promise<DibsEasyPayment> {
+		return this._httpHandler.get(process.env.DIBS_URI + APP_CONFIG.path.dibs.payment + '/' + paymentId, process.env.DIBS_SECRET_KEY).then((response) => {
+			if (!response['payment']) {
+				throw new BlError('dibs response did not include payment information').store('paymentId', paymentId);
+			}
+			return TypedJSON.parse(response['payment'], DibsEasyPayment);
+		}).catch((getDibsPaymentDetailError: BlError) => {
+			throw new BlError(`could not get payment details for paymentId "${paymentId}"`).add(getDibsPaymentDetailError);
 		});
 	}
 	
@@ -97,7 +110,8 @@ export class DibsPaymentService {
 		if (!order.byCustomer) throw new BlError('order.byCustomer is false, no need to make dibs easy order');
 		if (order.amount == 0) throw new BlError('order.amount is zero');
 	}
-	
+
+
 	private validateOrderPayments(payments: string[]) {
 		/*
 		let numOfDibsPayments = 0;

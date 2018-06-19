@@ -73,7 +73,7 @@ export class HttpHandler {
 			rp(options).then((jsonResponse) => {
 		 		resolve(jsonResponse);
 			}).catch((error) => {
-		 		reject(new BlError(`could not get the requested resorce at "${url}"`).store('error', error));
+		 		reject(new BlError(`could not get the requested resource at "${url}"`).store('error', error));
 			})
 			
 		});
