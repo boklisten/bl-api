@@ -3,8 +3,8 @@ import {DibsEasyPaymentConsumerPhone} from "./dibs-easy-payment-consumer-phone";
 
 @JsonObject
 export class DibsEasyPaymentConsumerPrivatePerson {
-	@JsonMember({type: String})
-	dateOfBirth: string;
+	@JsonMember({type: Date})
+	dateOfBirth: Date;
 	@JsonMember({type: String})
 	email: string;
 	@JsonMember({type: String})

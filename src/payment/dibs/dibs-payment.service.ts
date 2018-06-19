@@ -9,7 +9,6 @@ import {APP_CONFIG} from "../../application-config";
 import {DibsEasyPayment} from "./dibs-easy-payment/dibs-easy-payment";
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
 import {deliverySchema} from "../../collections/delivery/delivery.schema";
-import {httpify} from "caseless";
 import {TypedJSON} from "typedjson-npm";
 
 export class DibsPaymentService {
@@ -20,18 +19,7 @@ export class DibsPaymentService {
 		this.deliveryStorage = (deliveryStorage) ? deliveryStorage : new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
 		this._httpHandler = (httpHandler) ? httpHandler : new HttpHandler();
 	}
-	
-	public getDibsPayment(dibsPaymentId: string): Promise<DibsEasyPayment> {
-		return new Promise((resolve, reject) => {
 
-		    this._httpHandler.get(process.env.DIBS_URI + APP_CONFIG.path.dibs.payment + '/' + dibsPaymentId, process.env.DIBS_SECRET_KEY).then((jsonRepsonse) => {
-		    	resolve(jsonRepsonse['payment'] as DibsEasyPayment);
-			}).catch((getError: BlError)  => {
-		    	reject(new BlError('could not get payment from dibs api from dibs api').add(getError))
-			})
-		});
-	}
-	
 	public getPaymentId(dibsEasyOrder: DibsEasyOrder): Promise<string> {
 		return new Promise((resolve, reject) => {
 			this._httpHandler.post(process.env.DIBS_URI + APP_CONFIG.path.dibs.payment, dibsEasyOrder, process.env.DIBS_SECRET_KEY).then((responseData: string) => {

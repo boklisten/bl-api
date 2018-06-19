@@ -8,6 +8,7 @@ import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {PaymentHandler} from "./payment-handler";
 import {DibsPaymentService} from "../../../payment/dibs/dibs-payment.service";
 import {DibsEasyPayment} from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import {UserDetailHelper} from "../../user-detail/helpers/user-detail.helper";
 
 chai.use(chaiAsPromised);
 
@@ -17,10 +18,12 @@ describe('PaymentHandler', () => {
 	let testPayment2: Payment;
 	let testOrder: Order;
 	let testAccessToken: AccessToken;
+	let userDetailHelperDibsPaymentUpdateSuccess: boolean;
 	const paymentStorage = new BlDocumentStorage<Payment>('payments');
 	const dibsPaymentService = new DibsPaymentService();
-	const paymentHandler = new PaymentHandler(paymentStorage, dibsPaymentService);
-	
+	const userDetailHelper = new UserDetailHelper();
+	const paymentHandler = new PaymentHandler(paymentStorage, dibsPaymentService, userDetailHelper);
+
 	beforeEach(() => {
 		testOrder = {
 			id: 'order1',
@@ -65,6 +68,8 @@ describe('PaymentHandler', () => {
 			permission: 'customer',
 			details: 'userDetails1'
 		}
+
+		userDetailHelperDibsPaymentUpdateSuccess = true;
 	});
 	
 	
@@ -101,6 +106,14 @@ describe('PaymentHandler', () => {
 		} else {
 			return Promise.reject('not found');
 		}
+	});
+
+	sinon.stub(userDetailHelper, 'updateUserDetailBasedOnDibsEasyPayment').callsFake((userDetailId: string, dibsEasyPayment: DibsEasyPayment, accessToken: any) => {
+		if (!userDetailHelperDibsPaymentUpdateSuccess) {
+			return Promise.reject(new BlError('could not update userDetail'));
+		}
+
+		return Promise.resolve(true);
 	});
 	
 	describe('confirmPayments()', () => {
@@ -152,7 +165,7 @@ describe('PaymentHandler', () => {
 				}
 			});
 			
-			sinon.stub(dibsPaymentService, 'getDibsPayment').callsFake((dibsPaymentId: string) => {
+			sinon.stub(dibsPaymentService, 'fetchDibsPaymentData').callsFake((dibsPaymentId: string) => {
 				if (dibsPaymentId !== testDibsEasyPayment.paymentId) {
 					return Promise.reject(new BlError('could not get payment'));
 				}
