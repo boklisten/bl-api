@@ -65,15 +65,15 @@ export class CollectionEndpoint<T extends BlDocument> {
 			}
 
 
-			let output = chalk.dim.bold.yellow(method.toUpperCase()) + '\t' + chalk.dim.green(uri);
+			let output = chalk.bold(method.toUpperCase()) + ' \t' + uri;
 
 
 
-			logger.verbose(output + this.getRestrictionPrintout(endpoint.restriction));
+			logger.verbose(output + chalk.italic(this.getRestrictionPrintout(endpoint.restriction)));
 
 			if (endpoint.operations) {
 				for (let operation of endpoint.operations) {
-					let operationOutput = output + chalk.dim.green('/' + operation.name) + this.getRestrictionPrintout(operation.restriction);
+					let operationOutput = output + '/' + operation.name +  this.getRestrictionPrintout(operation.restriction);
 					logger.verbose(operationOutput);
 				}
 			}
@@ -82,23 +82,21 @@ export class CollectionEndpoint<T extends BlDocument> {
 
 	private getRestrictionPrintout(restriction: BlEndpointRestriction): string {
 		let permissionService: PermissionService = new PermissionService();
-		let output = '\t';
+		let output = '\t\t ';
 
 		if (restriction && restriction.permissions) {
-			output += chalk.dim.bold.red('[' + permissionService.getLowestPermission(restriction.permissions) + ']');
+			output += '[' + permissionService.getLowestPermission(restriction.permissions) + ']';
 		} else {
-			output += chalk.dim.green('[everyone]');
+			output += '[everyone]';
 		}
 
-		output += '\t';
+		output += '\t ';
 
 		if (restriction && restriction.restricted) {
-			output += chalk.red.dim('user');
+			output += chalk.underline('user');
 		}
 		return output;
 	}
-
-
 
 	private createGetAll(endpoint: BlEndpoint) {
 		const collectionEndpointGetAll = new CollectionEndpointGetAll<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);

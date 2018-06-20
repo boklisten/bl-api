@@ -15,7 +15,6 @@ import {
 import {ItemCollection} from "../collections/item/item.collection";
 import {CustomerItemCollection} from "../collections/customer-item/customer-item.collection";
 import {CollectionEndpoint} from "./collection-endpoint";
-import chalk from "chalk";
 import {BranchCollection} from "../collections/branch/branch.collection";
 import {UserDetailCollection} from "../collections/user-detail/user-detail.collection";
 import {DeliveryCollection} from "../collections/delivery/delivery.collection";
@@ -29,7 +28,6 @@ import {PasswordReset} from "../collections/password-reset/password-reset";
 import {PasswordResetCollection} from "../collections/password-reset/password-reset.collection";
 import {EmailValidation} from "../collections/email-validation/email-validation";
 import {EmailValidationCollection} from "../collections/email-validation/email-validation.collection";
-import {logger} from "../logger/logger";
 
 export class CollectionEndpointCreator {
 	private _responseHandler: SEResponseHandler;
@@ -53,8 +51,6 @@ export class CollectionEndpointCreator {
 			new CollectionEndpoint<PasswordReset>(this._router, new PasswordResetCollection(), this._responseHandler),
 			new CollectionEndpoint<EmailValidation>(this._router, new EmailValidationCollection(), this._responseHandler)
 		];
-
-		logger.verbose(`${chalk.blue('#')} ${chalk.gray('endpoints:')}`);
 
 		for (const collectionEndpoint of collectionEndpoints) {
 			collectionEndpoint.create();

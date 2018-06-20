@@ -43,7 +43,7 @@ export class SEResponseHandler {
 		this.setHeaders(res);
 		res.send(blapiErrorRes);
 
-		logger.verbose(chalk.yellow(`-> HTTP ${blapiErrorRes.httpStatus} `) + chalk.green(blapiErrorRes.msg))
+		logger.verbose('<- ' + chalk.bold(`${blapiErrorRes.httpStatus} `) + blapiErrorRes.msg + '\n');
 
 		res.end();
 	}

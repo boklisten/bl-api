@@ -46,7 +46,7 @@ export class BlErrorHandler {
 	
 	private printBlError(blError: BlError) {
 		if (!(blError instanceof BlError)) {
-			logger.debug(chalk.blue('! ' + chalk.bold.red('unknown error') + ' ' + chalk.green(blError)));
+			logger.debug('! ' + 'unknown error' + ' ' + blError);
 			return;
 		}
 
@@ -56,13 +56,13 @@ export class BlErrorHandler {
 			}
 		}
 
-		logger.debug(chalk.yellow('! ') + chalk.red('(' + blError.getCode() + ') ') + chalk.red(blError.getMsg()));
+		logger.debug('! ' + '(' + blError.getCode() + ') ' + blError.getMsg());
 
 
 		if (blError.getStore() && blError.getStore().length > 0) {
 			logger.debug(chalk.magenta('stored error data:'));
 			for (let storeData of blError.getStore()) {
-				logger.debug('\t' + chalk.blue('key: ') + chalk.green(storeData.key))
+				logger.debug('\t' + 'key: ' + storeData.key)
 				let data: any = '';
 
 				data = JSON.stringify(storeData.value);
@@ -71,7 +71,7 @@ export class BlErrorHandler {
 					data = storeData.value;
 				}
 
-				logger.debug('\t' + chalk.blue('value: '), data);
+				logger.debug('\t' + 'value: ', data);
 			}
 		}
 
