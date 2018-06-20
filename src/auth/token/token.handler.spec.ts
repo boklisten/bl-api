@@ -1,6 +1,7 @@
 import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import * as sinon from 'sinon';
 import {expect} from 'chai';
 import {TokenHandler} from "./token.handler";
 import {BlError} from "@wizardcoder/bl-model";
@@ -26,18 +27,6 @@ const testUser: User = {
 	valid: true
 };
 
-class UserHandlerMock extends UserHandler {
-
-	getByUsername(username: string): Promise<User> {
-		return new Promise((resolve, reject) => {
-		    if (username === testUser.username) {
-		    	return resolve(testUser);
-			}
-			reject(new BlError('could not find user'))
-		});
-	}
-}
-
 describe('TokenHandler', () => {
 		let refreshTokenConfig: RefreshToken = {
 		iss: '',
@@ -59,9 +48,18 @@ describe('TokenHandler', () => {
 		details: ''
 	};
 	
-	let userHandlerMock = new UserHandlerMock();
+	let userHandler = new UserHandler();
 	let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
-	let tokenHandler = new TokenHandler(userHandlerMock, tokenConfig);
+	let tokenHandler = new TokenHandler(userHandler, tokenConfig);
+
+	sinon.stub(userHandler, 'getByUsername').callsFake((username: string) => {
+		return new Promise((resolve, reject) => {
+		    if (username === testUser.username) {
+		    	return resolve(testUser);
+			}
+			reject(new BlError('could not find user'))
+		});
+	});
 	
 	describe('createTokens()', () => {
 		context('when username is not valid', () => {
