@@ -6,6 +6,7 @@ import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {userDetailSchema} from "../../user-detail/user-detail.schema";
 import {customerItemSchema} from "../customer-item.schema";
 import {orderSchema} from "../../order/order.schema";
+import {UserDetailHelper} from "../../user-detail/helpers/user-detail.helper";
 
 
 export class CustomerItemPostHook extends Hook {
@@ -13,14 +14,16 @@ export class CustomerItemPostHook extends Hook {
 	private _userDetailStorage: BlDocumentStorage<UserDetail>;
 	private _customerItemStorage: BlDocumentStorage<CustomerItem>;
 	private _orderStorage: BlDocumentStorage<Order>;
+	private _userDetailHelper: UserDetailHelper;
 
 	constructor(customerItemValidator?: CustomerItemValidator, customerItemStorage?: BlDocumentStorage<CustomerItem>, userDetailStorage?: BlDocumentStorage<UserDetail>,
-				orderStorage?: BlDocumentStorage<Order>) {
+				orderStorage?: BlDocumentStorage<Order>, userDetailHelper?: UserDetailHelper) {
 		super();
 		this._customerItemValidator = (customerItemValidator) ? customerItemValidator : new CustomerItemValidator();
 		this._userDetailStorage = (userDetailStorage) ? userDetailStorage : new BlDocumentStorage('userdetails', userDetailSchema);
 		this._customerItemStorage = (customerItemStorage) ? customerItemStorage : new BlDocumentStorage('customeritems', customerItemSchema);
 		this._orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage('orders', orderSchema);
+		this._userDetailHelper = (userDetailHelper) ? userDetailHelper : new UserDetailHelper();
 	}
 
 	public before(customerItem: CustomerItem, accessToken: AccessToken, id?: string): Promise<boolean> {
@@ -28,11 +31,20 @@ export class CustomerItemPostHook extends Hook {
 			return Promise.reject(new BlError('customerItem is undefined'));
 		}
 
-		return this._customerItemValidator.validate(customerItem).then(() => {
-			return true;
-		}).catch((customerItemValidationError: BlError) => {
-			throw new BlError('could not validate customerItem').add(customerItemValidationError);
+		return this._userDetailStorage.get(customerItem.customer).then((userDetail: UserDetail) => {
+			if (!this._userDetailHelper.isValid(userDetail)) {
+				throw new BlError(`userDetail "${customerItem.customer}" not valid`);
+			}
+
+			return this._customerItemValidator.validate(customerItem).then(() => {
+				return true;
+			}).catch((customerItemValidationError: BlError) => {
+				throw new BlError('could not validate customerItem').add(customerItemValidationError);
+			});
+		}).catch((blError: BlError) => {
+			throw blError;
 		});
+
 	}
 
 	public after(customerItems: CustomerItem[], accessToken: AccessToken): Promise<CustomerItem[]> {

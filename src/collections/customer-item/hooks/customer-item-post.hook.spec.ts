@@ -33,6 +33,15 @@ describe('CustomerItemPostHook', () => {
 
 		testUserDetail = {
 			id: 'userDetail1',
+			name: 'Alexander Hamilton',
+			address: 'Boston road 1c',
+			postCode: '1234',
+			postCity: 'Boston',
+			phone: '21212121',
+			country: 'USA',
+			emailConfirmed: true,
+			dob: new Date(1755, 1, 11),
+			active: true,
 			customerItems: []
 		} as UserDetail;
 
@@ -138,6 +147,14 @@ describe('CustomerItemPostHook', () => {
 		it('should resolve with true if customerItemValidator.validate resolves', () => {
 			return expect(customerItemPostHook.before(testCustomerItem, testAccessToken))
 				.to.be.fulfilled;
+		});
+
+		it('should reject if userDetail is not valid', () => {
+			testUserDetail.name = null;
+			testUserDetail.dob = null;
+
+			return expect(customerItemPostHook.before(testCustomerItem, testAccessToken))
+				.to.be.rejectedWith(BlError, /userDetail "userDetail1" not valid/);
 		});
 	});
 

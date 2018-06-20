@@ -68,6 +68,12 @@ export class UserDetailHelper {
 		return userDetailUpdateObject;
 	}
 
+	public isValid(userDetail: UserDetail): boolean {
+		let invalidUserDetailFields = this.getInvalidUserDetailFields(userDetail);
+
+		return (invalidUserDetailFields.length <= 0 && userDetail.active);
+	}
+
 	public getInvalidUserDetailFields(userDetail: UserDetail) {
 		let invalidFields = [];
 
