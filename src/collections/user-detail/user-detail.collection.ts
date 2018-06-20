@@ -3,6 +3,7 @@
 import {BlCollection, BlEndpoint} from "../bl-collection";
 import {userDetailSchema} from "./user-detail.schema";
 import {Schema} from "mongoose";
+import {UserDetailValidOperation} from "./operations/user-detail-valid.operation";
 
 export class UserDetailCollection implements BlCollection {
 	collectionName = 'userdetails';
@@ -13,7 +14,17 @@ export class UserDetailCollection implements BlCollection {
 			restriction: {
 				permissions: ['customer', "employee", "admin"],
 				restricted: true
-			}
+			},
+			operations: [
+				{
+					name: 'valid',
+					operation: new UserDetailValidOperation(),
+					restriction: {
+						permissions: ['customer'],
+						restricted: true
+					}
+				}
+			]
 		},
 		{
 			method: 'patch',
