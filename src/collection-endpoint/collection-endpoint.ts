@@ -12,6 +12,7 @@ import {CollectionEndpointDelete} from "./collection-endpoint-delete/collection-
 import {CollectionEndpointPatch} from "./collection-endpoint-patch/collection-endpoint-patch";
 import chalk from "chalk";
 import {Hook} from "../hook/hook";
+import {logger} from "../logger/logger";
 
 
 export class CollectionEndpoint<T extends BlDocument> {
@@ -64,16 +65,16 @@ export class CollectionEndpoint<T extends BlDocument> {
 			}
 
 
-			let output = '\t' + chalk.dim.bold.yellow(method.toUpperCase()) + '\t' + chalk.dim.green(uri);
+			let output = chalk.dim.bold.yellow(method.toUpperCase()) + '\t' + chalk.dim.green(uri);
 
 
 
-			console.log(output + this.getRestrictionPrintout(endpoint.restriction));
+			logger.verbose(output + this.getRestrictionPrintout(endpoint.restriction));
 
 			if (endpoint.operations) {
 				for (let operation of endpoint.operations) {
 					let operationOutput = output + chalk.dim.green('/' + operation.name) + this.getRestrictionPrintout(operation.restriction);
-					console.log(operationOutput);
+					logger.verbose(operationOutput);
 				}
 			}
 		}

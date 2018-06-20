@@ -3,6 +3,7 @@
 .tscache
 .idea
 .env
+*.log
 src/config/secrets.ts
 
 \.nyc_output/

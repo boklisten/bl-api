@@ -9,10 +9,12 @@ import * as path from "path";
 import {DibsPaymentService} from "../payment/dibs/dibs-payment.service";
 import {DibsEasyPayment} from "../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import {BlError} from "@wizardcoder/bl-model";
+import {logger} from "../logger/logger";
 let bodyParser = require('body-parser');
 const chalk = require('chalk');
 const packageJson = require('../../package.json');
 
+export const commander = require('commander');
 
 export class Server {
 
@@ -22,6 +24,9 @@ export class Server {
 
 	constructor() {
 		require('dotenv').config(); //adds the .env file to environment variables
+
+
+
 
 		this.printServerStartMessage();
 		
@@ -82,7 +87,7 @@ export class Server {
 			let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 			if (req.method !== 'OPTIONS') { // no point in showing all the preflight requests
 				//console.log(chalk.blue('> ') + chalk.gray.bold('[' + d.toISOString() + ']' + chalk.gray('(' + ip + ')')));
-				console.log(`${chalk.blue('> ')} ${chalk.bold.dim.yellow(req.method)} ${chalk.green(req.url)}`);
+				logger.verbose(`${chalk.bold.dim.yellow(req.method)} ${chalk.green(req.url)}`);
 			}
 			next();
 		};
@@ -132,7 +137,7 @@ export class Server {
 
 		this.app.listen(this.app.get('port'), () => {
 			
-			console.log(chalk.blue('#') + chalk.gray(' server is up and running\n'));
+			logger.info(chalk.blue('#') + chalk.gray(' server is up and running\n'));
 		});
 		
 		this.app.on('uncaughtException', () => {
@@ -160,15 +165,14 @@ export class Server {
 	}
 	
 	private printServerStartMessage() {
-		console.log(chalk.blue(`\t _     _             _\n`+
-			                   `\t| |__ | | __ _ _ __ (_)\n`+
-			                   `\t| '_ \\| |/ _\` | '_ \\| |\n`+
-			                   `\t| |_) | | (_| | |_) | |\n`+
-							   `\t|_.__/|_|\\__,_| .__/|_|\n`+
-			                   `\t	      |_| v${packageJson.version}\n`));
-		console.log(chalk.blue('# ') + chalk.gray('port:\t\t') + chalk.dim.green(process.env.PORT));
-		console.log(chalk.blue('# ') + chalk.gray('path:\t\t') + chalk.dim.green(this.getServerPath()));
-		console.log(chalk.blue('# ') + chalk.gray('mongoDb:\t') + chalk.dim.green(this.getMongoDbPath()));
+		logger.info(chalk.blue('  _     _             _'));
+		logger.info(chalk.blue(' | |__ | | __ _ _ __ (_)'));
+		logger.info(chalk.blue(' | \'_ \\| |/ _` | \'_ \\| |'));
+		logger.info(chalk.blue(' | |_) | | (_| | |_) | |'));
+		logger.info(chalk.blue(' |_.__/|_|\\__,_| .__/|_|'));
+		logger.info(chalk.blue(`               |_| v${packageJson.version}`));
+		logger.info(chalk.blue('# ') + chalk.gray('path:    ') + chalk.dim.green(`localhost:${process.env.PORT}`) + chalk.dim.green(this.getServerPath()));
+		logger.info(chalk.blue('# ') + chalk.gray('mongoDb: ') + chalk.dim.green(this.getMongoDbPath()));
 	}
 
 	private getMongoDbPath(): string {

@@ -55,7 +55,8 @@
     "sinon-chai": "^2.14.0",
     "typedjson-npm": "^0.1.7",
     "typescript": "^2.6.2",
-    "validator": "^9.2.0"
+    "validator": "^9.2.0",
+    "winston": "^3.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.1.0",

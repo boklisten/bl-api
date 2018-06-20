@@ -43,7 +43,7 @@ module.exports = function (grunt) {
                     watch: ["src"],
                     ext: "ts",
                     ignore: ["src/**/*.spec.ts"],
-                    exec: "ts-node ./src/index.ts"
+                    exec: "ts-node ./src/index.ts --log-silly"
                 }
             },
             'generate-dev': {

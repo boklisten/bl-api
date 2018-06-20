@@ -29,6 +29,7 @@ import {PasswordReset} from "../collections/password-reset/password-reset";
 import {PasswordResetCollection} from "../collections/password-reset/password-reset.collection";
 import {EmailValidation} from "../collections/email-validation/email-validation";
 import {EmailValidationCollection} from "../collections/email-validation/email-validation.collection";
+import {logger} from "../logger/logger";
 
 export class CollectionEndpointCreator {
 	private _responseHandler: SEResponseHandler;
@@ -53,12 +54,11 @@ export class CollectionEndpointCreator {
 			new CollectionEndpoint<EmailValidation>(this._router, new EmailValidationCollection(), this._responseHandler)
 		];
 
-		console.log(`${chalk.blue('#')} ${chalk.gray('endpoints:')}`);
+		logger.verbose(`${chalk.blue('#')} ${chalk.gray('endpoints:')}`);
 
 		for (const collectionEndpoint of collectionEndpoints) {
 			collectionEndpoint.create();
 			collectionEndpoint.printEndpoints();
-			console.log('');
 		}
 	}
 }

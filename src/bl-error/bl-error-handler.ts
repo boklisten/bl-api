@@ -4,6 +4,7 @@ import {BlError, BlapiErrorResponse} from "@wizardcoder/bl-model";
 import {BlDocumentStorage} from "../storage/blDocumentStorage";
 import {BlErrorLog} from "../collections/bl-error-log/bl-error-log";
 import {blErrorLogSchema} from "../collections/bl-error-log/bl-error-log.schema";
+import {logger} from "../logger/logger";
 const chalk = require('chalk');
 
 
@@ -26,6 +27,8 @@ export class BlErrorHandler {
 		this.storeError(blError);
 
 		let blErrorResponse = this.getErrorResponse(blError);
+
+
 		return new BlapiErrorResponse(blErrorResponse.httpStatus, blErrorResponse.code, blErrorResponse.msg);
 	}
 
@@ -33,27 +36,33 @@ export class BlErrorHandler {
 		this._errorLogStorage.add(new BlErrorLog(blError), {id: 'SYSTEM', permission: 'admin'}).then((addedErrorLog) => {
 
 		}).catch((blErrorAddError) => {
-			console.log('blErrorHandler: there was a error saving the BlErrorLog: ' + blErrorAddError);
+			logger.warn('blErrorHandler: there was a error saving the BlErrorLog: ' + blErrorAddError);
 		});
 	}
-	
+
 	private printErrorStack(blError: BlError) {
 		this.printBlError(blError);
-		console.log();
 	}
 	
 	private printBlError(blError: BlError) {
 		if (!(blError instanceof BlError)) {
-			console.log(chalk.blue('\t#' + chalk.bold.red('unknown error') + ' ' + chalk.green(blError)));
+			logger.debug(chalk.blue('! ' + chalk.bold.red('unknown error') + ' ' + chalk.green(blError)));
 			return;
 		}
-		
-		console.log(chalk.blue('\t# [' + blError.getCode() + '] ') + chalk.red(blError.getMsg()))
-		
+
+		if (blError.errorStack && blError.errorStack.length > 0) {
+			for (let err of blError.errorStack) {
+				this.printBlError(err);
+			}
+		}
+
+		logger.debug(chalk.yellow('! ') + chalk.red('(' + blError.getCode() + ') ') + chalk.red(blError.getMsg()));
+
+
 		if (blError.getStore() && blError.getStore().length > 0) {
-			console.log('\t\t ' + chalk.blue('# ') + chalk.green('stored error data'));
+			logger.debug(chalk.magenta('stored error data:'));
 			for (let storeData of blError.getStore()) {
-				console.log('\t\t\t' + chalk.blue('key: ') + chalk.green(storeData.key))
+				logger.debug('\t' + chalk.blue('key: ') + chalk.green(storeData.key))
 				let data: any = '';
 
 				data = JSON.stringify(storeData.value);
@@ -62,15 +71,10 @@ export class BlErrorHandler {
 					data = storeData.value;
 				}
 
-				console.log('\t\t\t' + chalk.blue('value: '), data);
+				logger.debug('\t' + chalk.blue('value: '), data);
 			}
 		}
-		
-		if (blError.errorStack && blError.errorStack.length > 0) {
-			for (let err of blError.errorStack) {
-				this.printBlError(err);
-			}
-		}
+
 	}
 	
 	private getErrorResponse(blError: BlError): BlapiErrorResponse {

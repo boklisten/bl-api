@@ -4,6 +4,8 @@ import {Response} from 'express';
 import {BlapiResponse, BlapiErrorResponse, BlError} from "@wizardcoder/bl-model";
 import {BlErrorHandler} from "../bl-error/bl-error-handler";
 import {APP_CONFIG} from "../application-config";
+import {logger} from "../logger/logger";
+import chalk from "chalk";
 
 export class SEResponseHandler {
 	errorHandler: BlErrorHandler;
@@ -31,14 +33,6 @@ export class SEResponseHandler {
 
 		res.redirect(redirectUrl);
 	}
-	
-	public sendAuthErrorResponse(res: Response, info: any, err: any) {
-		const blapiErrorResponse = this.getBlapiErrorResponseByAuthError(info);
-		this.setHeaders(res);
-		res.status(blapiErrorResponse.httpStatus);
-		res.send(blapiErrorResponse);
-		res.end();
-	}
 
 	public sendErrorResponse(res: Response, blError: BlError) {
 		
@@ -48,8 +42,9 @@ export class SEResponseHandler {
 		
 		this.setHeaders(res);
 		res.send(blapiErrorRes);
-		
-		
+
+		logger.verbose(chalk.yellow(`-> HTTP ${blapiErrorRes.httpStatus} `) + chalk.green(blapiErrorRes.msg))
+
 		res.end();
 	}
 	
