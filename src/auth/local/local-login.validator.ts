@@ -32,12 +32,12 @@ export class LocalLoginValidator {
 								resolve({provider: localLogin.provider, providerId: localLogin.providerId});
 							},
 							(error: BlError) => {
-								reject(error.add(blError.msg('username or password is not correct')));
+								reject(error.add(blError.msg('username or password is not correct').code(908)));
 							});
 
 					},
 					(error: BlError) => {
-						reject(error.add(blError.msg('could not find the user with username "' + username + '"')));
+						reject(error.add(blError.msg('could not find the user with username "' + username + '"').code(702)));
 					});
 			}).catch((userValidError) => {
 				reject(new BlError('user not valid').code(902).add(userValidError));
@@ -51,7 +51,7 @@ export class LocalLoginValidator {
 			
 			this.localLoginHandler.get(username).then(
 				(localLogin: LocalLogin) => {
-					reject(blError.msg('username already exists').store('username', username));
+					reject(blError.msg('username already exists').store('username', username).code(903));
 				},
 				(error: BlError) => {
 					

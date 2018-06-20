@@ -36,7 +36,7 @@ export class LocalAuth {
 				},
 				(validateError: BlError) => {
 					return done(null, false, new BlError('could not login')
-							.code(validateError.getCode())
+							.code(900)
 							.add(validateError));
 				});
 		}));

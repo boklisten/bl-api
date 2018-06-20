@@ -117,9 +117,11 @@ export class BlErrorHandler {
 		
 		switch (code) {
 			case 701:
+				blapiErrorResponse.httpStatus = 400;
 				blapiErrorResponse.msg = 'bad format';
 				break;
 			case 702:
+				blapiErrorResponse.httpStatus = 404;
 				blapiErrorResponse.msg = 'not found';
 				break;
 		}
@@ -137,10 +139,12 @@ export class BlErrorHandler {
 				blapiErrorResponse.msg = 'user is not valid';
 				break;
 			case 903:
+				blapiErrorResponse.httpStatus = 400;
 				blapiErrorResponse.msg = 'username already exists';
 				break;
 			case 904:
-				blapiErrorResponse.msg = 'no permission';
+				blapiErrorResponse.httpStatus = 403;
+				blapiErrorResponse.msg = 'forbidden';
 				break;
 			case 905:
 				blapiErrorResponse.msg = 'invalid token';
