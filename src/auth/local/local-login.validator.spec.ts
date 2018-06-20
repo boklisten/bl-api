@@ -15,6 +15,7 @@ import {ProviderIdGenerator} from "./provider-id/provider-id-generator";
 import {BlError} from "@wizardcoder/bl-model";
 import {UserHandler} from "../user/user.handler";
 import {User} from "../../collections/user/user";
+import * as sinon from 'sinon';
 
 chai.use(chaiAsPromised);
 
@@ -26,73 +27,55 @@ const testLocalLogin = {
 	salt: "dog"
 };
 
-class LocalLoginHandlerMock extends LocalLoginHandler {
-	
-	
-	get(username: string): Promise<LocalLogin> {
-		return new Promise((resolve, reject) => {
-			if (username === testLocalLogin.username) resolve(testLocalLogin);
-			reject(new BlError('').code(404));
-		});
-	}
-	
-	
-	add(localLogin: LocalLogin): Promise<LocalLogin> {
-		return new Promise((resolve, reject) => {
-			resolve(localLogin);
-		});
-	}
-}
-
-class LocalLoginPasswordValidatorMock extends LocalLoginPasswordValidator {
-	
-	validate(password: string, salt: string, hashedPassword): Promise<boolean> {
-		return new Promise((resolve, reject) => {
-			resolve(true);
-		
-		});
-	}
-}
-
-class UserHandlerMock extends UserHandler {
-	create(username: string, provider: string, providerId: string) {
-		return new Promise((resolve, reject) => {
-			let user: User = {
-				id: '',
-				userDetail: '',
-				permission: 'customer',
-				login: {
-					provider: provider,
-					providerId: providerId
-				},
-				blid: '',
-				username: username,
-				valid: true,
-				active: true,
-				lastActive: '',
-				lastRequest: ''
-				
-			};
-		    resolve(user);
-		});
-	}
-
-	valid(username: string): Promise<boolean> {
-		return Promise.resolve(true);
-	}
-}
-
-
 describe('LocalLoginValidator', () => {
-	let localLoginPasswordValidatorMock = new LocalLoginPasswordValidatorMock(new SeCrypto());
+	let localLoginPasswordValidator = new LocalLoginPasswordValidator(new SeCrypto());
 	let saltGenerator = new SaltGenerator();
 	let seCrypto = new SeCrypto();
 	let hashedPasswordGenerator = new HashedPasswordGenerator(saltGenerator, seCrypto);
 	let providerIdGenerator = new ProviderIdGenerator(seCrypto);
 	let localLoginCreator = new LocalLoginCreator(hashedPasswordGenerator, providerIdGenerator);
-	let userHandlerMock = new UserHandlerMock();
-	let localLoginHandler = new LocalLoginHandlerMock();
-	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidatorMock, localLoginCreator, userHandlerMock);
+	let localLoginHandler = new LocalLoginHandler();
+	let userHandler = new UserHandler();
+	let localLoginValidator = new LocalLoginValidator(localLoginHandler, localLoginPasswordValidator, localLoginCreator, userHandler);
+
+	sinon.stub(localLoginHandler, 'get').callsFake((username: string) => {
+		return new Promise((resolve, reject) => {
+			if (username === testLocalLogin.username) resolve(testLocalLogin);
+			reject(new BlError('').code(702));
+		});
+	});
+
+	sinon.stub(localLoginHandler, 'add').callsFake((localLogin: LocalLogin) => {
+		return new Promise((resolve, reject) => {
+			resolve(localLogin);
+		});
+	});
+
+	sinon.stub(localLoginPasswordValidator, 'validate').callsFake((password: string, salt: string, hashedPassword: any) => {
+		return Promise.resolve(true);
+	});
+
+	sinon.stub(userHandler, 'create').callsFake((username: string, provider: string, providerId: string) => {
+		return Promise.resolve({
+			id: '',
+			userDetail: '',
+			permission: 'customer',
+			login: {
+				provider: provider,
+				providerId: providerId
+			},
+			blid: '',
+			username: username,
+			valid: true,
+			active: true,
+			lastActive: '',
+			lastRequest: ''
+		});
+	});
+
+	sinon.stub(userHandler, 'valid').callsFake(() => {
+		return Promise.resolve(true);
+	});
 	
 	describe('validate()', () => {
 		let testUserName = '';
@@ -127,7 +110,7 @@ describe('LocalLoginValidator', () => {
 					
 					},
 					(error: BlError) => {
-						error.getCode().should.be.eq(404);
+						error.getCode().should.be.eq(702);
 					});
 			});
 		});
