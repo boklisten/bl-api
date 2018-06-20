@@ -6,23 +6,25 @@ import {BlapiResponse, BlError, UserDetail} from "@wizardcoder/bl-model";
 import {userDetailSchema} from "../user-detail.schema";
 import {SEResponseHandler} from "../../../response/se.response.handler";
 import {isNullOrUndefined} from "util";
+import {UserDetailHelper} from "../helpers/user-detail.helper";
 
 
 export class UserDetailValidOperation implements Operation {
 	private _userDetailStorage: BlDocumentStorage<UserDetail>;
+	private _userDetailHelper: UserDetailHelper;
 	private _resHandler: SEResponseHandler;
 
-	constructor(userDetailStorage?: BlDocumentStorage<UserDetail>, resHandler?: SEResponseHandler) {
+	constructor(userDetailStorage?: BlDocumentStorage<UserDetail>, resHandler?: SEResponseHandler, userDetailHelper?: UserDetailHelper) {
 		this._userDetailStorage = (userDetailStorage) ? userDetailStorage : new BlDocumentStorage('userdetails', userDetailSchema);
 		this._resHandler = (resHandler) ? resHandler : new SEResponseHandler();
+		this._userDetailHelper = new UserDetailHelper();
 	}
 
 	async run(blApiRequest: BlApiRequest, req?: Request, res?: Response, next?: NextFunction): Promise<boolean> {
 		try {
 			let userDetail = await this._userDetailStorage.get(blApiRequest.documentId);
 
-
-			let invalidUserDetailFields = this.getInvalidUserDetailFields(userDetail);
+			let invalidUserDetailFields = this._userDetailHelper.getInvalidUserDetailFields(userDetail);
 
 			if (invalidUserDetailFields.length <= 0) {
 				this._resHandler.sendResponse(res, new BlapiResponse([{valid: true}]));
@@ -42,40 +44,5 @@ export class UserDetailValidOperation implements Operation {
 
 			throw responseError;
 		}
-	}
-
-
-	private getInvalidUserDetailFields(userDetail: UserDetail) {
-		let invalidFields = [];
-
-		if (isNullOrUndefined(userDetail.name) || userDetail.name.length <= 0) {
-			invalidFields.push('name');
-		}
-
-		if (isNullOrUndefined(userDetail.address) || userDetail.address.length <= 0) {
-			invalidFields.push('address')
-		}
-
-		if (isNullOrUndefined(userDetail.postCode) || userDetail.postCode.length <= 0) {
-			invalidFields.push('postCode');
-		}
-
-		if (isNullOrUndefined(userDetail.postCity) || userDetail.postCity.length <= 0) {
-			invalidFields.push('postCity');
-		}
-
-		if (isNullOrUndefined(userDetail.phone) || userDetail.phone.length <= 0) {
-			invalidFields.push('phone');
-		}
-
-		if (isNullOrUndefined(userDetail.emailConfirmed) || !userDetail.emailConfirmed) {
-			invalidFields.push('emailConfirmed');
-		}
-
-		if (isNullOrUndefined(userDetail.dob)) {
-			invalidFields.push('dob');
-		}
-
-		return invalidFields;
 	}
 }

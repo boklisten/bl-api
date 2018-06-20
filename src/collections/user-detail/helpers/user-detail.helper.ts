@@ -67,4 +67,38 @@ export class UserDetailHelper {
 
 		return userDetailUpdateObject;
 	}
+
+	public getInvalidUserDetailFields(userDetail: UserDetail) {
+		let invalidFields = [];
+
+		if (isNullOrUndefined(userDetail.name) || userDetail.name.length <= 0) {
+			invalidFields.push('name');
+		}
+
+		if (isNullOrUndefined(userDetail.address) || userDetail.address.length <= 0) {
+			invalidFields.push('address')
+		}
+
+		if (isNullOrUndefined(userDetail.postCode) || userDetail.postCode.length <= 0) {
+			invalidFields.push('postCode');
+		}
+
+		if (isNullOrUndefined(userDetail.postCity) || userDetail.postCity.length <= 0) {
+			invalidFields.push('postCity');
+		}
+
+		if (isNullOrUndefined(userDetail.phone) || userDetail.phone.length <= 0) {
+			invalidFields.push('phone');
+		}
+
+		if (isNullOrUndefined(userDetail.emailConfirmed) || !userDetail.emailConfirmed) {
+			invalidFields.push('emailConfirmed');
+		}
+
+		if (isNullOrUndefined(userDetail.dob)) {
+			invalidFields.push('dob');
+		}
+
+		return invalidFields;
+	}
 }
