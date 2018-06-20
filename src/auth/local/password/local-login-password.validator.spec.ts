@@ -1,6 +1,7 @@
 import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import * as sinon from 'sinon';
 import {expect} from 'chai';
 import {LocalLoginPasswordValidator} from "./local-login-password.validator";
 import {SeCrypto} from "../../../crypto/se.crypto";
@@ -9,19 +10,13 @@ import {BlError} from "@wizardcoder/bl-model";
 
 chai.use(chaiAsPromised);
 
-class SeCryptoMock extends SeCrypto {
-	
-	hash(password: string, salt: string): Promise<string> {
-		return new Promise((resolve, reject) => {
-			resolve(password + salt);
-		});
-	}
-
-}
-
 describe('LocalLoginPasswordValidator', () => {
-	let seCryptoMock = new SeCryptoMock();
-	let localLoginPasswordValidator = new LocalLoginPasswordValidator(seCryptoMock);
+	let seCrypto = new SeCrypto();
+	let localLoginPasswordValidator = new LocalLoginPasswordValidator(seCrypto);
+
+	sinon.stub(seCrypto, 'hash').callsFake((password: string, salt: string) => {
+			return Promise.resolve(password + salt);
+	});
 	
 	describe('validate', () => {
 		let testPassword = '';
