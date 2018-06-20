@@ -26,7 +26,7 @@ export class CollectionEndpointAuth {
 
 	private validateAuth(restriction: BlEndpointRestriction, accessToken: AccessToken): boolean {
 		if (!accessToken) {
-			throw new BlError('accessToken not found').code(911);
+			throw new BlError('accessToken invalid').code(910);
 		}
 
 		if (restriction && restriction.permissions) {

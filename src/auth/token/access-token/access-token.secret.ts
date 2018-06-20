@@ -5,6 +5,6 @@ export class AccessTokenSecret {
 	}
 	
 	public get(): string {
-		return 'this is the access token secret';
+		return process.env.ACCESS_TOKEN_SECRET;
 	}
 }

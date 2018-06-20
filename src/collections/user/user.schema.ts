@@ -32,7 +32,7 @@ export let UserSchema = {
 	},
 	valid: {
 		type: Schema.Types.Boolean,
-		default: false
+		default: true
 	},
 	active: {
 		type: Schema.Types.Boolean,

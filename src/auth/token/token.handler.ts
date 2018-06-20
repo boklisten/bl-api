@@ -17,7 +17,10 @@ export class TokenHandler {
 	
 	public createTokens(username: string): Promise<{accessToken: string, refreshToken: string}> {
 		return new Promise((resolve, reject) => {
-			this.userHandler.getByUsername(username).then((user: User) => {
+			this.userHandler.getByUsername(username).then((theUser: User) => {
+				let user = theUser;
+
+				this.userHandler.valid(username).then(() => {
 					this.refreshTokenCreator.create(user.username, user.blid).then(
 						(refreshToken: string) => {
 							this.accessTokenCreator.create(user.username, user.blid, user.permission, user.userDetail, refreshToken).then(
@@ -35,6 +38,13 @@ export class TokenHandler {
 								.code(906)
 								.add(refreshTokenCreatorError));
 						});
+				}).catch((userValidError: BlError) => {
+					reject(new BlError('user is not valid')
+						.add(userValidError)
+						.code(902))
+				});
+
+
 				},
 				(getUserError: BlError) => {
 					reject(new BlError('could not get user with username "' + username + '"')

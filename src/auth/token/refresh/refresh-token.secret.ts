@@ -2,6 +2,6 @@
 export class RefreshTokenSecret {
 	
 	get(): string {
-		return 'this is the secret';
+		return process.env.REFRESH_TOKEN_SECRET;
 	}
 }
