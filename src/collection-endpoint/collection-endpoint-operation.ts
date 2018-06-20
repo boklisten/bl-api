@@ -3,7 +3,7 @@ import {BlEndpointMethod, BlEndpointOperation} from "../collections/bl-collectio
 import {CollectionEndpointAuth} from "./collection-endpoint-auth/collection-endpoint-auth";
 
 import {SEResponseHandler} from "../response/se.response.handler";
-import {AccessToken, BlapiResponse, BlError} from "@wizardcoder/bl-model";
+import {AccessToken, BlError} from "@wizardcoder/bl-model";
 import {BlApiRequest} from "../request/bl-api-request";
 
 export class CollectionEndpointOperation {
@@ -59,9 +59,4 @@ export class CollectionEndpointOperation {
 			})
 			.catch((blError: BlError) => this._responseHandler.sendErrorResponse(res, blError));
 	}
-
-	private run(blapiRequest: BlApiRequest): any {
-	}
-
-
 }

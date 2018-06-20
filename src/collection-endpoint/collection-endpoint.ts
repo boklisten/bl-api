@@ -64,7 +64,7 @@ export class CollectionEndpoint<T extends BlDocument> {
 			}
 
 
-			let output = '\t\t' + chalk.dim.bold.yellow(method.toUpperCase()) + '\t' + chalk.dim.green(uri);
+			let output = '\t' + chalk.dim.bold.yellow(method.toUpperCase()) + '\t' + chalk.dim.green(uri);
 
 
 
@@ -72,7 +72,7 @@ export class CollectionEndpoint<T extends BlDocument> {
 
 			if (endpoint.operations) {
 				for (let operation of endpoint.operations) {
-					let operationOutput = output + '/' + chalk.dim.green(operation.name) + this.getRestrictionPrintout(operation.restriction);
+					let operationOutput = output + chalk.dim.green('/' + operation.name) + this.getRestrictionPrintout(operation.restriction);
 					console.log(operationOutput);
 				}
 			}

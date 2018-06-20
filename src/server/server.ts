@@ -97,16 +97,6 @@ export class Server {
 	}
 	
 	private test() {
-		const dibsPaymentService = new DibsPaymentService();
-
-		dibsPaymentService.fetchDibsPaymentData('3cc6b8b9a99c48f1b8b4f95cea4a870e').then((dibsEasyPayment: DibsEasyPayment) => {
-			console.log('the payment details', dibsEasyPayment);
-			console.log('private persion', dibsEasyPayment.consumer.privatePerson);
-		}).catch((err: BlError) => {
-			console.log('could not get payment details', err);
-		})
-
-
 	}
 	
 	private generateEndpoints() {

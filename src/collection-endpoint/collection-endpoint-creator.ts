@@ -53,7 +53,7 @@ export class CollectionEndpointCreator {
 			new CollectionEndpoint<EmailValidation>(this._router, new EmailValidationCollection(), this._responseHandler)
 		];
 
-		console.log(`\t${chalk.blue('#')} ${chalk.gray('endpoints:')}`);
+		console.log(`${chalk.blue('#')} ${chalk.gray('endpoints:')}`);
 
 		for (const collectionEndpoint of collectionEndpoints) {
 			collectionEndpoint.create();
