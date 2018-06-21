@@ -57,9 +57,11 @@ export class OrderItemBuyValidator {
 			price = this.priceService.sanitize(item.price);
 			
 		}
+
+		let expectedPrice = this.priceService.round(price);
 		
-		if (orderItem.amount != price) {
-			throw new BlError(`orderItem.amount "${orderItem.amount}" is not equal to item.price - orderItem.discount "${price}" when type is "buy"`);
+		if (orderItem.amount != expectedPrice) {
+			throw new BlError(`orderItem.amount "${orderItem.amount}" is not equal to item.price "${item.price}" - orderItem.discount "${orderItem.discount || 0}" = "${expectedPrice}" when type is "buy"`);
 		}
 		
 		return true;

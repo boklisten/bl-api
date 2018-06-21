@@ -45,9 +45,11 @@ export class OrderItemRentValidator {
 				} else {
 					rentalPrice = this.priceService.sanitize(item.price * rentPeriod.percentage);
 				}
-				
-				if (orderItem.amount !== rentalPrice) {
-					throw new BlError(`orderItem.amount "${orderItem.amount}" is not equal to the rental price "${rentalPrice}"`);
+
+				let expectedAmount = this.priceService.round(rentalPrice);
+
+				if (orderItem.amount !== expectedAmount) {
+					throw new BlError(`orderItem.amount "${orderItem.amount}" is not equal to the rental price "${expectedAmount}"`);
 				}
 				
 				return true;

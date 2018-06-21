@@ -160,7 +160,7 @@ describe('OrderItemRentValidator', () => {
 					];
 					testItem.price = 110;
 					
-					let expectedAmount = priceService.sanitize( 110 * 0.234);
+					let expectedAmount = priceService.round(priceService.sanitize( 110 * 0.234));
 					
 					return expect(orderItemRentValidator.validate(testBranch, testOrder.orderItems[0], testItem))
 						.to.be.rejectedWith(BlError, `orderItem.amount "100" is not equal to the rental price "${expectedAmount}"`);

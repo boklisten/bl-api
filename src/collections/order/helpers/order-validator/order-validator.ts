@@ -53,10 +53,4 @@ export class OrderValidator {
 		}
 		return Promise.resolve(true);
 	}
-
-	private validateUser(userDetailId: string): Promise<boolean> {
-		return new Promise((resolve, reject) => {
-
-		});
-	}
 }

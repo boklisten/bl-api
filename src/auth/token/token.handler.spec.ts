@@ -60,6 +60,10 @@ describe('TokenHandler', () => {
 			reject(new BlError('could not find user'))
 		});
 	});
+
+	sinon.stub(userHandler, 'valid').callsFake(() => {
+		return Promise.resolve(true);
+	});
 	
 	describe('createTokens()', () => {
 		context('when username is not valid', () => {

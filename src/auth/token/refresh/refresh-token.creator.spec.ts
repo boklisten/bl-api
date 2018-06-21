@@ -73,7 +73,9 @@ describe('RefreshTokenCreator', () => {
 						refreshToken.should.be.a('string')
 							.and.have.length.gte(50);
 							done();
-					});
+					}).catch((err) => {
+						console.log('ERRRRRRR', err);
+				})
 			});
 		});
 		

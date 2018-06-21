@@ -45,13 +45,14 @@ export class OrderItemValidator {
 			for (let orderItem of order.orderItems) {
 				let item = await this.itemStorage.get(orderItem.item);
 				await this.validateOrderItemBasedOnType(branch, item, orderItem);
-			
+				this.validateOrderItemAmounts(orderItem);
 			}
 			
 		} catch (e) {
 			if (e instanceof BlError) {
 				return Promise.reject(e);
 			}
+			console.log('the err', e);
 			return Promise.reject(new BlError('unknown error, orderItem could not be validated').store('error', e));
 		}
 	}
@@ -66,16 +67,31 @@ export class OrderItemValidator {
 				return await this.orderItemExtendValidator.validate(branch, orderItem);
 		}
 	}
+
+	private validateOrderItemAmounts(orderItem: OrderItem) {
+		let expectedTotalAmount = this.priceService.sanitize(orderItem.unitPrice + orderItem.taxAmount);
+
+		if (orderItem.amount !== expectedTotalAmount) {
+			throw new BlError(`orderItem.amount "${orderItem.amount}" is not equal to orderItem.unitPrice "${orderItem.unitPrice}" + orderItem.taxAmount "${orderItem.taxAmount}"`)
+		}
+
+		let expectedTaxAmount = this.priceService.sanitize(orderItem.unitPrice * orderItem.taxRate);
+
+		if (orderItem.taxAmount !== expectedTaxAmount) {
+			throw new BlError(`orderItem.taxAmount "${orderItem.taxAmount}" is not equal to orderItem.unitPrice "${orderItem.unitPrice}" * orderItem.taxRate "${orderItem.taxRate}"`)
+		}
+	}
+
 	
 	private validateAmount(order: Order): boolean {
-		let totAmount = 0;
+		let expectedTotalAmount = 0;
 		
 		for (let orderItem of order.orderItems) {
-			totAmount += orderItem.amount;
+			expectedTotalAmount += orderItem.amount;
 		}
-		
-		if (this.priceService.sanitize(totAmount) !== order.amount) {
-			throw new BlError(`order.amount is "${order.amount}" but total of orderItems amount is "${totAmount}"`)
+
+		if (expectedTotalAmount !== order.amount) {
+			throw new BlError(`order.amount is "${order.amount}" but total of orderItems amount is "${expectedTotalAmount}"`)
 		}
 		
 		return true

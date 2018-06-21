@@ -10,12 +10,16 @@ export class PriceService {
 	}
 	
 	public sanitize(price: number): number {
+		return +price.toFixed(2); // the plus changes the output to a number
+	}
+
+	public round(num: number): number {
 		if (this.up) {
-			return this.roundUp(price);
+			return this.roundUp(num);
 		} else if (this.down) {
-			return this.roundDown(price);
+			return this.roundDown(num);
 		} else {
-			return price;
+			return num;
 		}
 	}
 	

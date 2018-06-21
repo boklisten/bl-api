@@ -25,7 +25,30 @@ describe('OrderItemValidator', () => {
 	
 	let testOrder: Order;
 	let testBranch: Branch;
-	
+
+	sinon.stub(orderItemRentValidator, 'validate').callsFake(() => {
+		return Promise.resolve(true);
+	});
+
+	sinon.stub(orderItemBuyValidator, 'validate').callsFake(() => {
+		return Promise.resolve(true);
+	});
+
+	sinon.stub(orderItemExtendValidator, 'validate').callsFake(() => {
+		return Promise.resolve(true);
+	});
+
+	sinon.stub(branchStorage, 'get').callsFake((id: string) => {
+		if (id !== 'branch1') {
+			return Promise.reject(new BlError('not found').code(702));
+		}
+		return Promise.resolve(testBranch);
+	});
+
+	sinon.stub(itemStorage, 'get').callsFake((id: string) => {
+		return Promise.resolve({});
+	});
+
 	beforeEach(() => {
 		testOrder = {
 			id: 'order1',
@@ -53,7 +76,7 @@ describe('OrderItemValidator', () => {
 			byCustomer: true,
 			payments: ['payment1']
 		};
-		
+
 		testBranch = {
 			id: 'branch1',
 			name: 'Sonans',
@@ -83,16 +106,9 @@ describe('OrderItemValidator', () => {
 			}
 		};
 	});
-	
+
 	describe('#validate()', () => {
-		
-		sinon.stub(branchStorage, 'get').callsFake((id: string) => {
-			if (id !== 'branch1') {
-				return Promise.reject(new BlError('not found').code(702));
-			}
-			return Promise.resolve(testBranch);
-		});
-		
+
 		context('when order.amount is not equal to the total of orderItems amount', () => {
 			it('should reject with error whe the order.branch is not found', () => {
 				testOrder.branch = 'notFoundBranch';
@@ -114,6 +130,83 @@ describe('OrderItemValidator', () => {
 				return expect(orderItemValidator.validate(testBranch, testOrder))
 					.to.be.rejectedWith(BlError, /order.amount is "100" but total of orderItems amount is "780"/)
 			});
+		});
+
+		it('should reject if amount does not include taxAmount', () => {
+			testOrder.orderItems = [
+				{
+					type: 'rent',
+					item: 'item1',
+					title: 'signatur 3',
+					amount: 100, // this should have been (unitPrice + taxAmount)
+					unitPrice: 100,
+					taxRate: 0.25,
+					taxAmount: 25, // this should be (unitPrice * taxRate)
+				}
+			];
+
+			testOrder.amount = 100;
+
+			return expect(orderItemValidator.validate(testBranch, testOrder))
+				.to.be.rejectedWith(BlError, /orderItem.amount "100" is not equal to orderItem.unitPrice "100" \+ orderItem.taxAmount "25"/);
+		});
+
+		it('should reject if amount does not includes more than unitPrice + taxAmount', () => {
+			testOrder.orderItems = [
+				{
+					type: 'rent',
+					item: 'item1',
+					title: 'signatur 3',
+					amount: 160, // this should have been (unitPrice + taxAmount)
+					unitPrice: 100,
+					taxRate: 0.25,
+					taxAmount: 25, // this should be (unitPrice * taxRate)
+				}
+			];
+
+			testOrder.amount = 160;
+
+			return expect(orderItemValidator.validate(testBranch, testOrder))
+				.to.be.rejectedWith(BlError, /orderItem.amount "160" is not equal to orderItem.unitPrice "100" \+ orderItem.taxAmount "25"/);
+		});
+
+
+		it('should reject if taxAmount does not equal unitPrice * taxRate', () => {
+			testOrder.orderItems = [
+				{
+					type: 'rent',
+					item: 'item1',
+					title: 'signatur 3',
+					amount: 100, // this should have been (unitPrice + taxAmount)
+					unitPrice: 100,
+					taxRate: 0.25,
+					taxAmount: 0, // this should be (unitPrice * taxRate)
+				}
+			];
+
+			testOrder.amount = 100;
+
+			return expect(orderItemValidator.validate(testBranch, testOrder))
+				.to.be.rejectedWith(BlError, /orderItem.taxAmount "0" is not equal to orderItem.unitPrice "100" \* orderItem.taxRate "0.25"/);
+		});
+
+		it('should resolve if price amount is valid', () => {
+			testOrder.orderItems = [
+				{
+					type: 'rent',
+					item: 'item1',
+					title: 'signatur 3',
+					amount: 125,
+					unitPrice: 100,
+					taxRate: 0.25,
+					taxAmount: 25,
+				}
+			];
+
+			testOrder.amount = 125;
+
+			return expect(orderItemValidator.validate(testBranch, testOrder))
+				.to.be.fulfilled;
 		});
 		
 	});

@@ -45,7 +45,7 @@ describe('AccessTokenCreator', () => {
 		let testUserDetailId = '';
 		
 		beforeEach((done) => {
-			testUsername = 'bill@clintonisapedo.com';
+			testUsername = 'bill@clintonlol.com';
 			testUserid = '124';
 			testPermission = 'customer';
 			testUserDetailId = 'avx';
@@ -109,6 +109,7 @@ describe('AccessTokenCreator', () => {
 						done();
 					},
 					(error: BlError) => {
+						console.log('the err', error);
 						error.should.not.be.fulfilled;
 						done();
 					});
