@@ -129,7 +129,7 @@ describe('OrderItemBuyValidator', () => {
 				testItem.taxRate = 0;
 				
 				return expect(orderItemPriceValidator.validate(testBranch, testOrder.orderItems[0], testItem))
-					.to.be.rejectedWith(BlError, /orderItem.amount "100" is not equal to item.price - orderItem.discount "200"/);
+					.to.be.rejectedWith(BlError, /orderItem.amount "100" is not equal to item.price "200" - orderItem.discount "0" = "200"/);
 			});
 			
 			it('should reject if item.price is 134 and orderItem.amount is 400', () => {
@@ -140,7 +140,7 @@ describe('OrderItemBuyValidator', () => {
 				testItem.taxRate = 0;
 				
 				return expect(orderItemPriceValidator.validate(testBranch, testOrder.orderItems[0], testItem))
-						.to.be.rejectedWith(BlError, /orderItem.amount "400" is not equal to item.price - orderItem.discount "134"/);
+						.to.be.rejectedWith(BlError, /orderItem.amount "400" is not equal to item.price "134" - orderItem.discount "0" = "134"/);
 			});
 			
 			it('should resolve if a valid order is sent', () => {
@@ -188,7 +188,7 @@ describe('OrderItemBuyValidator', () => {
 				};
 				
 				return expect(orderItemPriceValidator.validate(testBranch, testOrder.orderItems[0], testItem))
-					.to.be.rejectedWith(BlError, /orderItem.amount "100" is not equal to item.price - orderItem.discount "400"/);
+					.to.be.rejectedWith(BlError, /orderItem.amount "100" is not equal to item.price "500" - orderItem.discount "100" = "400"/);
 			});
 			
 			it('should reject if (item.price - discount.amount) is 200 but orderItem.amount is 560', () => {
@@ -199,7 +199,7 @@ describe('OrderItemBuyValidator', () => {
 				};
 				
 				return expect(orderItemPriceValidator.validate(testBranch, testOrder.orderItems[0], testItem))
-					.to.be.rejectedWith(BlError, /orderItem.amount "560" is not equal to item.price - orderItem.discount "200"/);
+					.to.be.rejectedWith(BlError, /orderItem.amount "560" is not equal to item.price "500" - orderItem.discount "300" = "200"/);
 			});
 			
 			it('should resolve if a valid order is placed', () => {

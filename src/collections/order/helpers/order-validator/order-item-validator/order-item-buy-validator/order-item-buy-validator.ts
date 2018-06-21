@@ -46,22 +46,27 @@ export class OrderItemBuyValidator {
 	
 	private validateOrderItemPriceTypeBuy(orderItem: OrderItem, item: Item): boolean {
 		let price;
+		let discount = 0;
 		if (orderItem.discount) {
 			if (isNullOrUndefined(orderItem.discount.amount)) {
 				throw new BlError('orderItem.discount was set, but no discount.amount provided');
 			}
-			
+
+			discount = orderItem.discount.amount;
+
 			price = this.priceService.sanitize(item.price - orderItem.discount.amount);
-			
+
 		} else {
 			price = this.priceService.sanitize(item.price);
-			
+
 		}
 
 		let expectedPrice = this.priceService.round(price);
-		
+
+
+
 		if (orderItem.amount != expectedPrice) {
-			throw new BlError(`orderItem.amount "${orderItem.amount}" is not equal to item.price "${item.price}" - orderItem.discount "${orderItem.discount || 0}" = "${expectedPrice}" when type is "buy"`);
+			throw new BlError(`orderItem.amount "${orderItem.amount}" is not equal to item.price "${item.price}" - orderItem.discount "${discount}" = "${expectedPrice}" when type is "buy"`);
 		}
 		
 		return true;
