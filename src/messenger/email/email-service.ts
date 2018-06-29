@@ -77,7 +77,7 @@ export class EmailService implements MessengerService {
 		};
 
 		let passwordResetUri = (process.env.CLIENT_URI) ? process.env.CLIENT_URI : 'localhost:4200/#/';
-		passwordResetUri += EMAIL_SETTINGS.types.passwordReset + passwordResetCode;
+		passwordResetUri += EMAIL_SETTINGS.types.passwordReset.path + passwordResetCode;
 
 		this._emailHandler.sendPasswordReset(emailSetting, passwordResetUri).then((emailLog) => {
 
