@@ -1,6 +1,6 @@
 import {EmailHandler, EmailLog} from "@wizardcoder/bl-email";
 import {OrderItemType} from "@wizardcoder/bl-model/dist/order/order-item/order-item-type";
-import {Delivery, Order, OrderItem, Payment, UserDetail, BlError} from "@wizardcoder/bl-model";
+import {Delivery, Order, OrderItem, Payment, UserDetail, BlError, CustomerItem, Branch} from "@wizardcoder/bl-model";
 import {EMAIL_SETTINGS} from "../email-settings";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {paymentSchema} from "../../../collections/payment/payment.schema";
@@ -11,6 +11,8 @@ import {EmailUser} from "@wizardcoder/bl-email/dist/ts/template/email-user";
 import {isNullOrUndefined} from "util";
 import {DibsEasyPayment} from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import moment = require("moment");
+import {branchItemSchema} from "../../../collections/branch-item/branch-item.schema";
+import {branchSchema} from "../../../collections/branch/branch.schema";
 
 
 export class OrderEmailHandler {
@@ -18,10 +20,17 @@ export class OrderEmailHandler {
 	private standardDayFormat = 'DD.MM.YYYY';
 	private standardTimeFormat = 'DD.MM.YYYY HH.mm.ss';
 	private localeSetting = 'nb';
+	private noPaymentNoticeText = 'Dette er kun en reservasjon, du har ikke betalt enda. Du betaler først når du kommer til oss på stand.';
+	private agreementTextBlock = 'Vedlagt i denne mailen ligger en kontrakt som du trenger å skrive under på for å få leid bøkene. Kontrakten må du ha med deg når du kommer til oss på stand.'
+	private guardianTextBlock = ''
 
-	constructor(private _emailHandler: EmailHandler, private _deliveryStorage?: BlDocumentStorage<Delivery>, private _paymentStorage?: BlDocumentStorage<Payment>) {
+	constructor(private _emailHandler: EmailHandler,
+				private _deliveryStorage?: BlDocumentStorage<Delivery>,
+				private _paymentStorage?: BlDocumentStorage<Payment>,
+				private _branchStorage?: BlDocumentStorage<Branch>) {
 		this._deliveryStorage = (_deliveryStorage) ? _deliveryStorage : new BlDocumentStorage('deliveries', deliverySchema);
 		this._paymentStorage = (_paymentStorage) ? _paymentStorage : new BlDocumentStorage('payments', paymentSchema);
+		this._branchStorage = (_branchStorage) ? _branchStorage : new BlDocumentStorage('branches', branchSchema);
 	}
 
 	public async sendOrderReceipt(customerDetail: UserDetail, order: Order): Promise<EmailLog> {
@@ -32,17 +41,79 @@ export class OrderEmailHandler {
 			userId: customerDetail.id
 		};
 
+
+		let withAgreement: boolean = await this.shouldSendAgreement(order, customerDetail, order.branch);
+
+
 		let emailOrder: EmailOrder = await this.orderToEmailOrder(order);
 
 		let emailUser: EmailUser = {
 			id: customerDetail.id,
-			dob: customerDetail.dob.toString(),
+			dob: (!isNullOrUndefined(customerDetail.dob)) ? moment(customerDetail.dob).format(this.standardDayFormat) : '',
 			name: customerDetail.name,
 			email: customerDetail.email,
 			address: customerDetail.address,
 		};
 
-		return this._emailHandler.sendOrderReceipt(emailSetting, emailOrder, emailUser);
+		if (withAgreement) {
+			this.sendToGuardianIfUserIsUnder18(customerDetail, emailOrder, emailUser);
+
+			emailSetting.textBlocks = [{text: this.agreementTextBlock }]
+		}
+
+		if (!withAgreement) { // if the branch is not responsible
+			if (this.paymentNeeded(order)) {
+				this.addNoPaymentProvidedNotice(emailSetting)
+			}
+		}
+
+		return this._emailHandler.sendOrderReceipt(emailSetting, emailOrder, emailUser, withAgreement);
+	}
+
+	private paymentNeeded(order: Order): boolean {
+		if (order.amount > 0) {
+			if (isNullOrUndefined(order.payments) || order.payments.length <= 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private addNoPaymentProvidedNotice(emailSetting: EmailSetting) {
+		if (isNullOrUndefined(emailSetting.textBlocks)) {
+			emailSetting.textBlocks = [];
+		}
+
+		emailSetting.textBlocks.push({
+			text: this.noPaymentNoticeText,
+			warning: true
+		});
+	}
+
+	private sendToGuardianIfUserIsUnder18(customerDetail: UserDetail, emailOrder: EmailOrder, emailUser: EmailUser) {
+		if (moment(customerDetail.dob).isValid()) {
+			if (moment(customerDetail.dob).isAfter(moment(new Date()).subtract(18, 'years'))) {
+				if (customerDetail.guardian && customerDetail.guardian.email) {
+
+					const emailSetting: EmailSetting = {
+						toEmail: customerDetail.guardian.email,
+						fromEmail: EMAIL_SETTINGS.types.receipt.fromEmail,
+						subject: EMAIL_SETTINGS.types.receipt.subject,
+						userId: customerDetail.id
+					};
+
+					emailSetting.textBlocks = [{text: 'Du får denne e-posten fordi du er oppgitt som foresatt til ' + customerDetail.name + '. Vær vennlig å skriv under på kontrakten som' +
+						' ligger vedlagt og la eleven levere denne når bøkene skal leveres ut. Eleven vil ikke kunne hente ut bøker uten underskrift fra foresatt.'}];
+
+					this._emailHandler.sendOrderReceipt(emailSetting, emailOrder, emailUser, true).then(() => {
+
+					}).catch(() => {
+
+					})
+
+				}
+			}
+		}
 	}
 
 	private async orderToEmailOrder(order: Order): Promise<any> {
@@ -167,7 +238,7 @@ export class OrderEmailHandler {
 			taxAmount: (!isNullOrUndefined(payment.taxAmount)) ? payment.taxAmount.toString() : null,
 			paymentId: '',
 			status: this.translatePaymentConfirmed(),
-			creationTime: (!isNullOrUndefined(payment.creationTime)) ? moment(payment.creationTime.toString()).format(this.standardTimeFormat) : null
+			creationTime: (!isNullOrUndefined(payment.creationTime)) ? moment(payment.creationTime).format(this.standardTimeFormat) : null
 		};
 
 		if (payment.method === 'dibs') {
@@ -282,5 +353,36 @@ export class OrderEmailHandler {
 
 
 		return orderItemType;
+	}
+
+	private shouldSendAgreement(order: Order, customerDetail: UserDetail, branchId: string): Promise<boolean> {
+		let rentFound = false;
+		for (let orderItem of order.orderItems) {
+			if (orderItem.type === 'rent') {
+				rentFound = true;
+				break;
+			}
+		}
+
+		if (!rentFound) {
+			return Promise.resolve(false);
+		}
+
+
+		if (customerDetail.dob) {
+			if (moment(customerDetail.dob).isValid()) {
+				if (moment(customerDetail.dob).isAfter(moment(new Date()).subtract(18, 'years'))) {
+					return Promise.resolve(true); // the user is under the age of 18
+				}
+			}
+		}
+
+		return this._branchStorage.get(branchId).then((branch: Branch) => {
+			return (branch.paymentInfo.responsible);
+		}).catch((getBranchError: BlError) => {
+			throw new BlError('could not get branch').add(getBranchError);
+		})
+
+
 	}
 }

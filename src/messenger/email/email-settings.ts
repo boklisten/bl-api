@@ -3,17 +3,17 @@
 export const EMAIL_SETTINGS = {
 	types: {
 		receipt: {
-			fromEmail: 'noreply@boklisten.co',
-			subject: 'Receipt from Boklisten.co'
+			fromEmail: 'ikkesvar@boklisten.no',
+			subject: 'Kvittering fra Boklisten.no'
 		},
 		emailConfirmation: {
-			fromEmail: 'noreply@boklisten.co',
-			subject: 'Confirm your email at Boklisten.co',
+			fromEmail: 'ikkesvar@boklisten.no',
+			subject: 'Bekreft e-posten din hos Boklisten.no',
 			path: 'auth/email/confirm/'
 		},
 		passwordReset: {
-			fromEmail: 'noreply@boklisten.co',
-			subject: 'Reset your password at Boklisten.co',
+			fromEmail: 'ikkesvar@boklisten.no',
+			subject: 'Tilbakestill passordet hos Boklisten.no',
 			path: 'auth/reset/'
 		}
 	}

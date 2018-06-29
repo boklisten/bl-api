@@ -19,7 +19,8 @@ export class EmailService implements MessengerService {
 		this._emailHandler = (emailHandler) ? emailHandler : new EmailHandler({
 			sendgrid: {
 				apiKey: process.env.SENDGRID_API_KEY
-			}
+			},
+			locale: 'nb'
 		});
 
 		this._orderEmailHandler = new OrderEmailHandler(this._emailHandler);

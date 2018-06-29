@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {BlError, Delivery, Order, OrderItem, Payment, UserDetail} from '@wizardcoder/bl-model';
+import {BlError, Branch, Delivery, Order, OrderItem, Payment, UserDetail} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {OrderEmailHandler} from "./order-email-handler";
 import {EmailHandler, EmailLog, EmailTemplateInput} from "@wizardcoder/bl-email";
@@ -21,10 +21,11 @@ describe('OrderEmailHandler', () => {
 	let emailSendSuccessful: boolean;
 	let standardTimeFormat = 'DD.MM.YYYY HH.mm.ss';
 	let standardDayFormat = 'DD.MM.YYYY';
+	const branchStorage = new BlDocumentStorage<Branch>('branches');
 	const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
 	const paymentStorage = new BlDocumentStorage<Payment>('payments');
 	const emailHandler = new EmailHandler({sendgrid: {apiKey: 'someKey'}});
-	const orderEmailHandler = new OrderEmailHandler(emailHandler, deliveryStorage, paymentStorage);
+	const orderEmailHandler = new OrderEmailHandler(emailHandler, deliveryStorage, paymentStorage, branchStorage);
 
 	sinon.stub(deliveryStorage, 'get').callsFake((id: string) => {
 		if (id !== testDelivery.id) {
@@ -34,6 +35,9 @@ describe('OrderEmailHandler', () => {
 		return Promise.resolve(testDelivery);
 	});
 
+	let branchStorageGetStub = sinon.stub(branchStorage, 'get').returns(Promise.resolve({paymentInfo: {responsible: false}}));
+
+
 	let paymentStorageStub = sinon.stub(paymentStorage, 'get').callsFake((id: string) => {
 		if (id !== testPayment.id) {
 			return Promise.reject(new BlError('payment not found'));
@@ -42,11 +46,10 @@ describe('OrderEmailHandler', () => {
 		return Promise.resolve(testPayment);
 	});
 
-	let sendOrderReceiptStub = sinon.stub(emailHandler, 'sendOrderReceipt').callsFake((emailTemplateInput: EmailTemplateInput) => {
+	let sendOrderReceiptStub = sinon.stub(emailHandler, 'sendOrderReceipt').callsFake(() => {
 		if (!emailSendSuccessful) {
 			return Promise.reject(new Error('could not send email'));
 		}
-
 
 		return Promise.resolve(true);
 	});
@@ -66,7 +69,116 @@ describe('OrderEmailHandler', () => {
 		});
 
 		context('emailHandler.sendOrderReceipt: emailSetting argument', () => {
+			context('when one of the items have type rent', () => {
 
+				beforeEach(() => {
+					testOrder.orderItems = [
+						{
+							title: 'Some cool title',
+							amount: 100,
+							type: 'rent',
+							info: {
+								to: new Date()
+							}
+						} as OrderItem
+					];
+
+					testOrder.amount = testOrder.orderItems[0].amount;
+					testOrder.branch = 'branchThatIsResponsible';
+
+				});
+
+				context('when user is under the age of 18', () => {
+					let ages = [
+						moment(new Date()).subtract(16, 'year').toDate(),
+						moment(new Date()).subtract(1, 'day').toDate(),
+						moment(new Date()).subtract(12, 'year').toDate(),
+						moment(new Date()).subtract(18, 'year').add(1, 'day').toDate()
+					];
+
+					for (let age of ages) {
+						it('should set withAgreement to true when user dob is ' + moment(age).format('DD.MM.YY'), (done) => {
+							testCustomerDetail.dob = age;
+
+							orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder).then(() => {
+								let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
+								let withAgreement = sendOrderReceiptArguments[3];
+
+								expect(withAgreement).to.be.true;
+
+								done();
+							}).catch((err) => {
+								done(err);
+							})
+						});
+					}
+				});
+
+
+				it('should set withAgreement to true when branch.responsible is set to true', (done) => {
+					branchStorageGetStub.withArgs(testOrder.branch).returns(Promise.resolve({paymentInfo: {responsible: true}}));
+
+					orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder).then(() => {
+						let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
+						let withAgreement = sendOrderReceiptArguments[3];
+
+						expect(withAgreement).to.be.true;
+
+						done();
+					}).catch((err) => {
+						done(err);
+					});
+				});
+
+				it('should send email to guardian if withAgreement is set and user is under 18', (done) => {
+					//this ensures that with agreement is set to true
+					branchStorageGetStub.withArgs(testOrder.branch).returns(Promise.resolve({paymentInfo: {responsible: true}}));
+					testCustomerDetail.dob = moment(new Date()).subtract(16, 'year').toDate(),
+
+					orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder).then(() => {
+						let sendOrderReceiptArguments = sendOrderReceiptStub.getCalls();
+
+						let guardianEmailSetting = sendOrderReceiptArguments[sendOrderReceiptStub.getCalls().length - 2].args[0]; // the next to last call should be to the guardian
+
+						expect(guardianEmailSetting.toEmail).to.be.eq(testCustomerDetail.guardian.email);
+
+						done();
+					}).catch((err) => {
+						done(err);
+					});
+
+				});
+			});
+
+			context('when none of the items have type rent', () => {
+				beforeEach(() => {
+					testOrder.orderItems = [
+						{
+							title: 'Some cool title',
+							amount: 100,
+							type: 'buy',
+						} as OrderItem
+					];
+
+					testOrder.amount = testOrder.orderItems[0].amount;
+				});
+
+				it('should not have withAgreement set to true even if user is under age of 18', (done) => {
+					testCustomerDetail.dob = moment(new Date()).subtract(12, 'year').toDate();
+
+
+					orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder).then(() => {
+						let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
+						let withAgreement = sendOrderReceiptArguments[3];
+
+						expect(withAgreement).to.be.false;
+
+						done();
+					}).catch((err) => {
+						done(err);
+					});
+				});
+			});
 		});
 
 		context('emailHandler.sendOrderReceipt: emailOrder argument', () => {
@@ -428,10 +540,15 @@ describe('OrderEmailHandler', () => {
 		testCustomerDetail = {
 			id: 'customer1',
 			email: 'customer@test.com',
-			dob: new Date(2000, 1, 1),
+			dob: new Date(1993, 1, 1),
 			address: 'Traktorveien 10 D',
 			postCity: 'Trondheim',
-			postCode: '7070'
+			postCode: '7070',
+			guardian: {
+				email: 'guardian@boklisten.co',
+				name: 'Guardian McGuardiface',
+				phone: '12345678'
+			}
 		} as UserDetail;
 
 		testDelivery = {
