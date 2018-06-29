@@ -99,8 +99,10 @@ export class OrderEmailHandler {
 						toEmail: customerDetail.guardian.email,
 						fromEmail: EMAIL_SETTINGS.types.receipt.fromEmail,
 						subject: EMAIL_SETTINGS.types.receipt.subject,
-						userId: customerDetail.id
+						userId: customerDetail.id,
+						userFullName: customerDetail.guardian.name
 					};
+
 
 					emailSetting.textBlocks = [{text: 'Du får denne e-posten fordi du er oppgitt som foresatt til ' + customerDetail.name + '. Vær vennlig å skriv under på kontrakten som' +
 						' ligger vedlagt og la eleven levere denne når bøkene skal leveres ut. Eleven vil ikke kunne hente ut bøker uten underskrift fra foresatt.'}];
