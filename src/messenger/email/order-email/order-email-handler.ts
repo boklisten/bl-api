@@ -48,8 +48,8 @@ export class OrderEmailHandler {
 	private async orderToEmailOrder(order: Order): Promise<any> {
 		let emailOrder: EmailOrder = {
 			id: order.id,
-			showDeadline: true,
-			showPrice: false,
+			showDeadline: this.shouldShowDeadline(order),
+			showPrice: (order.amount !== 0),
 			showStatus: true,
 			itemAmount: order.amount.toString(),
 			totalAmount: order.amount.toString(), // should include the totalAmount including the delivery amount
@@ -83,6 +83,15 @@ export class OrderEmailHandler {
 
 		return Promise.resolve(emailOrder);
 
+	}
+
+	private shouldShowDeadline(order: Order) {
+		for (let orderItem of order.orderItems) {
+			if (orderItem.type === 'rent' || orderItem.type === 'extend') {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private extractEmailOrderPaymentFromOrder(order: Order): Promise<{payment: any, showPayment: boolean}> {

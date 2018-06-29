@@ -65,6 +65,10 @@ describe('OrderEmailHandler', () => {
 				.to.be.fulfilled;
 		});
 
+		context('emailHandler.sendOrderReceipt: emailSetting argument', () => {
+
+		});
+
 		context('emailHandler.sendOrderReceipt: emailOrder argument', () => {
 
 			it('should have item amount equal to order.amount', (done) => {
@@ -82,6 +86,55 @@ describe('OrderEmailHandler', () => {
 					done(err);
 				});
 			});
+
+			it('should have showPrice set to true when order.amount is not 0', (done) => {
+				let expectedAmount = '120';
+				testOrder.amount = parseInt(expectedAmount);
+
+				orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder).then(() => {
+					let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
+					let emailOrder = sendOrderReceiptArguments[1];
+
+					expect(emailOrder.showPrice).to.be.eq(true);
+
+					done();
+				}).catch((err) => {
+					done(err);
+				});
+			});
+
+			it('should have showDedline set to false if none of the items has type rent or extend', (done) => {
+				testOrder.orderItems = [
+					{
+						title: 'Det vet da fåglarna',
+						amount: 100,
+						type: 'cancel',
+					} as OrderItem,
+					{
+						title: 'Jokko mokko',
+						amount: 100,
+						type: 'return',
+					} as OrderItem,
+
+				];
+
+				testOrder.amount = testOrder.orderItems[0].amount + testOrder.orderItems[1].amount;
+				testOrder.delivery = null;
+				testPayment.amount = testOrder.amount;
+
+				orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder).then(() => {
+					let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
+					let emailOrder = sendOrderReceiptArguments[1];
+
+					expect(emailOrder.showDeadline).to.be.false;
+
+					done();
+				}).catch((err) => {
+					done(err);
+				})
+			});
+
+
 
 			it('should display item.amount if order.orderItem.amount is more than 0', (done) => {
 				testOrder.orderItems = [
