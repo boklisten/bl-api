@@ -61,10 +61,9 @@ export class OrderEmailHandler {
 			emailSetting.textBlocks = [{text: this.agreementTextBlock }]
 		}
 
-		if (!withAgreement) { // if the branch is not responsible
-			if (this.paymentNeeded(order)) {
-				this.addNoPaymentProvidedNotice(emailSetting)
-			}
+
+		if (this.paymentNeeded(order)) {
+			this.addNoPaymentProvidedNotice(emailSetting)
 		}
 
 		return this._emailHandler.sendOrderReceipt(emailSetting, emailOrder, emailUser, withAgreement);
@@ -146,9 +145,8 @@ export class OrderEmailHandler {
 		emailOrder.showDelivery = emailOrderDelivery.showDelivery;
 		emailOrder.delivery = emailOrderDelivery.delivery;
 
-
 		if (emailOrder.delivery) {
-			emailOrder.totalAmount = order.amount + emailOrderDelivery.delivery['price'];
+			emailOrder.totalAmount = order.amount + emailOrderDelivery.delivery['amount'];
 		}
 
 		emailOrder.showPayment = emailOrderPayment.showPayment;
@@ -171,7 +169,6 @@ export class OrderEmailHandler {
 		if (isNullOrUndefined(order.payments) || order.payments.length <= 0) {
 			return Promise.resolve({payment: null, showPayment: false});
 		}
-
 
 		let paymentPromiseArr: Promise<Payment>[] = [];
 
@@ -298,7 +295,8 @@ export class OrderEmailHandler {
 		}
 		return {
 			method: delivery.method,
-			price: delivery.amount,
+			currency: this.defaultCurrency,
+			amount: delivery.amount,
 			address: deliveryAddress,
 			estimatedDeliveryDate: (delivery.info['estimatedDelivery']) ? moment(delivery.info['estimatedDelivery']).format(this.standardDayFormat) : ''
 		}
@@ -357,7 +355,7 @@ export class OrderEmailHandler {
 		return orderItemType;
 	}
 
-	private shouldSendAgreement(order: Order, customerDetail: UserDetail, branchId: string): Promise<boolean> {
+	private async shouldSendAgreement(order: Order, customerDetail: UserDetail, branchId: string): Promise<boolean> {
 		let rentFound = false;
 		for (let orderItem of order.orderItems) {
 			if (orderItem.type === 'rent') {
@@ -379,12 +377,18 @@ export class OrderEmailHandler {
 			}
 		}
 
+		try {
+			return await this.isBranchResponsible(branchId);
+		} catch (e) {
+			throw e;
+		}
+	}
+
+	private isBranchResponsible(branchId: string): Promise<boolean> {
 		return this._branchStorage.get(branchId).then((branch: Branch) => {
 			return (branch.paymentInfo.responsible);
 		}).catch((getBranchError: BlError) => {
 			throw new BlError('could not get branch').add(getBranchError);
 		})
-
-
 	}
 }

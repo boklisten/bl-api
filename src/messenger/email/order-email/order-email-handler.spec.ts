@@ -215,7 +215,7 @@ describe('OrderEmailHandler', () => {
 				});
 			});
 
-			it('should have showDedline set to false if none of the items has type rent or extend', (done) => {
+			it('should have showDeadline set to false if none of the items has type rent or extend', (done) => {
 				testOrder.orderItems = [
 					{
 						title: 'Det vet da fåglarna',
@@ -393,7 +393,8 @@ describe('OrderEmailHandler', () => {
 
 					expect(emailOrder.delivery).to.be.eql({
 						method: testDelivery.method,
-						price: testDelivery.amount,
+						amount: testDelivery.amount,
+						currency: 'NOK',
 						address: expectedAddress,
 						estimatedDeliveryDate: moment(testDelivery.info['estimatedDelivery']).format('DD.MM.YYYY')
 					});
