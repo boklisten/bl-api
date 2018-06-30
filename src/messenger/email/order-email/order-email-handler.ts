@@ -123,6 +123,7 @@ export class OrderEmailHandler {
 			showDeadline: this.shouldShowDeadline(order),
 			showPrice: (order.amount !== 0),
 			showStatus: true,
+			currency: this.defaultCurrency,
 			itemAmount: order.amount.toString(),
 			totalAmount: order.amount.toString(), // should include the totalAmount including the delivery amount
 			items: this.orderItemsToEmailItems(order.orderItems),
