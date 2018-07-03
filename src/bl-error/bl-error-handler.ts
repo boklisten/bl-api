@@ -65,13 +65,15 @@ export class BlErrorHandler {
 				logger.debug('\t' + 'key: ' + storeData.key)
 				let data: any = '';
 
-				data = JSON.stringify(storeData.value);
 
+				logger.debug('\t' + 'value: ' + storeData.value);
+				/*
+				console.log('store: ', blError.getStore());
 				if (Object.getOwnPropertyNames(data).length <= 0 || data === '{}') {
 					data = storeData.value;
 				}
+				*/
 
-				logger.debug('\t' + 'value: ', data);
 			}
 		}
 
