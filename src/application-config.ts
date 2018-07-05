@@ -95,5 +95,11 @@ export const APP_CONFIG = {
 	},
 	date: {
 		cancelDays: 14
+	},
+	payment: {
+		paymentServiceConfig: {
+			roundDown: true,
+			roundUp: false
+		}
 	}
 };

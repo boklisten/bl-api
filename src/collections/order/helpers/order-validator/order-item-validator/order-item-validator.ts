@@ -52,7 +52,6 @@ export class OrderItemValidator {
 			if (e instanceof BlError) {
 				return Promise.reject(e);
 			}
-			console.log('the err', e);
 			return Promise.reject(new BlError('unknown error, orderItem could not be validated').store('error', e));
 		}
 	}

@@ -45,6 +45,15 @@ export let orderSchema = {
 					type: Schema.Types.Mixed,
 					required: false
 				},
+				movedFromOrder: {
+					type: Schema.Types.ObjectId,
+					required: false
+				},
+				movedToOrder: {
+					type: Schema.Types.ObjectId,
+					required: false
+
+				},
 				discount: {
 					type: {
 						amount: {

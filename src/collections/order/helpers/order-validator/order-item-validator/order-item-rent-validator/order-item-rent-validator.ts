@@ -1,18 +1,26 @@
 
-import {Branch, OrderItem, Item, BlError} from '@wizardcoder/bl-model';
+import {Branch, OrderItem, Item, BlError, Order} from '@wizardcoder/bl-model';
 import {isNullOrUndefined} from "util";
 import {PriceService} from "../../../../../../price/price.service";
+import {BlDocumentStorage} from "../../../../../../storage/blDocumentStorage";
+import {orderSchema} from "../../../../order.schema";
+import {OrderItemRentPeriodValidator} from "./order-item-rent-period-validator/order-item-rent-period-validator";
 
 export class OrderItemRentValidator {
 	private priceService: PriceService;
+	private orderItemRentPeriodValidator: OrderItemRentPeriodValidator;
 	
-	constructor() {
+	constructor(private _orderStorage?: BlDocumentStorage<Order>, ) {
 		this.priceService = new PriceService({roundDown: true});
+		this._orderStorage = (_orderStorage) ? _orderStorage : new BlDocumentStorage('orders', orderSchema);
+		this.orderItemRentPeriodValidator = new OrderItemRentPeriodValidator();
 	}
 	
 	public async validate(branch: Branch, orderItem: OrderItem, item: Item): Promise<boolean> {
+		console.log('the order item', orderItem);
 		try {
-			await this.validateOrderItemPriceTypeRent(orderItem, item, branch);
+			await this.validateOrderItemInfoFields(orderItem);
+			await this.orderItemRentPeriodValidator.validate(orderItem, branch.paymentInfo, item.price);
 			return Promise.resolve(true);
 		} catch (e) {
 			if (e instanceof BlError) {
@@ -21,49 +29,11 @@ export class OrderItemRentValidator {
 			return Promise.reject(new BlError('unkown error, could not validate orderItem type rent').store('error', e));
 		}
 	}
-	
-	private validateOrderItemPriceTypeRent(orderItem: OrderItem, item: Item, branch: Branch): boolean {
-		this.validateOrderItemInfoFields(orderItem);
 
-		if (isNullOrUndefined(branch.paymentInfo.rentPeriods)) {
-			throw new BlError('branch.paymentInfo.rentPeriods is undefined');
-		}
-		
-		if (branch.paymentInfo.responsible) {
-			if (orderItem.amount !== 0) {
-				throw new BlError(`orderItem.amount is "${orderItem.amount}" when branch.paymentInfo.responsible is true`);
-			}
-			return true;
-		}
-		
-		for (let rentPeriod of branch.paymentInfo.rentPeriods) {
-			if (rentPeriod.type === orderItem.info.periodType) {
-				let rentalPrice;
-				
-				if (orderItem.discount) {
-					rentalPrice = this.priceService.sanitize((item.price * rentPeriod.percentage) - orderItem.discount.amount);
-				} else {
-					rentalPrice = this.priceService.sanitize(item.price * rentPeriod.percentage);
-				}
-
-				let expectedAmount = this.priceService.round(rentalPrice);
-
-				if (orderItem.amount !== expectedAmount) {
-					throw new BlError(`orderItem.amount "${orderItem.amount}" is not equal to the rental price "${expectedAmount}"`);
-				}
-				
-				return true;
-			}
-		}
-		
-		throw new BlError(`orderItem.info.periodType "${orderItem.info.periodType}" is not valid on branch`);
-	}
-	
 	private validateOrderItemInfoFields(orderItem: OrderItem): boolean {
 		if (isNullOrUndefined(orderItem.info)) {
 			throw new BlError('orderItem.info is not set when orderItem.type is "rent"');
 		}
 		return true;
 	}
-	
 }
