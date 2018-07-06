@@ -17,7 +17,6 @@ export class OrderItemRentValidator {
 	}
 	
 	public async validate(branch: Branch, orderItem: OrderItem, item: Item): Promise<boolean> {
-		console.log('the order item', orderItem);
 		try {
 			await this.validateOrderItemInfoFields(orderItem);
 			await this.orderItemRentPeriodValidator.validate(orderItem, branch.paymentInfo, item.price);
@@ -26,7 +25,7 @@ export class OrderItemRentValidator {
 			if (e instanceof BlError) {
 				return Promise.reject(e);
 			}
-			return Promise.reject(new BlError('unkown error, could not validate orderItem type rent').store('error', e));
+			return Promise.reject(new BlError('unknown error, could not validate orderItem type rent').store('error', e));
 		}
 	}
 

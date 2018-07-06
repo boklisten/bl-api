@@ -66,13 +66,18 @@ export class OrderPlacedHandler {
 		return new Promise((resolve, reject) => {
 			this.userDetailStorage.get(order.customer).then((userDetail: UserDetail) => {
 				let orders = (userDetail.orders) ? userDetail.orders : [];
-				orders.push(order.id);
-				
-				this.userDetailStorage.update(order.customer, {orders: orders}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedUserDetail: UserDetail) => {
-					resolve(true);
-				}).catch((updateUserDetailError: BlError) => {
-					reject(new BlError('could not update userDetail with placed order'));
-				});
+				if (orders.indexOf(order.id) <= -1) {
+					orders.push(order.id);
+
+					this.userDetailStorage.update(order.customer, {orders: orders}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedUserDetail: UserDetail) => {
+						resolve(true);
+					}).catch((updateUserDetailError: BlError) => {
+						reject(new BlError('could not update userDetail with placed order'));
+					});
+				} else {
+					reject(new BlError('the order was already in userDetails'));
+				}
+
 
 			}).catch((getUserDetailError: BlError) => {
 				reject(new BlError(`customer "${order.customer}" not found`).add(getUserDetailError));
