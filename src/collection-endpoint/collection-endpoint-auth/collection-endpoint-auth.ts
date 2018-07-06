@@ -2,6 +2,7 @@ import {BlEndpointRestriction} from "../../collections/bl-collection";
 import {AccessToken, BlError} from "@wizardcoder/bl-model";
 import * as passport from "passport";
 import {NextFunction, Request, Response} from "express";
+import {isNullOrUndefined} from "util";
 
 
 export class CollectionEndpointAuth {
@@ -9,7 +10,7 @@ export class CollectionEndpointAuth {
 
 	public authenticate(restriction: BlEndpointRestriction, req: Request, res: Response, next: NextFunction): Promise<AccessToken | boolean> {
 		return new Promise((resolve, reject) => {
-			if (restriction) { // it is a restriction on this endpoint and authentication is required
+			if (restriction || !isNullOrUndefined(req.headers['authorization'])) { // it is a restriction on this endpoint and authentication is required, also try if there are sent with a auth header
 				passport.authenticate(this._authStrategy, (err, tokens: { accessToken: AccessToken }, info) => {
 					try {
 						this.validateAuth(restriction, tokens.accessToken);
