@@ -44,18 +44,22 @@ export class DeliveryPostHook extends Hook {
 		let delivery = deliveries[0];
 		return new Promise((resolve, reject) => {
 			this.orderStorage.get(delivery.order).then((order: Order) => {
+
 				this.deliveryValidator.validate(delivery, order).then(() => {
 
 					this.deliveryHandler.updateOrderBasedOnMethod(delivery, order, accessToken).then((updatedDelivery: Delivery) => {
 						return resolve([updatedDelivery]);
 					}).catch((blError: BlError) => {
+						console.log('update order based on method error', blError);
 						return reject(blError);
 					});
 
 				}).catch((blError: BlError) => {
+					console.log('validate delivery error', blError)
 					return reject(blError);
 				});
 			}).catch((blError: BlError) => {
+				console.log('get order error', blError);
 				return reject(blError);
 			});
 		});

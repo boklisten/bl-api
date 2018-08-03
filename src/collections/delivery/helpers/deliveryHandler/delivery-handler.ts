@@ -103,14 +103,17 @@ export class DeliveryHandler {
 
 					this.deliveryStorage.update(delivery.id, {amount: amount, info: deliveryInfoBring}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedDelivery: Delivery) => {
 						resolve(updatedDelivery);
-					}).catch((blError: BlError) => {
-						reject(blError);
+					}).catch((updateDeliveryError: BlError) => {
+						console.log('update delivery error', updateDeliveryError)
+						reject(updateDeliveryError);
 					})
 
 				}).catch((getBranchError: BlError) => {
+					console.log('get branch error', getBranchError);
 					reject(getBranchError);
 				});
 			}).catch((blError) => {
+				console.log('get bring delivery info error', blError);
 		    	reject(blError);
 			})
 		});
