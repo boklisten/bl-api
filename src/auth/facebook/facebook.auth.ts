@@ -23,7 +23,7 @@ export class FacebookAuth {
 		passport.use(new Strategy({
 				clientID: process.env.FACEBOOK_CLIENT_ID,
 				clientSecret: process.env.FACEBOOK_SECRET,
-				callbackURL: this.apiPath.createPath('auth/facebook/callback'),
+				callbackURL: process.env.BL_API_URI + this.apiPath.createPath('auth/facebook/callback'),
 				profileFields: ['id', 'email', 'name'],
 				enableProof: true
 			},
@@ -85,12 +85,12 @@ export class FacebookAuth {
 
 	private createAuthGet(router: Router) {
 		router.get(this.apiPath.createPath('auth/facebook'),
-			passport.authenticate('facebook', {scope: ['public_profile', 'email']}));
+			passport.authenticate(APP_CONFIG.login.facebook.name, {scope: ['public_profile', 'email']}));
 	}
 
 	private createCallbackGet(router: Router) {
 		router.get(this.apiPath.createPath('auth/facebook/callback'),
-			passport.authenticate('facebook', { failureRedirect: process.env.CLIENT_URI + APP_CONFIG.path.client.auth.socialLoginFailure}),
+			passport.authenticate(APP_CONFIG.login.facebook.name, { failureRedirect: process.env.CLIENT_URI + APP_CONFIG.path.client.auth.socialLoginFailure}),
 			(req: any, res: any) => {
 				this.resHandler.sendAuthTokens(res, req.user.accessToken, req.user.refreshToken);
 			});
