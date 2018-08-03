@@ -25,7 +25,7 @@ export class GoogleAuth {
 			clientID: process.env.GOOGLE_CLIENT_ID,
 			clientSecret: process.env.GOOGLE_SECRET,
 			passReqToCallback: true,
-			callbackURL: this.apiPath.createPath('auth/google/callback')
+			callbackURL: process.env.BL_API_URI + this.apiPath.createPath('auth/google/callback')
 		},
 		(req, accessToken: any, refreshToken: any, profile: any, done: any) => {
 			let provider = blConfig.APP_CONFIG.login.google.name;
@@ -90,7 +90,7 @@ export class GoogleAuth {
 
 	private createAuthGet(router: Router) {
 		router.get(this.apiPath.createPath('auth/google'),
-			passport.authenticate('google', {scope: ['profile', 'email'] })
+			passport.authenticate(blConfig.APP_CONFIG.login.google.name, {scope: ['profile', 'email'] })
 		);
 	}
 
