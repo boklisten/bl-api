@@ -67,6 +67,14 @@ export class Server {
 			next();
 		};
 
+		this.app.get('*', (req, res, next) => {
+			if (req.headers['x-forwarded-proto'] !== 'https' && process.env.NODE_ENV === 'production') {
+				res.redirect('https://' + req.hostname + req.url);
+			} else {
+				next();
+			}
+		});
+
 		this.app.use(debugLogPath);
 		this.initModules();
 		this.app.use(this.router);
