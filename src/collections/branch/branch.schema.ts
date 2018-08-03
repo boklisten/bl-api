@@ -67,6 +67,11 @@ export const branchSchema = {
 				default: false,
 				required: true
 			},
+			responsibleForDelivery: {
+				type: Schema.Types.Boolean,
+				default: false,
+				required: false
+			},
 			rentPeriods: {
 				type: [{
 					type: Schema.Types.String,

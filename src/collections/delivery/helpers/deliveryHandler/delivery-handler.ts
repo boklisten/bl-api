@@ -93,6 +93,7 @@ export class DeliveryHandler {
 	private getBringDeliveryInfoAndUpdateDelivery(order: Order, delivery: Delivery, items: Item[], accessToken: AccessToken): Promise<Delivery> {
 		return new Promise((resolve, reject) => {
 		    this.bringDeliveryService.getDeliveryInfoBring(delivery.info['facilityAddress'], delivery.info['shipmentAddress'], items).then((deliveryInfoBring: DeliveryInfoBring) => {
+
 		    	this.branchStorage.get(order.branch).then((branch: Branch) => {
 		    		let amount = deliveryInfoBring.amount;
 
