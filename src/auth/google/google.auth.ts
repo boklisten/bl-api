@@ -104,7 +104,8 @@ export class GoogleAuth {
 				}
 
 				if (tokens) {
-					return resHandler.sendAuthTokens(res, tokens.accessToken, tokens.refreshToken, req.headers.referer as string);
+					const refererPath = (req.headers.referer) ? req.headers.referer + '#/' : null;
+					return resHandler.sendAuthTokens(res, tokens.accessToken, tokens.refreshToken, refererPath);
 				}
 			})(req, res);
 		})

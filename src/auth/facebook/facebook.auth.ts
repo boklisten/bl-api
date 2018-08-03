@@ -92,7 +92,8 @@ export class FacebookAuth {
 		router.get(this.apiPath.createPath('auth/facebook/callback'),
 			passport.authenticate(APP_CONFIG.login.facebook.name, { failureRedirect: process.env.CLIENT_URI + APP_CONFIG.path.client.auth.socialLoginFailure}),
 			(req: any, res: any) => {
-				this.resHandler.sendAuthTokens(res, req.user.accessToken, req.user.refreshToken);
+				const refererPath = (req.headers.referer) ? req.headers.referer + '#/' : null;
+				this.resHandler.sendAuthTokens(res, req.user.accessToken, req.user.refreshToken, refererPath);
 			});
 	}
 
