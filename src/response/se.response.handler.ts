@@ -29,7 +29,7 @@ export class SEResponseHandler {
 			redirectUrl += process.env.CLIENT_URI;
 		}
 
-		redirectUrl +=  '#/auth/token;accessToken=' + accessToken + ';refreshToken=' + refreshToken;
+		redirectUrl +=  'auth/token;accessToken=' + accessToken + ';refreshToken=' + refreshToken;
 
 		res.redirect(redirectUrl);
 	}
