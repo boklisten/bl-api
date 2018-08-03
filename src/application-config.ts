@@ -101,5 +101,8 @@ export const APP_CONFIG = {
 			roundDown: true,
 			roundUp: false
 		}
+	},
+	delivery: {
+		deliveryDays: 7
 	}
 };

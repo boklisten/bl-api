@@ -125,7 +125,7 @@ export class BringDeliveryService {
 				if (expectedDelivery) {
 					let workingDays = expectedDelivery['WorkingDays'];
 					if (workingDays) {
-						deliveryInfoBring.estimatedDelivery = moment().add(workingDays, 'days').toDate();
+						deliveryInfoBring.estimatedDelivery = moment().add(parseInt(workingDays) + APP_CONFIG.delivery.deliveryDays, 'days').toDate();
 					}
 				}
 			}

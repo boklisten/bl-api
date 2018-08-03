@@ -1,23 +1,33 @@
 
 
-import {Delivery, Order, BlError, AccessToken, Item, DeliveryInfoBring} from '@wizardcoder/bl-model';
+import {Delivery, Order, BlError, AccessToken, Item, DeliveryInfoBring, Branch} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
 import {orderSchema} from "../../../order/order.schema";
 import {itemSchema} from "../../../item/item.schema";
 import {BringDeliveryService} from "../deliveryBring/bringDelivery.service";
 import {deliverySchema} from "../../delivery.schema";
+import {branchSchema} from "../../../branch/branch.schema";
 
 export class DeliveryHandler {
 	private orderStorage: BlDocumentStorage<Order>;
 	private itemStorage: BlDocumentStorage<Item>;
 	private bringDeliveryService: BringDeliveryService;
 	private deliveryStorage?: BlDocumentStorage<Delivery>;
+	private branchStorage?: BlDocumentStorage<Branch>;
 	
-	constructor(orderStorage?: BlDocumentStorage<Order>, itemStorage?: BlDocumentStorage<Item>, deliveryStorage?: BlDocumentStorage<Delivery>, bringDeliveryService?: BringDeliveryService) {
+	constructor(
+		orderStorage?: BlDocumentStorage<Order>,
+		branchStorage?: BlDocumentStorage<Branch>,
+		itemStorage?: BlDocumentStorage<Item>,
+		deliveryStorage?: BlDocumentStorage<Delivery>,
+		bringDeliveryService?: BringDeliveryService
+	) {
 		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage('orders', orderSchema);
 		this.itemStorage = (itemStorage) ? itemStorage : new BlDocumentStorage('items', itemSchema);
 		this.bringDeliveryService = (bringDeliveryService) ? bringDeliveryService : new BringDeliveryService();
 		this.deliveryStorage = (deliveryStorage) ? deliveryStorage : new BlDocumentStorage('deliveries', deliverySchema);
+		this.branchStorage = (branchStorage) ? branchStorage : new BlDocumentStorage('branches', branchSchema);
+
 	}
 	
 	public updateOrderBasedOnMethod(delivery: Delivery, order: Order, accessToken?: AccessToken): Promise<Delivery> {
@@ -41,7 +51,7 @@ export class DeliveryHandler {
 	private updateOrderWithDeliveryMethodBring(delivery: Delivery, order: Order, accessToken: AccessToken): Promise<Delivery> {
 		return new Promise((resolve, reject) => {
 		    this.fetchItems(order).then((items: Item[]) => {
-		    	this.getBringDeliveryInfoAndUpdateDelivery(delivery, items, accessToken).then((updatedDelivery: Delivery) => {
+		    	this.getBringDeliveryInfoAndUpdateDelivery(order, delivery, items, accessToken).then((updatedDelivery: Delivery) => {
 		    		this.updateOrder(order, updatedDelivery, accessToken).then(() => {
 		    			resolve(updatedDelivery);
 					}).catch((blError: BlError) => {
@@ -80,14 +90,25 @@ export class DeliveryHandler {
 		});
 	}
 	
-	private getBringDeliveryInfoAndUpdateDelivery(delivery: Delivery, items: Item[], accessToken: AccessToken): Promise<Delivery> {
+	private getBringDeliveryInfoAndUpdateDelivery(order: Order, delivery: Delivery, items: Item[], accessToken: AccessToken): Promise<Delivery> {
 		return new Promise((resolve, reject) => {
 		    this.bringDeliveryService.getDeliveryInfoBring(delivery.info['facilityAddress'], delivery.info['shipmentAddress'], items).then((deliveryInfoBring: DeliveryInfoBring) => {
-		    	this.deliveryStorage.update(delivery.id, {amount: deliveryInfoBring.amount, info: deliveryInfoBring}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedDelivery: Delivery) => {
-		    		resolve(updatedDelivery);
-				}).catch((blError: BlError) => {
-		    		reject(blError);
-				})
+		    	this.branchStorage.get(order.branch).then((branch: Branch) => {
+		    		let amount = deliveryInfoBring.amount;
+
+		    		if (branch.paymentInfo && branch.paymentInfo.responsibleForDelivery) {
+		    			amount = 0;
+					}
+
+					this.deliveryStorage.update(delivery.id, {amount: amount, info: deliveryInfoBring}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedDelivery: Delivery) => {
+						resolve(updatedDelivery);
+					}).catch((blError: BlError) => {
+						reject(blError);
+					})
+
+				}).catch((getBranchError: BlError) => {
+					reject(getBranchError);
+				});
 			}).catch((blError) => {
 		    	reject(blError);
 			})
