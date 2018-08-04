@@ -76,7 +76,7 @@ export class BringDeliveryService {
 	private createBringDelivery(facilityAddress: FacilityAddress, shipmentAddress: ShipmentAddress, items: Item[]): BringDelivery {
 		let bringDelivery: BringDelivery;
 
-		let totalWeight = 500;
+		let totalWeight = 0;
 
 		for (const item of items) {
 			if (item.info && item.info['weight']) {
@@ -84,6 +84,10 @@ export class BringDeliveryService {
 			} else {
 				totalWeight += 500;
 			}
+		}
+
+		if (totalWeight === 0) {
+			totalWeight = 500;
 		}
 		
 		bringDelivery = {

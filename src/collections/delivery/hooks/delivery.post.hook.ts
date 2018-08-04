@@ -50,16 +50,13 @@ export class DeliveryPostHook extends Hook {
 					this.deliveryHandler.updateOrderBasedOnMethod(delivery, order, accessToken).then((updatedDelivery: Delivery) => {
 						return resolve([updatedDelivery]);
 					}).catch((blError: BlError) => {
-						console.log('update order based on method error', blError);
 						return reject(blError);
 					});
 
 				}).catch((blError: BlError) => {
-					console.log('validate delivery error', blError)
 					return reject(blError);
 				});
 			}).catch((blError: BlError) => {
-				console.log('get order error', blError);
 				return reject(blError);
 			});
 		});
