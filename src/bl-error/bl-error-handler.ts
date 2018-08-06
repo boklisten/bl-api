@@ -33,6 +33,12 @@ export class BlErrorHandler {
 	}
 
 	private storeError(blError: BlError) {
+		if (blError && blError.getCode()) {
+			if (blError.getCode() === 909 || blError.getCode() === 910) { // if it is a accessToken or RefreshToken error, don't store
+				return;
+			}
+		}
+
 		this._errorLogStorage.add(new BlErrorLog(blError), {id: 'SYSTEM', permission: 'admin'}).then((addedErrorLog) => {
 
 		}).catch((blErrorAddError) => {
