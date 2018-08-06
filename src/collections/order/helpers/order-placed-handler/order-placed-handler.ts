@@ -17,24 +17,28 @@ import {userDetailSchema} from "../../../user-detail/user-detail.schema";
 import {EmailService} from "../../../../messenger/email/email-service";
 import {deliverySchema} from "../../../delivery/delivery.schema";
 import {Messenger} from "../../../../messenger/messenger";
+import {CustomerItemHandler} from "../../../customer-item/helpers/customer-item-handler";
 
 export class OrderPlacedHandler {
 	private customerItemStorage: BlDocumentStorage<CustomerItem>;
 	private orderStorage: BlDocumentStorage<Order>;
 	private paymentHandler: PaymentHandler;
 	private userDetailStorage: BlDocumentStorage<UserDetail>;
+	private _customerItemHandler: CustomerItemHandler;
 	private _messenger: Messenger;
 	
 	constructor(customerItemStorage?: BlDocumentStorage<CustomerItem>,
 				orderStorage?: BlDocumentStorage<Order>,
 				paymentHandler?: PaymentHandler,
 				userDetailStorage?: BlDocumentStorage<UserDetail>,
-				messenger?: Messenger) {
+				messenger?: Messenger,
+				customerItemHandler?: CustomerItemHandler) {
 		this.customerItemStorage = (customerItemStorage) ? customerItemStorage : new BlDocumentStorage('customeritems', customerItemSchema);
 		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage('orders', orderSchema);
 		this.paymentHandler = (paymentHandler) ? paymentHandler : new PaymentHandler();
 		this.userDetailStorage = (userDetailStorage) ? userDetailStorage : new BlDocumentStorage('userdetails', userDetailSchema);
 		this._messenger = (messenger) ? messenger : new Messenger();
+		this._customerItemHandler = (customerItemHandler) ? customerItemHandler : new CustomerItemHandler();
 	}
 	
 	public placeOrder(order: Order, accessToken: AccessToken): Promise<Order> {
@@ -51,6 +55,8 @@ export class OrderPlacedHandler {
 						id: accessToken.sub,
 						permission: accessToken.permission
 					});
+				}).then(() => {
+					return this.updateCustomerItemsIfPresent(order);
 				}).then((updatedOrder: Order) => {
 					placedOrder = updatedOrder;
 					return this.updateUserDetailWithPlacedOrder(placedOrder, accessToken);
@@ -61,7 +67,35 @@ export class OrderPlacedHandler {
 					throw new BlError('order could not be placed').add(placedOrderError);
 			});
 	}
-	
+
+	private async updateCustomerItemsIfPresent(order: Order): Promise<Order> {
+		try {
+			for (let orderItem of order.orderItems) {
+				if (orderItem.type === 'extend' || orderItem.type === 'buyout') {
+					let customerItemId = null;
+
+					if (orderItem.info && orderItem.info.customerItem) {
+						customerItemId = orderItem.info.customerItem;
+					} else if (orderItem.customerItem) {
+						customerItemId = orderItem.customerItem;
+					}
+
+					if (customerItemId !== null) {
+						if (orderItem.type === 'extend') {
+							await this._customerItemHandler.extend(customerItemId, orderItem, order.branch);
+						} else if (orderItem.type === 'buyout') {
+							await this._customerItemHandler.buyout(customerItemId, order.id, orderItem);
+						}
+					}
+				}
+			}
+
+			return Promise.resolve(order);
+		} catch (e) {
+			throw e;
+		}
+	}
+
 	private updateUserDetailWithPlacedOrder(order: Order, accessToken: AccessToken): Promise<boolean> {
 		return new Promise((resolve, reject) => {
 			this.userDetailStorage.get(order.customer).then((userDetail: UserDetail) => {
