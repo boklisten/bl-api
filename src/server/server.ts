@@ -5,6 +5,7 @@ import {BlAuth} from "../auth/bl.auth";
 import {CollectionEndpointCreator} from "../collection-endpoint/collection-endpoint-creator";
 import * as path from "path";
 import {logger} from "../logger/logger";
+import {APP_CONFIG} from "../application-config";
 
 let bodyParser = require('body-parser');
 const chalk = require('chalk');

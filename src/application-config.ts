@@ -2,7 +2,7 @@
 export const APP_CONFIG = {
 	path: {
 		client: {
-			checkout: 'cart',
+			checkout: 'cart/confirm',
 			agreement: {
 				rent: 'info/agreement/rent'
 			},
