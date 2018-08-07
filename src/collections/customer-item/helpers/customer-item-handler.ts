@@ -1,9 +1,9 @@
 import {BlError, Branch, CustomerItem, OrderItem} from "@wizardcoder/bl-model";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
-import {Period} from "@wizardcoder/bl-model/dist/period/period";
 import {SystemUser} from "../../../auth/permission/permission.service";
 import {branchSchema} from "../../branch/branch.schema";
 import {customerItemSchema} from "../customer-item.schema";
+import {Period} from "@wizardcoder/bl-model/dist/period/period";
 
 export class CustomerItemHandler {
 
