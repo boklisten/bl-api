@@ -107,6 +107,11 @@ export const branchSchema = {
 				type: [Schema.Types.String],
 				default: [],
 				required: true
+			},
+			payLater: {
+				type: Schema.Types.Boolean,
+				default: false,
+				required: false
 			}
 		},
 		required: true,
@@ -118,6 +123,16 @@ export const branchSchema = {
 				percentage: 1
 			},
 			acceptedMethods: []
+		}
+	},
+	deliveryMethods: {
+		branch: {
+			type: Schema.Types.Boolean,
+			default: true
+		},
+		mail: {
+			type: Schema.Types.Boolean,
+			default: true
 		}
 	},
 	branchItems: {
