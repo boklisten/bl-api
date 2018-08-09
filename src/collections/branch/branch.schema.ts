@@ -130,7 +130,7 @@ export const branchSchema = {
 			type: Schema.Types.Boolean,
 			default: true
 		},
-		mail: {
+		byMail: {
 			type: Schema.Types.Boolean,
 			default: true
 		}
