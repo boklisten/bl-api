@@ -33,6 +33,22 @@ export class OrderCollection implements BlCollection {
 				permissions: ["customer", "employee", "admin"],
 				restricted: true
 			}
+		},
+		{
+			method: 'getAll',
+			restriction: {
+				permissions: ["manager", "admin"]
+			},
+			validQueryParams: [
+				{
+					fieldName: 'name',
+					type: 'string'
+				},
+				{
+					fieldName: 'placed',
+					type: 'boolean'
+				}
+			]
 		}
 	]
 }
