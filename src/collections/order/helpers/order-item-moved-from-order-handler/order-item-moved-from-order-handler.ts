@@ -59,8 +59,6 @@ export class OrderItemMovedFromOrderHandler {
 			}
 		}
 
-		console.log('should update original order', originalOrder.orderItems);
-
 		await this._orderStorage.update(orderItemToUpdate.originalOrderId, {orderItems: originalOrder.orderItems}, new SystemUser());
 		return true;
 	}

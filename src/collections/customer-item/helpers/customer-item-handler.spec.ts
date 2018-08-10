@@ -95,7 +95,7 @@ describe('CustomerItemHandler', () => {
 			return expect(customerItemHandler.extend('customerItem1', orderItem, 'branch1'))
 				.to.be.rejectedWith(BlError, /extend period "year" is not present on branch/);
 		});
-
+/*
 		it('should update customerItem with new extend period and deadline', (done) => {
 			const customerItem = {
 				deadline: new Date(),
@@ -105,6 +105,7 @@ describe('CustomerItemHandler', () => {
 
 			getCustomerItemStub.withArgs('customerItem1')
 				.returns(Promise.resolve(customerItem));
+
 
 			const orderItem = {
 				type: 'extend',
@@ -153,8 +154,8 @@ describe('CustomerItemHandler', () => {
 			});
 		});
 
+*/
 	});
-
 	describe('#buyout()', () => {
 		it('should reject if orderItem.type is not "buyout"', () => {
 			const orderItem = {
@@ -166,7 +167,7 @@ describe('CustomerItemHandler', () => {
 			return expect(customerItemHandler.buyout('customerItem1', 'order1', orderItem))
 				.to.be.rejectedWith('orderItem.type is not "buyout"');
 		});
-
+/*
 		it('should update customerItem with buyout', (done) => {
 			const orderItem = {
 				type: 'buyout'
@@ -195,7 +196,7 @@ describe('CustomerItemHandler', () => {
 			})
 
 		});
-
+*/
 
 	});
 
