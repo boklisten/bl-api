@@ -18,6 +18,7 @@ import {EmailService} from "../../../../messenger/email/email-service";
 import {deliverySchema} from "../../../delivery/delivery.schema";
 import {Messenger} from "../../../../messenger/messenger";
 import {CustomerItemHandler} from "../../../customer-item/helpers/customer-item-handler";
+import {OrderItemMovedFromOrderHandler} from "../order-item-moved-from-order-handler/order-item-moved-from-order-handler";
 
 export class OrderPlacedHandler {
 	private customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -25,6 +26,7 @@ export class OrderPlacedHandler {
 	private paymentHandler: PaymentHandler;
 	private userDetailStorage: BlDocumentStorage<UserDetail>;
 	private _customerItemHandler: CustomerItemHandler;
+	private _orderItemMovedFromOrderHandler: OrderItemMovedFromOrderHandler;
 	private _messenger: Messenger;
 	
 	constructor(customerItemStorage?: BlDocumentStorage<CustomerItem>,
@@ -32,13 +34,15 @@ export class OrderPlacedHandler {
 				paymentHandler?: PaymentHandler,
 				userDetailStorage?: BlDocumentStorage<UserDetail>,
 				messenger?: Messenger,
-				customerItemHandler?: CustomerItemHandler) {
+				customerItemHandler?: CustomerItemHandler,
+				orderItemMovedFromOrderHandler?: OrderItemMovedFromOrderHandler) {
 		this.customerItemStorage = (customerItemStorage) ? customerItemStorage : new BlDocumentStorage('customeritems', customerItemSchema);
 		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage('orders', orderSchema);
 		this.paymentHandler = (paymentHandler) ? paymentHandler : new PaymentHandler();
 		this.userDetailStorage = (userDetailStorage) ? userDetailStorage : new BlDocumentStorage('userdetails', userDetailSchema);
 		this._messenger = (messenger) ? messenger : new Messenger();
 		this._customerItemHandler = (customerItemHandler) ? customerItemHandler : new CustomerItemHandler();
+		this._orderItemMovedFromOrderHandler = (orderItemMovedFromOrderHandler) ? orderItemMovedFromOrderHandler : new OrderItemMovedFromOrderHandler();
 	}
 	
 	public placeOrder(order: Order, accessToken: AccessToken): Promise<Order> {
@@ -59,6 +63,8 @@ export class OrderPlacedHandler {
 					return this.updateCustomerItemsIfPresent(order);
 				}).then((updatedOrder: Order) => {
 					placedOrder = updatedOrder;
+					this._orderItemMovedFromOrderHandler.updateOrderItems(order);
+				}).then(() => {
 					return this.updateUserDetailWithPlacedOrder(placedOrder, accessToken);
 				}).then(() => {
 					this.sendOrderConfirmationMail(placedOrder);
@@ -111,11 +117,17 @@ export class OrderPlacedHandler {
 				} else {
 					reject(new BlError('the order was already in userDetails'));
 				}
-
-
 			}).catch((getUserDetailError: BlError) => {
 				reject(new BlError(`customer "${order.customer}" not found`).add(getUserDetailError));
 			});
+		});
+	}
+
+	private updateLastOrderItemsIfMovedFromOrder(order: Order, accessToken: AccessToken): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			let movedFromOrderItems: {itemId: string, movedFromOrderId: string, movedToOrderId: string}[] = [];
+
+			reject(new Error(''));
 		});
 	}
 

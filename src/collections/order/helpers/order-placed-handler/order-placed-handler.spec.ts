@@ -8,6 +8,8 @@ import {BlDocumentStorage} from "../../../../storage/blDocumentStorage";
 import {OrderPlacedHandler} from "./order-placed-handler";
 import {PaymentHandler} from "../../../payment/helpers/payment-handler";
 import {Messenger} from "../../../../messenger/messenger";
+import {OrderItemMovedFromOrderHandler} from "../order-item-moved-from-order-handler/order-item-moved-from-order-handler";
+import {CustomerItemHandler} from "../../../customer-item/helpers/customer-item-handler";
 
 chai.use(chaiAsPromised);
 
@@ -25,7 +27,20 @@ describe('OrderPlacedHandler', () => {
 	const paymentHandler = new PaymentHandler();
 	const userDetailStorage = new BlDocumentStorage<UserDetail>('userdetails');
 	const messenger = new Messenger();
-	const orderPlacedHandler = new OrderPlacedHandler(customerItemStorage, orderStorage, paymentHandler, userDetailStorage, messenger);
+	const orderItemMovedFromOrderHandler = new OrderItemMovedFromOrderHandler();
+	const customerItemHandler = new CustomerItemHandler();
+	const orderPlacedHandler =
+		new OrderPlacedHandler(
+			customerItemStorage,
+			orderStorage,
+			paymentHandler,
+			userDetailStorage,
+			messenger,
+			customerItemHandler,
+			orderItemMovedFromOrderHandler
+		);
+
+	sinon.stub(orderItemMovedFromOrderHandler, 'updateOrderItems').resolves(true);
 
 	sinon.stub(customerItemStorage, 'add').callsFake((customerItem: CustomerItem) => {
 		if (customerItem.item === 'item1') {
@@ -71,6 +86,8 @@ describe('OrderPlacedHandler', () => {
 		}
 		return Promise.resolve(testOrder);
 	});
+
+	let getOrderStub = sinon.stub(orderStorage, 'get');
 
 	sinon.stub(messenger, 'orderPlaced').callsFake(() => {
 		return true;
@@ -204,7 +221,11 @@ describe('OrderPlacedHandler', () => {
 			return expect(orderPlacedHandler.placeOrder(testOrder, testAccessToken))
 				.to.be.fulfilled;
 		});
-	
+
+
+
+
+
 	});
 	
 });
