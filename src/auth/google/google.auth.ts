@@ -100,11 +100,11 @@ export class GoogleAuth {
 				const resHandler = new SEResponseHandler();
 
 				if (!tokens && (err || blError)) {
-					return res.redirect(req.headers.referer + '#/' + APP_CONFIG.path.client.auth.socialLoginFailure);
+					return res.redirect(req.headers.referer + '/' + APP_CONFIG.path.client.auth.socialLoginFailure);
 				}
 
 				if (tokens) {
-					const refererPath = (req.headers.referer) ? req.headers.referer + '#/' : null;
+					const refererPath = (req.headers.referer) ? req.headers.referer + '/' : null;
 					return resHandler.sendAuthTokens(res, tokens.accessToken, tokens.refreshToken, refererPath);
 				}
 			})(req, res);

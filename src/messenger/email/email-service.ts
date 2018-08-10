@@ -59,7 +59,7 @@ export class EmailService implements MessengerService {
 		};
 
 
-		let emailVerificationUri = (process.env.CLIENT_URI) ? process.env.CLIENT_URI : 'localhost:4200/#/';
+		let emailVerificationUri = (process.env.CLIENT_URI) ? process.env.CLIENT_URI : 'localhost:4200/';
 		emailVerificationUri += EMAIL_SETTINGS.types.emailConfirmation.path + confirmationCode;
 
 		this._emailHandler.sendEmailVerification(emailSetting, emailVerificationUri).then((emailLog) => {
@@ -77,7 +77,7 @@ export class EmailService implements MessengerService {
 			userId: customerDetail.id
 		};
 
-		let passwordResetUri = (process.env.CLIENT_URI) ? process.env.CLIENT_URI : 'localhost:4200/#/';
+		let passwordResetUri = (process.env.CLIENT_URI) ? process.env.CLIENT_URI : 'localhost:4200/';
 		passwordResetUri += EMAIL_SETTINGS.types.passwordReset.path + passwordResetCode;
 
 		this._emailHandler.sendPasswordReset(emailSetting, passwordResetUri).then((emailLog) => {

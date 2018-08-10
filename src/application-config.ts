@@ -34,7 +34,7 @@ export const APP_CONFIG = {
 			version: 'v1'
 		},
 		client: {
-			base: 'https://localhost:4200/#/'
+			base: 'https://localhost:4200/'
 		},
 		mongoDb: {
 			basePath: 'mongodb://',
