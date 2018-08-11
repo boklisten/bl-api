@@ -25,7 +25,7 @@ export class DbQueryLimitFilter {
 		let limitStr = limit.toString();
 
 		for (let n of limitStr) {
-			if (!parseInt(n)) return false;
+			if (!parseInt(n) && n !== '0') return false;
 		}
 
 		return true;
