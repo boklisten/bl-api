@@ -26,10 +26,10 @@ export class SEResponseHandler {
 		if (referer) {
 			redirectUrl += referer;
 		} else {
-			redirectUrl += process.env.CLIENT_URI;
+			redirectUrl += process.env.CLIENT_URI + 'auth/token';
 		}
 
-		redirectUrl +=  'auth/token;accessToken=' + accessToken + ';refreshToken=' + refreshToken;
+		redirectUrl +=  ';accessToken=' + accessToken + ';refreshToken=' + refreshToken;
 
 		res.redirect(redirectUrl);
 	}

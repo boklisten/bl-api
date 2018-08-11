@@ -47,6 +47,10 @@ export class OrderCollection implements BlCollection {
 				{
 					fieldName: 'placed',
 					type: 'boolean'
+				},
+				{
+					fieldName: 'byCustomer',
+					type: 'boolean'
 				}
 			]
 		}
