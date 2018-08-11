@@ -100,7 +100,7 @@ export class GoogleAuth {
 				const resHandler = new SEResponseHandler();
 
 				if (!tokens && (err || blError)) {
-					return res.redirect(req.headers.referer + '/' + APP_CONFIG.path.client.auth.socialLoginFailure);
+					return res.redirect(process.env.CLIENT_URI + APP_CONFIG.path.client.auth.socialLoginFailure);
 				}
 
 				if (tokens) {
