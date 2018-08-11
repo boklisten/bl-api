@@ -21,14 +21,7 @@ export class SEResponseHandler {
 	}
 	
 	public sendAuthTokens(res: Response, accessToken: string, refreshToken: string, referer?: string) {
-		let redirectUrl = '';
-
-		if (referer) {
-			redirectUrl += referer;
-		} else {
-			redirectUrl += process.env.CLIENT_URI + 'auth/token';
-		}
-
+		let redirectUrl = process.env.CLIENT_URI + 'auth/token';
 		redirectUrl +=  ';accessToken=' + accessToken + ';refreshToken=' + refreshToken;
 
 		res.redirect(redirectUrl);
