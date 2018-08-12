@@ -1,16 +1,19 @@
 
 
-import {BlError, Item, OrderItem, Branch} from '@wizardcoder/bl-model';
+import {BlError, Item, OrderItem, Branch, Order} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from "../../../../../../storage/blDocumentStorage";
 import {error, isNullOrUndefined} from "util";
 import {PriceService} from "../../../../../../price/price.service";
+import {orderSchema} from "../../../../order.schema";
 
 export class OrderItemBuyValidator {
 	private priceService: PriceService;
+	private orderStorage: BlDocumentStorage<Order>;
 	
-	constructor(priceService?: PriceService) {
+	constructor(priceService?: PriceService, orderStorage?: BlDocumentStorage<Order>) {
 		
 		this.priceService = (priceService) ? priceService : new PriceService({roundDown: true});
+		this.orderStorage = (orderStorage) ? orderStorage : new BlDocumentStorage<Order>('orders', orderSchema);
 	}
 	
 	public async validate(branch: Branch, orderItem: OrderItem, item: Item): Promise<boolean> {
@@ -43,10 +46,51 @@ export class OrderItemBuyValidator {
 		
 		return true;
 	}
-	
-	private validateOrderItemPriceTypeBuy(orderItem: OrderItem, item: Item): boolean {
+
+	private async validateIfMovedFromOrder(orderItem: OrderItem, itemPrice: number): Promise<boolean> {
+		if (!orderItem.movedFromOrder) {
+			return true;
+		}
+
+		await this.orderStorage.get(orderItem.movedFromOrder).then((order: Order) => {
+			if ((!order.payments || order.payments.length <= 0) && orderItem.amount === 0) {
+				throw new BlError('the original order has not been payed, but orderItem.amount is "0"');
+			}
+
+			let movedFromOrderItem = this.getOrderItemFromOrder(orderItem.item, order);
+
+			let expectedOrderItemAmount = this.priceService.round(this.priceService.sanitize(itemPrice)) - movedFromOrderItem.amount;
+
+			if (orderItem.amount !== expectedOrderItemAmount) {
+				throw new BlError(`orderItem amount is "${orderItem.amount}" but should be "${expectedOrderItemAmount}"`)
+			}
+
+			return true;
+
+		}).catch(() => {
+			return false;
+		})
+	}
+
+	private getOrderItemFromOrder(itemId: string, order: Order): OrderItem {
+		for (const orderItem of order.orderItems) {
+			if (orderItem.item.toString() === itemId.toString()) {
+				return orderItem;
+			}
+		}
+
+		throw new BlError('not found in original orderItem');
+	}
+
+	private async validateOrderItemPriceTypeBuy(orderItem: OrderItem, item: Item): Promise<boolean> {
 		let price;
 		let discount = 0;
+
+		if (!isNullOrUndefined(orderItem.movedFromOrder)) {
+			return await this.validateIfMovedFromOrder(orderItem, item.price);
+		}
+
+
 		if (orderItem.discount) {
 			if (isNullOrUndefined(orderItem.discount.amount)) {
 				throw new BlError('orderItem.discount was set, but no discount.amount provided');
