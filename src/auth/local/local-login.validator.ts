@@ -48,6 +48,8 @@ export class LocalLoginValidator {
 	public create(username: string, password: string): Promise<{provider: string, providerId: string}> {
 		return new Promise((resolve, reject) => {
 			let blError = new BlError('').className('LocalLoginValidator').methodName('create');
+
+			username = username.toString().toLocaleLowerCase();
 			
 			this.localLoginHandler.get(username).then(
 				(localLogin: LocalLogin) => {
