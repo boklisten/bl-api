@@ -1,13 +1,17 @@
 import {EmailService} from "./email/email-service";
-import {BlError, Order, UserDetail} from "@wizardcoder/bl-model";
+import {BlError, Delivery, Order, UserDetail} from "@wizardcoder/bl-model";
 import {Message} from "./message";
 import {MessengerService} from "./messenger-service";
+import {BlDocumentStorage} from "../storage/blDocumentStorage";
+import {deliverySchema} from "../collections/delivery/delivery.schema";
 
 export class Messenger implements MessengerService {
 	private _emailService: EmailService;
+	private _deliveryStorage: BlDocumentStorage<Delivery>;
 
 	constructor() {
 		this._emailService = new EmailService();
+		this._deliveryStorage = new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
 	}
 
 	/**
@@ -51,6 +55,14 @@ export class Messenger implements MessengerService {
 	 */
 	public orderPlaced(customerDetail: UserDetail, order: Order) {
 		this._emailService.orderPlaced(customerDetail, order);
+	}
+
+	public sendDeliveryInformation(customerDetail: UserDetail, order: Order) {
+		this._deliveryStorage.get(order.delivery).then((delivery: Delivery) => {
+			this._emailService.deliveryInformation(customerDetail, order, delivery);
+		}).catch(() => {
+
+		})
 	}
 
 	/**

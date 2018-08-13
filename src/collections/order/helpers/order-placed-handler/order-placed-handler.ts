@@ -132,10 +132,19 @@ export class OrderPlacedHandler {
 	}
 
 	private sendOrderConfirmationMail(order: Order) {
+		console.log('sending order email');
 		this.userDetailStorage.get(order.customer).then((customerDetail: UserDetail) => {
-			this._messenger.orderPlaced(customerDetail, order);
-		}).catch((getCustomerDetailError) => {
 
+			if (order.handoutByDelivery) {
+				console.log('sending delivery info')
+				this._messenger.sendDeliveryInformation(customerDetail, order);
+			} else {
+				console.log('sending order placed');
+				this._messenger.orderPlaced(customerDetail, order);
+			}
+
+		}).catch((getCustomerDetailError) => {
+			console.log('could not get customer detail');
 		})
 	}
 }

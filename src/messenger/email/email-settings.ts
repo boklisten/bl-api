@@ -15,6 +15,10 @@ export const EMAIL_SETTINGS = {
 			fromEmail: 'ikkesvar@boklisten.no',
 			subject: 'Tilbakestill passordet hos Boklisten.no',
 			path: 'auth/reset/'
+		},
+		deliveryInformation: {
+			fromEmail: 'ikkesvar@boklisten.no',
+			subject: 'Dine bøker er på vei'
 		}
 	}
 };

@@ -9,6 +9,11 @@ import {MessengerService} from "../messenger-service";
 import {Message} from "../message";
 import {EmailSetting} from "@wizardcoder/bl-email/dist/ts/template/email-setting";
 import {EMAIL_SETTINGS} from "./email-settings";
+import {EmailOrder} from "@wizardcoder/bl-email/dist/ts/template/email-order";
+import {EmailUser} from "@wizardcoder/bl-email/dist/ts/template/email-user";
+import moment = require("moment");
+import {isNullOrUndefined} from "util";
+import {logger} from "../../logger/logger";
 
 
 export class EmailService implements MessengerService {
@@ -48,6 +53,74 @@ export class EmailService implements MessengerService {
 		}).catch((emailError) => {
 
 		});
+	}
+
+	public deliveryInformation(customerDetail: UserDetail, order: Order, delivery: Delivery) {
+		let emailSetting: EmailSetting = {
+			toEmail: customerDetail.email,
+			fromEmail: EMAIL_SETTINGS.types.deliveryInformation.fromEmail,
+			subject: EMAIL_SETTINGS.types.deliveryInformation.subject,
+			userId: customerDetail.id
+		};
+
+		let emailUser: EmailUser = {
+			id: customerDetail.id,
+			name: customerDetail.name,
+			dob: (!isNullOrUndefined(customerDetail.dob)) ? moment(customerDetail.dob).format('DD.MM.YYYY') : '',
+			email: customerDetail.email,
+			address: customerDetail.address
+		};
+
+		let deliveryAddress = '';
+
+		if (delivery.info['shipmentAddress']) {
+			deliveryAddress = delivery.info['shipmentAddress'].name;
+			deliveryAddress += ', ' + delivery.info['shipmentAddress'].address;
+			deliveryAddress += ', ' + delivery.info['shipmentAddress'].postalCode;
+			deliveryAddress += ' ' + delivery.info['shipmentAddress'].postalCity;
+
+		}
+
+		const emailOrder: EmailOrder = {
+			id: order.id,
+			showDeadline: false,
+			showPrice: false,
+			showStatus: true,
+			currency: null,
+			itemAmount: null,
+			payment: null,
+			showPayment: false,
+			totalAmount: null,
+			items: this.orderItemsToDeliveryInformationItems(order.orderItems),
+			showDelivery: true,
+			delivery: {
+				method: 'bring',
+				trackingNumber: delivery.info['trackingNumber'],
+				estimatedDeliveryDate: null,
+				address: deliveryAddress,
+				amount: null,
+				currency: null
+			}
+		};
+
+		this._emailHandler.sendDelivery(emailSetting, emailOrder, emailUser).then(() => {
+
+		}).catch((err) => {
+			logger.log('warn', 'could not send delivery info by mail: ' + err);
+		})
+
+
+	}
+
+	private orderItemsToDeliveryInformationItems(orderItems: OrderItem[]) {
+		const emailInformaitionItems: {title: string, status: string}[] = [];
+		for (let orderItem of orderItems) {
+			emailInformaitionItems.push({
+				title: orderItem.title,
+				status: 'utlevering via Bring'
+			});
+		}
+		return emailInformaitionItems;
 	}
 
 	public emailConfirmation(customerDetail: UserDetail, confirmationCode: string) {

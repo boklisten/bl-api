@@ -50,6 +50,10 @@ export let orderSchema = {
 					type: Schema.Types.Mixed,
 					required: false
 				},
+				handout: {
+					type: Schema.Types.Boolean,
+					required: false
+				},
 				movedFromOrder: {
 					type: Schema.Types.ObjectId,
 					required: false
@@ -100,5 +104,9 @@ export let orderSchema = {
 	},
 	delivery: {
 		type: Schema.Types.ObjectId
+	},
+	handoutByDelivery: {
+		type: Schema.Types.Boolean,
+		required: false
 	}
 };

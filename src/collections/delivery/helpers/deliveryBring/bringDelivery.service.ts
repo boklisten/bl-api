@@ -39,7 +39,7 @@ export class BringDeliveryService {
 			return Promise.reject(new BlError('items is empty or undefined'));
 		}
 		
-		if (!facilityAddress.postalCode || shipmentAddress.postalCode.length <= 0) {
+		if (!facilityAddress.postalCode || facilityAddress.postalCode.length <= 0) {
 			return Promise.reject(new BlError('fromPostalCode is empty or undefined'));
 		}
 		

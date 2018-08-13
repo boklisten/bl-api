@@ -97,8 +97,12 @@ export class DeliveryHandler {
 		    	this.branchStorage.get(order.branch).then((branch: Branch) => {
 		    		let amount = deliveryInfoBring.amount;
 
-		    		if (branch.paymentInfo && branch.paymentInfo.responsibleForDelivery) {
+		    		if ((branch.paymentInfo && branch.paymentInfo.responsibleForDelivery) || order.handoutByDelivery) {
 		    			amount = 0;
+					}
+
+					if (delivery.info['trackingNumber']) {
+		    			deliveryInfoBring['trackingNumber'] = delivery.info['trackingNumber'];
 					}
 
 					this.deliveryStorage.update(delivery.id, {amount: amount, info: deliveryInfoBring}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedDelivery: Delivery) => {
