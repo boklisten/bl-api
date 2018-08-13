@@ -60,7 +60,15 @@ export class EmailService implements MessengerService {
 			toEmail: customerDetail.email,
 			fromEmail: EMAIL_SETTINGS.types.deliveryInformation.fromEmail,
 			subject: EMAIL_SETTINGS.types.deliveryInformation.subject,
-			userId: customerDetail.id
+			userId: customerDetail.id,
+			textBlocks: [
+				{
+					text: 'Dine bøker er nå på vei! De vil bli levert til deg ved hjelp av Bring'
+				},
+				{
+					text: 'Vi anser nå disse bøkene som utlevert. Det er nå du som er ansvarlig for bøkene frem til innlevering. Om noe skulle skje med leveringen er det bare å ta kontakt.'
+				}
+			]
 		};
 
 		let emailUser: EmailUser = {

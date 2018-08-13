@@ -310,7 +310,7 @@ export class OrderEmailHandler {
 		for (const orderItem of orderItems) {
 			emailItems.push({
 				title: orderItem.title,
-				status: this.translateOrderItemType(orderItem.type),
+				status: this.translateOrderItemType(orderItem.type, orderItem.handout),
 				deadline: (orderItem.type === 'rent' || orderItem.type === 'extend') ? moment(orderItem.info.to).format(this.standardDayFormat) + '' : null,
 				price: (orderItem.type !== 'return' && orderItem.amount) ? orderItem.amount.toString() : null
 			});
@@ -337,19 +337,26 @@ export class OrderEmailHandler {
 		return 'confirmed';
 	}
 
-	private translateOrderItemType(orderItemType: OrderItemType): string {
+	private translateOrderItemType(orderItemType: OrderItemType, handout?: boolean): string {
+		let trans = '';
 		if (this.localeSetting === 'nb') {
+
 			if (orderItemType === 'rent') {
-				return 'leie';
+				trans += 'leie';
 			} else if (orderItemType === 'return') {
-				return 'returnert';
+				trans += 'returnert';
 			} else if (orderItemType === 'extend') {
-				return 'forlenget'
+				trans += 'forlenget'
 			} else if (orderItemType === 'cancel') {
-				return 'kansellert'
+				trans += 'kansellert'
 			} else if (orderItemType === 'buy') {
-				return 'kjøp'
+				trans += 'kjøp'
 			}
+
+			if (handout) {
+				trans += ' - utlevert';
+			}
+			return trans;
 		}
 
 
