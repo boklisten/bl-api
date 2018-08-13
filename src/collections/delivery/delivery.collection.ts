@@ -16,20 +16,20 @@ export class DeliveryCollection implements BlCollection {
 			method: 'post',
 			hook: new DeliveryPostHook(),
 			restriction: {
-				permissions: ['customer', 'employee', "admin"]
+				permissions: ['customer', 'employee', "manager", "admin", "super"]
 			}
 		},
 		{
 			method: 'getAll',
 			restriction: {
-				permissions: ['admin'],
+				permissions: ['admin', "super"],
 				restricted: true
 			}
 		},
 		{
 			method: 'getId',
 			restriction: {
-				permissions: ['customer', 'employee', 'admin'],
+				permissions: ['customer', 'employee', "manager", 'admin', "super"],
 				restricted: true
 			}
 		},
@@ -37,7 +37,7 @@ export class DeliveryCollection implements BlCollection {
 			method: 'patch',
 			hook: new DeliveryPatchHook(),
 			restriction: {
-				permissions: ['customer', "employee", "admin"],
+				permissions: ['customer', "employee", "manager", "admin", "super"],
 				restricted: true
 			}
 		},

@@ -4,16 +4,18 @@ import {UserPermission} from "@wizardcoder/bl-model";
 import {ValidParam} from "../query/valid-param/db-query-valid-params";
 import {Operation} from "../operation/operation";
 
-export interface BlEndpointRestriction {
-	permissions: UserPermission[]; //a list of the permission the user needs
-	restricted?: boolean; //if set this endpoint is restricted to the user or for a user with higher permission
-	secured?: boolean; //this endpoint is only accessible to the user that created it
-}
 
 export interface BlCollection {
 	collectionName: string; //the name determines the path to the collection like /api/vi/collectionName
 	mongooseSchema: any; //the mongooseSchema for this collection
+	documentPermission?: BlDocumentPermission,
 	endpoints: BlEndpoint[]; //a list of the valid endpoints for this collection;
+}
+
+export interface BlEndpointRestriction {
+	permissions: UserPermission[]; //a list of the permission the user needs
+	restricted?: boolean; //if set this endpoint is restricted to the user or for a user with higher permission
+	secured?: boolean; //this endpoint is only accessible to the user that created it
 }
 
 export interface BlEndpointOperation {
@@ -30,5 +32,9 @@ export interface BlEndpoint {
 	validQueryParams?: ValidParam[];
 	restriction?: BlEndpointRestriction; //this endpoint is only accessible to the user that created it
 	operations?: BlEndpointOperation[]
+}
+
+export interface BlDocumentPermission {
+	viewableForPermission: UserPermission // the lowest permission you need to have to view documents not your own
 }
 

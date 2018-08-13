@@ -1,5 +1,6 @@
 
 import {BlDocument, UserPermission} from "@wizardcoder/bl-model";
+import {BlDocumentPermission, BlEndpointRestriction} from "../../collections/bl-collection";
 
 
 export class SystemUser {
@@ -24,6 +25,10 @@ export class PermissionService {
 		}
 
 		for (let permission of userPermissions) {
+			if (permission === "manager") return "manager";
+		}
+
+		for (let permission of userPermissions) {
 			if (permission === "admin") return "admin";
 		}
 		
@@ -38,9 +43,24 @@ export class PermissionService {
 		return (this.isPermissionOver(userPermission, document.user.permission) || userPermission === document.user.permission);
 	}
 	
-	public haveRestrictedDocumentPermission(userId: string, userPermission: UserPermission, document: BlDocument): boolean {
+	public haveRestrictedDocumentPermission(userId: string, userPermission: UserPermission, document: BlDocument, endpointRestriction: BlEndpointRestriction, documentPermission?: BlDocumentPermission): boolean {
 		if (document.user.id === userId) return true; //the user who created the document always have access to it
-		return (this.isPermissionOver(userPermission, document.user.permission));
+		if (this.isPermissionOver(userPermission, document.user.permission)) {
+			return true;
+		} else {
+			if (documentPermission && documentPermission.viewableForPermission) {
+				return this.isPermissionEqualOrOver(userPermission, documentPermission.viewableForPermission);
+			}
+		}
+		return false;
+	}
+
+	protected isPermissionEqualOrOver(permission: UserPermission, restrictedPermission: UserPermission): boolean {
+		if (permission === restrictedPermission) {
+			return true;
+		} else {
+			return this.isPermissionOver(permission, restrictedPermission);
+		}
 	}
 	
 	private isPermissionOver(permission: UserPermission, restrictedPermission: UserPermission): boolean {
@@ -49,7 +69,13 @@ export class PermissionService {
 		if (permission === 'super') return true;
 
 		if (permission === 'admin') {
-			if (restrictedPermission === 'employee' || restrictedPermission === 'customer') {
+			if (restrictedPermission === "manager" || restrictedPermission === 'employee' || restrictedPermission === 'customer') {
+				return true;
+			}
+		}
+
+		if (permission === "manager") {
+			if (restrictedPermission === "employee" || restrictedPermission === "customer") {
 				return true;
 			}
 		}

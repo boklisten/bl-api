@@ -1,6 +1,6 @@
 
 
-import {BlCollection, BlEndpoint} from "../bl-collection";
+import {BlCollection, BlDocumentPermission, BlEndpoint, BlEndpointRestriction} from "../bl-collection";
 import {userDetailSchema} from "./user-detail.schema";
 import {Schema} from "mongoose";
 import {UserDetailValidOperation} from "./operations/user-detail-valid.operation";
@@ -8,11 +8,14 @@ import {UserDetailValidOperation} from "./operations/user-detail-valid.operation
 export class UserDetailCollection implements BlCollection {
 	collectionName = 'userdetails';
 	mongooseSchema = userDetailSchema;
+	documentPermission: BlDocumentPermission = {
+		viewableForPermission: "employee"
+	};
 	endpoints: BlEndpoint[] = [
 		{
 			method: 'getId',
 			restriction: {
-				permissions: ['customer', "employee", "admin"],
+				permissions: ['customer', "employee", "manager", "admin", "super"],
 				restricted: true
 			},
 			operations: [
@@ -20,7 +23,7 @@ export class UserDetailCollection implements BlCollection {
 					name: 'valid',
 					operation: new UserDetailValidOperation(),
 					restriction: {
-						permissions: ['customer'],
+						permissions: ['customer', "employee", "manager", "admin", "super"],
 						restricted: true
 					}
 				}
@@ -29,7 +32,7 @@ export class UserDetailCollection implements BlCollection {
 		{
 			method: 'patch',
 			restriction: {
-				permissions: ['customer', 'employee', "admin"]
+				permissions: ['customer', 'employee', "manager", "admin", "super"]
 			}
 		},
 		{
@@ -61,7 +64,7 @@ export class UserDetailCollection implements BlCollection {
 				}
 			],
 			restriction: {
-				permissions: ['employee', 'admin']
+				permissions: ['employee', "manager", 'admin', "super"]
 			}
 		}
 	]

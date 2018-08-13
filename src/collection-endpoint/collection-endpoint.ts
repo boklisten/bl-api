@@ -1,6 +1,6 @@
 import {BlDocument, BlError} from "@wizardcoder/bl-model";
 import {Router} from "express";
-import {BlCollection, BlEndpoint, BlEndpointRestriction} from "../collections/bl-collection";
+import {BlCollection, BlDocumentPermission, BlEndpoint, BlEndpointRestriction} from "../collections/bl-collection";
 import {BlDocumentStorage} from "../storage/blDocumentStorage";
 import {SEResponseHandler} from "../response/se.response.handler";
 import {PermissionService} from "../auth/permission/permission.service";
@@ -20,7 +20,7 @@ export class CollectionEndpoint<T extends BlDocument> {
 	private _permissionService: PermissionService;
 	private _apiPath: ApiPath;
 
-	constructor(private _router: Router, private _collection: BlCollection, private _responseHandler: SEResponseHandler) {
+	constructor(private _router: Router, private _collection: BlCollection) {
 		this._documentStorage = new BlDocumentStorage<T>(_collection.collectionName, _collection.mongooseSchema);
 		this._permissionService = new PermissionService();
 		this._apiPath = new ApiPath();
@@ -99,27 +99,27 @@ export class CollectionEndpoint<T extends BlDocument> {
 	}
 
 	private createGetAll(endpoint: BlEndpoint) {
-		const collectionEndpointGetAll = new CollectionEndpointGetAll<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);
+		const collectionEndpointGetAll = new CollectionEndpointGetAll<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage, this._collection.documentPermission);
 		collectionEndpointGetAll.create();
 	}
 
 	private createGetId(endpoint: BlEndpoint) {
-		const collectionEndpointGetId = new CollectionEndpointGetId<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);
+		const collectionEndpointGetId = new CollectionEndpointGetId<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage, this._collection.documentPermission);
 		collectionEndpointGetId.create();
 	}
 
 	private createPost(endpoint: BlEndpoint) {
-		const collectionEndpointPost = new CollectionEndpointPost<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);
+		const collectionEndpointPost = new CollectionEndpointPost<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage, this._collection.documentPermission);
 		collectionEndpointPost.create();
 	}
 
 	private createDelete(endpoint: BlEndpoint) {
-		const collectionEndpointDelete = new CollectionEndpointDelete<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);
+		const collectionEndpointDelete = new CollectionEndpointDelete<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage, this._collection.documentPermission);
 		collectionEndpointDelete.create();
 	}
 
 	private createPatch(endpoint: BlEndpoint) {
-		const collectionEndpointPatch = new CollectionEndpointPatch<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage);
+		const collectionEndpointPatch = new CollectionEndpointPatch<T>(this._router, endpoint, this._collection.collectionName, this._documentStorage, this._collection.documentPermission);
 		collectionEndpointPatch.create();
 	}
 }

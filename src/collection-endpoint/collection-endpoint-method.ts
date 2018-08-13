@@ -1,7 +1,7 @@
 import {CollectionEndpointAuth} from "./collection-endpoint-auth/collection-endpoint-auth";
 import {SEResponseHandler} from "../response/se.response.handler";
 import {NextFunction, Request, Response, Router} from "express";
-import {BlEndpoint} from "../collections/bl-collection";
+import {BlDocumentPermission, BlEndpoint} from "../collections/bl-collection";
 import {ApiPath} from "../config/api-path";
 import {AccessToken, BlapiResponse, BlDocument, BlError} from "@wizardcoder/bl-model";
 import {Hook} from "../hook/hook";
@@ -20,7 +20,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 	protected _collectionEndpointDocumentAuth: CollectionEndpointDocumentAuth<T>;
 
 
-	constructor(protected _router: Router, protected _endpoint: BlEndpoint, protected _collectionName: string, protected _documentStorage: BlDocumentStorage<T>) {
+	constructor(protected _router: Router, protected _endpoint: BlEndpoint, protected _collectionName: string, protected _documentStorage: BlDocumentStorage<T>, protected documentPermission?: BlDocumentPermission) {
 		const apiPath = new ApiPath();
 		this._collectionUri = apiPath.createPath(this._collectionName);
 		this._collectionEndpointAuth = new CollectionEndpointAuth();
@@ -100,7 +100,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 
 				return this.onRequest(blApiRequest);
 			})
-			.then((docs: T[]) => this._collectionEndpointDocumentAuth.validate(this._endpoint.restriction, docs, blApiRequest))
+			.then((docs: T[]) => this._collectionEndpointDocumentAuth.validate(this._endpoint.restriction, docs, blApiRequest, this.documentPermission))
 			.then((docs: T[]) => this._endpoint.hook.after(docs, userAccessToken))
 			.then((docs: T[]) => this._responseHandler.sendResponse(res, new BlapiResponse(docs)))
 			.catch((blError: BlError) => this._responseHandler.sendErrorResponse(res, blError));

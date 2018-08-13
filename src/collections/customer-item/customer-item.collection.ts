@@ -1,4 +1,4 @@
-import {BlCollection, BlEndpoint} from "../bl-collection";
+import {BlCollection, BlDocumentPermission, BlEndpoint} from "../bl-collection";
 import {customerItemSchema} from "./customer-item.schema";
 import {Schema} from "mongoose";
 import {CustomerItemPostHook} from "./hooks/customer-item-post.hook";
@@ -6,18 +6,21 @@ import {CustomerItemPostHook} from "./hooks/customer-item-post.hook";
 export class CustomerItemCollection implements BlCollection {
 	collectionName = 'customeritems';
 	mongooseSchema = customerItemSchema;
+	documentPermission: BlDocumentPermission = {
+		viewableForPermission: "employee"
+	};
 	endpoints: BlEndpoint[] = [
 		{
 			method: 'getId',
 			restriction: {
-				permissions: ['customer', "employee", "admin"],
+				permissions: ['customer', "employee", "manager", "admin", "super"],
 				restricted: true
 			}
 		},
 		{
 			method: 'patch',
 			restriction: {
-				permissions: ['customer', "employee", "admin"],
+				permissions: ['customer', "employee", "manager", "admin", "super"],
 				restricted: true
 			}
 		},
@@ -25,7 +28,7 @@ export class CustomerItemCollection implements BlCollection {
 			method: 'post',
 			hook: new CustomerItemPostHook(),
 			restriction: {
-				permissions: ['employee', 'admin']
+				permissions: ['employee', "manager", 'admin', "super"]
 			}
 		}
 	]

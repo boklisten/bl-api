@@ -13,7 +13,7 @@ export class EmailValidationCollection implements BlCollection {
 			method: 'post',
 			hook: new EmailValidationPostHook(),
 			restriction: {
-				permissions: ['customer', 'employee', 'admin'],
+				permissions: ['customer', 'employee', "manager", 'admin', "super"],
 				restricted: true
 			}
 		},

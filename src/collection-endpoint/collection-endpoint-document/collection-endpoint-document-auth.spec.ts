@@ -6,7 +6,7 @@ import * as sinon from 'sinon';
 import {BlDocument, BlError} from '@wizardcoder/bl-model';
 import {CollectionEndpointDocumentAuth} from "./collection-endpoint-document-auth";
 import {BlApiRequest} from "../../request/bl-api-request";
-import {BlEndpoint, BlEndpointRestriction} from "../../collections/bl-collection";
+import {BlDocumentPermission, BlEndpoint, BlEndpointRestriction} from "../../collections/bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -63,6 +63,32 @@ describe('CollectionEndpointDocumentAuth', () => {
 				testBlApiRequest.user.id = 'user2';
 				testDocs[0].user.id = 'user1';
 			});
+
+			context('when document permission is present on document endpoint', () => {
+
+				it('should reject if user permission is equal or lower to document.user.permission and document permission on endpoint', () => {
+					const documentPermission: BlDocumentPermission = {
+						viewableForPermission: "manager"
+					};
+					testBlApiRequest.user.permission = 'employee';
+					testDocs[0].user.permission = "manager";
+
+					return expect(collectionEndpointDocumentAuth.validate(testRestriction, testDocs, testBlApiRequest, documentPermission))
+						.to.be.rejectedWith(BlError, /lacking restricted permission to view or edit the document/);
+				});
+
+				it('should resolve if user permission is equal or higher than documentPermission', () => {
+					const documentPermission: BlDocumentPermission = {
+						viewableForPermission: "employee"
+					};
+					testBlApiRequest.user.permission = 'employee';
+					testDocs[0].user.permission = "admin"; // the doc was created by a admin, but should be viewable for a employee also
+
+					return expect(collectionEndpointDocumentAuth.validate(testRestriction, testDocs, testBlApiRequest, documentPermission))
+						.to.be.fulfilled;
+				});
+			});
+
 
 			it('should reject if blApiRequest.user.permission is equal or lower to document.user.permission', () => {
 				testBlApiRequest.user.permission = 'customer';

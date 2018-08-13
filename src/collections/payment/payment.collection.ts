@@ -1,7 +1,7 @@
 
 
 import {Schema} from "mongoose";
-import {BlCollection, BlEndpoint} from "../bl-collection";
+import {BlCollection, BlDocumentPermission, BlEndpoint} from "../bl-collection";
 import {paymentSchema} from "./payment.schema";
 import {BlDocument} from "@wizardcoder/bl-model";
 import {PaymentPostHook} from "./hooks/payment.post.hook";
@@ -10,12 +10,15 @@ import {PaymentPatchHook} from "./hooks/payment.patch.hook";
 export class PaymentCollection implements BlCollection {
 	public collectionName = 'payments';
 	public mongooseSchema = paymentSchema;
+	documentPermission: BlDocumentPermission = {
+		viewableForPermission: "employee"
+	};
 	public endpoints: BlEndpoint[] = [
 		{
 			method: "post",
 			hook: new PaymentPostHook(),
 			restriction: {
-				permissions: ["customer", "employee", "admin"],
+				permissions: ["customer", "employee", "manager", "admin", "super"],
 				restricted: true
 			}
 		},
@@ -29,7 +32,7 @@ export class PaymentCollection implements BlCollection {
 		{
 			method: 'getId',
 			restriction: {
-				permissions: ["customer", "employee", "admin"],
+				permissions: ["customer", "employee", "manager", "admin", "super"],
 				restricted: true
 			}
 		},
@@ -37,14 +40,14 @@ export class PaymentCollection implements BlCollection {
 			method: "patch",
 			hook: new PaymentPatchHook(),
 			restriction: {
-				permissions: ["customer", "employee", "admin"],
+				permissions: ["customer", "employee", "manager", "admin", "super"],
 				restricted: true
 			}
 		},
 		{
 			method: "delete",
 			restriction: {
-				permissions: ["admin"],
+				permissions: ["admin", "manager"],
 				restricted: true
 			}
 		}

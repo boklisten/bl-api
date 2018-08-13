@@ -1,6 +1,6 @@
 
 
-import {BlCollection, BlEndpoint} from "../bl-collection";
+import {BlCollection, BlDocumentPermission, BlEndpoint} from "../bl-collection";
 import {orderSchema} from "./order.schema";
 import {OrderValidator} from "./helpers/order-validator/order-validator";
 import {Schema} from "mongoose";
@@ -10,12 +10,15 @@ import {OrderPostHook} from "./hooks/order.post.hook";
 export class OrderCollection implements BlCollection {
 	collectionName = 'orders';
 	mongooseSchema = orderSchema;
+	documentPermission: BlDocumentPermission = {
+		viewableForPermission: "employee"
+	};
 	endpoints: BlEndpoint[] = [
 		{
 			method: 'post',
 			hook: new OrderPostHook(),
 			restriction: {
-				permissions: ["customer", "employee", "admin"],
+				permissions: ["customer", "employee", "manager", "admin", "super"],
 				restricted: true
 			}
 		},
@@ -23,21 +26,21 @@ export class OrderCollection implements BlCollection {
 			method: 'patch',
 			hook: new OrderPatchHook(),
 			restriction: {
-				permissions: ["customer", "employee", "admin"],
+				permissions: ["customer", "employee", "manager", "admin", "super"],
 				restricted: true
 			}
 		},
 		{
 			method: 'getId',
 			restriction: {
-				permissions: ["customer", "employee", "admin"],
+				permissions: ["customer", "employee", "manager", "admin", "super"],
 				restricted: true
 			}
 		},
 		{
 			method: 'getAll',
 			restriction: {
-				permissions: ["manager", "admin"]
+				permissions: ["manager", "admin", "super"]
 			},
 			validQueryParams: [
 				{
