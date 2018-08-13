@@ -29,6 +29,11 @@ export let orderSchema = {
 					type: Schema.Types.Number,
 					required: true
 				},
+				delivered: {
+					type: Schema.Types.Boolean,
+					required: false,
+					default: false
+				},
 				taxRate: {
 					type: Schema.Types.Number,
 					required: true
