@@ -365,11 +365,24 @@ export class OrderEmailHandler {
 
 	private async shouldSendAgreement(order: Order, customerDetail: UserDetail, branchId: string): Promise<boolean> {
 		let rentFound = false;
+		let onlyHandout = false;
+
 		for (let orderItem of order.orderItems) {
+
+			if (orderItem.handout) {
+				onlyHandout = true;
+			} else {
+				onlyHandout = false;
+			}
+
 			if (orderItem.type === 'rent') {
 				rentFound = true;
-				break;
 			}
+
+		}
+
+		if (onlyHandout) {
+			return Promise.resolve(false);
 		}
 
 		if (!rentFound) {

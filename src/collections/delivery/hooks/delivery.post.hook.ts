@@ -15,7 +15,7 @@ export class DeliveryPostHook extends Hook {
 	
 	private orderStorage: BlDocumentStorage<Order>;
 	private deliveryStorage: BlDocumentStorage<Delivery>;
-	private itemStorage: BlDocumentStorage<Item>;
+	private itemStorage: BlDocumentStorage<Item>;rrt
 	private bringDeliveryService: BringDeliveryService;
 	private deliveryValidator: DeliveryValidator;
 	private deliveryHandler: DeliveryHandler;
@@ -44,15 +44,12 @@ export class DeliveryPostHook extends Hook {
 		let delivery = deliveries[0];
 		return new Promise((resolve, reject) => {
 			this.orderStorage.get(delivery.order).then((order: Order) => {
-
 				this.deliveryValidator.validate(delivery, order).then(() => {
-
 					this.deliveryHandler.updateOrderBasedOnMethod(delivery, order, accessToken).then((updatedDelivery: Delivery) => {
 						return resolve([updatedDelivery]);
 					}).catch((blError: BlError) => {
 						return reject(blError);
 					});
-
 				}).catch((blError: BlError) => {
 					return reject(blError);
 				});
@@ -60,7 +57,5 @@ export class DeliveryPostHook extends Hook {
 				return reject(blError);
 			});
 		});
-		
 	}
-
 }

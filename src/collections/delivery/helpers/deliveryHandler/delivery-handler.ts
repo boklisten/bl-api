@@ -27,11 +27,9 @@ export class DeliveryHandler {
 		this.bringDeliveryService = (bringDeliveryService) ? bringDeliveryService : new BringDeliveryService();
 		this.deliveryStorage = (deliveryStorage) ? deliveryStorage : new BlDocumentStorage('deliveries', deliverySchema);
 		this.branchStorage = (branchStorage) ? branchStorage : new BlDocumentStorage('branches', branchSchema);
-
 	}
 	
 	public updateOrderBasedOnMethod(delivery: Delivery, order: Order, accessToken?: AccessToken): Promise<Delivery> {
-		
 		switch (delivery.method) {
 			case "branch":
 				return this.updateOrderWithDeliveryMethodBranch(delivery, order, accessToken);
@@ -93,7 +91,6 @@ export class DeliveryHandler {
 	private getBringDeliveryInfoAndUpdateDelivery(order: Order, delivery: Delivery, items: Item[], accessToken: AccessToken): Promise<Delivery> {
 		return new Promise((resolve, reject) => {
 		    this.bringDeliveryService.getDeliveryInfoBring(delivery.info['facilityAddress'], delivery.info['shipmentAddress'], items).then((deliveryInfoBring: DeliveryInfoBring) => {
-
 		    	this.branchStorage.get(order.branch).then((branch: Branch) => {
 		    		let amount = deliveryInfoBring.amount;
 
@@ -110,7 +107,6 @@ export class DeliveryHandler {
 					}).catch((updateDeliveryError: BlError) => {
 						reject(updateDeliveryError);
 					})
-
 				}).catch((getBranchError: BlError) => {
 					reject(getBranchError);
 				});
