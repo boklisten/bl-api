@@ -63,6 +63,8 @@ export class PaymentValidator {
 				return this.validatePaymentCard(payment, order);
 			case 'cash':
 				return this.validatePaymentCash(payment, order);
+			case 'vipps':
+				return this.validatePaymentVipps(payment, order);
 			default:
 				throw new BlError(`payment.method "${payment.method}" not supported`);
 		}
@@ -73,6 +75,10 @@ export class PaymentValidator {
 	}
 
 	private validatePaymentCard(payment: Payment, order: Order): Promise<boolean> {
+		return Promise.resolve(true);
+	}
+
+	private validatePaymentVipps(payment: Payment, order: Order): Promise<boolean> {
 		return Promise.resolve(true);
 	}
 

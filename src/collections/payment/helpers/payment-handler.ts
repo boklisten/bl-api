@@ -19,49 +19,48 @@ export class PaymentHandler {
 		this._userDetailHelper = (userDetailHelper) ? userDetailHelper : new UserDetailHelper();
 	}
 	
-	public confirmPayments(order: Order, accessToken: AccessToken): Promise<Payment[]> {
-		return new Promise((resolve, reject) => {
-			if (!order.payments || order.payments.length <= 0) {
-				resolve([]);
+	public async confirmPayments(order: Order, accessToken: AccessToken): Promise<Payment[]> {
+		if (!order.payments || order.payments.length <= 0) {
+			return [];
+		}
+
+		let payments: Payment[];
+
+		try{
+			payments = await this.paymentStorage.getMany(order.payments);
+		} catch (e) {
+			throw new BlError('one or more payments was not found');
+		}
+
+
+		for (let payment of payments) {
+			if (payment.confirmed) {
+				throw new BlError(`payment "${payment.id}" is already confirmed`);
 			}
-			
-			this.paymentStorage.getMany(order.payments).then((payments: Payment[]) => {
-				
-				for (let payment of payments) {
-					if (payment.confirmed) {
-						return reject(new BlError(`payment "${payment.id}" is already confirmed`))
-					}
-				}
-				
-				if (payments.length > 1) {
-					this.confirmMultiplePayments(order, payments).then(() => {
-					
-					}).catch((confirmError: BlError) => {
-						reject(confirmError);
-					});
-				} else {
-					
-					this.confirmBasedOnPaymentMethod(order, payments[0], accessToken).then(() => {
-						this.paymentStorage.update(payments[0].id, {confirmed: true}, {id: accessToken.sub, permission: accessToken.permission}).then((updatedPayment: Payment) => {
-							resolve([updatedPayment]);
-						}).catch((updateError: BlError) => {
-							reject(new BlError('could not set payment.confirmed to true').add(updateError));
-						});
-					}).catch((confirmPaymentError: BlError) => {
-						reject(confirmPaymentError);
-					});
-				}
-			}).catch((paymentNotFoundError: BlError) => {
-				reject(new BlError('one or more payments was not found').add(paymentNotFoundError))
-			})
-		});
+		}
+
+		if (payments.length > 1) {
+			await this.confirmMultiplePayments(order, payments, accessToken);
+		} else {
+			await this.confirmBasedOnPaymentMethod(order, payments[0], accessToken);
+
+			let updatedPayment = await this.paymentStorage.update(payments[0].id, {confirmed: true}, {
+				id: accessToken.sub,
+				permission: accessToken.permission
+			});
+			return [updatedPayment];
+		}
 	}
-	
-	private confirmMultiplePayments(order: Order, payments: Payment[]) {
+
+	private async confirmMultiplePayments(order: Order, payments: Payment[], accessToken: AccessToken): Promise<boolean> {
 		if (payments.length > 1) {
 			for (let payment of payments) {
 				if (payment.method === 'dibs') {
 					return Promise.reject(new BlError(`there was multiple payments but only one is allowed if one has method "${payment.method}"`));
+				} else {
+					if (this.confirmBasedOnPaymentMethod(order, payment, accessToken)) {
+						await this.paymentStorage.update(payment.id, {confirmed: true}, {id: accessToken.sub, permission: accessToken.permission});
+					}
 				}
 			}
 		}
@@ -75,12 +74,18 @@ export class PaymentHandler {
 				return this.confirmMethodCard(order, payment);
 			case 'cash':
 				return this.confirmMethodCash(order, payment);
+			case 'vipps':
+				return this.confirmMethodVipps(order, payment);
 			default:
 				return Promise.reject(new BlError(`payment method "${payment.method}" not supported`));
 		}
 	}
 
 	private confirmMethodCard(order: Order, payment: Payment): Promise<boolean> {
+		return Promise.resolve(true);
+	}
+
+	private confirmMethodVipps(order: Order, payment: Payment): Promise<boolean> {
 		return Promise.resolve(true);
 	}
 
