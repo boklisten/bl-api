@@ -30,7 +30,7 @@ export class ItemCollection implements BlCollection {
 				},
 				{
 					fieldName: 'info.isbn',
-					type: 'string',
+					type: 'number',
 				}
 			]
 		},
