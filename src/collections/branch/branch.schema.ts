@@ -98,10 +98,17 @@ export const branchSchema = {
 			},
 			buyout: {
 				type: {
-					percentage: Schema.Types.Boolean
+					percentage: Schema.Types.Number
 				},
 				default: 1,
 				required: true
+			},
+			sell: {
+				type: {
+					percentage: Schema.Types.Number
+				},
+				default: 1,
+				required: false
 			},
 			acceptedMethods: {
 				type: [Schema.Types.String],
@@ -120,6 +127,9 @@ export const branchSchema = {
 			rentPeriods: [],
 			extendPeriods: [],
 			buyout: {
+				percentage: 1
+			},
+			sell: {
 				percentage: 1
 			},
 			acceptedMethods: []
