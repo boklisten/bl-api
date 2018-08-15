@@ -16,7 +16,7 @@ export const paymentSchema = {
 	},
 	customer: {
 		type: Schema.Types.ObjectId,
-		required: true
+		required: false
 	},
 	branch: {
 		type: Schema.Types.ObjectId,

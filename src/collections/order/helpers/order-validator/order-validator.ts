@@ -37,7 +37,10 @@ export class OrderValidator {
 	public async validate(order: Order): Promise<boolean> {
 		
 		try {
-			await this.orderUserDetailValidator.validate(order);
+			if (this.mustHaveCustomer(order)) {
+				await this.orderUserDetailValidator.validate(order);
+			}
+
 			await this.orderFieldValidator.validate(order);
 			let branch = await this.branchStorage.get(order.branch);
 			
@@ -52,5 +55,15 @@ export class OrderValidator {
 			return Promise.reject(new BlError('order could not be validated').store('error', e));
 		}
 		return Promise.resolve(true);
+	}
+
+	private mustHaveCustomer(order: Order): boolean {
+		for (let orderItem of order.orderItems) {
+			if (orderItem.type !== 'buy') {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

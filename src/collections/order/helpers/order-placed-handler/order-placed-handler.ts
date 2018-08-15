@@ -19,6 +19,7 @@ import {deliverySchema} from "../../../delivery/delivery.schema";
 import {Messenger} from "../../../../messenger/messenger";
 import {CustomerItemHandler} from "../../../customer-item/helpers/customer-item-handler";
 import {OrderItemMovedFromOrderHandler} from "../order-item-moved-from-order-handler/order-item-moved-from-order-handler";
+import {isNullOrUndefined} from "util";
 
 export class OrderPlacedHandler {
 	private customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -45,33 +46,33 @@ export class OrderPlacedHandler {
 		this._orderItemMovedFromOrderHandler = (orderItemMovedFromOrderHandler) ? orderItemMovedFromOrderHandler : new OrderItemMovedFromOrderHandler();
 	}
 	
-	public placeOrder(order: Order, accessToken: AccessToken): Promise<Order> {
-			let placedOrder: Order;
-			return this.userDetailStorage.get(order.customer)
-				.then((userDetail: UserDetail) => {
-					if (!userDetail.emailConfirmed) {
-						throw new BlError('userDetail.emailConfirmed is not true');
-					}
+	public async placeOrder(order: Order, accessToken: AccessToken): Promise<Order> {
+		try {
+			console.log('the order', order);
+			if (!isNullOrUndefined(order.customer)) {
+				console.log('have customer?', order.customer);
+				let userDetail = await this.userDetailStorage.get(order.customer);
 
-					return this.paymentHandler.confirmPayments(order, accessToken);
-				}).then(() => {
-					return this.orderStorage.update(order.id, {placed: true}, {
-						id: accessToken.sub,
-						permission: accessToken.permission
-					});
-				}).then(() => {
-					return this.updateCustomerItemsIfPresent(order);
-				}).then((updatedOrder: Order) => {
-					placedOrder = updatedOrder;
-					this._orderItemMovedFromOrderHandler.updateOrderItems(order);
-				}).then(() => {
-					return this.updateUserDetailWithPlacedOrder(placedOrder, accessToken);
-				}).then(() => {
-					this.sendOrderConfirmationMail(placedOrder);
-					return placedOrder;
-				}).catch((placedOrderError: BlError) => {
-					throw new BlError('order could not be placed').add(placedOrderError);
+				if (!userDetail.emailConfirmed) {
+					throw new BlError('userDetail.emailConfirmed is not true');
+				}
+			}
+
+			await this.paymentHandler.confirmPayments(order, accessToken);
+
+			const placedOrder = await this.orderStorage.update(order.id, {placed: true}, {
+				id: accessToken.sub,
+				permission: accessToken.permission
 			});
+
+			await this.updateCustomerItemsIfPresent(placedOrder);
+			await this._orderItemMovedFromOrderHandler.updateOrderItems(placedOrder);
+			await this.updateUserDetailWithPlacedOrder(placedOrder, accessToken);
+			this.sendOrderConfirmationMail(placedOrder);
+			return placedOrder;
+		} catch (e) {
+			throw new BlError('could not update order').add(e);
+		}
 	}
 
 	private async updateCustomerItemsIfPresent(order: Order): Promise<Order> {
@@ -103,6 +104,9 @@ export class OrderPlacedHandler {
 	}
 
 	private updateUserDetailWithPlacedOrder(order: Order, accessToken: AccessToken): Promise<boolean> {
+		if (isNullOrUndefined(order.customer) || !order.customer) {
+			return Promise.resolve(true);
+		}
 		return new Promise((resolve, reject) => {
 			this.userDetailStorage.get(order.customer).then((userDetail: UserDetail) => {
 				let orders = (userDetail.orders) ? userDetail.orders : [];
