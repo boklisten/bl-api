@@ -48,9 +48,7 @@ export class OrderPlacedHandler {
 	
 	public async placeOrder(order: Order, accessToken: AccessToken): Promise<Order> {
 		try {
-			console.log('the order', order);
 			if (!isNullOrUndefined(order.customer)) {
-				console.log('have customer?', order.customer);
 				let userDetail = await this.userDetailStorage.get(order.customer);
 
 				if (!userDetail.emailConfirmed) {
@@ -145,7 +143,7 @@ export class OrderPlacedHandler {
 			}
 
 		}).catch((getCustomerDetailError) => {
-			console.log('could not get customer detail');
+
 		})
 	}
 }
