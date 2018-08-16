@@ -96,7 +96,7 @@ export class GoogleAuth {
 
 	private createCallbackGet(router: Router) {
 		router.get(this.apiPath.createPath('auth/google/callback'), (req, res) => {
-			passport.authenticate(blConfig.APP_CONFIG.login.google.name, function (err, tokens, blError: BlError) {
+			passport.authenticate(blConfig.APP_CONFIG.login.google.name, (err, tokens, blError: BlError) => {
 				const resHandler = new SEResponseHandler();
 
 				if (!tokens && (err || blError)) {
@@ -104,8 +104,7 @@ export class GoogleAuth {
 				}
 
 				if (tokens) {
-					const refererPath = (req.headers.referer) ? req.headers.referer + '/' : null;
-					return resHandler.sendAuthTokens(res, tokens.accessToken, tokens.refreshToken, refererPath);
+					return resHandler.sendAuthTokens(res, tokens.accessToken, tokens.refreshToken, this.apiPath.retrieveRefererPath(req.headers));
 				}
 			})(req, res);
 		})

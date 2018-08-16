@@ -16,7 +16,7 @@ export const APP_CONFIG = {
 		}
 	},
 	server: {
-		basePath: 'http://localhost:1337/api/v1/'
+		basePath: 'http://localhost:1337'
 	},
 	url: {
 		bring: {
