@@ -37,10 +37,6 @@ export class PasswordResetPostHook extends Hook {
 
 		return new Promise((resolve, reject) => {
 			this._userHandler.getByUsername(passwordReset.email).then((user: User) => {
-				if (user.login.provider !== 'local') {
-					reject(new BlError(`provider "${user.login.provider}" is not local, can only reset password if provider is local`).code(912));
-				}
-
 				if (!user.active) {
 					reject(new BlError('user.active is false').code(703));
 				}

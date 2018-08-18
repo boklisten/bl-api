@@ -5,10 +5,16 @@ import isEmail = require("validator/lib/isEmail");
 import {BlError} from "@wizardcoder/bl-model";
 import {HashedPasswordGenerator} from "../password/hashed-password-generator";
 import {ProviderIdGenerator} from "../provider-id/provider-id-generator";
+import {SeCrypto} from "../../../crypto/se.crypto";
+import {SaltGenerator} from "../salt/salt-generator";
 
 export class LocalLoginCreator {
-	constructor(private hashedPasswordGenerator: HashedPasswordGenerator, private providerIdGenerator: ProviderIdGenerator) {
-	
+	private _hashedPasswordGenerator: HashedPasswordGenerator;
+	private _providerIdGenerator: ProviderIdGenerator;
+
+	constructor(private hashedPasswordGenerator?: HashedPasswordGenerator, private providerIdGenerator?: ProviderIdGenerator) {
+		this._hashedPasswordGenerator = (hashedPasswordGenerator) ? hashedPasswordGenerator : new HashedPasswordGenerator(new SaltGenerator(), new SeCrypto());
+		this._providerIdGenerator = (providerIdGenerator) ? providerIdGenerator : new ProviderIdGenerator(new SeCrypto());
 	}
 	
 	public create(username: string, password: string): Promise<LocalLogin> {
@@ -17,9 +23,9 @@ export class LocalLoginCreator {
 			if (!username || !isEmail(username)) return reject(blError.msg('username "'+ username + '" is undefined or not an Email').code(103));
 			if (!password || password.length < 6) return reject(blError.msg('password is to short or empty').code(103));
 			
-			this.hashedPasswordGenerator.generate(password).then(
+			this._hashedPasswordGenerator.generate(password).then(
 				(hashedPasswordAndSalt: {hashedPassword: string, salt: string}) => {
-					this.providerIdGenerator.generate(username).then(
+					this._providerIdGenerator.generate(username).then(
 						(providerId: string) => {
 							let newLocalLogin = new LocalLogin();
 							newLocalLogin.username = username;

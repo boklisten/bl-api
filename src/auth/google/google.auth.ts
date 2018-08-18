@@ -45,8 +45,8 @@ export class GoogleAuth {
 					.store('providerId', providerId));
 			}
 
-			this.userHandler.exists(provider, providerId).then(
-				(exists: boolean) => {
+			this.userHandler.get(provider, providerId).then(
+				(user: User) => {
 					this.userHandler.valid(username).then(() => {
 						this.createTokens(username, done);
 					}).catch((userValidError: BlError) => {

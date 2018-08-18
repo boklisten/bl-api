@@ -10,6 +10,15 @@ export type User = {
 		provider: string,
 		providerId: string
 	},
+	logins: {
+		provider: string,
+		providerId?: string,
+		device?: {
+			type: string,
+			name: string
+		},
+		time: Date
+	}[],
 	blid: string,
 	username: string,
 	valid: boolean,
@@ -18,6 +27,8 @@ export type User = {
 		permission: UserPermission
 	}
 	active?: boolean,
+	primary?: boolean, // if user had multiple user details, this flag sets this to the primary
+	movedToPrimary?: string, // if user had multiple user details, this is set to link to the primary user
 	lastActive?: string,
 	lastRequest?: string,
 }

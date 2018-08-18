@@ -34,6 +34,12 @@ export let UserSchema = {
 		type: Schema.Types.Boolean,
 		default: true
 	},
+	primary: {
+		type: Schema.Types.Boolean,
+	},
+	movedToPrimary: {
+		type: Schema.Types.ObjectId
+	},
 	active: {
 		type: Schema.Types.Boolean,
 		default: true

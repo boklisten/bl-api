@@ -18,7 +18,7 @@ export class FacebookAuth {
 
 	constructor(router: Router, private resHandler: SEResponseHandler, private tokenHandler: TokenHandler, private userHandler: UserHandler) {
 		this.apiPath = new ApiPath;
-		
+
 
 		passport.use(new Strategy({
 				clientID: process.env.FACEBOOK_CLIENT_ID,
@@ -44,8 +44,8 @@ export class FacebookAuth {
 						.store('providerId', providerId));
 				}
 				
-				userHandler.exists(provider, providerId).then(
-					(exists: boolean) => {
+				userHandler.get(provider, providerId).then(
+					(user: User) => {
 						this.userHandler.valid(username).then(() => {
 							this.createTokens(username, done);
 						}).catch((userValidError: BlError) => {

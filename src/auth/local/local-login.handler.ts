@@ -9,14 +9,23 @@ import {HashedPasswordGenerator} from "./password/hashed-password-generator";
 import {SaltGenerator} from "./salt/salt-generator";
 import {SeCrypto} from "../../crypto/se.crypto";
 import {SystemUser} from "../permission/permission.service";
+import {LocalLoginCreator} from "./local-login-creator/local-login-creator";
+import {ProviderIdGenerator} from "./provider-id/provider-id-generator";
 
 export class LocalLoginHandler {
 	private localLoginStorage: BlDocumentStorage<LocalLogin>;
 	private _hashedPasswordGenerator: HashedPasswordGenerator;
+	private _localLoginCreator: LocalLoginCreator;
+	private _seCrypto: SeCrypto;
 	
-	constructor(localLoginStorage?: BlDocumentStorage<LocalLogin>, hashedPasswordGenerator?: HashedPasswordGenerator) {
+	constructor(localLoginStorage?: BlDocumentStorage<LocalLogin>,
+				hashedPasswordGenerator?: HashedPasswordGenerator,
+				localLoginCreator?: LocalLoginCreator,
+				) {
+		this._seCrypto = new SeCrypto();
 		this.localLoginStorage = (localLoginStorage) ? localLoginStorage : new BlDocumentStorage('locallogins', localLoginSchema);
-		this._hashedPasswordGenerator = (hashedPasswordGenerator) ? hashedPasswordGenerator : new HashedPasswordGenerator(new SaltGenerator(), new SeCrypto());
+		this._hashedPasswordGenerator = (hashedPasswordGenerator) ? hashedPasswordGenerator : new HashedPasswordGenerator(new SaltGenerator(), this._seCrypto);
+		this._localLoginCreator = (localLoginCreator) ? localLoginCreator : new LocalLoginCreator();
 	}
 	
 	public get(username: string): Promise<LocalLogin> {
@@ -30,7 +39,7 @@ export class LocalLoginHandler {
 			];
 			
 			this.localLoginStorage.getByQuery(dbQuery).then((localLogins: LocalLogin[]) => {
-				
+
 					if (localLogins.length !== 1) {
 						return reject(new BlError('could not get LocalLogin by the provided username "' + username + '"').store('username', username));
 					}
@@ -39,6 +48,33 @@ export class LocalLoginHandler {
 					return reject(new BlError(`could not get localLogin with username "${username}"`).code(702).add(error));
 				});
 		});
+	}
+
+	public async createDefaultLocalLogin(username: string): Promise<boolean> {
+		let alreadyAddedLocalLogin = null;
+
+		try {
+			alreadyAddedLocalLogin = await this.get(username);
+		} catch (e) {
+			alreadyAddedLocalLogin = null;
+		}
+
+		if (alreadyAddedLocalLogin) {
+			return true;
+		}
+
+		try {
+			const randomPassword = this._seCrypto.random();
+
+			console.log('creating local login');
+
+			const defaultLocalLogin = await this._localLoginCreator.create(username, randomPassword);
+			await this.localLoginStorage.add(defaultLocalLogin, new SystemUser());
+
+			return true;
+		} catch (e) {
+			throw new BlError('could not create default localLogin').store('localLoginCreationError', e);
+		}
 	}
 
 	public setPassword(username: string, password: string): Promise<boolean> {

@@ -10,37 +10,50 @@ import {userDetailSchema} from "../../collections/user-detail/user-detail.schema
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
 import {PasswordReset} from "../../collections/password-reset/password-reset";
 import {EmailValidationHelper} from "../../collections/email-validation/helpers/email-validation.helper";
+import {SystemUser} from "../permission/permission.service";
+import {LocalLoginHandler} from "../local/local-login.handler";
+import {LocalLoginValidator} from "../local/local-login.validator";
 
 export class UserHandler {
 	private blid: Blid;
 	private userDetailStorage: BlDocumentStorage<UserDetail>;
 	private userStorage: BlDocumentStorage<User>;
 	private _emailValidationHelper: EmailValidationHelper;
+	private _localLoginHandler: LocalLoginHandler;
 
-	constructor(userDetailStorage?: BlDocumentStorage<UserDetail>, userStorage?: BlDocumentStorage<User>, emailValidationHelper?: EmailValidationHelper) {
+	constructor(userDetailStorage?: BlDocumentStorage<UserDetail>,
+				userStorage?: BlDocumentStorage<User>,
+				emailValidationHelper?: EmailValidationHelper,
+				localLoginHandler?: LocalLoginHandler
+				) {
 		this.blid = new Blid();
 		this.userDetailStorage = (userDetailStorage) ? userDetailStorage : new BlDocumentStorage('userdetails', userDetailSchema);
 		this._emailValidationHelper = (emailValidationHelper) ? emailValidationHelper : new EmailValidationHelper();
 		this.userStorage = (userStorage) ? userStorage : new BlDocumentStorage('users', UserSchema);
+		this._localLoginHandler = (localLoginHandler) ? localLoginHandler : new LocalLoginHandler();
+
 	}
 	
 	public getByUsername(username: string): Promise<User> {
 		return new Promise((resolve, reject) => {
 			if (!username) return reject(new BlError('username is empty or undefined'));
-			
-			
+
 			let dbQuery = new SEDbQuery();
 			dbQuery.stringFilters = [
 				{fieldName: 'username', value: username}
 			];
 			
-			
 			this.userStorage.getByQuery(dbQuery).then(
 				(docs: User[]) => {
-					if (docs.length !== 1) {
-						reject(new BlError(`username "${username}" was not found`).code(702));
+					if (docs.length > 1) {
+						this.handleIfMultipleUsersWithSameEmail(docs).then((user: User) => {
+							resolve(user);
+						}).catch(() => {
+							reject(new BlError(`could not handle user with multiple entries`));
+						})
+					} else {
+						resolve(docs[0]);
 					}
-					resolve(docs[0]);
 				},
 				(error: BlError) => {
 					reject(new BlError('could not find user with username "' + username + '"')
@@ -50,10 +63,46 @@ export class UserHandler {
 		});
 	}
 
+	private handleIfMultipleUsersWithSameEmail(users: User[]): Promise<User> {
+		// this bit of code is for some of our very first customers that had more than one user
+		// this issue came from multiple logins as it was created a new user for Facbook, Google and local
+		// even with the same email
+
+		let selectedUser = null;
+
+		for (let user of users) {
+			if (user.primary) {
+				selectedUser = user;
+			}
+		}
+
+		if (selectedUser) {
+			return Promise.resolve(selectedUser);
+		} else {
+
+			selectedUser = users[0];
+
+			return this.userStorage.update(selectedUser, {primary: true}, new SystemUser()).then((primaryUser) => {
+				let promiseArr: Promise<User>[] = [];
+
+				for (let i = 1; i < users.length; i++) {
+					promiseArr.push(this.userStorage.update(users[i].id, {movedToPrimary: selectedUser.id}, new SystemUser()));
+				}
+
+				return Promise.all(promiseArr).then(() => {
+					return primaryUser;
+				}).catch(() => {
+					throw new BlError(`user with multiple entries could not update the other entries with invalid`);
+				});
+			}).catch((updateUserErr) => {
+				throw new BlError('user with multiple entries could not update one to primary');
+			});
+		}
+	}
+
 	public get(provider: string, providerId: string): Promise<User> {
 		let blError = new BlError('').className('userHandler').methodName('exists')
-		
-		
+
 		return new Promise((resolve, reject) => {
 			if (!provider || provider.length <= 0) reject(blError.msg('provider is empty or undefined'));
 			if (!providerId || providerId.length <= 0) reject(blError.msg('providerId is empty of undefined'));
@@ -74,54 +123,83 @@ export class UserHandler {
 		});
 	}
 
-	public create(username: string, provider: string, providerId: string): Promise<User> {
-		return new Promise((resolve, reject) => {
-			let blError = new BlError('').className('UserHandler').methodName('create');
-			
-			if (!username || username.length <= 0) reject(blError.msg('username is empty or undefined'));
-			if (!provider || provider.length <= 0) reject(blError.msg('provider is empty or undefined'));
-			if (!providerId || providerId.length <= 0) reject(blError.msg('providerId is empty or undefined'));
+	public async create(username: string, provider: string, providerId: string): Promise<User> {
 
-			this.blid.createUserBlid(provider, providerId).then((userId) => {
-				let userDetail: any = {
-					email: username,
-					blid: userId,
-					emailConfirmed: (provider === 'google' || provider === 'facebook') // email is only valid on creation if provider is facebook or google
-				};
+		if (!username || username.length <= 0) throw new BlError('username is empty or undefined').code(907);
+		if (!provider || provider.length <= 0) throw new BlError('provider is empty or undefined').code(907);
+		if (!providerId || providerId.length <= 0) throw new BlError('providerId is empty or undefined').code(907);
 
-				return this.userDetailStorage.add(userDetail, {id: userId, permission: "customer"});
-			}).then((addedUserDetail: UserDetail) => {
-				if (!addedUserDetail.emailConfirmed) {
-					return this.sendEmailValidationLink(addedUserDetail);
-				}
-				return Promise.resolve(addedUserDetail);
-			}).then((addedUserDetail: UserDetail) => {
-				let user: User = {
-					id: '',
-					userDetail: addedUserDetail.id,
-					permission: "customer",
-					blid: addedUserDetail.user.id,
-					username: username,
-					valid: false,
-					login: {
-						provider: provider,
-						providerId: providerId
-					}
-				};
+		let userExists: User = null;
+		try {
+			userExists = await this.getByUsername(username);
+		} catch (e) {
+			userExists = null;
+		}
 
-				return this.userStorage.add(user, {id: addedUserDetail.user.id, permission: user.permission});
-			}).then((user: User) => {
-				resolve(user);
-			}).catch((blError: BlError) => {
-				reject(new BlError(`failed to create user with username "${username}"`).add(blError));
-			});
-			
-		});
+		if (userExists) {
+			if (provider === 'local') {
+				throw new BlError(`username "${username}" already exists, but trying to create new user with provider "local"`).code(903);
+			} else if (provider === 'google' || provider === 'facebook') {
+				// if user already exists and the creation is with google or facebook
+				return userExists;
+			} else {
+				throw new BlError(`username "${username}" already exists, but could not link it with new provider "${provider}"`)
+			}
+		}
+
+		try {
+			const blid = await this.blid.createUserBlid(provider, providerId);
+			let userDetail: any = {
+				email: username,
+				blid: blid,
+				emailConfirmed: (provider === 'google' || provider === 'facebook') // email is only valid on creation if using Google or Facebook
+			};
+
+			if (provider === 'google' || provider === 'facebook') {
+				// if the provider is google or facebook, should create a default localLogin
+				// this so that when the user tries to login with username or password he can
+				// ask for a new password via email
+
+				console.log(`the provider is ${provider} we should create a default login`);
+
+				await this._localLoginHandler.createDefaultLocalLogin(username);
+			}
+
+			const addedUserDetail: UserDetail = await this.userDetailStorage.add(userDetail, {id: blid, permission: "customer"});
+
+			if (!addedUserDetail.emailConfirmed) {
+				await this.sendEmailValidationLink(addedUserDetail);
+			}
+
+			let newUser: any = {
+				userDetail: addedUserDetail.id,
+				permission: 'customer',
+				blid: blid,
+				username: username,
+				valid: false,
+				login: {
+					provider: provider,
+					providerId: providerId
+				},
+			};
+
+			return await this.userStorage.add(newUser, {id: blid, permission: newUser.permission});
+		} catch (e) {
+			let blError = new BlError('user creation failed').code(903);
+
+			if (e instanceof BlError) {
+				blError.add(e);
+			} else {
+				blError.store('UserCreationError', e);
+			}
+
+			throw blError;
+		}
 	}
 
-	private sendEmailValidationLink(userDetail: UserDetail): Promise<UserDetail> {
+	private sendEmailValidationLink(userDetail: UserDetail): Promise<boolean> {
 		return this._emailValidationHelper.createAndSendEmailValidationLink(userDetail.id).then(() => {
-			return userDetail;
+			return true;
 		}).catch((sendEmailValidationLinkError: BlError) => {
 			throw new BlError('could not send out email validation link').add(sendEmailValidationLinkError);
 		});

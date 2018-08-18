@@ -9,10 +9,9 @@ import {BlError, UserDetail} from "@wizardcoder/bl-model";
 import {Promise} from 'es6-promise';
 import {User} from "../../collections/user/user";
 import {BlDocumentStorage} from "../../storage/blDocumentStorage";
-import {SEDbQueryBuilder} from "../../query/se.db-query-builder";
 import {SEDbQuery} from "../../query/se.db-query";
-import {PasswordReset} from "../../collections/password-reset/password-reset";
 import {EmailValidationHelper} from "../../collections/email-validation/helpers/email-validation.helper";
+import {LocalLoginHandler} from "../local/local-login.handler";
 
 chai.use(chaiAsPromised);
 
@@ -35,7 +34,8 @@ describe('UserHandler', () => {
 	const userStorage: BlDocumentStorage<User> = new BlDocumentStorage('users', UserSchema);
 	const emailValidationHelper: EmailValidationHelper = new EmailValidationHelper();
 	const userDetailStorage: BlDocumentStorage<UserDetail> = new BlDocumentStorage('userdetails', UserDetail);
-	let userHandler = new UserHandler(userDetailStorage, userStorage, emailValidationHelper);
+	const localLoginHandler: LocalLoginHandler = new LocalLoginHandler();
+	let userHandler = new UserHandler(userDetailStorage, userStorage, emailValidationHelper, localLoginHandler);
 	let testProvider = '';
 	let testProviderId = '';
 	let testUsername = '';
@@ -70,7 +70,7 @@ describe('UserHandler', () => {
 		});
 	});
 
-	sinon.stub(userStorage, 'getByQuery').callsFake((query: SEDbQuery) => {
+	let userStorageGetByQueryStub = sinon.stub(userStorage, 'getByQuery').callsFake((query: SEDbQuery) => {
 		return new Promise((resolve, reject) => {
 			if (query.stringFilters[0].value !== testUser.username) {
 				return reject(new BlError('not found').code(702));
@@ -143,6 +143,27 @@ describe('UserHandler', () => {
 				});
 			});
 		});
+
+		context('when multiple users is found with same username', () => {
+			it('should select the first one with primary if primary is set', () => {
+				let username = 'jimmy@dore.com';
+				const testUsers = [
+					{username: username, movedToPrimary: 'someObjectId'},
+					{username: username, primary: true}
+				];
+
+				let dbQuery = new SEDbQuery();
+				dbQuery.stringFilters = [
+					{fieldName: 'username', value: username}
+				];
+
+
+				userStorageGetByQueryStub.withArgs(dbQuery).resolves(testUsers);
+
+				return expect(userHandler.getByUsername(username))
+					.to.eventually.be.eql({username: username, primary: true})
+			});
+		});
 	});
 
 	describe('create()', () => {
@@ -168,22 +189,70 @@ describe('UserHandler', () => {
 		});
 
 		it('should resolve with a user when username, provider and providerId is valid', () => {
-			return userHandler.create(testUsername, testProvider, testProviderId).then(
+			return userHandler.create('jesus@christ.com', testProvider, testProviderId).then(
 				(user: User) => {
 					user.username.should.be.eql(testUser.username);
 					user.login.should.be.eql(testUser.login);
 				});
 		});
 
-		it('should reject if emailValidationHelper rejects on sending of email validaion link', (done) => {
+		it('should reject if username already exists and provider is "local"', (done) => {
+			testUsername = 'James@bond.com';
+			let dbQuery = new SEDbQuery();
+			dbQuery.stringFilters = [
+				{fieldName: 'username', value: testUsername}
+			];
+
+			userStorageGetByQueryStub.withArgs(dbQuery).resolves([testUser]);
+
+			userHandler.create(testUsername, 'local', 'someProviderId').catch((blError: BlError) => {
+				expect(blError.getMsg())
+					.to.be.eq(`username "${testUsername}" already exists, but trying to create new user with provider "local"`);
+
+				expect(blError.getCode())
+					.to.be.eq(903);
+				done();
+			})
+		});
+
+		it('should resolve if username already exists and provider is "google"', () => {
+			testUsername = 'gert@bert.com';
+			let dbQuery = new SEDbQuery();
+			dbQuery.stringFilters = [
+				{fieldName: 'username', value: testUsername}
+			];
+
+			userStorageGetByQueryStub.withArgs(dbQuery).resolves([testUser]);
+
+			return expect(userHandler.create(testUsername, 'google', 'someGoogleId'))
+				.to.be.fulfilled;
+		});
+
+		it('should resolve if username already exists and provider is "facebook"', () => {
+			testUsername = 'jets@bets.com';
+			let dbQuery = new SEDbQuery();
+			dbQuery.stringFilters = [
+				{fieldName: 'username', value: testUsername}
+			];
+
+			userStorageGetByQueryStub.withArgs(dbQuery).resolves([testUser]);
+
+			return expect(userHandler.create(testUsername, 'facebook', 'someFacebookId'))
+				.to.be.fulfilled;
+		});
+
+		it('should reject if emailValidationHelper rejects on sending of email validation link', (done) => {
 			emailValidationLinkSuccess = false;
 
-			userHandler.create(testUsername, testProvider, testProviderId).catch((blError: BlError) => {
+			userHandler.create('jhon@boi.com', testProvider, testProviderId).catch((blError: BlError) => {
 				expect(blError.errorStack.length)
 					.to.be.gte(1);
 
 				expect(blError.errorStack[0].getMsg())
 					.to.be.eq('could not send out email validation link');
+
+				expect(blError.getCode())
+					.to.eq(903);
 
 				done();
 			})
@@ -191,6 +260,7 @@ describe('UserHandler', () => {
 
 		it('should send out email validation link on user creation', (done) => {
 			emailValidationLinkSuccess = true;
+			testUsername = 'johnny@ronny.com';
 
 			userHandler.create(testUsername, testProvider, testProviderId).then(() => {
 				expect(emailValidationHelperSendLinkStub)

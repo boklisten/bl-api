@@ -49,7 +49,7 @@ describe('PasswordResetPostHook', () => {
 				permission: 'customer'
 			},
 			active: true
-		}
+		} as any;
 	});
 
 	describe('#before', () => {
@@ -106,14 +106,6 @@ describe('PasswordResetPostHook', () => {
 		});
 
 		describe('when user is found in storage', () => {
-			it('should reject if user.login.provider is not local', () => {
-				testUser.login.provider = 'facebook';
-
-				return expect(passwordResetPostHook.before(testPasswordReset))
-					.to.be.rejectedWith(BlError, /provider "facebook" is not local/);
-
-			});
-
 			it('should reject if user.active is false', () => {
 				testUser.active = false;
 

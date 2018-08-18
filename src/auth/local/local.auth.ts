@@ -24,6 +24,7 @@ export class LocalAuth {
 		passport.use(new Strategy((username: string, password: string, done: any) => {
 			localLoginValidator.validate(username, password).then(
 				(localLoginProvider: {provider: string, providerId: string}) => {
+					console.log('got local login', localLoginProvider);
 					this.tokenHandler.createTokens(username).then(
 						(tokens: {accessToken: string, refreshToken: string}) => {
 							done(null, tokens);
@@ -47,7 +48,6 @@ export class LocalAuth {
 				passport.authenticate('local', (error,
 												jwTokens: {accessToken: string, refreshToken: string},
 												blError: BlError) => {
-					
 					if (blError) {
 						if (!(blError instanceof BlError)) {
 							blError = new BlError('unknown error').code(500);
