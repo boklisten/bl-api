@@ -70,6 +70,10 @@ describe('UserHandler', () => {
 		});
 	});
 
+	let localLoginHandlerGetStub = sinon.stub(localLoginHandler, 'get').callsFake(() => {
+		return Promise.resolve({});
+	});
+
 	let userStorageGetByQueryStub = sinon.stub(userStorage, 'getByQuery').callsFake((query: SEDbQuery) => {
 		return new Promise((resolve, reject) => {
 			if (query.stringFilters[0].value !== testUser.username) {
@@ -223,6 +227,7 @@ describe('UserHandler', () => {
 			];
 
 			userStorageGetByQueryStub.withArgs(dbQuery).resolves([testUser]);
+
 
 			return expect(userHandler.create(testUsername, 'google', 'someGoogleId'))
 				.to.be.fulfilled;

@@ -14,7 +14,7 @@ import {RefreshToken} from "./refresh/refresh-token";
 
 chai.use(chaiAsPromised);
 
-const testUser: User = {
+const testUser: any = {
 	id: 'abc',
 	username: 'bill@clintonisugly.com',
 	userDetail: 'abc',
