@@ -10,7 +10,6 @@ import {SaltGenerator} from "./salt/salt-generator";
 import {SeCrypto} from "../../crypto/se.crypto";
 import {SystemUser} from "../permission/permission.service";
 import {LocalLoginCreator} from "./local-login-creator/local-login-creator";
-import {ProviderIdGenerator} from "./provider-id/provider-id-generator";
 
 export class LocalLoginHandler {
 	private localLoginStorage: BlDocumentStorage<LocalLogin>;
@@ -50,6 +49,26 @@ export class LocalLoginHandler {
 		});
 	}
 
+	public async createDefaultLocalLoginIfNoneIsFound(username: string): Promise<boolean> {
+		let localLogin: LocalLogin = null;
+
+		try {
+			localLogin = await this.get(username);
+		} catch (e) {
+			localLogin = null;
+
+			if (e instanceof BlError) {
+				if (e.getCode() === 702) {
+					let createDefaultLocalLogin = await this.createDefaultLocalLogin(username);
+				}
+			} else {
+				throw new BlError('could not create default localLogin')
+			}
+		}
+
+		return true;
+	}
+
 	public async createDefaultLocalLogin(username: string): Promise<boolean> {
 		let alreadyAddedLocalLogin = null;
 
@@ -65,8 +84,6 @@ export class LocalLoginHandler {
 
 		try {
 			const randomPassword = this._seCrypto.random();
-
-			console.log('creating local login');
 
 			const defaultLocalLogin = await this._localLoginCreator.create(username, randomPassword);
 			await this.localLoginStorage.add(defaultLocalLogin, new SystemUser());

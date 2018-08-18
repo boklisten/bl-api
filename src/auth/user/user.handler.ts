@@ -13,6 +13,7 @@ import {EmailValidationHelper} from "../../collections/email-validation/helpers/
 import {SystemUser} from "../permission/permission.service";
 import {LocalLoginHandler} from "../local/local-login.handler";
 import {LocalLoginValidator} from "../local/local-login.validator";
+import {LocalLogin} from "../../collections/local-login/local-login";
 
 export class UserHandler {
 	private blid: Blid;
@@ -90,7 +91,8 @@ export class UserHandler {
 				}
 
 				return Promise.all(promiseArr).then(() => {
-					return primaryUser;
+
+					return selectedUser;
 				}).catch(() => {
 					throw new BlError(`user with multiple entries could not update the other entries with invalid`);
 				});
@@ -141,6 +143,13 @@ export class UserHandler {
 				throw new BlError(`username "${username}" already exists, but trying to create new user with provider "local"`).code(903);
 			} else if (provider === 'google' || provider === 'facebook') {
 				// if user already exists and the creation is with google or facebook
+				try {
+					const localLogin = await this._localLoginHandler.get(username);
+				} catch (e) {
+					// if localLogin is not found, should create a default one
+					await this._localLoginHandler.createDefaultLocalLogin(username);
+				}
+
 				return userExists;
 			} else {
 				throw new BlError(`username "${username}" already exists, but could not link it with new provider "${provider}"`)
@@ -159,8 +168,6 @@ export class UserHandler {
 				// if the provider is google or facebook, should create a default localLogin
 				// this so that when the user tries to login with username or password he can
 				// ask for a new password via email
-
-				console.log(`the provider is ${provider} we should create a default login`);
 
 				await this._localLoginHandler.createDefaultLocalLogin(username);
 			}

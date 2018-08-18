@@ -12,14 +12,17 @@ import * as blConfig from '../../application-config';
 import {UserHandler} from "../user/user.handler";
 import {User} from "../../collections/user/user";
 import {APP_CONFIG} from "../../application-config";
+import {LocalLoginHandler} from "../local/local-login.handler";
 
 export class GoogleAuth {
 	private apiPath: ApiPath;
+	private _localLoginHandler: LocalLoginHandler;
 
 	constructor(router: Router, private resHandler: SEResponseHandler, private tokenHandler: TokenHandler, private userHandler: UserHandler) {
 		this.apiPath = new ApiPath();
 		this.createAuthGet(router);
 		this.createCallbackGet(router);
+		this._localLoginHandler = new LocalLoginHandler();
 
 		passport.use(new OAuth2Strategy({
 			clientID: process.env.GOOGLE_CLIENT_ID,
@@ -48,7 +51,13 @@ export class GoogleAuth {
 			this.userHandler.get(provider, providerId).then(
 				(user: User) => {
 					this.userHandler.valid(username).then(() => {
-						this.createTokens(username, done);
+
+						this._localLoginHandler.createDefaultLocalLoginIfNoneIsFound(username).then(() => {
+							this.createTokens(username, done);
+						}).catch((e) => {
+							done(null, null, new BlError('could not create default local login if none was found').store('error', e).code(902));
+						});
+
 					}).catch((userValidError: BlError) => {
 						done(null, null, new BlError('user not valid').code(902).add(userValidError))
 					});

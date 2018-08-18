@@ -11,13 +11,17 @@ import {SEResponseHandler} from "../../response/se.response.handler";
 import {BlError} from "@wizardcoder/bl-model";
 import {User} from "../../collections/user/user";
 import {APP_CONFIG} from "../../application-config";
+import {LocalLoginHandler} from "../local/local-login.handler";
 
 export class FacebookAuth {
 	private apiPath: ApiPath;
+	private _localLoginHandler: LocalLoginHandler;
 
 
 	constructor(router: Router, private resHandler: SEResponseHandler, private tokenHandler: TokenHandler, private userHandler: UserHandler) {
 		this.apiPath = new ApiPath;
+		this._localLoginHandler = new LocalLoginHandler();
+
 
 
 		passport.use(new Strategy({
@@ -47,7 +51,13 @@ export class FacebookAuth {
 				userHandler.get(provider, providerId).then(
 					(user: User) => {
 						this.userHandler.valid(username).then(() => {
-							this.createTokens(username, done);
+
+							this._localLoginHandler.createDefaultLocalLoginIfNoneIsFound(username).then(() => {
+								this.createTokens(username, done);
+							}).catch((e) => {
+								done(null, null, new BlError('could not create default local login if none was found').store('error', e).code(902));
+							});
+
 						}).catch((userValidError: BlError) => {
 							done(null, null, new BlError('user not valid').code(902).add(userValidError));
 						});
@@ -55,6 +65,7 @@ export class FacebookAuth {
 					(existsError: BlError) => {
 						userHandler.create(username, provider, providerId).then(
 							(user: User) => {
+
 								this.createTokens(user.username, done);
 							},
 							(createError: BlError) => {
