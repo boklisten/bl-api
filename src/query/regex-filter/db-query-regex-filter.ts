@@ -20,10 +20,26 @@ export class DbQueryRegexFilter {
 
 		let searchString = query.s;
 
+
 		if (!searchString) return [];
+
+		searchString = this.sanitizeSearchString(searchString);
+
 		if (searchString.length < 3) throw new TypeError('search string "' + searchString+ '" is under 3 chars long');
 
 		return this.generateRegexFilters(searchString, validRegexParams);
+	}
+
+	private sanitizeSearchString(searchString: string) {
+		let searchStringArr = searchString.split(' ');
+		let returnString = '';
+		for (let word of searchStringArr) {
+			if (returnString.length > 0) {
+				returnString += '[^\\\\S]';
+			}
+			returnString += word;
+		}
+		return returnString;
 	}
 
 	private generateRegexFilters(searchString: string, validRegexParams: string[]): RegexFilter[] {
@@ -32,7 +48,6 @@ export class DbQueryRegexFilter {
 		for (let validRegexParam of validRegexParams) {
 			regexFilters.push({fieldName: validRegexParam, op: {$regex: searchString, $options: 'imx'}});
 		}
-
 		return regexFilters;
 	}
 }
