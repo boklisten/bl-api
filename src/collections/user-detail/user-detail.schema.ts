@@ -48,7 +48,7 @@ export let userDetailSchema = {
 			type: Schema.Types.Boolean
 		},
 		phone: {
-			type: Schema.Types.Number
+			type: Schema.Types.String
 		},
 		confirmed: {
 			type: Schema.Types.Boolean

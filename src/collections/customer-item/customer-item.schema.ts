@@ -99,4 +99,23 @@ export const customerItemSchema = {
 		}],
 		default: []
 	},
+	customerInfo: {
+		type: {
+			name: Schema.Types.String,
+			phone: Schema.Types.String,
+			address: Schema.Types.String,
+			postCode: Schema.Types.String,
+			postCity: Schema.Types.String,
+			dob: Schema.Types.Date,
+			guardian: {
+				type: {
+					name: Schema.Types.String,
+					email: Schema.Types.String,
+					phone: Schema.Types.String
+				},
+				required: false
+			}
+		},
+		required: false
+	}
 };
