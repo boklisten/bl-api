@@ -24,7 +24,6 @@ export class LocalAuth {
 		passport.use(new Strategy((username: string, password: string, done: any) => {
 			localLoginValidator.validate(username, password).then(
 				(localLoginProvider: {provider: string, providerId: string}) => {
-					console.log('got local login', localLoginProvider);
 					this.tokenHandler.createTokens(username).then(
 						(tokens: {accessToken: string, refreshToken: string}) => {
 							done(null, tokens);
@@ -36,9 +35,13 @@ export class LocalAuth {
 						});
 				},
 				(validateError: BlError) => {
-					return done(null, false, new BlError('could not login')
-							.code(900)
-							.add(validateError));
+					if (validateError.getCode() === 908 || validateError.getCode() === 901 || validateError.getCode() === 702) {
+						return done(null, false, new BlError('username or password is wrong').code(908).add(validateError));
+					} else {
+						return done(null, false, new BlError('could not login')
+								.code(900)
+								.add(validateError));
+					}
 				});
 		}));
 	}
@@ -94,9 +97,14 @@ export class LocalAuth {
 						});
 				},
 				(loginValidatorCreateError: BlError) => {
-					this.resHandler.sendErrorResponse(res, new BlError('could not create user')
-							.add(loginValidatorCreateError)
-							.code(907));
+					if (loginValidatorCreateError.getCode() === 903) {
+						this.resHandler.sendErrorResponse(res, loginValidatorCreateError);
+					} else {
+						this.resHandler.sendErrorResponse(res, new BlError('could not create user')
+								.add(loginValidatorCreateError)
+								.code(907));
+
+					}
 				});
 			});
 	}
