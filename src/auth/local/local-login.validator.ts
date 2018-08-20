@@ -3,7 +3,7 @@
 import {LocalLoginHandler} from "./local-login.handler";
 import {isEmail} from "validator";
 import {LocalLogin} from "../../collections/local-login/local-login";
-import {BlError} from "@wizardcoder/bl-model";
+import {BlApiError, BlError} from "@wizardcoder/bl-model";
 import {LocalLoginPasswordValidator} from "./password/local-login-password.validator";
 import {LocalLoginCreator} from "./local-login-creator/local-login-creator";
 import {UserHandler} from "../user/user.handler";
@@ -39,8 +39,12 @@ export class LocalLoginValidator {
 					(error: BlError) => {
 						reject(error.add(blError.msg('could not find the user with username "' + username + '"').code(702)));
 					});
-			}).catch((userValidError) => {
-				reject(new BlError('user not valid').code(902).add(userValidError));
+			}).catch((userValidError: BlError) => {
+				if (userValidError.getCode() === 702) {
+					reject(new BlError('user not found').code(702).add(userValidError));
+				} else {
+					reject(new BlError('user not valid').code(902).add(userValidError));
+				}
 			});
 		});
 	}
