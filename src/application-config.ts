@@ -90,7 +90,7 @@ export const APP_CONFIG = {
 		access: {
 			iss: 'boklisten.co',
 			aud: 'boklisten.co',
-			expiresIn: "60 second"
+			expiresIn: "10 minutes"
 		}
 	},
 	date: {
