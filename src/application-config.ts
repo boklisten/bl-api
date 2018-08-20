@@ -13,7 +13,8 @@ export const APP_CONFIG = {
 		},
 		dibs: {
 			payment: 'payments'
-		}
+		},
+		host: 'boklisten'
 	},
 	server: {
 		basePath: 'http://localhost:1337'
