@@ -69,6 +69,7 @@ export class OrderEmailHandler {
 		return this._emailHandler.sendOrderReceipt(emailSetting, emailOrder, emailUser, withAgreement);
 	}
 
+
 	private paymentNeeded(order: Order): boolean {
 		if (order.amount > 0) {
 			if (isNullOrUndefined(order.payments) || order.payments.length <= 0) {
@@ -117,7 +118,7 @@ export class OrderEmailHandler {
 		}
 	}
 
-	private async orderToEmailOrder(order: Order): Promise<any> {
+	public async orderToEmailOrder(order: Order): Promise<any> {
 		let emailOrder: EmailOrder = {
 			id: order.id,
 			showDeadline: this.shouldShowDeadline(order),
