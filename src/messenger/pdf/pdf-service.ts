@@ -14,13 +14,7 @@ export class PdfService {
 	private _orderEmailHandler: OrderEmailHandler;
 
 	constructor() {
-		const emailHandler = new EmailHandler(
-			{
-				sendgrid: {
-					apiKey: 'somId'
-				}
-			}
-		);
+		const emailHandler = new EmailHandler({locale: 'nb'});
 		this._pdfHandler = new PdfHandler(emailHandler);
 		this._standardDayFormat = 'DD.MM.YYYY';
 		this._orderEmailHandler = new OrderEmailHandler(emailHandler);
