@@ -6,6 +6,8 @@ import {OrderValidator} from "./helpers/order-validator/order-validator";
 import {Schema} from "mongoose";
 import {OrderPatchHook} from "./hooks/order.patch.hook";
 import {OrderPostHook} from "./hooks/order.post.hook";
+import {OrderReceiptPdfOperation} from "./operations/order-receipt-pdf.operation";
+import {OrderAgreementPdfOperation} from "./operations/order-agreement-pdf.operation";
 
 export class OrderCollection implements BlCollection {
 	collectionName = 'orders';
@@ -35,7 +37,25 @@ export class OrderCollection implements BlCollection {
 			restriction: {
 				permissions: ["customer", "employee", "manager", "admin", "super"],
 				restricted: true
-			}
+			},
+			operations: [
+				{
+					name: 'receipt',
+					operation: new OrderReceiptPdfOperation(),
+					restriction: {
+						permissions: ["customer", "employee", "manager", "admin", "super"],
+						restricted: true
+					}
+				},
+				{
+					name: 'agreement',
+					operation: new OrderAgreementPdfOperation(),
+					restriction: {
+						permissions: ["customer", "employee", "manager", "admin", "super"],
+						restricted: true
+					}
+				}
+			]
 		},
 		{
 			method: 'getAll',

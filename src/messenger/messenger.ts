@@ -4,14 +4,17 @@ import {Message} from "./message";
 import {MessengerService} from "./messenger-service";
 import {BlDocumentStorage} from "../storage/blDocumentStorage";
 import {deliverySchema} from "../collections/delivery/delivery.schema";
+import {PdfService} from "./pdf/pdf-service";
 
 export class Messenger implements MessengerService {
 	private _emailService: EmailService;
+	private _pdfService: PdfService;
 	private _deliveryStorage: BlDocumentStorage<Delivery>;
 
 	constructor() {
 		this._emailService = new EmailService();
 		this._deliveryStorage = new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
+		this._pdfService = new PdfService();
 	}
 
 	/**
@@ -55,6 +58,24 @@ export class Messenger implements MessengerService {
 	 */
 	public orderPlaced(customerDetail: UserDetail, order: Order) {
 		this._emailService.orderPlaced(customerDetail, order);
+	}
+
+	/**
+	 * returns a pdf of the receipt of the provided order
+	 * @param {UserDetail} customerDetail
+	 * @param {Order} order
+	 */
+	public getOrderReceiptPdf(customerDetail: UserDetail, order: Order) {
+		return this._pdfService.getOrderReceiptPdf(customerDetail, order);
+	}
+
+	/**
+	 * returns a pdf of the agreement of the provided order
+	 * @param {UserDetail} customerDetail
+	 * @param {Order} order
+	 */
+	public getOrderAgreementPdf(customerDetail: UserDetail, order: Order) {
+		return this._pdfService.getOrderAgreementPdf(customerDetail, order);
 	}
 
 	public sendDeliveryInformation(customerDetail: UserDetail, order: Order) {
