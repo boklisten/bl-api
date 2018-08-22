@@ -87,7 +87,7 @@ export class OrderPlacedHandler {
 
 					if (customerItemId !== null) {
 						if (orderItem.type === 'extend') {
-							await this._customerItemHandler.extend(customerItemId, orderItem, order.branch);
+							await this._customerItemHandler.extend(customerItemId, orderItem, order.branch, order.id);
 						} else if (orderItem.type === 'buyout') {
 							await this._customerItemHandler.buyout(customerItemId, order.id, orderItem);
 						}

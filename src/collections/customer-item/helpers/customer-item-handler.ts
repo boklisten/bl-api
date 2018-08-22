@@ -21,7 +21,7 @@ export class CustomerItemHandler {
 	 * @param customerItemId
 	 * @param orderItem
 	 */
-	public async extend(customerItemId: string, orderItem: OrderItem, branchId: string): Promise<CustomerItem> {
+	public async extend(customerItemId: string, orderItem: OrderItem, branchId: string, orderId: string): Promise<CustomerItem> {
 		try {
 			const customerItem = await this._customerItemStorage.get(customerItemId);
 
@@ -43,6 +43,8 @@ export class CustomerItemHandler {
 
 			let periodExtends = (customerItem.periodExtends) ? customerItem.periodExtends : [];
 
+			let customerItemOrders = (customerItem.orders) ? customerItem.orders : [];
+
 			periodExtends.push({
 				from: orderItem.info.from,
 				to: orderItem.info.to,
@@ -50,9 +52,12 @@ export class CustomerItemHandler {
 				time: new Date()
 			});
 
+			customerItemOrders.push(orderId);
+
 			return await this._customerItemStorage.update(customerItemId, {
 				deadline: orderItem.info.to,
-				periodExtends: periodExtends
+				periodExtends: periodExtends,
+				orders: customerItemOrders
 			}, new SystemUser());
 		} catch (e) {
 			throw e;
@@ -87,9 +92,13 @@ export class CustomerItemHandler {
 			}
 
 			const customerItem = await this._customerItemStorage.get(customerItemId);
+			let customerItemOrders = (customerItem.orders) ? customerItem.orders : [];
+
+			customerItemOrders.push(orderId);
 
 			return await this._customerItemStorage.update(customerItemId, {
 				buyout: true,
+				orders: customerItemOrders,
 				buyoutInfo: {
 					order: orderId
 				}
