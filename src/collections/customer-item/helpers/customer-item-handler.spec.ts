@@ -34,7 +34,7 @@ describe('CustomerItemHandler', () => {
 
 			const orderItem = {} as OrderItem;
 
-			return expect(customerItemHandler.extend('customerItem1', orderItem, 'branch1'))
+			return expect(customerItemHandler.extend('customerItem1', orderItem, 'branch1', 'order1'))
 				.to.be.rejectedWith(BlError, /can not extend when returned is true/);
 		});
 
@@ -52,7 +52,7 @@ describe('CustomerItemHandler', () => {
 				type: 'rent'
 			} as OrderItem;
 
-			return expect(customerItemHandler.extend('customerItem1', orderItem, 'branch1'))
+			return expect(customerItemHandler.extend('customerItem1', orderItem, 'branch1', 'order1'))
 				.to.be.rejectedWith(BlError, /orderItem.type is not "extend"/);
 		});
 
@@ -92,7 +92,7 @@ describe('CustomerItemHandler', () => {
 
 			getBranchStub.withArgs('branch1').resolves(branch);
 
-			return expect(customerItemHandler.extend('customerItem1', orderItem, 'branch1'))
+			return expect(customerItemHandler.extend('customerItem1', orderItem, 'branch1', 'order1'))
 				.to.be.rejectedWith(BlError, /extend period "year" is not present on branch/);
 		});
 /*
