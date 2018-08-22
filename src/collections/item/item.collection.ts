@@ -31,6 +31,10 @@ export class ItemCollection implements BlCollection {
 				{
 					fieldName: 'info.isbn',
 					type: 'number',
+				},
+				{
+					fieldName: 'creationTime',
+					type: 'date'
 				}
 			]
 		},

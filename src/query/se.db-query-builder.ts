@@ -9,9 +9,11 @@ import {DbQuerySkipFilter} from "./skip-filter/db-query-skip-filter";
 import {DbQuerySortFilter} from "./sort-filter/db-query-sort-filter";
 import {DbQueryValidParams, ValidParam} from "./valid-param/db-query-valid-params";
 import {DbQueryBooleanFilter} from "./boolean-filter/db-query-boolean-filter";
+import {DbQueryDateFilter} from "./date-filter/db-query-date-filter";
 
 export class SEDbQueryBuilder {
 	private dbQueryBooleanFilter: DbQueryBooleanFilter;
+	private dbQueryDateFilter: DbQueryDateFilter;
 	private dbQueryLimitFilter: DbQueryLimitFilter;
 	private dbQueryNumberFilter: DbQueryNumberFilter;
 	private dbQueryOnlyGetFilter: DbQueryOnlyGetFilter;
@@ -23,6 +25,7 @@ export class SEDbQueryBuilder {
 
 	constructor() {
 		this.dbQueryBooleanFilter = new DbQueryBooleanFilter();
+		this.dbQueryDateFilter = new DbQueryDateFilter();
 		this.dbQueryLimitFilter = new DbQueryLimitFilter();
 		this.dbQueryNumberFilter = new DbQueryNumberFilter();
 		this.dbQueryOnlyGetFilter = new DbQueryOnlyGetFilter();
@@ -34,6 +37,7 @@ export class SEDbQueryBuilder {
 
 
 	public getDbQuery(query: any, validQueryParams: ValidParam[]): SEDbQuery {
+		console.log(`"${query.creationTime}"`);
 		this.dbQueryValidParams = new DbQueryValidParams(validQueryParams);
 
 		let dbQuery: SEDbQuery = new SEDbQuery();
@@ -44,6 +48,7 @@ export class SEDbQueryBuilder {
 
 		try {
 			dbQuery.booleanFilters = this.dbQueryBooleanFilter.getBooleanFilters(query, this.dbQueryValidParams.getValidBooleanParams());
+			dbQuery.dateFilters = this.dbQueryDateFilter.getDateFilters(query, this.dbQueryValidParams.getValidDateParams());
 			dbQuery.limitFilter = this.dbQueryLimitFilter.getLimitFilter(query);
 			dbQuery.numberFilters = this.dbQueryNumberFilter.getNumberFilters(query, this.dbQueryValidParams.getValidNumberParams());
 			dbQuery.onlyGetFilters = this.dbQueryOnlyGetFilter.getOnlyGetFilters(query, this.dbQueryValidParams.getAllValidParams());
@@ -53,6 +58,7 @@ export class SEDbQueryBuilder {
 			dbQuery.stringFilters = this.dbQueryStringFilter.getStringFilters(query, this.dbQueryValidParams.getValidStringParams());
 
 		} catch(error) {
+			console.log('the err', error);
 			if (error instanceof TypeError) throw new TypeError('TypeError when building query, reason: ' + error.message);
 			if (error instanceof ReferenceError) throw new ReferenceError('ReferenceError when building query, reason: ' + error.message);
 			if (error instanceof RangeError) throw new RangeError('RangeError when building query, reason: ' + error.message);

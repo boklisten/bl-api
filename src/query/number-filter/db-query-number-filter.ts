@@ -56,10 +56,11 @@ export class DbQueryNumberFilter {
 
 		if (this.valueHasOperationIdentifier(value)) {
 			let opWithValue = this.getOperationWithValue(value);
-			let op: any = {}
+			let op: any = {};
+
 			op[opWithValue.operation] = opWithValue.value;
-			let numberFilter: NumberFilter = {fieldName: fieldName, op};
-			return numberFilter;
+
+			return {fieldName: fieldName, op};
 		}
 
 		return this.validateNumberFilter({fieldName: fieldName, op: {$eq: this.extractNumberFromQueryString(value)}});
