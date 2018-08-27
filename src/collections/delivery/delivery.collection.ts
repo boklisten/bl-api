@@ -24,7 +24,13 @@ export class DeliveryCollection implements BlCollection {
 			restriction: {
 				permissions: ['admin', "super"],
 				restricted: true
-			}
+			},
+			validQueryParams: [
+				{
+					fieldName: 'creationTime',
+					type: 'date'
+				}
+			]
 		},
 		{
 			method: 'getId',

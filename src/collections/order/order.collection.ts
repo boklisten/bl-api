@@ -78,6 +78,10 @@ export class OrderCollection implements BlCollection {
 				{
 					fieldName: 'branch',
 					type: 'string'
+				},
+				{
+					fieldName: 'creationTime',
+					type: 'date'
 				}
 			]
 		}

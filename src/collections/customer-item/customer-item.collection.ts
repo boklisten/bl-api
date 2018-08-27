@@ -30,6 +30,50 @@ export class CustomerItemCollection implements BlCollection {
 			restriction: {
 				permissions: ['employee', "manager", 'admin', "super"]
 			}
+		},
+		{
+			method: 'getAll',
+			restriction: {
+				permissions: ['admin', 'super']
+			},
+			validQueryParams: [
+				{
+					fieldName: 'creationTime',
+					type: 'date'
+				},
+				{
+					fieldName: 'deadline',
+					type: 'date'
+				},
+				{
+					fieldName: 'item',
+					type: 'string'
+				},
+				{
+					fieldName: 'customer',
+					type: 'string'
+				},
+				{
+					fieldName: 'handout',
+					type: 'boolean'
+				},
+				{
+					fieldName: 'handoutInfo.handoutEmployee',
+					type: 'string'
+				},
+				{
+					fieldName: 'handoutInfo.handoutById',
+					type: 'string'
+				},
+				{
+					fieldName: 'returned',
+					type: 'boolean'
+				},
+				{
+					fieldName: 'returnInfo.returnEmployee',
+					type: 'string'
+				}
+			]
 		}
 	]
 }
