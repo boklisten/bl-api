@@ -82,6 +82,18 @@ export class OrderCollection implements BlCollection {
 				{
 					fieldName: 'creationTime',
 					type: 'date'
+				},
+				{
+					fieldName: 'orderItems.delivered',
+					type: 'boolean'
+				},
+				{
+					fieldName: 'orderItems.handout',
+					type: 'boolean'
+				},
+				{
+					fieldName: 'orderItems.movedToOrder',
+					type: 'string'
 				}
 			]
 		}
