@@ -27,7 +27,13 @@ export class PaymentCollection implements BlCollection {
 			restriction: {
 				permissions: ["admin"],
 				restricted: true
-			}
+      },
+      validQueryParams: [
+        { fieldName: 'confirmed', type: 'boolean' },
+        { fieldName: 'creationTime', type: 'date' },
+        { fieldName: 'branch', type: 'string' },
+        { fieldName: 'method', type: 'string' }
+      ]
 		},
 		{
 			method: 'getId',
