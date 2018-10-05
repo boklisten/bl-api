@@ -4,7 +4,6 @@ import {Hook} from "../../../hook/hook";
 import {DeliveryValidator} from "../helpers/deliveryValidator/delivery-validator";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {isNullOrUndefined} from "util";
-import {isEmpty} from "typescript-library-bundler/dist";
 import {orderSchema} from "../../order/order.schema";
 import {DeliveryHandler} from "../helpers/deliveryHandler/delivery-handler";
 import {deliverySchema} from "../delivery.schema";
@@ -27,7 +26,7 @@ export class DeliveryPatchHook extends Hook {
 	
 	before(body: any, accessToken?: AccessToken, id?: string): Promise<boolean> {
 		
-		if (isEmpty(body) || isNullOrUndefined(body)) {
+		if (isNullOrUndefined(body)) {
 			return Promise.reject(new BlError('body is undefined'));
 		}
 		
@@ -35,7 +34,7 @@ export class DeliveryPatchHook extends Hook {
 			return Promise.reject(new BlError('id is undefined'));
 		}
 		
-		if (isEmpty(accessToken) || isNullOrUndefined(accessToken)) {
+		if (isNullOrUndefined(accessToken)) {
 			return Promise.reject(new BlError('accessToken is undefined'));
 		}
 		

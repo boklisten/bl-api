@@ -3,7 +3,6 @@
 
 import {Hook} from "../../../hook/hook";
 import {AccessToken, BlError, Order, UserDetail, Delivery} from '@wizardcoder/bl-model';
-import {isEmpty} from "typescript-library-bundler/dist";
 import {isNullOrUndefined} from "util";
 import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
 import {userDetailSchema} from "../../user-detail/user-detail.schema";
@@ -27,11 +26,11 @@ export class OrderPatchHook extends Hook {
 	}
 	
 	before(body: any, accessToken: AccessToken, id: string): Promise<boolean> {
-		if (isEmpty(body) || isNullOrUndefined(body)) {
+		if (isNullOrUndefined(body)) {
 			return Promise.reject(new BlError('body not defined'));
 		}
 		
-		if (isEmpty(accessToken) || isNullOrUndefined(accessToken)) {
+		if (isNullOrUndefined(accessToken)) {
 			return Promise.reject(new BlError('accessToken not defined'));
 		}
 		
@@ -47,7 +46,7 @@ export class OrderPatchHook extends Hook {
 			return Promise.reject(new BlError('can only patch one order at a time'));
 		}
 		
-		if (isEmpty(accessToken) || isNullOrUndefined(accessToken)) {
+		if (isNullOrUndefined(accessToken)) {
 			return Promise.reject(new BlError('accessToken not defined'));
 		}
 
