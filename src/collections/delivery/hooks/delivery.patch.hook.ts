@@ -26,7 +26,7 @@ export class DeliveryPatchHook extends Hook {
 	
 	before(body: any, accessToken?: AccessToken, id?: string): Promise<boolean> {
 		
-		if (isNullOrUndefined(body)) {
+    if (body === null || isNullOrUndefined(body)) {
 			return Promise.reject(new BlError('body is undefined'));
 		}
 		

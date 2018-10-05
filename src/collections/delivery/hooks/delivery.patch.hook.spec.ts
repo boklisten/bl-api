@@ -104,7 +104,7 @@ describe('DeliveryPatchHook', () => {
 		});
 		
 		it('should reject if body is empty or undefined', () => {
-			return expect(deliveryPatchHook.before({}, testAccessToken, 'delivery1'))
+			return expect(deliveryPatchHook.before(null, testAccessToken, 'delivery1'))
 				.to.be.rejectedWith(BlError, /body is undefined/);
 		});
 		
