@@ -37,7 +37,6 @@ export class SEDbQueryBuilder {
 
 
 	public getDbQuery(query: any, validQueryParams: ValidParam[]): SEDbQuery {
-		console.log(`"${query.creationTime}"`);
 		this.dbQueryValidParams = new DbQueryValidParams(validQueryParams);
 
 		let dbQuery: SEDbQuery = new SEDbQuery();
@@ -58,7 +57,6 @@ export class SEDbQueryBuilder {
 			dbQuery.stringFilters = this.dbQueryStringFilter.getStringFilters(query, this.dbQueryValidParams.getValidStringParams());
 
 		} catch(error) {
-			console.log('the err', error);
 			if (error instanceof TypeError) throw new TypeError('TypeError when building query, reason: ' + error.message);
 			if (error instanceof ReferenceError) throw new ReferenceError('ReferenceError when building query, reason: ' + error.message);
 			if (error instanceof RangeError) throw new RangeError('RangeError when building query, reason: ' + error.message);
