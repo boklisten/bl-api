@@ -1,7 +1,7 @@
 import {EmailService} from "./email/email-service";
-import {BlError, Delivery, Order, UserDetail} from "@wizardcoder/bl-model";
+import {BlError, Delivery, Order, UserDetail, CustomerItem} from "@wizardcoder/bl-model";
 import {Message} from "./message";
-import {MessengerService} from "./messenger-service";
+import {MessengerService, CustomerDetailWithCustomerItem} from "./messenger-service";
 import {BlDocumentStorage} from "../storage/blDocumentStorage";
 import {deliverySchema} from "../collections/delivery/delivery.schema";
 import {PdfService} from "./pdf/pdf-service";
@@ -37,18 +37,19 @@ export class Messenger implements MessengerService {
 
 	/**
 	 * reminds the customer of the due date of his items
-	 * @param {UserDetail} customerDetail
+   * @param {UserDetail} the customer to send reminder to
+   * @param {CustomerItem[]} the customerItems to remind of
 	 */
-	public remind(customerDetail: UserDetail) {
-		this._emailService.remind(customerDetail);
+	public remind(customerDetail: UserDetail, customerItems: CustomerItem[]) {
+		this._emailService.remind(customerDetail, customerItems);
 	}
 
 	/**
 	 * sends out reminders to more than one customer
-	 * @param {UserDetail[]} customerDetails
+	 * @param {CustomerDetailWithCustomerItem[]} customerDetails with customerItems to remind about
 	 */
-	public remindMany(customerDetails: UserDetail[]) {
-		this._emailService.remindMany(customerDetails);
+	public remindMany(customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[]) {
+		this._emailService.remindMany(customerDetailsWithCustomerItems);
 	}
 
 	/**

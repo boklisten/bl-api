@@ -34,15 +34,10 @@ describe('DbQueryDateFilter', () => {
 		it('should return filter with correct filedName', () => {
 			let fieldName = 'creationDate';
 			let query = {creationDate: '010120010000'};
-
-			let momentDate = moment(query.creationDate, validDateFormat, true);
-			let gtDate = momentDate.subtract(1, 'day').toISOString();
-			let ltDate = momentDate.add(1, 'day').toISOString();
-
+			let momentDate = moment(query.creationDate, validDateFormat, true).toISOString();
 
 			return expect(dbQueryDateFilter.getDateFilters(query, [fieldName]))
-				.to.eql([{fieldName: fieldName, op: {$gt: gtDate, $lt: ltDate}}])
-
+        .to.eql([{fieldName: fieldName, op: {$eq: momentDate}}])
 		});
 
 		context('when date is on invalid format', () => {
@@ -69,30 +64,23 @@ describe('DbQueryDateFilter', () => {
 			}
 		});
 
-		context('when single date is on valid format', () => {
-			let validDateParams = ['creationTime'];
-			let query = {creationTime: ''};
+    context('when only one date is provided', () => {
+      const validDateParams = ['creationTime'];
+      const validQueries = [
+        {creationTime: '201220180000'},
+        {creationTime: '010720180000'}
+      ]
 
-			let validDates = [
-				'210120010000',
-				'131020182115',
-				'111220170000'
-			];
+      for (let validQuery of validQueries) {
+        it('should resolve with correct date filter', () => {
+          const dateString = validQuery.creationTime;
+          const isoDate = moment(dateString, validDateFormat, true).toISOString();
 
-			for (let validDate of validDates) {
-				it('should resolve with correct date filter', () => {
-					let momentDate = moment(validDate, validDateFormat, true);
-					let gtIsoDate = momentDate.subtract(1, 'day').toISOString();
-					let ltIsoDate = momentDate.add(1, 'day').toISOString();
-
-					query.creationTime = validDate;
-
-					return expect(dbQueryDateFilter.getDateFilters(query, validDateParams))
-						.to.eql([{fieldName: 'creationTime', op: {$gt: gtIsoDate, $lt: ltIsoDate}}])
-
-				});
-			}
-		});
+          return expect(dbQueryDateFilter.getDateFilters(validQuery, validDateParams))
+            .to.eql([{fieldName: 'creationTime', op: { $eq: isoDate }}]);
+        });
+      }
+    });
 
 		context('when valid $lt and $gt on a param is provided', () => {
 			const validDateParams = ['creationTime'];

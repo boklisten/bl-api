@@ -5,7 +5,8 @@ export type DateFilter = {
 	fieldName: string,
 	op: {
 		$lt?: string,
-		$gt?: string
+    $gt?: string,
+    $eq?: string
 	}
 }
 
@@ -34,7 +35,7 @@ export class DbQueryDateFilter {
 						if (Array.isArray(query[param])) {
 							return this.generateMultipleDateFilter(param, query[param]);
 						} else {
-							return this.generateSingleDayFilter(param, query[param]);
+							return [this.generateSingleDayFilter(param, query[param])];
 						}
 					}
 				}
@@ -48,7 +49,7 @@ export class DbQueryDateFilter {
 		}
 	}
 
-	private generateSingleDayFilter(fieldName: string, value: string): DateFilter[] {
+	private generateSingleDayFilter(fieldName: string, value: string): DateFilter {
 		if (!value) throw new Error('QueryBuilderDateFilter.generateDateFilter(): value is not defined');
 
 		let momentDate;
@@ -62,10 +63,10 @@ export class DbQueryDateFilter {
 			throw new SyntaxError('generateDateFilter(): invalid date');
 		}
 
-		let gtIsoDate = momentDate.subtract(1, 'day').toISOString();
-		let lessThanIsoDate = momentDate.add(1, 'day').toISOString();
+		let isoDate = momentDate.toISOString();
+    //let lessThanIsoDate = momentDate.add(1, 'day').toISOString();
 
-		return [{fieldName: fieldName, op: {$gt: gtIsoDate, $lt: lessThanIsoDate}}];
+		return {fieldName: fieldName, op: {$eq: isoDate}};
 	}
 
 	private generateMultipleDateFilter(fieldName: string, values: string[]): DateFilter[] {

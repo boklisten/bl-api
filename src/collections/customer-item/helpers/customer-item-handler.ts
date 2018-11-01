@@ -4,6 +4,8 @@ import {SystemUser} from "../../../auth/permission/permission.service";
 import {branchSchema} from "../../branch/branch.schema";
 import {customerItemSchema} from "../customer-item.schema";
 import {Period} from "@wizardcoder/bl-model/dist/period/period";
+import { SEDbQuery } from '../../../query/se.db-query';
+import moment = require('moment');
 
 export class CustomerItemHandler {
 
@@ -14,7 +16,6 @@ export class CustomerItemHandler {
 		this._customerItemStorage = (customerItemStorage) ? customerItemStorage : new BlDocumentStorage('customeritems', customerItemSchema);
 		this._branchStorage = (branchStorage) ? branchStorage : new BlDocumentStorage('branches', branchSchema);
 	}
-
 
 	/**
 	 * Extends the deadline of a customer item
@@ -107,7 +108,37 @@ export class CustomerItemHandler {
 		} catch (e) {
 			throw e;
 		}
-	}
+  }
 
+  /**
+   * Fetches a customers customerItems not returned for the specified deadline
+   * @param customerId the customer to look for
+   * @param deadline the deadline of the customerItem
+   */
+  public async getNotReturned(customerId: string, deadline: Date): Promise<CustomerItem[]> {
+    if (customerId == null || customerId.length <= 0) {
+      throw new BlError('customerId is null or undefined');
+    }
 
+    if (deadline == null) {
+      throw new BlError('deadline is null or undefined');
+    }
+
+    const dbQuery = new SEDbQuery();
+    const deadlineString = moment(deadline).format('DDMMYYYYHHmm');
+  
+    dbQuery.dateFilters = [
+      {fieldName: 'deadline', op: { $eq: deadlineString } }
+    ];
+
+    dbQuery.stringFilters = [
+      {fieldName: 'customer', value: customerId}
+    ];
+
+    dbQuery.booleanFilters = [
+      { fieldName: 'returned', value: false}
+    ]
+
+    return await this._customerItemStorage.getByQuery(dbQuery);
+  }
 }
