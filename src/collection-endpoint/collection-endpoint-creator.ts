@@ -9,7 +9,8 @@ import {
 	OpeningHour,
 	Order,
 	Payment,
-	UserDetail
+  UserDetail,
+  Message
 } from "@wizardcoder/bl-model";
 
 import {ItemCollection} from "../collections/item/item.collection";
@@ -28,6 +29,7 @@ import {PasswordReset} from "../collections/password-reset/password-reset";
 import {PasswordResetCollection} from "../collections/password-reset/password-reset.collection";
 import {EmailValidation} from "../collections/email-validation/email-validation";
 import {EmailValidationCollection} from "../collections/email-validation/email-validation.collection";
+import {MessageCollection} from "../collections/message/message.collection";
 
 export class CollectionEndpointCreator {
 	private _responseHandler: SEResponseHandler;
@@ -49,7 +51,8 @@ export class CollectionEndpointCreator {
 			new CollectionEndpoint<UserDetail>(this._router, new UserDetailCollection()),
 			new CollectionEndpoint<BlErrorLog>(this._router, new BlErrorLogCollection()),
 			new CollectionEndpoint<PasswordReset>(this._router, new PasswordResetCollection()),
-			new CollectionEndpoint<EmailValidation>(this._router, new EmailValidationCollection())
+			new CollectionEndpoint<EmailValidation>(this._router, new EmailValidationCollection()),
+      new CollectionEndpoint<Message>(this._router, new MessageCollection())
 		];
 
 		for (const collectionEndpoint of collectionEndpoints) {

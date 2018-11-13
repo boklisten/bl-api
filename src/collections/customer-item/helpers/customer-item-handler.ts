@@ -5,6 +5,7 @@ import {branchSchema} from "../../branch/branch.schema";
 import {customerItemSchema} from "../customer-item.schema";
 import {Period} from "@wizardcoder/bl-model/dist/period/period";
 import { SEDbQuery } from '../../../query/se.db-query';
+import { SEDbQueryBuilder } from '../../../query/se.db-query-builder';
 import moment = require('moment');
 
 export class CustomerItemHandler {
@@ -124,20 +125,21 @@ export class CustomerItemHandler {
       throw new BlError('deadline is null or undefined');
     }
 
-    const dbQuery = new SEDbQuery();
     const deadlineString = moment(deadline).format('DDMMYYYYHHmm');
-  
-    dbQuery.dateFilters = [
-      {fieldName: 'deadline', op: { $eq: deadlineString } }
-    ];
 
-    dbQuery.stringFilters = [
-      {fieldName: 'customer', value: customerId}
-    ];
+    const query = {
+      customer: customerId.toString(),
+      deadline: '<' + deadlineString,
+      returned: 'false'
+    }
 
-    dbQuery.booleanFilters = [
-      { fieldName: 'returned', value: false}
-    ]
+    const dbQueryBuilder = new SEDbQueryBuilder();
+
+    const dbQuery = dbQueryBuilder.getDbQuery(query, [
+      {fieldName: 'customer', type: 'string'},
+      {fieldName: 'deadline', type: 'date'},
+      {fieldName: 'returned', type: 'boolean'}
+    ]);
 
     return await this._customerItemStorage.getByQuery(dbQuery);
   }

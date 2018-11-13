@@ -64,7 +64,7 @@ describe('DbQueryDateFilter', () => {
 			}
 		});
 
-    context('when only one date is provided', () => {
+    context('when only one date is provided without operation', () => {
       const validDateParams = ['creationTime'];
       const validQueries = [
         {creationTime: '201220180000'},
@@ -78,6 +78,29 @@ describe('DbQueryDateFilter', () => {
 
           return expect(dbQueryDateFilter.getDateFilters(validQuery, validDateParams))
             .to.eql([{fieldName: 'creationTime', op: { $eq: isoDate }}]);
+        });
+      }
+    });
+    
+    context('when only one date is provided with operation', () => {
+      const validDateParams = ['creationTime'];
+      const validQueries = [
+        {creationTime: '<201220180000', op: '$lt'},
+        {creationTime: '>010720180000', op: '$gt'}
+      ]
+
+      for (let validQuery of validQueries) {
+        it('should resolve with correct date filter', () => {
+
+          const creationTime = validQuery.creationTime.slice(1, validQuery.creationTime.length);
+          const dateString = creationTime;
+          const isoDate = moment(dateString, validDateFormat, true).toISOString();
+
+          const expectedOp = {}
+          expectedOp[validQuery.op] = isoDate; 
+
+          return expect(dbQueryDateFilter.getDateFilters(validQuery, validDateParams))
+            .to.eql([{fieldName: 'creationTime', op: expectedOp}]);
         });
       }
     });

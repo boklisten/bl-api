@@ -56,9 +56,20 @@ export class EmailService implements MessengerService {
     const emailSetting: EmailSetting = {
       userId: emailUser.id,
       toEmail: emailUser.email,
-      fromEmail: '',
-      subject: '',
-      textBlocks: []
+      fromEmail: 'ikkesvar@boklisten.no',
+      subject: 'På tide å levere bøkene',
+      textBlocks: [
+        {
+          text: 'Nå er det snart på tide å levere bøkene dine. Dette kan du gjøre på en av våre stands. For å se åpningstidene og info om hvor vi står kan du sjekke dette på Boklisten.no'
+        },
+        {
+          text: 'Om du ikke har mulighet til å komme innom våre stands på de oppgitte tidspunktene, så kan du også sende bøkene i posten. Sendelsen må da skje før fristen er gått ut.' 
+        },
+        {
+          text: 'Det er viktig at du leverer bøkene i tide, hvis du ikke leverer vil det tilkomme gebyrer i henhold til leieavtalen.', 
+          warning: true
+        }
+      ]
     };
 
     try {

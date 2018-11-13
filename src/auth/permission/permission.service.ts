@@ -55,7 +55,7 @@ export class PermissionService {
 		return false;
 	}
 
-	protected isPermissionEqualOrOver(permission: UserPermission, restrictedPermission: UserPermission): boolean {
+	public isPermissionEqualOrOver(permission: UserPermission, restrictedPermission: UserPermission): boolean {
 		if (permission === restrictedPermission) {
 			return true;
 		} else {

@@ -125,16 +125,18 @@ describe('CustomerItemHandler', () => {
       customerItemHandler.getNotReturned('customer1', new Date(2012, 1, 1)).then((notReturnedCustomerItems) => {
         expect(notReturnedCustomerItems)
           .to.eql([]);
-
         done();
-      });
+      }).catch((err) => {
+        done(err);
+      })
     });
 
     it('should ask db with correct query', (done) => {
-        const expectedQuery = new SEDbQuery();
+      const expectedQuery = new SEDbQuery();
+        const deadline = new Date(2018, 11,20);
 
         expectedQuery.dateFilters = [
-          {fieldName: 'deadline', op: {$eq: "201220180000"}}
+          {fieldName: 'deadline', op: {$lt: deadline.toISOString()}}
         ];
 
         expectedQuery.stringFilters = [
@@ -148,7 +150,7 @@ describe('CustomerItemHandler', () => {
         getByQueryCustomerItemStub.withArgs(expectedQuery)
           .resolves([]);
 
-        customerItemHandler.getNotReturned('customer1', new Date(2018, 11, 20)).then((result) => {
+        customerItemHandler.getNotReturned('customer1', deadline).then((result) => {
           expect(getByQueryCustomerItemStub).calledWith(expectedQuery);
           done();
         }).catch((err) => {

@@ -52,7 +52,14 @@ export class DbQueryDateFilter {
 	private generateSingleDayFilter(fieldName: string, value: string): DateFilter {
 		if (!value) throw new Error('QueryBuilderDateFilter.generateDateFilter(): value is not defined');
 
+    const operation = this.getOperation(value);
+    
+    if (operation) {
+      value = value.slice(1, value.length);
+    }
+    
 		let momentDate;
+
 		try {
 			momentDate = moment(value, this.dateFormat, true);
 		} catch (e) {
@@ -65,6 +72,16 @@ export class DbQueryDateFilter {
 
 		let isoDate = momentDate.toISOString();
     //let lessThanIsoDate = momentDate.add(1, 'day').toISOString();
+
+    if (operation) {
+      var op = {};
+      op[operation] = isoDate;
+
+      return {
+        fieldName: fieldName, 
+        op: op
+      } 
+    } 
 
 		return {fieldName: fieldName, op: {$eq: isoDate}};
 	}
@@ -88,6 +105,7 @@ export class DbQueryDateFilter {
 					return operationIdentifier.op;
 				}
 			}
-		}
+    }
+    return null;
 	}
 }

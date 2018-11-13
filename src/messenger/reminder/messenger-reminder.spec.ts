@@ -3,13 +3,13 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {BlError} from '@wizardcoder/bl-model';
-
+import { BlError, UserDetail } from '@wizardcoder/bl-model';
 import { MessengerReminder } from './messenger-reminder';
 import { BlDocumentStorage } from '../../storage/blDocumentStorage';
 import { CustomerItem } from '@wizardcoder/bl-model';
 import { SEDbQuery } from '../../query/se.db-query';
 import { CustomerItemHandler } from '../../collections/customer-item/helpers/customer-item-handler';
+import { EmailService } from '../email/email-service';
 
 chai.use(chaiAsPromised);
 
@@ -18,8 +18,20 @@ describe('MessengerReminder', () => {
   const customerItemHandler = new CustomerItemHandler();
   const customerItemStorageGetAllStub = sinon.stub(customerItemStorage, 'getAll');
   const customerItemStorageGetByQueryStub = sinon.stub(customerItemStorage, 'getByQuery');
-  const messengerReminder = new MessengerReminder(customerItemHandler);
+  const emailService = new EmailService();
+  const emailServiceRemindStub = sinon.stub(emailService, 'remind');
   const getNotReturnedStub = sinon.stub(customerItemHandler, 'getNotReturned');
+  const userDetailStorage = new BlDocumentStorage<UserDetail>('userdetails');
+  const userDetailStorageGetStub = sinon.stub(userDetailStorage, 'get');
+
+  const messengerReminder = new MessengerReminder(customerItemHandler, userDetailStorage, emailService);
+
+  afterEach(() => {
+    customerItemStorageGetAllStub.reset();
+    customerItemStorageGetByQueryStub.reset();
+    emailServiceRemindStub.reset();
+    getNotReturnedStub.reset();
+  });
 
   describe('#remindCustomer', () => {
     it('should throw error if no customerId is provided', (done) => {
@@ -49,5 +61,43 @@ describe('MessengerReminder', () => {
         done();
       });
     });
+
+    it('should call emailService.remind with correct arguments', (done) => {
+
+      const customerItems = [
+        {
+          id: 'customerItem1',
+          deadline: new Date(2018, 0, 1),
+          title: ''
+        }
+      ];
+
+      const customerDetail: UserDetail = {
+        id: 'customer1',
+        name: 'albert',
+        address: 'Abc 123',
+        email: 'some@email.com',
+        phone: '123',
+        branch: 'branch1',
+        postCode: '0123',
+        postCity: 'oslo',
+        country: 'norway',
+        dob: new Date()
+      }
+
+      getNotReturnedStub.resolves(customerItems);
+      userDetailStorageGetStub.resolves(customerDetail);
+      emailServiceRemindStub.resolves(true);
+
+      messengerReminder.remindCustomer('customer1', new Date()).then(() => {
+
+        expect(emailServiceRemindStub)
+          .calledWith(customerDetail, customerItems);
+        done();
+
+      }).catch((err) => {
+        done(err);
+      })
+    })
   });
 });
