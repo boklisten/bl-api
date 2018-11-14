@@ -20,8 +20,8 @@ build:
       command: npm install
     - save_cache:
       key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-              - node_modules
+      paths:
+          - node_modules
 test:
   docker:
     - image: circleci/node:8.4
