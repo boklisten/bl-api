@@ -15,6 +15,9 @@ jobs:
           command: "npm --version"
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install Typescript
+          command: "npm install typescript"
       - run: 
           name: Install node modules
           command: npm install
