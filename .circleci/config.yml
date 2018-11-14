@@ -23,6 +23,7 @@ jobs:
           paths:
               - node_modules
   test:
+    working_directory: ~/bl-api
     docker:
       - image: circleci/node:8.4
     steps:
