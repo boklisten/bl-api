@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import { BlError, UserDetail } from '@wizardcoder/bl-model';
+import { BlError, UserDetail, Message } from '@wizardcoder/bl-model';
 import { MessengerReminder } from './messenger-reminder';
 import { BlDocumentStorage } from '../../storage/blDocumentStorage';
 import { CustomerItem } from '@wizardcoder/bl-model';
@@ -35,7 +35,13 @@ describe('MessengerReminder', () => {
 
   describe('#remindCustomer', () => {
     it('should throw error if no customerId is provided', (done) => {
-      messengerReminder.remindCustomer(null, new Date()).catch((err) => {
+      const message = {
+        info: {
+          deadline: new Date()
+        }
+      }
+
+      messengerReminder.remindCustomer(message as Message).catch((err) => {
       
         expect(err.getMsg())
           .to.contain('customerId is null or undefined');
@@ -45,7 +51,11 @@ describe('MessengerReminder', () => {
     });
 
     it('should throw error if deadline is not provided', (done) => {
-      messengerReminder.remindCustomer('abc', null).catch((err) => {
+      const message = {
+        customerId: 'customer1'
+      }
+
+      messengerReminder.remindCustomer(message as Message).catch((err) => {
         expect(err.getMsg())
           .to.contain('deadline is null or undefined');
 
@@ -56,7 +66,14 @@ describe('MessengerReminder', () => {
     it('should call customerItemHandler to get not returned customerItems', (done) => {
       getNotReturnedStub.onFirstCall().resolves([]);
 
-      messengerReminder.remindCustomer('customer1', new Date()).then(() => {
+      const message = {
+        customerId: 'customer1',
+        info: {
+          deadline: new Date()
+        }
+      }
+
+      messengerReminder.remindCustomer(message as Message).then(() => {
         expect(getNotReturnedStub).to.be.calledOnce;
         done();
       });
@@ -85,16 +102,29 @@ describe('MessengerReminder', () => {
         dob: new Date()
       }
 
+      const textBlocks = [
+        {
+          text: 'Hi there, this is a textblock'
+        }
+      ]
+
       getNotReturnedStub.resolves(customerItems);
       userDetailStorageGetStub.resolves(customerDetail);
       emailServiceRemindStub.resolves(true);
 
-      messengerReminder.remindCustomer('customer1', new Date()).then(() => {
+      const message = {
+        id: 'message1',
+        customerId: 'customer1',
+        info: {
+          deadline: new Date()
+        },
+        textBlocks: textBlocks
+      }
 
+      messengerReminder.remindCustomer(message as Message).then(() => {
         expect(emailServiceRemindStub)
-          .calledWith(customerDetail, customerItems);
+          .calledWith(message, customerDetail, customerItems);
         done();
-
       }).catch((err) => {
         done(err);
       })

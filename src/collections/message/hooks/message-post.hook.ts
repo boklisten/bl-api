@@ -1,4 +1,3 @@
-
 import { Hook } from '../../../hook/hook';
 import { AccessToken, Message, BlError } from "@wizardcoder/bl-model";
 import { isNullOrUndefined } from 'util';
@@ -45,7 +44,7 @@ export class MessagePostHook implements Hook {
 
   private async onRemind(message: Message): Promise<Message[]> {
     try {
-      await this.messengerReminder.remindCustomer(message.customerId, message.info.deadline, message.id);
+      await this.messengerReminder.remindCustomer(message);
       return [message];
     } catch (e) {
       throw e;

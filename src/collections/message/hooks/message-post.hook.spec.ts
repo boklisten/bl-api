@@ -86,7 +86,7 @@ describe('MessagePostHook', () => {
           const args = messengerReminderRemindCustomerStub.lastCall;
 
           expect(args).to.be
-            .calledWith(message.customerId, message.info.deadline, message.id);
+            .calledWith(message);
 
           done();
         }).catch((err) => {

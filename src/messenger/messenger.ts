@@ -1,6 +1,5 @@
 import {EmailService} from "./email/email-service";
-import {BlError, Delivery, Order, UserDetail, CustomerItem} from "@wizardcoder/bl-model";
-import {Message} from "./message";
+import {BlError, Delivery, Order, UserDetail, CustomerItem, Message} from "@wizardcoder/bl-model";
 import {MessengerService, CustomerDetailWithCustomerItem} from "./messenger-service";
 import {BlDocumentStorage} from "../storage/blDocumentStorage";
 import {deliverySchema} from "../collections/delivery/delivery.schema";
@@ -40,8 +39,8 @@ export class Messenger implements MessengerService {
    * @param {UserDetail} the customer to send reminder to
    * @param {CustomerItem[]} the customerItems to remind of
 	 */
-	public remind(customerDetail: UserDetail, customerItems: CustomerItem[]) {
-		this._emailService.remind(customerDetail, customerItems);
+	public remind(message: Message, customerDetail: UserDetail, customerItems: CustomerItem[]) {
+		this._emailService.remind(message, customerDetail, customerItems);
 	}
 
 	/**

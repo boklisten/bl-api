@@ -3,10 +3,11 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {BlError, UserDetail, CustomerItem, Item} from '@wizardcoder/bl-model';
+import { BlError, UserDetail, CustomerItem, Item, Message } from '@wizardcoder/bl-model';
 import { EmailService } from './email-service';
 import { EmailHandler } from '@wizardcoder/bl-email';
 import { BlDocumentStorage } from '../../storage/blDocumentStorage';
+
 
 chai.use(chaiAsPromised);
 
@@ -24,8 +25,12 @@ describe('EmailService', () => {
     it('should call emailHandler.sendReminder', (done) => {
       emailHandlerRemindStub.resolves(true);
       itemStorageGetStub.resolves({id: 'item1', title: 'title'});
+      const message: Message = { 
+        id: 'message1', 
+        messageType: 'reminder' 
+      } as Message;
 
-      emailService.remind({id: 'abc', email: 'some@email.org'} as UserDetail, [{id: 'customerItem1'}] as CustomerItem[]).then(() => {
+      emailService.remind(message, {id: 'abc', email: 'some@email.org'} as UserDetail, [{id: 'customerItem1'}] as CustomerItem[]).then(() => {
         expect(emailHandlerRemindStub).to.have.been.called;
         done();
       });
@@ -42,9 +47,14 @@ describe('EmailService', () => {
         deadline: new Date(),
         handout: false,
         returned: false
-      }]
+      }];
 
-      emailService.remind(customerDetail, customerItems).catch((err) => {
+      const message: Message = { 
+        id: 'message1', 
+        messageType: 'reminder' 
+      } as Message;
+
+      emailService.remind(message, customerDetail, customerItems).catch((err) => {
         expect(err.getMsg()).to.eq('not found');
         done();
       })
@@ -82,12 +92,17 @@ describe('EmailService', () => {
         id: 'item2',
         title: 'Terra Mater'
       }
+
+      const message: Message = { 
+        id: 'message1', 
+        messageType: 'reminder' 
+      } as Message;
       
       emailHandlerRemindStub.resolves(true);
       itemStorageGetStub.withArgs('item1').resolves(item1);
       itemStorageGetStub.withArgs('item2').resolves(item2);
 
-      emailService.remind(customerDetail, customerItems).then(() => {
+      emailService.remind(message, customerDetail, customerItems).then(() => {
         const emailOrderItems = emailHandlerRemindStub.lastCall.args[1].items;
 
         expect(emailOrderItems).to.eql([

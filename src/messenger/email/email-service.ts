@@ -1,5 +1,5 @@
 import {EmailHandler, EmailLog, EmailTemplateInput} from "@wizardcoder/bl-email";
-import {BlError, Delivery, Order, OrderItem, Payment, UserDetail, CustomerItem, Item} from "@wizardcoder/bl-model";
+import {BlError, Delivery, Order, OrderItem, Payment, UserDetail, CustomerItem, Item, Message} from "@wizardcoder/bl-model";
 import { BlDocumentStorage } from '../../storage/blDocumentStorage';
 import {OrderItemType} from "@wizardcoder/bl-model/dist/order/order-item/order-item-type";
 import * as fs from "fs";
@@ -7,7 +7,6 @@ import {EmailAttachment} from "@wizardcoder/bl-email/dist/ts/template/email-atta
 import {type} from "os";
 import {OrderEmailHandler} from "./order-email/order-email-handler";
 import {MessengerService, CustomerDetailWithCustomerItem} from "../messenger-service";
-import {Message} from "../message";
 import {EmailSetting} from "@wizardcoder/bl-email/dist/ts/template/email-setting";
 import {EMAIL_SETTINGS} from "./email-settings";
 import {EmailOrder} from "@wizardcoder/bl-email/dist/ts/template/email-order";
@@ -41,8 +40,15 @@ export class EmailService implements MessengerService {
 
 	public sendMany(messages: Message[], customerDetails: UserDetail[]) {
 	}
-
-  public async remind(customerDetail: UserDetail, customerItems: CustomerItem[]): Promise<boolean> {
+  
+  /**
+   * Sends out a reminder to the email specified in customerDetail
+   * The email will include the customerItems with the deadline
+   * @param message message the email service should update on later actions 
+   * @param customerDetail the customer to send email to
+   * @param customerItems a list of customerItems to include in the email
+   */
+  public async remind(message: Message, customerDetail: UserDetail, customerItems: CustomerItem[]): Promise<boolean> {
     const emailUser = this.customerDetailToEmailUser(customerDetail);
 
     const emailOrder: EmailOrder = {
@@ -58,18 +64,7 @@ export class EmailService implements MessengerService {
       toEmail: emailUser.email,
       fromEmail: 'ikkesvar@boklisten.no',
       subject: 'På tide å levere bøkene',
-      textBlocks: [
-        {
-          text: 'Nå er det snart på tide å levere bøkene dine. Dette kan du gjøre på en av våre stands. For å se åpningstidene og info om hvor vi står kan du sjekke dette på Boklisten.no'
-        },
-        {
-          text: 'Om du ikke har mulighet til å komme innom våre stands på de oppgitte tidspunktene, så kan du også sende bøkene i posten. Sendelsen må da skje før fristen er gått ut.' 
-        },
-        {
-          text: 'Det er viktig at du leverer bøkene i tide, hvis du ikke leverer vil det tilkomme gebyrer i henhold til leieavtalen.', 
-          warning: true
-        }
-      ]
+      textBlocks: (message.textBlocks && message.textBlocks.length > 0) ? message.textBlocks : []
     };
 
     try {

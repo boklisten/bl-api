@@ -1,4 +1,4 @@
-import { CustomerItem, BlError, UserDetail } from '@wizardcoder/bl-model';
+import { CustomerItem, BlError, Message, UserDetail } from '@wizardcoder/bl-model';
 import { BlDocumentStorage } from '../../storage/blDocumentStorage';
 import { SEDbQuery } from '../../query/se.db-query';
 import moment = require('moment');
@@ -30,19 +30,19 @@ export class MessengerReminder {
    *  @param deadline the deadline the reminder is for
    *  @param messageId if provided, stores message info in that message object
    */
-  public async remindCustomer(customerId: string, deadline: Date, messageId?: string): Promise<any> {
-    if (customerId == null || customerId.length <= 0) {
+  public async remindCustomer(message: Message): Promise<any> {
+    if (message.customerId == null || message.customerId.length <= 0) {
       throw new BlError('customerId is null or undefined');
     }
 
-    if (deadline == null) {
+    if (!message.info || message.info.deadline == null) {
       throw new BlError('deadline is null or undefined');
     }
 
     try {
-      const notReturnedCustomerItems = await this.customerItemHandler.getNotReturned(customerId, deadline);
-      const userDetail = await this.userDetailStorage.get(customerId);
-      await this.emailService.remind(userDetail, notReturnedCustomerItems);
+      const notReturnedCustomerItems = await this.customerItemHandler.getNotReturned(message.customerId, message.info.deadline);
+      const userDetail = await this.userDetailStorage.get(message.customerId);
+      await this.emailService.remind(message, userDetail, notReturnedCustomerItems);
     } catch (e) {
       throw e;
     }

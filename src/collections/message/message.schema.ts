@@ -21,8 +21,8 @@ export const messageSchema = {
     type: Schema.Types.Mixed,
     required: false
   },
-  message: {
-    type: Schema.Types.Mixed,
+  textBlocks: {
+    type: [Schema.Types.Mixed],
     required: false
   }
 }
