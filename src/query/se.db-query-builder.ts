@@ -10,6 +10,7 @@ import {DbQuerySortFilter} from "./sort-filter/db-query-sort-filter";
 import {DbQueryValidParams, ValidParam} from "./valid-param/db-query-valid-params";
 import {DbQueryBooleanFilter} from "./boolean-filter/db-query-boolean-filter";
 import {DbQueryDateFilter} from "./date-filter/db-query-date-filter";
+import { DbQueryExpandFilter } from "./expand-filter/db-query-expand-filter";
 
 export class SEDbQueryBuilder {
 	private dbQueryBooleanFilter: DbQueryBooleanFilter;
@@ -20,7 +21,8 @@ export class SEDbQueryBuilder {
 	private dbQueryRegexFilter: DbQueryRegexFilter;
 	private dbQuerySkipFilter: DbQuerySkipFilter;
 	private dbQuerySortFilter: DbQuerySortFilter;
-	private dbQueryStringFilter: DbQueryStringFilter;
+  private dbQueryStringFilter: DbQueryStringFilter;
+  private dbQueryExpandFilter: DbQueryExpandFilter;
 	private dbQueryValidParams: DbQueryValidParams;
 
 	constructor() {
@@ -33,11 +35,11 @@ export class SEDbQueryBuilder {
 		this.dbQuerySkipFilter = new DbQuerySkipFilter();
 		this.dbQuerySortFilter = new DbQuerySortFilter();
 		this.dbQueryStringFilter = new DbQueryStringFilter();
+    this.dbQueryExpandFilter = new DbQueryExpandFilter();
 	}
 
 
 	public getDbQuery(query: any, validQueryParams: ValidParam[]): SEDbQuery {
-		console.log(`"${query.creationTime}"`);
 		this.dbQueryValidParams = new DbQueryValidParams(validQueryParams);
 
 		let dbQuery: SEDbQuery = new SEDbQuery();
@@ -56,9 +58,8 @@ export class SEDbQueryBuilder {
 			dbQuery.skipFilter = this.dbQuerySkipFilter.getSkipFilter(query);
 			dbQuery.sortFilters = this.dbQuerySortFilter.getSortFilters(query, this.dbQueryValidParams.getAllValidParams());
 			dbQuery.stringFilters = this.dbQueryStringFilter.getStringFilters(query, this.dbQueryValidParams.getValidStringParams());
-
+      dbQuery.expandFilters = this.dbQueryExpandFilter.getExpandFilters(query, this.dbQueryValidParams.getValidExpandParams());
 		} catch(error) {
-			console.log('the err', error);
 			if (error instanceof TypeError) throw new TypeError('TypeError when building query, reason: ' + error.message);
 			if (error instanceof ReferenceError) throw new ReferenceError('ReferenceError when building query, reason: ' + error.message);
 			if (error instanceof RangeError) throw new RangeError('RangeError when building query, reason: ' + error.message);

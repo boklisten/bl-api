@@ -85,7 +85,7 @@ export let orderSchema = {
 		required: true
 	},
 	customer: {
-		type: Schema.Types.ObjectId
+		type: Schema.Types.Mixed
 	},
 	byCustomer: {
 		type: Schema.Types.Boolean,

@@ -1,6 +1,5 @@
 import {UserPermission} from "@wizardcoder/bl-model";
 
-
 export class BlApiRequest {
 	documentId?: string;
 	query?: any;
@@ -8,5 +7,5 @@ export class BlApiRequest {
 	user?: {
 		id: string,
 		permission: UserPermission
-	}
+  };
 }

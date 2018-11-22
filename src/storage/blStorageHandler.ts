@@ -2,16 +2,17 @@
 
 import {BlDocument, UserPermission} from "@wizardcoder/bl-model";
 import {SEDbQuery} from "../query/se.db-query";
+import { NestedDocument } from "./nested-document";
 
 export interface BlStorageHandler<T extends BlDocument> {
 	
-	get(id: string): Promise<T>;
+  get(id: string, userPermission?: UserPermission, nestedDocuments?: NestedDocument[]): Promise<T>;
 	
-	getMany(ids: string[]): Promise<T[]>;
+	getMany(ids: string[], userPermission?: UserPermission, nestedDocuments?: NestedDocument[]): Promise<T[]>;
 	
-	getByQuery(dbQuery: SEDbQuery): Promise<T[]>;
+	getByQuery(dbQuery: SEDbQuery, nestedDocuments?: NestedDocument[]): Promise<T[]>;
 	
-	getAll(): Promise<T[]>;
+	getAll(userPermission?: UserPermission, nestedDocuments?: NestedDocument[]): Promise<T[]>;
 	
 	add(doc: T, user: {id: string, permission: UserPermission}): Promise<T>;
 	

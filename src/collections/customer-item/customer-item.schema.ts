@@ -3,11 +3,11 @@ import {Schema} from 'mongoose';
 
 export const customerItemSchema = {
 	item: {
-		type: Schema.Types.ObjectId,
+		type: Schema.Types.Mixed,
 		required: true
 	},
 	customer: {
-		type: Schema.Types.ObjectId,
+		type: Schema.Types.Mixed,
 		require: true
 	},
 	sharedItem: {

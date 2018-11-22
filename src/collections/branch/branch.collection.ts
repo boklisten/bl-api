@@ -13,7 +13,7 @@ export class BranchCollection implements BlCollection {
 			method: 'getAll'
 		},
 		{
-			method: 'getId'
+      method: 'getId'
 		},
 		{
 			method: 'post',

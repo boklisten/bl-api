@@ -22,7 +22,7 @@
     "@types/moment": "^2.13.0",
     "@types/validator": "^6.3.0",
     "@wizardcoder/bl-email": "^1.4.9",
-    "@wizardcoder/bl-model": "^0.15.0",
+    "@wizardcoder/bl-model": "^0.16.2",
     "bluebird": "^3.5.1",
     "chalk": "^2.3.2",
     "commander": "^2.13.0",

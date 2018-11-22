@@ -5,6 +5,8 @@ import {BlStorageHandler} from "../blStorageHandler";
 import {MongooseModelCreator} from "./mongoose-schema-creator";
 import {PermissionService} from "../../auth/permission/permission.service";
 import {SEDbQuery} from "../../query/se.db-query";
+import { NestedDocument } from "../nested-document";
+import { ExpandFilter } from "../../query/expand-filter/db-query-expand-filter";
 import * as mongoose from 'mongoose';
 
 export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageHandler<T>{
@@ -20,25 +22,35 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		this.permissionService = new PermissionService();
 	}
 
-	get(id: string, userPermission?: UserPermission): Promise<T> {
+	public get(id: string, userPermission?: UserPermission, nestedDocuments?: NestedDocument[]): Promise<T> {
 		return new Promise((resolve, reject) => {
 			let filter: any = {_id: id};
 
 		    this.mongooseModel.findOne(filter, (error, doc) => {
+
 				if (error) {
 					return reject(this.handleError(new BlError(`error when trying to find document with id "${id}"`), error));
 				}
 
 				if (doc === null) {
 					return reject(new BlError(`object "${id}" not found`).code(702));
-				}
+        }
 
-				resolve(doc);
+        if (nestedDocuments && nestedDocuments.length > 0) {
+          this.getNestedDocuments(doc, nestedDocuments, userPermission).then((docWithNestedObjects) => {
+            resolve(docWithNestedObjects);
+          }).catch((nestedDocError) => {
+            return reject(nestedDocError);
+          });
+        } else {
+				  resolve(doc);
+        }
+
 			});
 		});
 	}
 	
-	getByQuery(dbQuery: SEDbQuery): Promise<T[]> {
+	public getByQuery(dbQuery: SEDbQuery, nestedDocuments?: NestedDocument[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 		    this.mongooseModel
 				.find(dbQuery.getFilter(), dbQuery.getOgFilter())
@@ -52,14 +64,24 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 					
 					if (docs.length <= 0) {
 		    			return reject(new BlError('not found').code(702));
-					}
-					
-					resolve(docs)
+          }
+
+          const expandFilters = dbQuery.getExpandFilter();
+
+          if (nestedDocuments && nestedDocuments.length > 0) {
+            this.retrieveNestedDocuments(docs, nestedDocuments, expandFilters).then((docsWithNestedDocuments: T[]) => {
+              resolve(docsWithNestedDocuments);
+            }).catch((e) => {
+              reject(e);
+            });
+          } else {
+            resolve(docs)
+          }
 		    });
 		});
 	}
 	
-	getMany(ids: string[], userPermission?: UserPermission): Promise<T[]> {
+	public getMany(ids: string[], userPermission?: UserPermission, nestedDocuments?: NestedDocument[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			const idArr = [];
 			
@@ -80,13 +102,22 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 			this.mongooseModel.find(filter).exec((error, docs) => {
 				if (error || docs.length <= 0) {
 					return reject(this.handleError(new BlError('error when trying to find document'), error));
-				}
-				resolve(docs);
+        }
+
+        if (nestedDocuments && nestedDocuments.length > 0) {
+          this.retrieveNestedDocuments(docs, nestedDocuments, [], userPermission).then((docsWithNestedDocuments: T[]) => {
+            resolve(docsWithNestedDocuments);
+          }).catch((e) => {
+            reject(e);
+          });
+        } else {
+          resolve(docs)
+        }
 			});
 		});
 	}
 	
-	getAll(userPermission?: UserPermission): Promise<T[]> {
+	public getAll(userPermission?: UserPermission, nestedDocuments?: NestedDocument[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			let filter: any = {active: true};
 
@@ -97,14 +128,22 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 			this.mongooseModel.find(filter, (error, docs) => {
 				if (error || docs === null) {
 					reject(this.handleError(new BlError('failed to get all documnts'), error));
-				}
-				
-				resolve(docs);
+        }
+
+        if (nestedDocuments && nestedDocuments.length > 0) {
+          this.retrieveNestedDocuments(docs, nestedDocuments, [], userPermission).then((docsWithNestedDocuments: T[]) => {
+            resolve(docsWithNestedDocuments);
+          }).catch((e) => {
+            reject(e);
+          });
+        } else {
+          resolve(docs)
+        }			
 			});
 		});
 	}
 	
-	add(doc: T, user?: {id: string, permission: UserPermission}): Promise<T> {
+	public add(doc: T, user?: {id: string, permission: UserPermission}): Promise<T> {
 		return new Promise((resolve, reject) => {
 			doc.creationTime = new Date();
 			doc.lastUpdated = new Date();
@@ -126,13 +165,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		});
 	}
 	
-	addMany(docs: T[]): Promise<T[]> {
+	public addMany(docs: T[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			reject(new BlError('not implemented'));
 		});
 	}
 	
-	update(id: string, data: any, user: {id: string, permission: UserPermission}): Promise<T> {
+	public update(id: string, data: any, user: {id: string, permission: UserPermission}): Promise<T> {
 		return new Promise((resolve, reject) => {
 			this.mongooseModel.findById(id, (error, document) => {
 				if (error) {
@@ -163,13 +202,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		});
 	}
 	
-	updateMany(docs: {id: string, data: any}[]): Promise<T[]> {
+	public updateMany(docs: {id: string, data: any}[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			reject(new BlError('not implemented'));
 		});
 	}
 	
-	remove(id: string, user: {id: string, permission: UserPermission}): Promise<T> {
+	public remove(id: string, user: {id: string, permission: UserPermission}): Promise<T> {
 		return new Promise((resolve, reject) => {
 			this.mongooseModel.findById(id, (error, doc) => {
 				if (error || doc === null) {
@@ -191,13 +230,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		});
 	}
 	
-	removeMany(ids: string[]): Promise<T[]> {
+	public removeMany(ids: string[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			reject(new BlError('not implemented'));
 		});
 	}
 	
-	exists(id: string): Promise<boolean> {
+	public exists(id: string): Promise<boolean> {
 		return new Promise((resolve, reject) => {
 		    this.get(id).then(() => {
 		    	resolve(true);
@@ -205,10 +244,72 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		    	reject(new BlError(`document with id ${id} does not exist`).code(702));
 			});
 		});
-	}
+  }
+  /**
+   * Tries to fetch all nested values on the specified documents
+   * @param {BlDocument[]} docs the documents to search through
+   * @param {NestedDocument[]} nestedDocuments the values to fetch
+   * @param {UserPermission} userPermission
+   */
+  private async retrieveNestedDocuments(docs: BlDocument[], nestedDocuments: NestedDocument[], expandFilters?: ExpandFilter[], userPermission?: UserPermission): Promise<BlDocument[]> {
+    const promiseArr: Promise<BlDocument>[] = [];
+
+    if (expandFilters && expandFilters.length > 0) {
+      let expandedNestedDocuments = [];
+
+      for (let expandFilter of expandFilters) {
+        for (let nestedDocument of nestedDocuments) {
+          if (expandFilter.fieldName === nestedDocument.field) {
+            expandedNestedDocuments.push(nestedDocument);
+          }
+        }
+      }
+
+      nestedDocuments = expandedNestedDocuments;
+    }
+
+    
+    for (let doc of docs) {
+      promiseArr.push(this.getNestedDocuments(doc, nestedDocuments, userPermission));
+    }
+
+    try {
+      const docsWithExpandedDocs = await Promise.all(promiseArr);
+      return docsWithExpandedDocs;
+    } catch (e) {
+      throw new BlError('could not retrieve nested documents').code(702).add(e);
+    }
+  }
+
+
+  private async getNestedDocuments(doc: BlDocument, nestedDocuments: NestedDocument[], userPermission?: UserPermission): Promise<any> {
+    const nestedDocumentsPromArray: Promise<any>[] = [];
+
+    for (const nestedDocument of nestedDocuments) {
+      if (doc && doc[nestedDocument.field]) {
+        nestedDocumentsPromArray.push(this.getNestedDocument(doc[nestedDocument.field], nestedDocument, userPermission));
+      }
+    }
+
+    try {
+      const nestedDocs = await Promise.all(nestedDocumentsPromArray);      
+      
+      for (let i = 0; i < nestedDocuments.length; i++) {
+        doc[nestedDocuments[i].field] = nestedDocs[i];
+      }
+
+      return doc;
+    } catch (nestedDocumentError) {
+      return doc;
+    }
+  }
+
+  private getNestedDocument(id: string, nestedDocument: NestedDocument, userPermission?: UserPermission): Promise<any> {
+    const documentStorage = new MongoDbBlStorageHandler(nestedDocument.collection, nestedDocument.mongooseSchema);
+    return documentStorage.get(id, userPermission);
+  }
 	
 	private handleError(blError: BlError, error: any): BlError {
-		
 		if (error) {
 			if (error.name === 'CastError') {
 				return blError.code(702).store('castError', error);
@@ -220,7 +321,5 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 		} else {
 			return new BlError('EndpointMongoDb: unknown error').add(blError).code(200);
 		}
-	}
-
-
+  }
 }

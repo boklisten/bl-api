@@ -74,7 +74,6 @@ describe('RefreshTokenCreator', () => {
 							.and.have.length.gte(50);
 							done();
 					}).catch((err) => {
-						console.log('ERRRRRRR', err);
 				})
 			});
 		});

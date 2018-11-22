@@ -13,7 +13,6 @@ export class DbQueryOnlyGetFilter {
 	public getOnlyGetFilters(query: any, validOnlyGetParams: string[]): OnlyGetFilter[] {
 
 		if (!query || Object.keys(query).length === 0 && query.constructor === Object) {
-
 			throw new TypeError('query can not be undefined or empty');
 		}
 

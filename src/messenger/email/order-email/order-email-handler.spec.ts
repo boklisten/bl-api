@@ -432,7 +432,6 @@ describe('OrderEmailHandler', () => {
 				orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder).then(() => {
 					let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
 					let emailOrder = sendOrderReceiptArguments[1]; //second arg is the emailOrder
-				//	console.log('the email order', emailOrder);
 
 					expect(emailOrder.showPayment).to.be.true;
 					expect(emailOrder.payment.total).to.be.eq(expectedTotal);

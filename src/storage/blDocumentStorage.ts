@@ -4,6 +4,7 @@ import {BlDocument, BlError, UserDetail, UserPermission} from "@wizardcoder/bl-m
 import {BlStorageHandler} from "./blStorageHandler";
 import {MongoDbBlStorageHandler} from "./mongoDb/mongoDb.blStorageHandler";
 import {SEDbQuery} from "../query/se.db-query";
+import { NestedDocument } from "./nested-document";
 
 export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler<T> {
 	
@@ -15,9 +16,9 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 		}
 	}
 	
-	get(id: string): Promise<T> {
+	get(id: string, userPermission?: UserPermission, nestedDocuments?: NestedDocument[]): Promise<T> {
 		return new Promise((resolve, reject) => {
-			this.mongoDbHandler.get(id).then((doc: T) => {
+			this.mongoDbHandler.get(id, userPermission, nestedDocuments).then((doc: T) => {
 				resolve(doc);
 			}).catch((blError: BlError) => {
 				reject(blError);
@@ -25,9 +26,9 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 		});
 	}
 	
-	getByQuery(dbQuery: SEDbQuery): Promise<T[]> {
+	getByQuery(dbQuery: SEDbQuery, nestedDocuments?: NestedDocument[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
-		    this.mongoDbHandler.getByQuery(dbQuery).then((docs: T[]) => {
+		    this.mongoDbHandler.getByQuery(dbQuery, nestedDocuments).then((docs: T[]) => {
 		    	resolve(docs);
 			}).catch((blError: BlError) => {
 		    	reject(blError);
@@ -35,7 +36,7 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 		});
 	}
 	
-	getMany(ids: string[], userPermission?: UserPermission): Promise<T[]> {
+	getMany(ids: string[], userPermission?: UserPermission, nestedDocuments?: NestedDocument[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			this.mongoDbHandler.getMany(ids, userPermission).then((docs: T[]) => {
 				resolve(docs);
@@ -45,7 +46,7 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 		});
 	}
 	
-	getAll(userPermission?: UserPermission): Promise<T[]> {
+	getAll(userPermission?: UserPermission, nestedDocuments?: NestedDocument[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			this.mongoDbHandler.getAll(userPermission).then((docs: T[]) => {
 				resolve(docs);

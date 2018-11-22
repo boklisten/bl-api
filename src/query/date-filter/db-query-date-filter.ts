@@ -1,6 +1,7 @@
 import moment = require("moment");
 
 
+
 export type DateFilter = {
 	fieldName: string,
 	op: {
@@ -42,7 +43,6 @@ export class DbQueryDateFilter {
 
 			return [];
 		} catch (e) {
-			console.log('date error: ', e);
 			if (e instanceof SyntaxError) {
 				throw new SyntaxError();
 			}
@@ -50,7 +50,6 @@ export class DbQueryDateFilter {
 	}
 
 	private generateSingleDayFilter(fieldName: string, value: string): DateFilter[] {
-		console.log(`value "${value}"`);
 		if (!value) throw new Error('QueryBuilderDateFilter.generateDateFilter(): value is not defined');
 
 		let momentDate;
