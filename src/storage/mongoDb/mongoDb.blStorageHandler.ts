@@ -36,16 +36,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument> implements BlStorageH
 					return reject(new BlError(`object "${id}" not found`).code(702));
         }
 
-        if (nestedDocuments && nestedDocuments.length > 0) {
-          this.getNestedDocuments(doc, nestedDocuments, userPermission).then((docWithNestedObjects) => {
-            resolve(docWithNestedObjects);
-          }).catch((nestedDocError) => {
-            return reject(nestedDocError);
-          });
-        } else {
-				  resolve(doc);
-        }
-
+        resolve(doc);
 			});
 		});
 	}
