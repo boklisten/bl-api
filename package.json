@@ -15,6 +15,10 @@
     "test:watch": "mocha -r ts-node/register --trace-warnings --reporter min --watch --watch-extensions ts \"./src/**/*.spec.ts\"",
     "copy": "copyfiles \"./src/public/**\" \"./dist/public/\" --flat"
   },
+  "engines": {
+    "node": "8.11.3",
+    "npm": "6.1.0"
+  },
   "author": "holskil",
   "license": "ISC",
   "dependencies": {
