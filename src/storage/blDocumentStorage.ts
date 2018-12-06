@@ -16,9 +16,9 @@ export class BlDocumentStorage<T extends BlDocument> implements BlStorageHandler
 		}
 	}
 	
-	get(id: string, userPermission?: UserPermission, nestedDocuments?: NestedDocument[]): Promise<T> {
+	get(id: string, userPermission?: UserPermission): Promise<T> {
 		return new Promise((resolve, reject) => {
-			this.mongoDbHandler.get(id, userPermission, nestedDocuments).then((doc: T) => {
+			this.mongoDbHandler.get(id, userPermission).then((doc: T) => {
 				resolve(doc);
 			}).catch((blError: BlError) => {
 				reject(blError);
