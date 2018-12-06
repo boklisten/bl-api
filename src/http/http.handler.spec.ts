@@ -10,16 +10,5 @@ describe('HttpHandler', () => {
 	const httpHandler = new HttpHandler();
 	
 	describe('#getWithQuery()', () => {
-		/*
-		it('should resolve with data', () => {
-			
-			httpHandler.getWithQuery('https://www.vg.no', '').then((response) => {
-				
-				console.log('the response', response);
-			}).catch(() => {
-				console.log('wath the fuck');
-			});
-		});
-		*/
 	});
 });

@@ -22,9 +22,9 @@ export class CollectionEndpointGetAll<T extends BlDocument> extends CollectionEn
 				dbQuery = dbQueryBuilder.getDbQuery(blApiRequest.query, this._endpoint.validQueryParams);
 			} catch (e) {
 				throw new BlError('could not create query from request query string').add(e).store('query', blApiRequest.query);
-			}
+      }
 
-			return this._documentStorage.getByQuery(dbQuery).then((docs: T[]) => {
+			return this._documentStorage.getByQuery(dbQuery, this._endpoint.nestedDocuments).then((docs: T[]) => {
 				return docs;
 			}).catch((blError: BlError) => {
 				throw blError;

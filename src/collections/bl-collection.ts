@@ -3,6 +3,7 @@ import {Hook} from "../hook/hook";
 import {UserPermission} from "@wizardcoder/bl-model";
 import {ValidParam} from "../query/valid-param/db-query-valid-params";
 import {Operation} from "../operation/operation";
+import { NestedDocument } from "../storage/nested-document";
 
 
 export interface BlCollection {
@@ -30,6 +31,7 @@ export interface BlEndpoint {
 	method: BlEndpointMethod;
 	hook?: Hook; //an optional hook for this endpoint
 	validQueryParams?: ValidParam[];
+  nestedDocuments?: NestedDocument[]; // what nested documents should be retrieved at request 
 	restriction?: BlEndpointRestriction; //this endpoint is only accessible to the user that created it
 	operations?: BlEndpointOperation[]
 }

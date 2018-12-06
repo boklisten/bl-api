@@ -8,6 +8,7 @@ import {LimitFilter} from "./limit-filter/db-query-limit-filter";
 import {RegexFilter} from "./regex-filter/db-query-regex-filter";
 import {BooleanFilter} from "./boolean-filter/db-query-boolean-filter";
 import {DateFilter} from "./date-filter/db-query-date-filter";
+import {ExpandFilter } from "./expand-filter/db-query-expand-filter";
 
 export class SEDbQuery {
 	booleanFilters: BooleanFilter[];
@@ -19,6 +20,7 @@ export class SEDbQuery {
 	sortFilters: SortFilter[];
 	limitFilter: LimitFilter;
 	regexFilters: RegexFilter[];
+  expandFilters: ExpandFilter[];
 
 
 	constructor() {
@@ -30,7 +32,8 @@ export class SEDbQuery {
 		this.skipFilter = {skip: 0};
 		this.sortFilters = [];
 		this.limitFilter = {limit: 0};
-		this.regexFilters = [];
+    this.regexFilters = [];
+    this.expandFilters = [];
 	}
 
 	getFilter(): any {
@@ -85,7 +88,11 @@ export class SEDbQuery {
 
 	getSkipFilter(): number {
 		return this.skipFilter.skip;
-	}
+  }
+
+  getExpandFilter() {
+    return this.expandFilters;
+  }
 
 	getSortFilter(): any {
 

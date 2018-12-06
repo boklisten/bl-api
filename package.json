@@ -1,6 +1,6 @@
 {
   "name": "bl-api",
-  "version": "1.1.5",
+  "version": "1.2.0",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -12,8 +12,12 @@
     "release": "standard-version && grunt pkg",
     "pretest": "tsc",
     "test": "mocha -r ts-node/register \"src/**/*.spec.ts\" --reporter min --exit",
-    "test:watch": "mocha -r ts-node/register --trace-warnings --reporter min --watch --watch-extensions ts \"./src/**/*.spec.ts\"",
+    "test:watch": "mocha -r ts-node/register --trace-warnings --reporter progress --watch --watch-extensions ts \"./src/**/*.spec.ts\"",
     "copy": "copyfiles \"./src/public/**\" \"./dist/public/\" --flat"
+  },
+  "engines": {
+    "node": "8.11.3",
+    "npm": "6.1.0"
   },
   "author": "holskil",
   "license": "ISC",
@@ -37,7 +41,6 @@
     "moment": "^2.20.1",
     "mongodb": "^2.2.34",
     "mongoose": "^4.13.9",
-    "npm": "^6.1.0",
     "passport": "^0.4.0",
     "passport-custom": "^1.0.5",
     "passport-facebook": "^2.1.1",
@@ -45,14 +48,12 @@
     "passport-jwt": "^3.0.1",
     "passport-local": "^1.0.0",
     "qs": "^6.5.1",
-    "redis": "^2.8.0",
     "reflect-metadata": "^0.1.12",
-    "request": "^2.83.0",
+    "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "typedjson-npm": "^0.1.7",
     "typescript": "^2.6.2",
-    "validator": "^9.2.0",
-    "winston": "^3.0.0"
+    "validator": "^9.2.0"
   },
   "devDependencies": {
     "@types/chai": "^4.1.0",
@@ -68,12 +69,12 @@
     "@types/sinon-chai": "^2.7.29",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "grunt": "^1.0.1",
+    "grunt": "^1.0.3",
     "grunt-concurrent": "^2.3.1",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-compress": "^1.4.3",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-watch": "^1.0.0",
+    "grunt-contrib-watch": "^1.1.0",
     "grunt-express-server": "^0.5.3",
     "grunt-mocha-test": "^0.13.3",
     "grunt-nodemon": "^0.4.2",
@@ -91,8 +92,9 @@
     "standard-version": "^4.3.0",
     "ts-loader": "^3.2.0",
     "ts-node": "^3.3.0",
-    "typescript-library-bundler": "^0.1.7",
-    "webpack": "^3.10.0"
+    "typescript-library-bundler": "^0.2.4",
+    "webpack": "^3.10.0",
+    "winston": "^3.0.0"
   },
   "repository": "git@github.com:holskil/bl_api.git",
   "private": true

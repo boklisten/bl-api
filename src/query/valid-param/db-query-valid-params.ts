@@ -1,7 +1,7 @@
 
 export type ValidParam = {
 	fieldName: string,
-	type: 'string' | 'number' | 'boolean' | 'date'
+	type: 'string' | 'number' | 'boolean' | 'date' | 'expand';
 }
 
 export class DbQueryValidParams {
@@ -25,7 +25,11 @@ export class DbQueryValidParams {
 
 	public getValidDateParams(): string[] {
 		return this.getValidParamsBasedOnType('date');
-	}
+  }
+
+  public getValidExpandParams(): string[] {
+    return this.getValidParamsBasedOnType('expand');
+  }
 
 	public getAllValidParams(): string[] {
 		let allValidParams: string[] = [];

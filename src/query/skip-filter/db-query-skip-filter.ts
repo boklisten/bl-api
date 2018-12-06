@@ -24,7 +24,7 @@ export class DbQuerySkipFilter {
 		let skipstr = skip.toString();
 
 		for (let s of skipstr) {
-			if (!parseInt(s)) throw new TypeError('skip parameter "' + skip + '" is not a valid number');
+			if (s !== "0" && !parseInt(s)) throw new TypeError('skip parameter "' + skip + '" is not a valid number');
 		}
 
 		return parseInt(skipstr);
