@@ -165,7 +165,11 @@ export class CustomerItemHandler {
       throw new BlError('deadline is null or undefined');
     }
 
-    const deadlineString = moment(deadline).format('DDMMYYYYHHmm');
+    const deadlineString = moment(deadline)
+      .hour(0)
+      .minute(0)
+      .second(0)
+      .format('DDMMYYYYHHmm');
 
     const query = {
       customer: customerId.toString(),
