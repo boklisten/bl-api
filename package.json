@@ -52,7 +52,6 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "typedjson-npm": "^0.1.7",
-    "typescript": "^2.9.2",
     "validator": "^9.2.0"
   },
   "devDependencies": {
@@ -92,6 +91,7 @@
     "standard-version": "^4.3.0",
     "ts-loader": "^3.2.0",
     "ts-node": "^3.3.0",
+    "typescript": "^2.9.2",
     "typescript-library-bundler": "^0.2.4",
     "webpack": "^3.10.0",
     "winston": "^3.0.0"
