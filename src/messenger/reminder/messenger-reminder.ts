@@ -1,28 +1,40 @@
-import { CustomerItem, BlError, Message, UserDetail } from '@wizardcoder/bl-model';
-import { BlDocumentStorage } from '../../storage/blDocumentStorage';
-import { SEDbQuery } from '../../query/se.db-query';
+import {
+  CustomerItem,
+  BlError,
+  Message,
+  UserDetail,
+} from '@wizardcoder/bl-model';
+import {BlDocumentStorage} from '../../storage/blDocumentStorage';
+import {SEDbQuery} from '../../query/se.db-query';
 import moment = require('moment');
-import { CustomerItemHandler } from '../../collections/customer-item/helpers/customer-item-handler';
-import { EmailService } from '../email/email-service';
-import { userDetailSchema } from '../../collections/user-detail/user-detail.schema';
+import {CustomerItemHandler} from '../../collections/customer-item/helpers/customer-item-handler';
+import {EmailService} from '../email/email-service';
+import {userDetailSchema} from '../../collections/user-detail/user-detail.schema';
 
 export class MessengerReminder {
   private customerItemHandler: CustomerItemHandler;
   private userDetailStorage: BlDocumentStorage<UserDetail>;
-  private emailService: EmailService; 
+  private emailService: EmailService;
 
-  constructor(customerItemHandler?: CustomerItemHandler, userDetailStorage?: BlDocumentStorage<UserDetail>, emailService?: EmailService) {
-    this.customerItemHandler = (customerItemHandler) ? customerItemHandler : new CustomerItemHandler();
-    this.userDetailStorage = (userDetailStorage) ? userDetailStorage : new BlDocumentStorage<UserDetail>('userdetails', userDetailSchema);
-    this.emailService = (emailService) ? emailService : new EmailService();
+  constructor(
+    customerItemHandler?: CustomerItemHandler,
+    userDetailStorage?: BlDocumentStorage<UserDetail>,
+    emailService?: EmailService,
+  ) {
+    this.customerItemHandler = customerItemHandler
+      ? customerItemHandler
+      : new CustomerItemHandler();
+    this.userDetailStorage = userDetailStorage
+      ? userDetailStorage
+      : new BlDocumentStorage<UserDetail>('userdetails', userDetailSchema);
+    this.emailService = emailService ? emailService : new EmailService();
   }
-  
+
   /**
    *  Tries to remind all customers to return items that have the specified deadline
    *  @param deadline the deadline the reminder is for
    */
-  public remindAll(deadline: Date) {
-  }
+  public remindAll(deadline: Date) {}
 
   /**
    *  Reminds a customer to return a item with the specified deadline
@@ -40,9 +52,18 @@ export class MessengerReminder {
     }
 
     try {
-      const notReturnedCustomerItems = await this.customerItemHandler.getNotReturned(message.customerId, message.info.deadline);
+      const notReturnedCustomerItems = await this.customerItemHandler.getNotReturned(
+        message.customerId,
+        message.info.deadline,
+      );
+
       const userDetail = await this.userDetailStorage.get(message.customerId);
-      await this.emailService.remind(message, userDetail, notReturnedCustomerItems);
+
+      await this.emailService.remind(
+        message,
+        userDetail,
+        notReturnedCustomerItems,
+      );
     } catch (e) {
       throw e;
     }

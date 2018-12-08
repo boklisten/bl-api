@@ -1,28 +1,33 @@
-import { Schema } from 'mongoose';
+import {Schema} from 'mongoose';
 
 export const messageSchema = {
   messageType: {
     type: Schema.Types.String,
-    required: true
+    required: true,
   },
   messageMethod: {
     type: Schema.Types.String,
-    required: true
+    required: true,
   },
   customerId: {
     type: Schema.Types.ObjectId,
-    required: true
+    required: true,
   },
   employeeId: {
     type: Schema.Types.ObjectId,
-    required: false
+    required: false,
   },
   info: {
     type: Schema.Types.Mixed,
-    required: false
+    required: false,
+  },
+  sendgridEvents: {
+    type: [Schema.Types.Mixed],
+    required: false,
+    default: [],
   },
   textBlocks: {
     type: [Schema.Types.Mixed],
-    required: false
-  }
-}
+    required: false,
+  },
+};
