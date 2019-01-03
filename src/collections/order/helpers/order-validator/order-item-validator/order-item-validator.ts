@@ -8,12 +8,14 @@ import {OrderItemBuyValidator} from './order-item-buy-validator/order-item-buy-v
 import {OrderItemRentValidator} from './order-item-rent-validator/order-item-rent-validator';
 import {OrderFieldValidator} from '../order-field-validator/order-field-validator';
 import {PriceService} from '../../../../../price/price.service';
+import { OrderItemPartlyPaymentValidator } from "./order-item-partly-payment-validator/order-item-partly-payment-validator";
 
 export class OrderItemValidator {
   private orderItemFieldValidator: OrderFieldValidator;
   private orderItemExtendValidator: OrderItemExtendValidator;
   private orderItemBuyValidator: OrderItemBuyValidator;
   private orderItemRentValidator: OrderItemRentValidator;
+  private orderItemPartlyPaymentValidator: OrderItemPartlyPaymentValidator;
   private branchStorage: BlDocumentStorage<Branch>;
   private itemStorage: BlDocumentStorage<Item>;
   private priceService: PriceService;
@@ -25,6 +27,7 @@ export class OrderItemValidator {
     orderItemRentValidator?: OrderItemRentValidator,
     orderItemBuyValidator?: OrderItemBuyValidator,
     orderItemExtendValidator?: OrderItemExtendValidator,
+    orderItemPartlyPaymentValidator?: OrderItemPartlyPaymentValidator,
   ) {
     this.branchStorage = branchStorage
       ? branchStorage
@@ -46,6 +49,7 @@ export class OrderItemValidator {
       ? orderItemExtendValidator
       : new OrderItemExtendValidator();
     this.priceService = new PriceService({roundDown: true});
+    this.orderItemPartlyPaymentValidator = (orderItemPartlyPaymentValidator) ? orderItemPartlyPaymentValidator : new OrderItemPartlyPaymentValidator();
   }
 
   public async validate(branch: Branch, order: Order): Promise<boolean> {
@@ -83,6 +87,8 @@ export class OrderItemValidator {
           orderItem,
           item,
         );
+      case 'partly-payment':
+        return await this.orderItemPartlyPaymentValidator.validate(orderItem, item, branch);
       case 'buy':
         return await this.orderItemBuyValidator.validate(
           branch,
