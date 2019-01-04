@@ -1,4 +1,5 @@
 import { OrderItem, Item, Branch, BlError } from "@wizardcoder/bl-model";
+import {isNullOrUndefined} from 'util';
 
 export class OrderItemPartlyPaymentValidator {
 
@@ -39,15 +40,15 @@ export class OrderItemPartlyPaymentValidator {
   }
 
   private validateFields(orderItem: OrderItem) {
-    if (!orderItem.info) {
+    if (isNullOrUndefined(orderItem.info)) {
       throw new BlError("orderItem.info not specified");
     }
 
-    if (orderItem.info && !orderItem.info.to) {
+    if (orderItem.info && isNullOrUndefined(orderItem.info.to)) {
       throw new BlError("orderItem.info.to not specified");
     }
 
-    if (orderItem.info && !orderItem.info['amountLeftToPay']) {
+    if (orderItem.info && isNullOrUndefined(orderItem.info['amountLeftToPay'])) {
       throw new BlError("orderItem.info.amountLeftToPay not specified");
     }
   }
