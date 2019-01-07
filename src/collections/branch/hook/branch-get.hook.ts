@@ -35,7 +35,7 @@ export class BranchGetHook extends Hook {
             'admin',
           )
         ) {
-          return branch; // admin should always get the branchItems
+          return; // admin should always get the branchItems
         }
 
         // have a user
@@ -52,11 +52,10 @@ export class BranchGetHook extends Hook {
           }
         } else {
           if (!branch.isBranchItemsLive.atBranch) {
-            return (branch.branchItems = []);
+            branch.branchItems = [];
           }
         }
       }
     }
-    return branch;
   }
 }
