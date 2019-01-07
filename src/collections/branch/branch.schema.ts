@@ -144,7 +144,18 @@ export const branchSchema = {
 			type: Schema.Types.Boolean,
 			default: true
 		}
-	},
+  },
+  isBranchItemsLive: {
+    type: {
+      online: Schema.Types.Boolean,
+      atBranch: Schema.Types.Boolean
+    },
+    default: {
+      online: false,
+      atBranch: false
+    },
+    required: false
+  },
 	branchItems: {
 		type: [Schema.Types.ObjectId],
 		default: []
