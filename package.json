@@ -48,11 +48,13 @@
     "passport-jwt": "^3.0.1",
     "passport-local": "^1.0.0",
     "qs": "^6.5.1",
+    "redis": "^2.8.0",
     "reflect-metadata": "^0.1.12",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "typedjson-npm": "^0.1.7",
-    "validator": "^9.2.0"
+    "validator": "^9.2.0",
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "@types/chai": "^4.1.0",
@@ -95,8 +97,7 @@
     "ts-node": "^7.0.1",
     "typescript": "^2.9.2",
     "typescript-library-bundler": "^0.2.4",
-    "webpack": "^3.10.0",
-    "winston": "^3.0.0"
+    "webpack": "^3.10.0"
   },
   "repository": "git@github.com:holskil/bl_api.git",
   "private": true
