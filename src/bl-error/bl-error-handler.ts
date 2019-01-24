@@ -72,7 +72,7 @@ export class BlErrorHandler {
 
     if (blError.getStore() && blError.getStore().length > 0) {
       for (let storeData of blError.getStore()) {
-        logger.debug(`reason: ${storeData.value}`);
+        logger.debug(`reason: ${JSON.stringify(storeData.value)}`);
       }
     }
   }
