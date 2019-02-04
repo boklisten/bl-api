@@ -13,6 +13,12 @@ export class InvoiceCollection implements BlCollection {
       },
     },
     {
+      method: 'getAll',
+      restriction: {
+        permissions: ['admin', 'super'],
+      },
+    },
+    {
       method: 'post',
       restriction: {
         permissions: ['admin', 'super'],
