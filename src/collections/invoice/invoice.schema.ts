@@ -9,6 +9,7 @@ export const invoiceSchema = {
     type: Schema.Types.Boolean,
     default: false,
   },
+  branch: Schema.Types.ObjectId,
   toCreditNote: {
     type: Schema.Types.Boolean,
     default: false,
