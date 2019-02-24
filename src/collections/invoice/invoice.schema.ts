@@ -21,8 +21,9 @@ export const invoiceSchema = {
   customerItemPayments: {
     type: [
       {
-        customerItem: Schema.Types.String,
+        customerItem: Schema.Types.ObjectId,
         title: Schema.Types.String,
+        item: Schema.Types.ObjectId,
         numberOfItems: Schema.Types.String,
         cancel: Schema.Types.Boolean,
         payment: {
