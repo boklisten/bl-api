@@ -17,10 +17,10 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
           name: Install Typescript
-          command: "npm install typescript"
+          command: "npm install typescript -g"
       - run: 
           name: Install node modules
-          command: npm install
+          command: npm ci
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
@@ -33,7 +33,7 @@ jobs:
       - checkout
       - run:
           name: Test
-          command: npm test
+          command: npm run test
       - run:
           name: Code coverage
           command: './node_modules/.bin/nyc report --reporter=text-lcov'

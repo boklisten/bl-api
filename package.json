@@ -10,7 +10,6 @@
     "pkg": "grunt pkg",
     "dev": "grunt dev",
     "release": "standard-version && grunt pkg",
-    "pretest": "node_modules/typescrip/bin/tsc",
     "test": "mocha -r ts-node/register \"src/**/*.spec.ts\" --reporter min --exit",
     "test:watch": "mocha -r ts-node/register --trace-warnings --reporter progress --watch --watch-extensions ts \"./src/**/*.spec.ts\"",
     "copy": "copyfiles \"./src/public/**\" \"./dist/public/\" --flat"
