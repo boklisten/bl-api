@@ -21,6 +21,7 @@ export class BlErrorHandler {
       blError = new BlError('unknown error').store('error', err);
     }
 
+    console.log(blError);
     this.printErrorStack(blError);
     this.storeError(blError);
 
