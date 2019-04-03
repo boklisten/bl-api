@@ -26,16 +26,17 @@ export const logger = winston.createLogger({
   levels: customLevels.levels,
   format: winston.format.combine(
     winston.format.printf((info: any) => {
+      if (process.env.NODE_ENV === 'production') {
+        return `{${info.level}} ${info.message}`;
+      }
       return colorizer.colorize(
         info.level,
-        `${
-          process.env.NODE_ENV === 'production'
-            ? ''
-            : formatTimestamp(info.timestamp)
-        }{${info.level}} ${info.message}`,
+        `${formatTimestamp(info.timestamp)}{${info.level}} ${info.message}`,
       );
     }),
-    winston.format.colorize({all: true}),
+    winston.format.colorize({
+      all: process.env.NODE_ENV === 'production' ? false : true,
+    }),
   ),
   transports: [
     new winston.transports.Console({
