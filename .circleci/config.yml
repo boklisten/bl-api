@@ -20,7 +20,7 @@ jobs:
           command: "npm install typescript"
       - run: 
           name: Install node modules
-          command: npm ci
+          command: npm install
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
