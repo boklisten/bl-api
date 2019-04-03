@@ -3,7 +3,6 @@ const querystring = require('querystring');
 const qs = require('qs');
 const request = require('request');
 const rp = require('request-promise');
-const chalk = require('chalk');
 import {logger} from '../logger/logger';
 
 export class HttpHandler {
@@ -21,11 +20,11 @@ export class HttpHandler {
         options['headers']['Authorization'] = authorization;
       }
 
-      logger.verbose(`R-> ${chalk.bold('POST')} ${url}`);
+      logger.debug(`R-> POST ${url}`);
 
       request.post(options, (err, res, body) => {
         if (err) {
-          logger.verbose(`<-R ${chalk.bold('ERROR')} ${err}`);
+          logger.verbose(`<-R ERROR ${err}`);
           return reject(new BlError(`error on request to "${url}"`));
         }
 
@@ -34,7 +33,7 @@ export class HttpHandler {
             return resolve(body);
           }
 
-          logger.verbose(`<-R ${chalk.bold('ERROR')} ${err}`);
+          logger.verbose(`<-R ERROR ${err}`);
 
           return reject(
             new BlError(
@@ -57,14 +56,14 @@ export class HttpHandler {
         json: true,
       };
 
-      logger.verbose(`R-> ${chalk.bold('GET')} ${options.uri}`);
+      logger.debug(`R-> GET ${options.uri}`);
 
       rp(options)
         .then(jsonResponse => {
           resolve(jsonResponse);
         })
         .catch(error => {
-          logger.verbose(`<-R ${chalk.bold('ERROR')} ${error}`);
+          logger.verbose(`<-R ERROR ${error}`);
 
           reject(
             new BlError('could not get page with query')
@@ -87,14 +86,14 @@ export class HttpHandler {
         options['headers']['Authorization'] = authorization;
       }
 
-      logger.verbose(`R-> ${chalk.bold('GET')} ${options.uri}`);
+      logger.debug(`R-> GET ${options.uri}`);
 
       rp(options)
         .then(jsonResponse => {
           resolve(jsonResponse);
         })
         .catch(error => {
-          logger.verbose(`<-R ${chalk.bold('ERROR')} ${error}`);
+          logger.verbose(`<-R ERROR ${error}`);
 
           reject(
             new BlError(

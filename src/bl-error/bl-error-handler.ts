@@ -3,7 +3,6 @@ import {BlDocumentStorage} from '../storage/blDocumentStorage';
 import {BlErrorLog} from '../collections/bl-error-log/bl-error-log';
 import {blErrorLogSchema} from '../collections/bl-error-log/bl-error-log.schema';
 import {logger} from '../logger/logger';
-const chalk = require('chalk');
 
 export class BlErrorHandler {
   private _errorLogStorage: BlDocumentStorage<BlErrorLog>;
@@ -20,8 +19,6 @@ export class BlErrorHandler {
     if (!(err instanceof BlError)) {
       blError = new BlError('unknown error').store('error', err);
     }
-
-    console.log(blError);
     this.printErrorStack(blError);
     this.storeError(blError);
 
@@ -59,7 +56,7 @@ export class BlErrorHandler {
 
   private printBlError(blError: BlError) {
     if (!(blError instanceof BlError)) {
-      logger.debug(`! unknown error: ${blError}`);
+      logger.warn(`! unknown error: ${blError}`);
       return;
     }
 
@@ -69,11 +66,13 @@ export class BlErrorHandler {
       }
     }
 
-    logger.debug(`! (${blError.getCode()}): ${blError.getMsg()}`);
+    logger.verbose(`! (${blError.getCode()}): ${blError.getMsg()}`);
 
     if (blError.getStore() && blError.getStore().length > 0) {
       for (let storeData of blError.getStore()) {
-        logger.debug(`reason: ${JSON.stringify(storeData.value)}`);
+        logger.verbose(
+          `! (${blError.getCode()}) ${JSON.stringify(storeData.value)}`,
+        );
       }
     }
   }

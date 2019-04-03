@@ -1,15 +1,19 @@
+// IMPORTANT TO HAVE ON TOP
+require('dotenv').config(); //adds the .env file to environment variables
 import * as express from 'express';
 import {Application, Request, Response, Router} from 'express';
 import * as passport from 'passport';
 import {BlAuth} from '../auth/bl.auth';
 import {CollectionEndpointCreator} from '../collection-endpoint/collection-endpoint-creator';
 import * as path from 'path';
+
 import {logger} from '../logger/logger';
 import {APP_CONFIG} from '../application-config';
 
 let bodyParser = require('body-parser');
-const chalk = require('chalk');
 const packageJson = require('../../package.json');
+
+const mongoose = require('mongoose');
 
 export class Server {
   public app: Application;
@@ -17,38 +21,91 @@ export class Server {
   private blAuth: BlAuth;
 
   constructor() {
-    require('dotenv').config(); //adds the .env file to environment variables
-
     this.printServerStartMessage();
     this.initialServerConfig();
     this.initialPassportConfig();
     this.blAuth = new BlAuth(this.router);
     this.generateEndpoints();
-    this.mongoDbStart();
-    this.serverStart();
+    this.connectToDbAndStartServer();
   }
 
-  private mongoDbStart() {
-    let mongoose = require('mongoose');
-    mongoose.Promise = require('bluebird');
-    mongoose.connect(
-      process.env.MONGODB_URI,
-      {
-        useMongoClient: true,
-        reconnectTries: Number.MAX_VALUE,
-        reconnectInterval: 500,
-        poolSize: 10,
-        connectTimeoutMS: 10000,
-        socketTimeoutMS: 45000,
-      },
-    );
+  private connectToDbAndStartServer() {
+    this.connectToMongoDb()
+      .then(() => {
+        this.serverStart();
+      })
+      .catch(err => {
+        logger.error(`could not connect to mongodb: ${err}`);
+
+        if (
+          err
+            .toString()
+            .match(/failed to connect to server .* on first connect/g)
+        ) {
+          const interval = 5000;
+          logger.error(
+            `failed to connect to mongodb, will try again in ${interval} sec`,
+          );
+
+          setTimeout(() => {
+            this.connectToDbAndStartServer();
+          }, interval);
+        }
+      });
+  }
+
+  private connectToMongoDb(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      mongoose.Promise = require('bluebird');
+
+      logger.verbose(
+        `trying to connect to mongodb: ${process.env.MONGODB_URI}`,
+      );
+
+      mongoose.connection.on('disconnected', () => {
+        logger.error('mongoose connection was disconnected');
+      });
+
+      mongoose.connection.on('reconnected', () => {
+        logger.warn('mongoose connection was reconnected');
+      });
+
+      mongoose.connection.on('error', err => {
+        logger.error('mongoose connection has error');
+      });
+
+      mongoose
+        .connect(
+          process.env.MONGODB_URI,
+          {
+            useMongoClient: true,
+            reconnectTries: Number.MAX_VALUE,
+            reconnectInterval: 500,
+            poolSize: 10,
+            connectTimeoutMS: 10000,
+            socketTimeoutMS: 45000,
+            autoReconnect: true,
+          },
+        )
+        .then(() => {
+          logger.verbose(`connected to mongodb: ${process.env.MONGODB_URI}`);
+          resolve(true);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 
   private initialServerConfig() {
     this.app = express();
     this.app.use(bodyParser.json());
-    let cors = require('cors');
 
+    process.on('unhandledRejection', (reason, p) => {
+      logger.error(`unhandeled rejection at: ${p}, reason: ${reason}`);
+    });
+
+    let cors = require('cors');
     let whitelist = process.env.URI_WHITELIST.split(' ');
     let allowedMethods = ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'];
     let allowedHeaders = ['Content-Type', 'Authorization', 'X-Requested-With'];
@@ -71,7 +128,8 @@ export class Server {
       let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
       if (req.method !== 'OPTIONS') {
         // no point in showing all the preflight requests
-        logger.verbose(`${'-> ' + chalk.bold(req.method)} ${req.url}`);
+        logger.debug(`-> ${req.method} ${req.url}`);
+        logger.silly(`-> ${JSON.stringify(req.body)}`);
       }
       next();
     };
@@ -117,28 +175,41 @@ export class Server {
     this.app.use(express.static(path.join(__dirname, '../public')));
 
     this.app.listen(this.app.get('port'), () => {
-      logger.info(chalk.bold('blapi is ready to take requests!\n'));
+      logger.info('blapi is ready to take requests!');
     });
 
-    this.app.on('uncaughtException', () => {
-      console.log('an error occured');
+    this.app.on('uncaughtException', err => {
+      logger.warn('uncaught exception:' + err);
     });
 
     this.app.on('SIGTERM', () => {
-      console.log('user quit the program');
+      logger.warn('user quit the program');
+    });
+
+    this.app.on('SIGINT', function() {
+      mongoose.connection.close(function() {
+        logger.warn('mongoose connection disconnected through app termination');
+        process.exit(0);
+      });
     });
   }
 
   private printServerStartMessage() {
-    logger.info(chalk.bold.blue('  _     _             _'));
-    logger.info(chalk.bold.blue(' | |__ | | __ _ _ __ (_)'));
-    logger.info(chalk.bold.blue(" | '_ \\| |/ _` | '_ \\| |"));
-    logger.info(chalk.bold.blue(' | |_) | | (_| | |_) | |'));
-    logger.info(chalk.bold.blue(' |_.__/|_|\\__,_| .__/|_|'));
-    logger.info(chalk.bold.blue(`               |_| v${packageJson.version}`));
-    logger.info(
-      'path:    ' + 'localhost:' + process.env.PORT + process.env.SERVER_PATH,
+    logger.verbose('starting blapi');
+
+    logger.silly('  _     _             _');
+    logger.silly(' | |__ | | __ _ _ __ (_)');
+    logger.silly(" | '_ \\| |/ _` | '_ \\| |");
+    logger.silly(' | |_) | | (_| | |_) | |');
+    logger.silly(' |_.__/|_|\\__,_| .__/|_|');
+    logger.silly(`               |_| v${packageJson.version}`);
+
+    logger.verbose(
+      'server url:\t' +
+        process.env.SERVER_HOST +
+        process.env.SERVER_PORT +
+        process.env.SERVER_PATH,
     );
-    logger.info('mongoDB: ' + process.env.MONGODB_URI);
+    logger.verbose('mongoDB path:\t' + process.env.MONGODB_URI);
   }
 }
