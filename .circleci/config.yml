@@ -1,7 +1,7 @@
 
 version: 2
 jobs:
-  build:
+  test:
     working_directory: ~/bl-api
     docker:
       - image: circleci/node:8.4
@@ -15,22 +15,9 @@ jobs:
           command: "npm --version"
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: Install Typescript
-          command: "npm install typescript"
       - run: 
           name: Install node modules
           command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-              - node_modules
-  test:
-    working_directory: ~/bl-api
-    docker:
-      - image: circleci/node:8.4
-    steps:
-      - checkout
       - run:
           name: Test
           command: npm run test
@@ -45,9 +32,6 @@ jobs:
           prefix: coverage
 workflows:
   version: 2
-  build_and_test:
+  test:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+      - test 
