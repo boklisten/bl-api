@@ -21,15 +21,6 @@ jobs:
       - run:
           name: Test
           command: npm run test
-      - run:
-          name: Code coverage
-          command: './node_modules/.bin/nyc report --reporter=text-lcov'
-      - store_artifacts:
-          path: test-coverage.xml
-          prefix: tests
-      - store_artifacts:
-          path: coverage
-          prefix: coverage
 workflows:
   version: 2
   test:
