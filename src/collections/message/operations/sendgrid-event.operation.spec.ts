@@ -43,7 +43,7 @@ describe('SendgridEventOperation', () => {
         data: [
           {
             unique_args: {
-              emailType: 'receipt',
+              type: 'receipt',
             },
           },
         ],
@@ -63,8 +63,8 @@ describe('SendgridEventOperation', () => {
         sg_event_id: 'abcde',
         sg_message_id: '1234',
         unique_args: {
-          blMessageId: 'blMessage1',
-          emailType: 'reminder',
+          message_id: 'blMessage1',
+          type: 'reminder',
         },
       };
 
@@ -100,8 +100,8 @@ describe('SendgridEventOperation', () => {
         sg_event_id: 'abcde',
         sg_message_id: '1234',
         unique_args: {
-          blMessageId: 'blMessage1',
-          emailType: 'reminder',
+          message_id: 'blMessage1',
+          type: 'reminder',
         },
       };
 

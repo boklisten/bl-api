@@ -42,11 +42,11 @@ export class SendgridEventOperation implements Operation {
 
   private async parseSendgridEvent(sendgridEvent: SendgridEvent) {
     let blMessageId = sendgridEvent['unique_args']
-      ? sendgridEvent['unique_args']['blMessageId']
+      ? sendgridEvent['unique_args']['message_id']
       : null;
 
     let messageType = sendgridEvent['unique_args']
-      ? sendgridEvent['unique_args']['emailType']
+      ? sendgridEvent['unique_args']['type']
       : null;
 
     if (!blMessageId) {
@@ -73,9 +73,7 @@ export class SendgridEventOperation implements Operation {
     sendgridEvent: SendgridEvent,
   ): Promise<boolean> {
     let newSendgridEvents =
-      message.sendgridEvents && message.sendgridEvents.length > 0
-        ? message.sendgridEvents
-        : [];
+      message.events && message.events.length > 0 ? message.events : [];
 
     newSendgridEvents.push(sendgridEvent);
 

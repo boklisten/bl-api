@@ -3,125 +3,166 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import { BlError, UserDetail, CustomerItem, Item, Message } from '@wizardcoder/bl-model';
-import { EmailService } from './email-service';
-import { EmailHandler } from '@wizardcoder/bl-email';
-import { BlDocumentStorage } from '../../storage/blDocumentStorage';
+import {
+  BlError,
+  UserDetail,
+  CustomerItem,
+  Item,
+  Message,
+} from '@wizardcoder/bl-model';
+import {EmailService} from './email-service';
+import {EmailHandler} from '@wizardcoder/bl-email';
+import {BlDocumentStorage} from '../../storage/blDocumentStorage';
+import {
+  PostOffice,
+  Recipient,
+  MessageOptions,
+} from '@wizardcoder/bl-post-office';
 
+class MockPostOffice extends PostOffice {
+  constructor() {
+    super(undefined, undefined);
+    this.setConfig({reminder: {mediums: {email: false}}});
+  }
+
+  public async send(recipients: Recipient[], options: MessageOptions) {
+    return true;
+  }
+}
 
 chai.use(chaiAsPromised);
 
 describe('EmailService', () => {
-
   const emailHandler = new EmailHandler({sendgrid: {apiKey: 'someKey'}});
   const itemStorage = new BlDocumentStorage<Item>('items');
-  const emailService = new EmailService(emailHandler, itemStorage);
+  const mockPostOffice = new MockPostOffice();
+  const emailService = new EmailService(
+    emailHandler,
+    itemStorage,
+    mockPostOffice,
+  );
 
   const itemStorageGetStub = sinon.stub(itemStorage, 'get');
   const emailHandlerRemindStub = sinon.stub(emailHandler, 'sendReminder');
-
+  const postOfficeSendStub = sinon.stub(mockPostOffice, 'send');
 
   describe('#remind', () => {
-    it('should call emailHandler.sendReminder', (done) => {
-      emailHandlerRemindStub.resolves(true);
+    it('should call emailHandler.sendReminder', done => {
+      postOfficeSendStub.resolves(true);
       itemStorageGetStub.resolves({id: 'item1', title: 'title'});
-      const message: Message = { 
-        id: 'message1', 
-        messageType: 'reminder' 
+
+      const message: Message = {
+        id: 'message1',
+        messageType: 'reminder',
       } as Message;
 
-      emailService.remind(message, {id: 'abc', email: 'some@email.org'} as UserDetail, [{id: 'customerItem1'}] as CustomerItem[]).then(() => {
-        expect(emailHandlerRemindStub).to.have.been.called;
+      emailService
+        .remind(
+          message,
+          {id: 'abc', email: 'some@email.org'} as UserDetail,
+          [{id: 'customerItem1'}] as CustomerItem[],
+        )
+        .then(() => {
+          expect(postOfficeSendStub).to.have.been.called;
+          done();
+        });
+    });
+
+    it('should reject if customerItem.item does not exist', done => {
+      itemStorageGetStub.rejects(new BlError('not found'));
+
+      const customerDetail = {id: 'customer1', name: 'Some Name'} as UserDetail;
+      const customerItems = [
+        {
+          id: 'someId',
+          item: 'item1',
+          customer: 'customer1',
+          deadline: new Date(),
+          handout: false,
+          returned: false,
+        },
+      ];
+
+      const message: Message = {
+        id: 'message1',
+        messageType: 'reminder',
+      } as Message;
+
+      emailService.remind(message, customerDetail, customerItems).catch(err => {
+        expect(err.getMsg()).to.eq('not found');
         done();
       });
     });
 
-    it('should reject if customerItem.item does not exist', (done) => {
-      itemStorageGetStub.rejects(new BlError('not found'));
-
-      const customerDetail = {id: 'customer1', name: 'Some Name'} as UserDetail;
-      const customerItems = [{
-        id: 'someId',
-        item: 'item1',
-        customer: 'customer1',
-        deadline: new Date(),
-        handout: false,
-        returned: false
-      }];
-
-      const message: Message = { 
-        id: 'message1', 
-        messageType: 'reminder' 
-      } as Message;
-
-      emailService.remind(message, customerDetail, customerItems).catch((err) => {
-        expect(err.getMsg()).to.eq('not found');
-        done();
-      })
-    });
-
-
-    it('should convert all customerItems as emailOrderItems', (done) => {
+    it('should convert all customerItems as emailOrderItems', done => {
       const customerItems = [
         {
           id: '1',
           customer: 'customer1',
           item: 'item1',
-          deadline: new Date(2018, 0, 1)
+          amountLeftToPay: 200,
+          deadline: new Date(2018, 0, 1),
         },
         {
           id: '2',
           customer: 'customer1',
           item: 'item2',
-          deadline: new Date(2018, 0, 1)
-        }
+          amountLeftToPay: 100,
+          deadline: new Date(2018, 0, 1),
+        },
       ] as CustomerItem[];
 
       const customerDetail = {
         id: 'customer1',
         name: 'Some Name',
-        email: 'some@email.com'
+        email: 'some@email.com',
       } as UserDetail;
 
       const item1 = {
         id: 'item1',
-        title: 'Signatur 1'
-      }
+        title: 'Signatur 1',
+      };
 
       const item2 = {
         id: 'item2',
-        title: 'Terra Mater'
-      }
+        title: 'Terra Mater',
+      };
 
-      const message: Message = { 
-        id: 'message1', 
-        messageType: 'reminder' 
+      const message: Message = {
+        id: 'message1',
+        messageType: 'reminder',
       } as Message;
-      
+
       emailHandlerRemindStub.resolves(true);
       itemStorageGetStub.withArgs('item1').resolves(item1);
       itemStorageGetStub.withArgs('item2').resolves(item2);
 
-      emailService.remind(message, customerDetail, customerItems).then(() => {
-        const emailOrderItems = emailHandlerRemindStub.lastCall.args[1].items;
+      emailService
+        .remind(message, customerDetail, customerItems)
+        .then(() => {
+          const emailOrderItems =
+            postOfficeSendStub.lastCall.args[0][0].itemList.items;
 
-        expect(emailOrderItems).to.eql([
-          {
-            title: 'Signatur 1',
-            deadline: '01.01.2018'
-          },
-          {
-            title: 'Terra Mater',
-            deadline: '01.01.2018'
-          }
-        ])
+          expect(emailOrderItems).to.eql([
+            {
+              id: '1',
+              title: 'Signatur 1',
+              leftToPay: '200 NOK',
+              deadline: '01.01.2018',
+            },
+            {
+              id: '2',
+              title: 'Terra Mater',
+              leftToPay: '100 NOK',
+              deadline: '01.01.2018',
+            },
+          ]);
 
-        done();
-
-      }).catch((err) => {
-        done(err);
-      })
-    })
-  })
-
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
+    });
+  });
 });
