@@ -5,6 +5,10 @@ export const messageSchema = {
     type: Schema.Types.String,
     required: true,
   },
+  messageSubtype: {
+    type: Schema.Types.String,
+    required: true,
+  },
   messageMethod: {
     type: Schema.Types.String,
     required: true,
@@ -21,7 +25,7 @@ export const messageSchema = {
     type: Schema.Types.Mixed,
     required: false,
   },
-  sendgridEvents: {
+  events: {
     type: [Schema.Types.Mixed],
     required: false,
     default: [],

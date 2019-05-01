@@ -13,8 +13,7 @@ export class MessageCollection implements BlCollection {
       method: 'post',
       hook: new MessagePostHook(),
       restriction: {
-        permissions: ['customer', 'employee', 'manager', 'admin', 'super'],
-        restricted: true,
+        permissions: ['admin', 'super']
       },
       operations: [
         {

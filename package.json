@@ -25,7 +25,7 @@
     "@types/moment": "^2.13.0",
     "@types/validator": "^6.3.0",
     "@wizardcoder/bl-email": "^1.4.12",
-    "@wizardcoder/bl-model": "^0.19.7",
+    "@wizardcoder/bl-model": "^0.19.8",
     "@wizardcoder/bl-post-office": "^0.1.2",
     "bluebird": "^3.5.1",
     "chalk": "^2.3.2",

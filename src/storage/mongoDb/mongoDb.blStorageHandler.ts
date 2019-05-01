@@ -6,6 +6,7 @@ import {SEDbQuery} from '../../query/se.db-query';
 import {NestedDocument} from '../nested-document';
 import {ExpandFilter} from '../../query/expand-filter/db-query-expand-filter';
 import * as mongoose from 'mongoose';
+import {logger} from '../../logger/logger';
 
 export class MongoDbBlStorageHandler<T extends BlDocument>
   implements BlStorageHandler<T> {
@@ -212,6 +213,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
         document.save((error, updatedDocument) => {
           if (error) {
+            logger.error(`failed to save document: ${error}`);
             return reject(
               this.handleError(
                 new BlError(`failed to save the document`).store('data', data),

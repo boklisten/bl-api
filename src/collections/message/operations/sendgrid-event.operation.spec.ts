@@ -119,7 +119,7 @@ describe('SendgridEventOperation', () => {
           let args = messageStorageUpdateStub.lastCall.args;
 
           expect(args[0]).to.eq('blMessage1');
-          expect(args[1]).to.eql({sendgridEvents: [sendgridEvent]});
+          expect(args[1]).to.eql({events: [sendgridEvent]});
 
           done();
         })

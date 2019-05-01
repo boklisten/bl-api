@@ -33,6 +33,13 @@ export class MessagePostHook implements Hook {
       throw new BlError('messageType is not defined').code(701);
     }
 
+    if (
+      typeof message.messageSubtype === 'undefined' ||
+      !message.messageSubtype
+    ) {
+      throw new BlError('messageSubtype is not defined').code(701);
+    }
+
     if (message.messageType === 'reminder') {
       if (
         !this.permissionService.isPermissionEqualOrOver(

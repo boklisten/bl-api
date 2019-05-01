@@ -9,6 +9,7 @@ import {
 import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
 import {messageSchema} from '../message.schema';
 import {Request, Response, NextFunction} from 'express';
+import {logger} from '../../../logger/logger';
 
 export class SendgridEventOperation implements Operation {
   private _messageStorage: BlDocumentStorage<Message>;
@@ -62,6 +63,7 @@ export class SendgridEventOperation implements Operation {
       let message = await this._messageStorage.get(blMessageId);
       await this.updateMessageWithSendgridEvent(message, sendgridEvent);
     } catch (e) {
+      logger.warn(`could not update sendgrid event ${e}`);
       // if we dont find the message, there is no worries in not handling it
       // this is just for logging anyway, and we can handle some losses
       return true;
@@ -77,9 +79,11 @@ export class SendgridEventOperation implements Operation {
 
     newSendgridEvents.push(sendgridEvent);
 
+    logger.info(`${JSON.stringify(newSendgridEvents)}`);
+
     await this._messageStorage.update(
       message.id,
-      {sendgridEvents: newSendgridEvents},
+      {events: newSendgridEvents},
       {id: 'SYSTEM', permission: 'admin'},
     );
 
