@@ -84,6 +84,10 @@ export class CustomerItemCollection implements BlCollection {
 					type: 'boolean'
         },
         {
+          fieldName: 'type',
+					type: 'string'
+        },
+        {
 					fieldName: 'buyout',
 					type: 'boolean'
 				},

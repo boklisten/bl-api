@@ -13,6 +13,10 @@ export const messageSchema = {
     type: Schema.Types.String,
     required: true,
   },
+  sequenceNumber: {
+    type: Schema.Types.Number,
+    default: 0
+  },
   customerId: {
     type: Schema.Types.ObjectId,
     required: true,

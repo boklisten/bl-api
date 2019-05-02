@@ -41,12 +41,14 @@ describe('DbQueryStringFilter', () => {
 		});
 
 		it('should return correct array given valid input', () => {
-			let query = {name: 'billy bob', desc: 'hello there this is bob', age: '10'};
+			let query = {name: 'billy bob', desc: 'hello there this is bob', age: '10', branch: '123,83ax'};
 			let result = [
 				{fieldName: 'name', value: 'billy bob'},
-				{fieldName: 'desc', value: 'hello there this is bob'}
+        {fieldName: 'desc', value: 'hello there this is bob'},
+        {fieldName: 'branch', value: ['123', '83ax']},
 			];
-			expect(dbQueryStringFilter.getStringFilters(query, ['name', 'desc', 'title'])).to.eql(result);
+
+			expect(dbQueryStringFilter.getStringFilters(query, ['name', 'desc', 'title', 'branch'])).to.eql(result);
 
 		});
 	});

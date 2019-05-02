@@ -62,10 +62,8 @@ describe('SendgridEventOperation', () => {
         category: 'reminder',
         sg_event_id: 'abcde',
         sg_message_id: '1234',
-        unique_args: {
-          message_id: 'blMessage1',
-          type: 'reminder',
-        },
+        bl_message_id: 'blMessage1',
+        bl_message_type: 'reminder',
       };
 
       const blApiRequest = {data: [sendgridEvent]};
@@ -99,10 +97,8 @@ describe('SendgridEventOperation', () => {
         category: 'reminder',
         sg_event_id: 'abcde',
         sg_message_id: '1234',
-        unique_args: {
-          message_id: 'blMessage1',
-          type: 'reminder',
-        },
+        bl_message_id: 'blMessage1',
+        bl_message_type: 'reminder',
       };
 
       const blApiRequest = {data: [sendgridEvent]};
@@ -117,7 +113,6 @@ describe('SendgridEventOperation', () => {
         .run(blApiRequest)
         .then(() => {
           let args = messageStorageUpdateStub.lastCall.args;
-
           expect(args[0]).to.eq('blMessage1');
           expect(args[1]).to.eql({events: [sendgridEvent]});
 

@@ -7,6 +7,7 @@ import {Period} from '@wizardcoder/bl-model/dist/period/period';
 import {SEDbQuery} from '../../../query/se.db-query';
 import {SEDbQueryBuilder} from '../../../query/se.db-query-builder';
 import moment = require('moment');
+import { logger } from '../../../logger/logger';
 
 export class CustomerItemHandler {
   private _customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -156,7 +157,9 @@ export class CustomerItemHandler {
   public async getNotReturned(
     customerId: string,
     deadline: Date,
+    type?: 'partly-payment' | 'rent' | 'loan' | 'all'
   ): Promise<CustomerItem[]> {
+    logger.info('type', type);
     if (customerId == null || customerId.length <= 0) {
       throw new BlError('customerId is null or undefined');
     }
@@ -171,19 +174,38 @@ export class CustomerItemHandler {
       .second(0)
       .format('DDMMYYYYHHmm');
 
-    const query = {
-      customer: customerId.toString(),
-      deadline: deadlineString,
-      returned: 'false',
-    };
+    let query;
 
     const dbQueryBuilder = new SEDbQueryBuilder();
+    let dbQuery;
 
-    const dbQuery = dbQueryBuilder.getDbQuery(query, [
-      {fieldName: 'customer', type: 'string'},
-      {fieldName: 'deadline', type: 'date'},
-      {fieldName: 'returned', type: 'boolean'},
-    ]);
+    if (type) {
+      query = {
+        customer: customerId.toString(),
+        deadline: deadlineString,
+        returned: 'false',
+        type: type
+      };
+
+      dbQuery = dbQueryBuilder.getDbQuery(query, [
+        {fieldName: 'customer', type: 'string'},
+        {fieldName: 'deadline', type: 'date'},
+        {fieldName: 'returned', type: 'boolean'},
+        {fieldName: 'type', type: 'string'},
+      ]);
+    } else {
+      query = {
+        customer: customerId.toString(),
+        deadline: deadlineString,
+        returned: 'false'
+      }
+
+      dbQuery = dbQueryBuilder.getDbQuery(query, [
+        {fieldName: 'customer', type: 'string'},
+        {fieldName: 'deadline', type: 'date'},
+        {fieldName: 'returned', type: 'boolean'},
+      ]);
+    }
 
     return await this._customerItemStorage.getByQuery(dbQuery);
   }

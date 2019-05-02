@@ -22,5 +22,23 @@ export class MessageCollection implements BlCollection {
         },
       ],
     },
+    {
+      method: 'getAll',
+      restriction: {
+        permissions: ['admin', 'super']
+      }
+    },
+    {
+      method: 'getId',
+      restriction: {
+        permissions: ['admin', 'super']
+      }
+    },
+    {
+      method: 'delete',
+      restriction: {
+        permissions: ['admin', 'super']
+      }
+    }
   ];
 }

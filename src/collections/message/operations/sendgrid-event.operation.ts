@@ -42,19 +42,16 @@ export class SendgridEventOperation implements Operation {
   }
 
   private async parseSendgridEvent(sendgridEvent: SendgridEvent) {
-    let blMessageId = sendgridEvent['unique_args']
-      ? sendgridEvent['unique_args']['message_id']
-      : null;
-
-    let messageType = sendgridEvent['unique_args']
-      ? sendgridEvent['unique_args']['type']
-      : null;
+    let blMessageId = sendgridEvent['bl_message_id']
+    let messageType = sendgridEvent['bl_message_type']
 
     if (!blMessageId) {
+      logger.debug(`sendgrid event did not have a bl_message_id`);
       return true; // default is that the message dont have a blMessageId
     }
 
     if (messageType !== 'reminder') {
+      logger.debug(`sendgrid event did not have supported bl_message_type`);
       // as of now, we only whant to collect the reminder emails
       return true;
     }
@@ -79,13 +76,13 @@ export class SendgridEventOperation implements Operation {
 
     newSendgridEvents.push(sendgridEvent);
 
-    logger.info(`${JSON.stringify(newSendgridEvents)}`);
-
     await this._messageStorage.update(
       message.id,
       {events: newSendgridEvents},
       {id: 'SYSTEM', permission: 'admin'},
     );
+
+    logger.silly(`updated message "${message.id}" with sendgrid event: "${sendgridEvent['event']}"`);
 
     return true;
   }

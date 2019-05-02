@@ -36,6 +36,7 @@ export class SEDbQuery {
 
   getFilter(): any {
     let filterObj: any = {};
+    let orArr: any = [];
 
     for (let booleanFilter of this.booleanFilters) {
       filterObj[booleanFilter.fieldName] = booleanFilter.value;
@@ -50,10 +51,18 @@ export class SEDbQuery {
     }
 
     for (let stringFilter of this.stringFilters) {
-      filterObj[stringFilter.fieldName] = stringFilter.value;
+      if (Array.isArray(stringFilter.value)) {
+        let arr = stringFilter.value;
+        for (let stringValue of arr) {
+          let multipleValuesFilterObj: any = {};
+          multipleValuesFilterObj[stringFilter.fieldName] = stringValue;
+          orArr.push(multipleValuesFilterObj);
+        }
+      } else {
+        filterObj[stringFilter.fieldName] = stringFilter.value;
+      }
     }
 
-    let orArr: any = [];
 
     for (let regexFilter of this.regexFilters) {
       let regexFilterObj: any = {};
