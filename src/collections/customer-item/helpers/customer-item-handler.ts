@@ -7,7 +7,7 @@ import {Period} from '@wizardcoder/bl-model/dist/period/period';
 import {SEDbQuery} from '../../../query/se.db-query';
 import {SEDbQueryBuilder} from '../../../query/se.db-query-builder';
 import moment = require('moment');
-import { logger } from '../../../logger/logger';
+import {logger} from '../../../logger/logger';
 
 export class CustomerItemHandler {
   private _customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -157,7 +157,7 @@ export class CustomerItemHandler {
   public async getNotReturned(
     customerId: string,
     deadline: Date,
-    type?: 'partly-payment' | 'rent' | 'loan' | 'all'
+    type?: 'partly-payment' | 'rent' | 'loan' | 'all',
   ): Promise<CustomerItem[]> {
     logger.info('type', type);
     if (customerId == null || customerId.length <= 0) {
@@ -168,10 +168,18 @@ export class CustomerItemHandler {
       throw new BlError('deadline is null or undefined');
     }
 
-    const deadlineString = moment(deadline)
+    const before = moment(deadline)
       .hour(0)
       .minute(0)
       .second(0)
+      .subtract(1, 'day')
+      .format('DDMMYYYYHHmm');
+
+    const after = moment(deadline)
+      .hour(0)
+      .minute(0)
+      .second(0)
+      .add(1, 'day')
       .format('DDMMYYYYHHmm');
 
     let query;
@@ -182,9 +190,9 @@ export class CustomerItemHandler {
     if (type) {
       query = {
         customer: customerId.toString(),
-        deadline: deadlineString,
+        deadline: ['>' + before, '<' + after],
         returned: 'false',
-        type: type
+        type: type,
       };
 
       dbQuery = dbQueryBuilder.getDbQuery(query, [
@@ -196,9 +204,9 @@ export class CustomerItemHandler {
     } else {
       query = {
         customer: customerId.toString(),
-        deadline: deadlineString,
-        returned: 'false'
-      }
+        deadline: ['>' + before, '<' + after],
+        returned: 'false',
+      };
 
       dbQuery = dbQueryBuilder.getDbQuery(query, [
         {fieldName: 'customer', type: 'string'},

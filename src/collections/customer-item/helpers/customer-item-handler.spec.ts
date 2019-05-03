@@ -158,10 +158,19 @@ describe('CustomerItemHandler', () => {
 
     it('should ask db with correct query', done => {
       const expectedQuery = new SEDbQuery();
+
+      const before = new Date(2018, 11, 19);
       const deadline = new Date(2018, 11, 20);
+      const after = new Date(2018, 11, 21);
 
       expectedQuery.dateFilters = [
-        {fieldName: 'deadline', op: {$eq: deadline.toISOString()}},
+        {
+          fieldName: 'deadline',
+          op: {
+            $gt: before.toISOString(),
+            $lt: after.toISOString(),
+          },
+        },
       ];
 
       expectedQuery.stringFilters = [
