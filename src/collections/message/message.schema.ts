@@ -15,7 +15,7 @@ export const messageSchema = {
   },
   sequenceNumber: {
     type: Schema.Types.Number,
-    default: 0
+    default: 0,
   },
   customerId: {
     type: Schema.Types.ObjectId,
@@ -30,6 +30,12 @@ export const messageSchema = {
     required: false,
   },
   events: {
+    type: [Schema.Types.Mixed],
+    required: false,
+    default: [],
+  },
+
+  smsEvents: {
     type: [Schema.Types.Mixed],
     required: false,
     default: [],
