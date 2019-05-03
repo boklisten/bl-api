@@ -66,7 +66,7 @@ export class EmailService implements MessengerService {
     this._dateFormat = 'DD.MM.YYYY';
     this._orderEmailHandler = new OrderEmailHandler(this._emailHandler);
     this._postOffice = inputPostOffice ? inputPostOffice : postOffice;
-    this._postOffice.setConfig({reminder: {mediums: {email: true}}});
+    this._postOffice.setConfig({reminder: {mediums: {email: true, sms: true}}});
   }
 
   public send(messages: Message[], customerDetail: UserDetail) {}
@@ -96,6 +96,7 @@ export class EmailService implements MessengerService {
       subtype: 'partly-payment',
       sequence_number: message.sequenceNumber,
       textBlocks: message.textBlocks,
+      mediums: this.getMessageOptionMediums(message),
     };
 
     try {
@@ -103,6 +104,25 @@ export class EmailService implements MessengerService {
       return true;
     } catch (e) {
       logger.error(`could not send reminder: ${e}`);
+    }
+  }
+
+  private getMessageOptionMediums(
+    message: Message,
+  ): {email: boolean; sms: boolean; voice: boolean} {
+    switch (message.messageMethod) {
+      case 'all':
+        return {email: true, sms: true, voice: false};
+      case 'email':
+        return {email: true, sms: false, voice: false};
+      case 'sms':
+        return {email: false, sms: true, voice: false};
+      default:
+        return {
+          email: false,
+          sms: false,
+          voice: false,
+        };
     }
   }
 
