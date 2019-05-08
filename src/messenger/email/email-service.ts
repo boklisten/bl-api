@@ -147,39 +147,58 @@ export class EmailService implements MessengerService {
       user_id: customerDetail.id,
       email: customerDetail.email,
       phone: '+47' + customerDetail.phone,
-      itemList: await this.customerItemsToItemList(customerItems),
+      itemList: await this.customerItemsToItemList(message, customerItems),
     };
   }
 
-  private async customerItemsToItemList(customerItems: CustomerItem[]) {
+  private async customerItemsToItemList(message: Message, customerItems: CustomerItem[]) {
     return {
       summary: {
         total:
           this.getCustomerItemLeftToPayTotal(customerItems).toString() + ' NOK',
         totalTax: '0 NOK',
-        taxPercentage: '0%',
+        taxPercentage: '0',
       },
-      items: await this.customerItemsToEmailItems(customerItems),
+      items: await this.customerItemsToEmailItems(message, customerItems),
     };
   }
 
-  private async customerItemsToEmailItems(customerItems: CustomerItem[]) {
+  private async customerItemsToEmailItems(message: Message, customerItems: CustomerItem[]) {
     let items = [];
 
     for (let customerItem of customerItems) {
       const item = await this._itemStorage.get(customerItem.item as string);
-
-      items.push({
-        id: customerItem.id,
-        title: item.title,
-        deadline: !isNullOrUndefined(customerItem.deadline)
-          ? moment(customerItem.deadline).format('DD.MM.YYYY')
-          : '',
-        leftToPay: customerItem.amountLeftToPay + ' NOK',
-      });
+      items.push(this.customerItemToEmailItem(message, customerItem, item));
     }
 
     return items;
+  }
+
+  private customerItemToEmailItem(message: Message, customerItem: CustomerItem, item: Item) {
+    if (message.messageSubtype === 'partly-payment') {
+      return {
+        id: this.getItemIsbn(item),
+        title: item.title,
+        deadline: this.formatDeadline(customerItem.deadline),
+        leftToPay: customerItem.amountLeftToPay + ' NOK',
+      }
+    } else {
+      return {
+        id: this.getItemIsbn(item),
+        title: item.title,
+        deadline: this.formatDeadline(customerItem.deadline)
+      }
+    }
+  }
+
+  private formatDeadline(deadline) {
+    return !isNullOrUndefined(deadline)
+      ? moment(deadline).format('DD.MM.YYYY')
+      : ''
+  }
+
+  private getItemIsbn(item: Item): string {
+    return (item.info && item.info['isbn']) ? item.info['isbn'] : item.id;
   }
 
   private getCustomerItemLeftToPayTotal(customerItems: CustomerItem[]): number {

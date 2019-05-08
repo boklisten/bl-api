@@ -169,17 +169,17 @@ export class CustomerItemHandler {
     }
 
     const before = moment(deadline)
+      .subtract(2, 'day')
       .hour(0)
       .minute(0)
       .second(0)
-      .subtract(1, 'day')
       .format('DDMMYYYYHHmm');
 
     const after = moment(deadline)
+      .add(2, 'day')
       .hour(0)
       .minute(0)
       .second(0)
-      .add(1, 'day')
       .format('DDMMYYYYHHmm');
 
     let query;
@@ -214,6 +214,8 @@ export class CustomerItemHandler {
         {fieldName: 'returned', type: 'boolean'},
       ]);
     }
+
+    logger.silly('customerItem deadline query: ' + JSON.stringify(dbQuery));
 
     return await this._customerItemStorage.getByQuery(dbQuery);
   }
