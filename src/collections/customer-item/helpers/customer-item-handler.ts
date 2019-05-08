@@ -192,6 +192,7 @@ export class CustomerItemHandler {
         customer: customerId.toString(),
         deadline: ['>' + before, '<' + after],
         returned: 'false',
+        buyout: 'false',
         type: type,
       };
 
@@ -199,6 +200,7 @@ export class CustomerItemHandler {
         {fieldName: 'customer', type: 'string'},
         {fieldName: 'deadline', type: 'date'},
         {fieldName: 'returned', type: 'boolean'},
+        {fieldName: 'buyout', type: 'boolean'},
         {fieldName: 'type', type: 'string'},
       ]);
     } else {
@@ -206,12 +208,14 @@ export class CustomerItemHandler {
         customer: customerId.toString(),
         deadline: ['>' + before, '<' + after],
         returned: 'false',
+        buyout: 'false',
       };
 
       dbQuery = dbQueryBuilder.getDbQuery(query, [
         {fieldName: 'customer', type: 'string'},
         {fieldName: 'deadline', type: 'date'},
         {fieldName: 'returned', type: 'boolean'},
+        {fieldName: 'buyout', type: 'boolean'},
       ]);
     }
 
