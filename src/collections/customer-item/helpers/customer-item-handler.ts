@@ -188,6 +188,9 @@ export class CustomerItemHandler {
     let dbQuery;
 
     if (type) {
+      if (type === 'loan') {
+        type = 'rent';
+      }
       query = {
         customer: customerId.toString(),
         deadline: ['>' + before, '<' + after],
