@@ -93,7 +93,7 @@ export class EmailService implements MessengerService {
 
     const messageOptions: MessageOptions = {
       type: 'reminder',
-      subtype: 'partly-payment',
+      subtype: message.messageSubtype as any,
       sequence_number: message.sequenceNumber,
       textBlocks: message.textBlocks,
       mediums: this.getMessageOptionMediums(message),
