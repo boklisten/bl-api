@@ -146,12 +146,16 @@ export class EmailService implements MessengerService {
       message_id: message.id,
       user_id: customerDetail.id,
       email: customerDetail.email,
+      name: customerDetail.name,
       phone: '+47' + customerDetail.phone,
       itemList: await this.customerItemsToItemList(message, customerItems),
     };
   }
 
-  private async customerItemsToItemList(message: Message, customerItems: CustomerItem[]) {
+  private async customerItemsToItemList(
+    message: Message,
+    customerItems: CustomerItem[],
+  ) {
     return {
       summary: {
         total:
@@ -163,7 +167,10 @@ export class EmailService implements MessengerService {
     };
   }
 
-  private async customerItemsToEmailItems(message: Message, customerItems: CustomerItem[]) {
+  private async customerItemsToEmailItems(
+    message: Message,
+    customerItems: CustomerItem[],
+  ) {
     let items = [];
 
     for (let customerItem of customerItems) {
@@ -174,31 +181,35 @@ export class EmailService implements MessengerService {
     return items;
   }
 
-  private customerItemToEmailItem(message: Message, customerItem: CustomerItem, item: Item) {
+  private customerItemToEmailItem(
+    message: Message,
+    customerItem: CustomerItem,
+    item: Item,
+  ) {
     if (message.messageSubtype === 'partly-payment') {
       return {
         id: this.getItemIsbn(item),
         title: item.title,
         deadline: this.formatDeadline(customerItem.deadline),
         leftToPay: customerItem.amountLeftToPay + ' NOK',
-      }
+      };
     } else {
       return {
         id: this.getItemIsbn(item),
         title: item.title,
-        deadline: this.formatDeadline(customerItem.deadline)
-      }
+        deadline: this.formatDeadline(customerItem.deadline),
+      };
     }
   }
 
   private formatDeadline(deadline) {
     return !isNullOrUndefined(deadline)
       ? moment(deadline).format('DD.MM.YYYY')
-      : ''
+      : '';
   }
 
   private getItemIsbn(item: Item): string {
-    return (item.info && item.info['isbn']) ? item.info['isbn'] : item.id;
+    return item.info && item.info['isbn'] ? item.info['isbn'] : item.id;
   }
 
   private getCustomerItemLeftToPayTotal(customerItems: CustomerItem[]): number {
