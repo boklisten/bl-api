@@ -159,9 +159,9 @@ describe('CustomerItemHandler', () => {
     it('should ask db with correct query', done => {
       const expectedQuery = new SEDbQuery();
 
-      const before = new Date(2018, 11, 19);
+      const before = new Date(2018, 11, 18);
       const deadline = new Date(2018, 11, 20);
-      const after = new Date(2018, 11, 21);
+      const after = new Date(2018, 11, 22);
 
       expectedQuery.dateFilters = [
         {
@@ -177,7 +177,10 @@ describe('CustomerItemHandler', () => {
         {fieldName: 'customer', value: 'customer1'},
       ];
 
-      expectedQuery.booleanFilters = [{fieldName: 'returned', value: false}];
+      expectedQuery.booleanFilters = [
+        {fieldName: 'returned', value: false},
+        {fieldName: 'buyout', value: false},
+      ];
 
       getByQueryCustomerItemStub.withArgs(expectedQuery).resolves([]);
 

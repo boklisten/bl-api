@@ -49,7 +49,7 @@ export class CustomerItemHandler {
         return Promise.reject(new BlError('orderItem.type is not "extend"'));
       }
 
-      if (!orderItem.info || !orderItem.info.periodType) {
+      if (!orderItem.info || !orderItem.info['periodType']) {
         return Promise.reject(
           new BlError('orderItem info is not present when type is "extend"'),
         );
@@ -59,7 +59,7 @@ export class CustomerItemHandler {
 
       const extendPeriod = this.getExtendPeriod(
         branch,
-        orderItem.info.periodType,
+        orderItem.info['periodType'],
       );
 
       let periodExtends = customerItem.periodExtends
@@ -71,9 +71,9 @@ export class CustomerItemHandler {
         : [];
 
       periodExtends.push({
-        from: orderItem.info.from,
-        to: orderItem.info.to,
-        periodType: orderItem.info.periodType,
+        from: orderItem.info['from'],
+        to: orderItem.info['to'],
+        periodType: orderItem.info['periodType'],
         time: new Date(),
       });
 
@@ -82,7 +82,7 @@ export class CustomerItemHandler {
       return await this._customerItemStorage.update(
         customerItemId,
         {
-          deadline: orderItem.info.to,
+          deadline: orderItem.info['to'],
           periodExtends: periodExtends,
           orders: customerItemOrders,
         },

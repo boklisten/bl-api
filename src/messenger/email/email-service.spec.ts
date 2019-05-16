@@ -120,17 +120,24 @@ describe('EmailService', () => {
 
       const item1 = {
         id: 'item1',
+        info: {
+          isbn: '123',
+        },
         title: 'Signatur 1',
       };
 
       const item2 = {
         id: 'item2',
+        info: {
+          isbn: '456',
+        },
         title: 'Terra Mater',
       };
 
       const message: Message = {
         id: 'message1',
         messageType: 'reminder',
+        messageSubtype: 'partly-payment',
       } as Message;
 
       emailHandlerRemindStub.resolves(true);
@@ -145,13 +152,13 @@ describe('EmailService', () => {
 
           expect(emailOrderItems).to.eql([
             {
-              id: '1',
+              id: '123',
               title: 'Signatur 1',
               leftToPay: '200 NOK',
               deadline: '01.01.2018',
             },
             {
-              id: '2',
+              id: '456',
               title: 'Terra Mater',
               leftToPay: '100 NOK',
               deadline: '01.01.2018',
