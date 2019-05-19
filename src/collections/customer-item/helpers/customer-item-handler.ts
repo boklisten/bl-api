@@ -177,7 +177,7 @@ export class CustomerItemHandler {
         {
           returned: true,
           orders: customerItemOrders,
-          buyout: true,
+          buyback: true,
           buybackInfo: {
             order: orderId,
           },
