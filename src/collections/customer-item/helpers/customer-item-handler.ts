@@ -150,6 +150,46 @@ export class CustomerItemHandler {
   }
 
   /**
+   * Buyback a customer item
+   * @param customerItemId
+   * @param orderId
+   * @param orderItem
+   */
+  public async buyback(
+    customerItemId: string,
+    orderId: string,
+    orderItem: OrderItem,
+  ) {
+    try {
+      if (orderItem.type !== 'buyback') {
+        return Promise.reject(`orderItem.type is not "buyback"`);
+      }
+
+      const customerItem = await this._customerItemStorage.get(customerItemId);
+      let customerItemOrders: any[] = customerItem.orders
+        ? customerItem.orders
+        : [];
+
+      customerItemOrders.push(orderId);
+
+      return await this._customerItemStorage.update(
+        customerItemId,
+        {
+          returned: true,
+          orders: customerItemOrders,
+          buyout: true,
+          buybackInfo: {
+            order: orderId,
+          },
+        },
+        new SystemUser(),
+      );
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  /**
    * Fetches a customers customerItems not returned for the specified deadline
    * @param customerId the customer to look for
    * @param deadline the deadline of the customerItem

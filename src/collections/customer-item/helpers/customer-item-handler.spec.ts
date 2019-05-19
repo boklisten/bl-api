@@ -141,6 +141,20 @@ describe('CustomerItemHandler', () => {
     });
   });
 
+  describe('#buyback()', () => {
+    it('should reject if orderItem.type is not "buyout"', () => {
+      const orderItem = {
+        type: 'rent',
+      } as OrderItem;
+
+      const customerItem = {} as CustomerItem;
+
+      return expect(
+        customerItemHandler.buyback('customerItem1', 'order1', orderItem),
+      ).to.be.rejectedWith('orderItem.type is not "buyback"');
+    });
+  });
+
   describe('#getNotReturned', () => {
     it('should return emtpy array if there are no customerItems', done => {
       getByQueryCustomerItemStub.onFirstCall().resolves([]);

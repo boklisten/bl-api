@@ -126,6 +126,11 @@ export class OrderPlacedHandler {
                 orderItem,
               );
             } else if (orderItem.type === 'buyback') {
+              await this._customerItemHandler.buyback(
+                customerItemId,
+                order.id,
+                orderItem,
+              );
             }
           }
         }
