@@ -156,15 +156,27 @@ export class EmailService implements MessengerService {
     message: Message,
     customerItems: CustomerItem[],
   ) {
-    return {
-      summary: {
-        total:
-          this.getCustomerItemLeftToPayTotal(customerItems).toString() + ' NOK',
-        totalTax: '0 NOK',
-        taxPercentage: '0',
-      },
-      items: await this.customerItemsToEmailItems(message, customerItems),
-    };
+    if (message.messageSubtype === 'partly-payment') {
+      return {
+        summary: {
+          total:
+            this.getCustomerItemLeftToPayTotal(customerItems).toString() +
+            ' NOK',
+          totalTax: '0 NOK',
+          taxPercentage: '0',
+        },
+        items: await this.customerItemsToEmailItems(message, customerItems),
+      };
+    } else {
+      return {
+        summary: {
+          total: null,
+          totalTax: null,
+          taxPercentage: null,
+        },
+        items: await this.customerItemsToEmailItems(message, customerItems),
+      };
+    }
   }
 
   private async customerItemsToEmailItems(
