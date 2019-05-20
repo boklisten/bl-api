@@ -7,14 +7,14 @@ import {BlError, Message} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
 import {BlApiRequest} from '../../../request/bl-api-request';
 import {SEResponseHandler} from '../../../response/se.response.handler';
-import {SendgridEventOperation} from './sendgrid-event.operation';
+import {TwilioSmsEventOperation} from './twillio-sms-event.operation';
 
 chai.use(chaiAsPromised);
 
-describe('SendgridEventOperation', () => {
+describe('TwilioSmsEventOperation', () => {
   const messageStorage = new BlDocumentStorage<Message>('messages');
 
-  const sendgridEventOperation = new SendgridEventOperation(messageStorage);
+  const twilioSmsEventOperation = new TwilioSmsEventOperation(messageStorage);
 
   let messageStorageGetIdStub = sinon.stub(messageStorage, 'get');
   let messageStorageUpdateStub = sinon.stub(messageStorage, 'update');
@@ -27,46 +27,35 @@ describe('SendgridEventOperation', () => {
         data: null,
       };
 
-      return expect(sendgridEventOperation.run(blApiRequest)).to.be.rejected;
+      return expect(twilioSmsEventOperation.run(blApiRequest)).to.be.rejected;
     });
 
-    it('should be rejected if blApiRequest.data is not an array', () => {
+    it('should be rejected if blApiRequest.query is empty or undefined', () => {
       const blApiRequest = {
-        data: {something: 'else'},
+        data: {
+          status: 'sent',
+          price: -0.0075,
+          price_unit: 'USD',
+          body: 'some message',
+        },
+        query: null,
       };
 
-      return expect(sendgridEventOperation.run(blApiRequest)).to.be.rejected;
+      return expect(twilioSmsEventOperation.run(blApiRequest)).to.be.rejected;
     });
 
-    it('should return true if sendgridEvent email type is not "reminder"', () => {
+    it('should get correct message based on query parameter', done => {
+      const twilioSmsEvent = {
+        status: 'sent',
+        price: -0.0075,
+        price_unit: 'USD',
+        body: 'some message',
+      };
+
       const blApiRequest = {
-        data: [
-          {
-            unique_args: {
-              type: 'receipt',
-            },
-          },
-        ],
+        data: twilioSmsEvent,
+        query: {bl_message_id: 'blMessage1'},
       };
-
-      return expect(sendgridEventOperation.run(blApiRequest)).to.eventually.be
-        .fulfilled;
-    });
-
-    it('should get correct message based on info in sendgrid event', done => {
-      const sendgridEvent = {
-        email: 'some@email.com',
-        timestamp: 1234,
-        'smtp-id': '<abc>',
-        event: 'bounce',
-        category: 'reminder',
-        sg_event_id: 'abcde',
-        sg_message_id: '1234',
-        bl_message_id: 'blMessage1',
-        bl_message_type: 'reminder',
-      };
-
-      const blApiRequest = {data: [sendgridEvent]};
 
       messageStorageUpdateStub.resolves(true);
 
@@ -74,7 +63,7 @@ describe('SendgridEventOperation', () => {
         .withArgs('blMessage1')
         .resolves({id: 'blMessage1'});
 
-      sendgridEventOperation
+      twilioSmsEventOperation
         .run(blApiRequest)
         .then(() => {
           let arg = messageStorageGetIdStub.lastCall.args[0];
@@ -89,19 +78,17 @@ describe('SendgridEventOperation', () => {
     });
 
     it('should update correct message with sendgrid event', done => {
-      const sendgridEvent = {
-        email: 'some@email.com',
-        timestamp: 1234,
-        'smtp-id': '<abc>',
-        event: 'bounce',
-        category: 'reminder',
-        sg_event_id: 'abcde',
-        sg_message_id: '1234',
-        bl_message_id: 'blMessage1',
-        bl_message_type: 'reminder',
+      const twilioSmsEvent = {
+        status: 'sent',
+        price: -0.0075,
+        price_unit: 'USD',
+        body: 'some message',
       };
 
-      const blApiRequest = {data: [sendgridEvent]};
+      const blApiRequest = {
+        data: [twilioSmsEvent],
+        query: {bl_message_id: 'blMessage1'},
+      };
 
       messageStorageGetIdStub
         .withArgs('blMessage1')
@@ -109,12 +96,12 @@ describe('SendgridEventOperation', () => {
 
       messageStorageUpdateStub.resolves(true);
 
-      sendgridEventOperation
+      twilioSmsEventOperation
         .run(blApiRequest)
         .then(() => {
           let args = messageStorageUpdateStub.lastCall.args;
           expect(args[0]).to.eq('blMessage1');
-          expect(args[1]).to.eql({events: [sendgridEvent]});
+          expect(args[1]).to.eql({smsEvents: [twilioSmsEvent]});
 
           done();
         })

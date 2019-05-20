@@ -98,7 +98,11 @@ export class OrderPlacedHandler {
   private async updateCustomerItemsIfPresent(order: Order): Promise<Order> {
     try {
       for (let orderItem of order.orderItems) {
-        if (orderItem.type === 'extend' || orderItem.type === 'buyout') {
+        if (
+          orderItem.type === 'extend' ||
+          orderItem.type === 'buyout' ||
+          orderItem.type === 'buyback'
+        ) {
           let customerItemId = null;
 
           if (orderItem.info && orderItem.info.customerItem) {
@@ -117,6 +121,12 @@ export class OrderPlacedHandler {
               );
             } else if (orderItem.type === 'buyout') {
               await this._customerItemHandler.buyout(
+                customerItemId,
+                order.id,
+                orderItem,
+              );
+            } else if (orderItem.type === 'buyback') {
+              await this._customerItemHandler.buyback(
                 customerItemId,
                 order.id,
                 orderItem,

@@ -4,6 +4,12 @@ import {
   EmailTemplateInput,
 } from '@wizardcoder/bl-email';
 import {
+  Recipient,
+  MessageOptions,
+  PostOffice,
+  postOffice,
+} from '@wizardcoder/bl-post-office';
+import {
   BlError,
   Delivery,
   Order,
@@ -38,10 +44,12 @@ export class EmailService implements MessengerService {
   private _orderEmailHandler: OrderEmailHandler;
   private _dateFormat: string;
   private _itemStorage: BlDocumentStorage<Item>;
+  private _postOffice: PostOffice;
 
   constructor(
     emailHandler?: EmailHandler,
     itemStorage?: BlDocumentStorage<Item>,
+    inputPostOffice?: PostOffice,
   ) {
     this._emailHandler = emailHandler
       ? emailHandler
@@ -57,6 +65,8 @@ export class EmailService implements MessengerService {
       : new BlDocumentStorage<Item>('items', itemSchema);
     this._dateFormat = 'DD.MM.YYYY';
     this._orderEmailHandler = new OrderEmailHandler(this._emailHandler);
+    this._postOffice = inputPostOffice ? inputPostOffice : postOffice;
+    this._postOffice.setConfig({reminder: {mediums: {email: true, sms: true}}});
   }
 
   public send(messages: Message[], customerDetail: UserDetail) {}
@@ -75,37 +85,44 @@ export class EmailService implements MessengerService {
     customerDetail: UserDetail,
     customerItems: CustomerItem[],
   ): Promise<boolean> {
-    const emailUser = this.customerDetailToEmailUser(customerDetail);
+    const recipient = await this.customerDetailToRecipient(
+      message,
+      customerDetail,
+      customerItems,
+    );
 
-    const emailOrder: EmailOrder = {
-      id: '',
-      itemAmount: '0',
-      totalAmount: '0',
-      items: await this.customerItemsToEmailOrderItems(customerItems),
-      payment: null,
-    };
-
-    const emailSetting: EmailSetting = {
-      userId: emailUser.id,
-      toEmail: emailUser.email,
-      fromEmail: 'ikkesvar@boklisten.no',
-      subject: 'På tide å levere bøkene',
-      blMessageId: message.id,
-      textBlocks:
-        message.textBlocks && message.textBlocks.length > 0
-          ? message.textBlocks
-          : [],
+    const messageOptions: MessageOptions = {
+      type: 'reminder',
+      subtype: message.messageSubtype as any,
+      sequence_number: message.sequenceNumber,
+      textBlocks: message.textBlocks,
+      mediums: this.getMessageOptionMediums(message),
     };
 
     try {
-      await this._emailHandler.sendReminder(
-        emailSetting,
-        emailOrder,
-        emailUser,
-      );
+      const result = await this._postOffice.send([recipient], messageOptions);
       return true;
     } catch (e) {
-      throw e;
+      logger.error(`could not send reminder: ${e}`);
+    }
+  }
+
+  private getMessageOptionMediums(
+    message: Message,
+  ): {email: boolean; sms: boolean; voice: boolean} {
+    switch (message.messageMethod) {
+      case 'all':
+        return {email: true, sms: true, voice: false};
+      case 'email':
+        return {email: true, sms: false, voice: false};
+      case 'sms':
+        return {email: false, sms: true, voice: false};
+      default:
+        return {
+          email: false,
+          sms: false,
+          voice: false,
+        };
     }
   }
 
@@ -118,6 +135,101 @@ export class EmailService implements MessengerService {
       .sendOrderReceipt(customerDetail, order)
       .then(emailLog => {})
       .catch(emailError => {});
+  }
+
+  private async customerDetailToRecipient(
+    message: Message,
+    customerDetail: UserDetail,
+    customerItems: CustomerItem[],
+  ): Promise<Recipient> {
+    return {
+      message_id: message.id,
+      user_id: customerDetail.id,
+      email: customerDetail.email,
+      name: customerDetail.name,
+      phone: '+47' + customerDetail.phone,
+      itemList: await this.customerItemsToItemList(message, customerItems),
+    };
+  }
+
+  private async customerItemsToItemList(
+    message: Message,
+    customerItems: CustomerItem[],
+  ) {
+    if (message.messageSubtype === 'partly-payment') {
+      return {
+        summary: {
+          total:
+            this.getCustomerItemLeftToPayTotal(customerItems).toString() +
+            ' NOK',
+          totalTax: '0 NOK',
+          taxPercentage: '0',
+        },
+        items: await this.customerItemsToEmailItems(message, customerItems),
+      };
+    } else {
+      return {
+        summary: {
+          total: null,
+          totalTax: null,
+          taxPercentage: null,
+        },
+        items: await this.customerItemsToEmailItems(message, customerItems),
+      };
+    }
+  }
+
+  private async customerItemsToEmailItems(
+    message: Message,
+    customerItems: CustomerItem[],
+  ) {
+    let items = [];
+
+    for (let customerItem of customerItems) {
+      const item = await this._itemStorage.get(customerItem.item as string);
+      items.push(this.customerItemToEmailItem(message, customerItem, item));
+    }
+
+    return items;
+  }
+
+  private customerItemToEmailItem(
+    message: Message,
+    customerItem: CustomerItem,
+    item: Item,
+  ) {
+    if (message.messageSubtype === 'partly-payment') {
+      return {
+        id: this.getItemIsbn(item),
+        title: item.title,
+        deadline: this.formatDeadline(customerItem.deadline),
+        leftToPay: customerItem.amountLeftToPay + ' NOK',
+      };
+    } else {
+      return {
+        id: this.getItemIsbn(item),
+        title: item.title,
+        deadline: this.formatDeadline(customerItem.deadline),
+      };
+    }
+  }
+
+  private formatDeadline(deadline) {
+    return !isNullOrUndefined(deadline)
+      ? moment(deadline).format('DD.MM.YYYY')
+      : '';
+  }
+
+  private getItemIsbn(item: Item): string {
+    return item.info && item.info['isbn'] ? item.info['isbn'] : item.id;
+  }
+
+  private getCustomerItemLeftToPayTotal(customerItems: CustomerItem[]): number {
+    let total = 0;
+    customerItems.forEach(cu => {
+      total += cu.amountLeftToPay;
+    });
+    return total;
   }
 
   private customerDetailToEmailUser(customerDetail: UserDetail): EmailUser {

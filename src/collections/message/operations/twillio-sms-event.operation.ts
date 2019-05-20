@@ -11,7 +11,7 @@ import {messageSchema} from '../message.schema';
 import {Request, Response, NextFunction} from 'express';
 import {logger} from '../../../logger/logger';
 
-export class SendgridEventOperation implements Operation {
+export class TwilioSmsEventOperation implements Operation {
   private _messageStorage: BlDocumentStorage<Message>;
 
   constructor(messageStorage?: BlDocumentStorage<Message>) {
@@ -26,39 +26,42 @@ export class SendgridEventOperation implements Operation {
     res?: Response,
     next?: NextFunction,
   ): Promise<BlapiResponse> {
+    //logger.info('message_id::' + blApiRequest.query['bl_message_id']);
+
     if (!blApiRequest.data || Object.keys(blApiRequest.data).length === 0) {
       throw new BlError('blApiRequest.data is empty').code(701);
     }
 
-    if (!Array.isArray(blApiRequest.data)) {
-      throw new BlError('blApiRequest.data is not an array').code(701);
+    if (
+      !blApiRequest.query ||
+      Object.keys(blApiRequest.query).length === 0 ||
+      !blApiRequest.query['bl_message_id']
+    ) {
+      throw new BlError('blApiRequest.query.bl_message_id is empty').code(701);
     }
 
-    for (let sendgridEvent of blApiRequest.data) {
-      await this.parseSendgridEvent(sendgridEvent as SendgridEvent);
+    const blMessageId = blApiRequest.query['bl_message_id'];
+
+    if (Array.isArray(blApiRequest.data)) {
+      for (let twilioEvent of blApiRequest.data) {
+        await this.parseAndAddTwilioEvent(twilioEvent, blMessageId);
+      }
+    } else {
+      await this.parseAndAddTwilioEvent(blApiRequest.data, blMessageId);
     }
 
     return {documentName: 'success', data: []};
   }
 
-  private async parseSendgridEvent(sendgridEvent: SendgridEvent) {
-    let blMessageId = sendgridEvent['bl_message_id']
-    let messageType = sendgridEvent['bl_message_type']
-
+  private async parseAndAddTwilioEvent(twilioEvent, blMessageId: string) {
     if (!blMessageId) {
       logger.debug(`sendgrid event did not have a bl_message_id`);
       return true; // default is that the message dont have a blMessageId
     }
 
-    if (messageType !== 'reminder') {
-      logger.debug(`sendgrid event did not have supported bl_message_type`);
-      // as of now, we only whant to collect the reminder emails
-      return true;
-    }
-
     try {
       let message = await this._messageStorage.get(blMessageId);
-      await this.updateMessageWithSendgridEvent(message, sendgridEvent);
+      await this.updateMessageWithTwilioSmsEvent(message, twilioEvent);
     } catch (e) {
       logger.warn(`could not update sendgrid event ${e}`);
       // if we dont find the message, there is no worries in not handling it
@@ -67,22 +70,26 @@ export class SendgridEventOperation implements Operation {
     }
   }
 
-  private async updateMessageWithSendgridEvent(
+  private async updateMessageWithTwilioSmsEvent(
     message: Message,
-    sendgridEvent: SendgridEvent,
+    smsEvent: any,
   ): Promise<boolean> {
-    let newSendgridEvents =
-      message.events && message.events.length > 0 ? message.events : [];
+    let newSmsEvents =
+      message.smsEvents && message.smsEvents.length > 0
+        ? message.smsEvents
+        : [];
 
-    newSendgridEvents.push(sendgridEvent);
+    newSmsEvents.push(smsEvent);
 
     await this._messageStorage.update(
       message.id,
-      {events: newSendgridEvents},
+      {smsEvents: newSmsEvents},
       {id: 'SYSTEM', permission: 'admin'},
     );
 
-    logger.silly(`updated message "${message.id}" with sendgrid event: "${sendgridEvent['event']}"`);
+    logger.silly(
+      `updated message "${message.id}" with sms event: "${smsEvent['status']}"`,
+    );
 
     return true;
   }

@@ -5,9 +5,17 @@ export const messageSchema = {
     type: Schema.Types.String,
     required: true,
   },
+  messageSubtype: {
+    type: Schema.Types.String,
+    required: true,
+  },
   messageMethod: {
     type: Schema.Types.String,
     required: true,
+  },
+  sequenceNumber: {
+    type: Schema.Types.Number,
+    default: 0,
   },
   customerId: {
     type: Schema.Types.ObjectId,
@@ -21,7 +29,13 @@ export const messageSchema = {
     type: Schema.Types.Mixed,
     required: false,
   },
-  sendgridEvents: {
+  events: {
+    type: [Schema.Types.Mixed],
+    required: false,
+    default: [],
+  },
+
+  smsEvents: {
     type: [Schema.Types.Mixed],
     required: false,
     default: [],

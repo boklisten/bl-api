@@ -79,6 +79,19 @@ export const customerItemSchema = {
     },
     required: false,
   },
+  buyback: {
+    type: Schema.Types.Boolean,
+    default: false,
+  },
+  buybackInfo: {
+    type: {
+      order: {
+        type: Schema.Types.ObjectId,
+      },
+    },
+    required: false,
+  },
+
   orders: {
     type: [Schema.Types.ObjectId],
     default: [],

@@ -129,7 +129,14 @@ export class Server {
       if (req.method !== 'OPTIONS') {
         // no point in showing all the preflight requests
         logger.debug(`-> ${req.method} ${req.url}`);
-        logger.silly(`-> ${JSON.stringify(req.body)}`);
+        let body;
+        try {
+          body = JSON.stringify(req.body);
+        } catch (e) {
+          body = req.body.toString('utf8');
+        }
+
+        logger.silly(`-> ${body}`);
       }
       next();
     };

@@ -89,7 +89,8 @@ export class CollectionEndpoint<T extends BlDocument> {
 
       if (endpoint.operations) {
         for (let operation of endpoint.operations) {
-          let operationOutput = output + '/' + operation.name;
+          let operationUri = uri + '/' + operation.name;
+          let operationOutput = method.toUpperCase() + '\t' + this.getRestrictionPrintout(operation.restriction) + '\t' + operationUri;
           logger.silly(operationOutput);
         }
       }

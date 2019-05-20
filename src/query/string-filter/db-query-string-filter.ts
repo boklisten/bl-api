@@ -1,4 +1,3 @@
-
 export type StringFilter = {
 	fieldName: string,
 	value: string
@@ -18,13 +17,16 @@ export class DbQueryStringFilter {
 
 		let stringFilters: StringFilter[] = [];
 
-
 		try {
 			for (let param in query) {
 				if (validStringParams.indexOf(param) > -1 ) {
-					stringFilters.push({fieldName: param, value: this.getStringParamValue(query[param])});
+          if (Array.isArray(query[param])) {
+            stringFilters.push({fieldName: param, value: query[param]});
+          } else {
+            stringFilters.push({fieldName: param, value: this.getStringParamValue(query[param])});
+          }
 				}
-			}
+      }
 
 			return stringFilters;
 		} catch (error) {

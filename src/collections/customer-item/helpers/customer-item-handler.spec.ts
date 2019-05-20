@@ -141,6 +141,20 @@ describe('CustomerItemHandler', () => {
     });
   });
 
+  describe('#buyback()', () => {
+    it('should reject if orderItem.type is not "buyout"', () => {
+      const orderItem = {
+        type: 'rent',
+      } as OrderItem;
+
+      const customerItem = {} as CustomerItem;
+
+      return expect(
+        customerItemHandler.buyback('customerItem1', 'order1', orderItem),
+      ).to.be.rejectedWith('orderItem.type is not "buyback"');
+    });
+  });
+
   describe('#getNotReturned', () => {
     it('should return emtpy array if there are no customerItems', done => {
       getByQueryCustomerItemStub.onFirstCall().resolves([]);
@@ -158,17 +172,29 @@ describe('CustomerItemHandler', () => {
 
     it('should ask db with correct query', done => {
       const expectedQuery = new SEDbQuery();
+
+      const before = new Date(2018, 11, 18);
       const deadline = new Date(2018, 11, 20);
+      const after = new Date(2018, 11, 22);
 
       expectedQuery.dateFilters = [
-        {fieldName: 'deadline', op: {$eq: deadline.toISOString()}},
+        {
+          fieldName: 'deadline',
+          op: {
+            $gt: before.toISOString(),
+            $lt: after.toISOString(),
+          },
+        },
       ];
 
       expectedQuery.stringFilters = [
         {fieldName: 'customer', value: 'customer1'},
       ];
 
-      expectedQuery.booleanFilters = [{fieldName: 'returned', value: false}];
+      expectedQuery.booleanFilters = [
+        {fieldName: 'returned', value: false},
+        {fieldName: 'buyout', value: false},
+      ];
 
       getByQueryCustomerItemStub.withArgs(expectedQuery).resolves([]);
 
