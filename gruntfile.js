@@ -9,7 +9,7 @@ module.exports = function(grunt) {
       app: {
         files: [
           {
-            src: ['src/**/*.ts', '!src/.baseDir.ts'],
+            src: ['src/**/*.ts', '!src/.baseDir.ts', '!src/**/*.spec.ts'],
             dest: './dist',
           },
         ],
