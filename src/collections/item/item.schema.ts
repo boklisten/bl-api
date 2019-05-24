@@ -1,34 +1,37 @@
-
-
 import {Schema} from 'mongoose';
 
 export let itemSchema = {
-	title: {
-		type: Schema.Types.String,
-		required: true
-	},
-	type: {
-		type: Schema.Types.String,
-		required: true
-	},
-	price: {
-		type: Schema.Types.Number,
-		required: true
-	},
-	taxRate: {
-		type: Schema.Types.Number,
-		required: true,
-	},
-	info: {
-		type: Schema.Types.Mixed,
-		required: false
-	},
-	desc: {
-		type: Schema.Types.String,
-		required: false
-	},
-	categories: {
-		type: [Schema.Types.String],
-		default: []
-	}
+  title: {
+    type: Schema.Types.String,
+    required: true,
+  },
+  type: {
+    type: Schema.Types.String,
+    required: true,
+  },
+  price: {
+    type: Schema.Types.Number,
+    required: true,
+  },
+  taxRate: {
+    type: Schema.Types.Number,
+    required: true,
+  },
+  info: {
+    type: Schema.Types.Mixed,
+    required: false,
+  },
+  buyback: {
+    type: Schema.Types.Boolean,
+    required: false,
+    default: false,
+  },
+  desc: {
+    type: Schema.Types.String,
+    required: false,
+  },
+  categories: {
+    type: [Schema.Types.String],
+    default: [],
+  },
 };

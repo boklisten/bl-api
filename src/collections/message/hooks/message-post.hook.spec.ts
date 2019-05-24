@@ -14,6 +14,7 @@ import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
 import * as sinonChai from 'sinon-chai';
 import {MessagePostHook} from './message-post.hook';
 import {MessengerReminder} from '../../../messenger/reminder/messenger-reminder';
+import {MessageHelper} from '../helper/message-helper';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -21,10 +22,16 @@ chai.use(sinonChai);
 describe('MessagePostHook', () => {
   const messengerReminder = new MessengerReminder();
   const messagePostHook = new MessagePostHook(messengerReminder);
+  const messageStorage = new BlDocumentStorage<Message>('messages');
+  const messageHelper = new MessageHelper(messageStorage);
   const messengerReminderRemindCustomerStub = sinon.stub(
     messengerReminder,
     'remindCustomer',
   );
+
+  const messageHelperIsAddedStub = sinon.stub(messageHelper, 'isAdded');
+
+  messageHelperIsAddedStub.resolves(false);
 
   describe('#before', () => {
     context('when message type is "reminder"', () => {
@@ -50,6 +57,30 @@ describe('MessagePostHook', () => {
           messagePostHook.before(body, accessToken),
         ).to.eventually.be.rejectedWith(BlError, /no permission/);
       });
+    });
+
+    it('should reject if message is already added', () => {
+      const accessToken = {
+        permission: 'admin',
+      } as AccessToken;
+
+      const body: Message = {
+        id: '',
+        customerId: 'customer1',
+        messageType: 'reminder',
+        messageSubtype: 'none',
+        messageMethod: 'all',
+        info: {
+          deadline: new Date(),
+        },
+      };
+
+      messengerReminderRemindCustomerStub.resolves(true);
+      messageHelperIsAddedStub.resolves(true);
+
+      return expect(
+        messagePostHook.before(body, accessToken),
+      ).to.eventually.be.rejectedWith(BlError, /already added/);
     });
   });
 

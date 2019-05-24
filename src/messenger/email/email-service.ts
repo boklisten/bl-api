@@ -202,14 +202,14 @@ export class EmailService implements MessengerService {
       return {
         id: this.getItemIsbn(item),
         title: item.title,
-        deadline: this.formatDeadline(customerItem.deadline),
+        deadline: this.formatDeadline(message.info.deadline),
         leftToPay: customerItem.amountLeftToPay + ' NOK',
       };
     } else {
       return {
         id: this.getItemIsbn(item),
         title: item.title,
-        deadline: this.formatDeadline(customerItem.deadline),
+        deadline: this.formatDeadline(message.info.deadline),
       };
     }
   }

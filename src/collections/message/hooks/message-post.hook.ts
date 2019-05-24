@@ -5,23 +5,30 @@ import {MessengerReminder} from '../../../messenger/reminder/messenger-reminder'
 import {PermissionService} from '../../../auth/permission/permission.service';
 import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
 import {messageSchema} from '../message.schema';
+import {MessageHelper} from '../helper/message-helper';
+import {logger} from '../../../logger/logger';
 
 export class MessagePostHook implements Hook {
   private messengerReminder: MessengerReminder;
   private messageStorage: BlDocumentStorage<Message>;
   private permissionService: PermissionService;
+  private messageHelper: MessageHelper;
 
   constructor(
     messengerReminder?: MessengerReminder,
     messageStorage?: BlDocumentStorage<Message>,
+    messageHelper?: MessageHelper,
   ) {
     this.messengerReminder = messengerReminder
       ? messengerReminder
       : new MessengerReminder();
     this.messageStorage = messageStorage
       ? messageStorage
-      : new BlDocumentStorage('', messageSchema);
+      : new BlDocumentStorage('messages', messageSchema);
     this.permissionService = new PermissionService();
+    this.messageHelper = messageHelper
+      ? messageHelper
+      : new MessageHelper(this.messageStorage);
   }
 
   async before(
@@ -49,6 +56,22 @@ export class MessagePostHook implements Hook {
       ) {
         throw new BlError('no permission').code(904);
       }
+    }
+
+    let alreadyAdded;
+
+    try {
+      alreadyAdded = await this.messageHelper.isAdded(message);
+    } catch (e) {
+      throw new BlError('could not check if message was already added');
+    }
+
+    if (alreadyAdded) {
+      throw new BlError(
+        `message is already added: type: ${message.messageType}, subtype: ${
+          message.messageSubtype
+        }, seq: ${message.sequenceNumber}, customer: "${message.customerId}"`,
+      ).code(701);
     }
 
     return true;

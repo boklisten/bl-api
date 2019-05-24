@@ -18,11 +18,11 @@ export const messageSchema = {
     default: 0,
   },
   customerId: {
-    type: Schema.Types.ObjectId,
+    type: Schema.Types.String,
     required: true,
   },
   employeeId: {
-    type: Schema.Types.ObjectId,
+    type: Schema.Types.String,
     required: false,
   },
   info: {

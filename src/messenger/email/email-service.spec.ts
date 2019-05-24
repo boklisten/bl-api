@@ -54,6 +54,9 @@ describe('EmailService', () => {
       const message: Message = {
         id: 'message1',
         messageType: 'reminder',
+        info: {
+          deadline: new Date(),
+        },
       } as Message;
 
       emailService
@@ -86,6 +89,9 @@ describe('EmailService', () => {
       const message: Message = {
         id: 'message1',
         messageType: 'reminder',
+        info: {
+          deadline: new Date(),
+        },
       } as Message;
 
       emailService.remind(message, customerDetail, customerItems).catch(err => {
@@ -138,6 +144,9 @@ describe('EmailService', () => {
         id: 'message1',
         messageType: 'reminder',
         messageSubtype: 'partly-payment',
+        info: {
+          deadline: new Date(2018, 6, 1),
+        },
       } as Message;
 
       emailHandlerRemindStub.resolves(true);
@@ -155,13 +164,13 @@ describe('EmailService', () => {
               id: '123',
               title: 'Signatur 1',
               leftToPay: '200 NOK',
-              deadline: '01.01.2018',
+              deadline: '01.07.2018',
             },
             {
               id: '456',
               title: 'Terra Mater',
               leftToPay: '100 NOK',
-              deadline: '01.01.2018',
+              deadline: '01.07.2018',
             },
           ]);
 

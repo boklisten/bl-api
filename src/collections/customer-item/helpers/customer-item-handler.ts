@@ -199,7 +199,6 @@ export class CustomerItemHandler {
     deadline: Date,
     type?: 'partly-payment' | 'rent' | 'loan' | 'all',
   ): Promise<CustomerItem[]> {
-    logger.info('type', type);
     if (customerId == null || customerId.length <= 0) {
       throw new BlError('customerId is null or undefined');
     }
