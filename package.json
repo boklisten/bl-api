@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "watch": "grunt watch",
-    "start": "tsc --build tsconfig.build.json && node ./dist/index.js",
+    "start": "tsc -p tsconfig.build.json && node ./dist/index.js",
     "grunt": "grunt",
     "pkg": "grunt pkg",
     "dev": "grunt dev",
