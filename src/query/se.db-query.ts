@@ -8,12 +8,14 @@ import {RegexFilter} from './regex-filter/db-query-regex-filter';
 import {BooleanFilter} from './boolean-filter/db-query-boolean-filter';
 import {DateFilter} from './date-filter/db-query-date-filter';
 import {ExpandFilter} from './expand-filter/db-query-expand-filter';
+import {ObjectIdFilter} from './object-id-filter/db-query-object-id-filter';
 
 export class SEDbQuery {
   booleanFilters: BooleanFilter[];
   dateFilters: DateFilter[];
   numberFilters: NumberFilter[];
   stringFilters: StringFilter[];
+  objectIdFilters: ObjectIdFilter[];
   onlyGetFilters: OnlyGetFilter[];
   skipFilter: SkipFilter;
   sortFilters: SortFilter[];
@@ -26,6 +28,7 @@ export class SEDbQuery {
     this.dateFilters = [];
     this.numberFilters = [];
     this.stringFilters = [];
+    this.objectIdFilters = [];
     this.onlyGetFilters = [];
     this.skipFilter = {skip: 0};
     this.sortFilters = [];
@@ -63,6 +66,18 @@ export class SEDbQuery {
       }
     }
 
+    for (let objectIdFilter of this.objectIdFilters) {
+      if (Array.isArray(objectIdFilter.value)) {
+        let arr = objectIdFilter.value;
+        for (let stringValue of arr) {
+          let multipleValuesFilterObj: any = {};
+          multipleValuesFilterObj[objectIdFilter.fieldName] = stringValue;
+          orArr.push(multipleValuesFilterObj);
+        }
+      } else {
+        filterObj[objectIdFilter.fieldName] = objectIdFilter.value;
+      }
+    }
 
     for (let regexFilter of this.regexFilters) {
       let regexFilterObj: any = {};
