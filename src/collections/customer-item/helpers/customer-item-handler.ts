@@ -239,7 +239,7 @@ export class CustomerItemHandler {
       };
 
       dbQuery = dbQueryBuilder.getDbQuery(query, [
-        {fieldName: 'customer', type: 'string'},
+        {fieldName: 'customer', type: 'object-id'},
         {fieldName: 'deadline', type: 'date'},
         {fieldName: 'returned', type: 'boolean'},
         {fieldName: 'buyout', type: 'boolean'},
@@ -254,14 +254,12 @@ export class CustomerItemHandler {
       };
 
       dbQuery = dbQueryBuilder.getDbQuery(query, [
-        {fieldName: 'customer', type: 'string'},
+        {fieldName: 'customer', type: 'object-id'},
         {fieldName: 'deadline', type: 'date'},
         {fieldName: 'returned', type: 'boolean'},
         {fieldName: 'buyout', type: 'boolean'},
       ]);
     }
-
-    logger.silly('customerItem deadline query: ' + JSON.stringify(dbQuery));
 
     return await this._customerItemStorage.getByQuery(dbQuery);
   }
