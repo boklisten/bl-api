@@ -6,7 +6,7 @@ const colorizer = winston.format.colorize();
 
 function formatTimestamp(timestamp: string) {
   let date = new Date(timestamp);
-  return moment(timestamp).format('DDMMYY-HH:mm:ss.SSS');
+  return moment(timestamp).format('HH:mm:ss.SSS');
 }
 
 const customLevels = {
@@ -27,11 +27,11 @@ export const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.printf((info: any) => {
       if (process.env.NODE_ENV === 'production') {
-        return `{${info.level}} ${info.message}`;
+        return `${info.level} ${info.message}`;
       }
       return colorizer.colorize(
         info.level,
-        `${formatTimestamp(info.timestamp)}{${info.level}} ${info.message}`,
+        `${formatTimestamp(info.timestamp)} ${info.level} ${info.message}`,
       );
     }),
     winston.format.colorize({

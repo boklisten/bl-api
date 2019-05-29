@@ -136,7 +136,11 @@ export class Server {
           body = req.body.toString('utf8');
         }
 
-        logger.silly(`-> ${body}`);
+        if (
+          !(req.url.includes('auth') && process.env.NODE_ENV === 'production')
+        ) {
+          logger.silly(`-> ${body}`);
+        }
       }
       next();
     };
