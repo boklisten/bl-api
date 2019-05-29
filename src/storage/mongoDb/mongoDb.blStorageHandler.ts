@@ -52,6 +52,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     allowedNestedDocuments?: NestedDocument[],
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
+      logger.silly(
+        `mongoose.find(${JSON.stringify(dbQuery.getFilter())}, ${JSON.stringify(
+          dbQuery.getOgFilter(),
+        )}).limit(${dbQuery.getLimitFilter()}).skip(${dbQuery.getSkipFilter()}).sort(${JSON.stringify(
+          dbQuery.getSortFilter(),
+        )})`,
+      );
       this.mongooseModel
         .find(dbQuery.getFilter(), dbQuery.getOgFilter())
         .limit(dbQuery.getLimitFilter())

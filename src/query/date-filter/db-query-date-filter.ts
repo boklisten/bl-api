@@ -3,9 +3,9 @@ import moment = require('moment');
 export type DateFilter = {
   fieldName: string;
   op: {
-    $lt?: string;
-    $gt?: string;
-    $eq?: string;
+    $lt?: Date;
+    $gt?: Date;
+    $eq?: Date;
   };
 };
 
@@ -83,7 +83,7 @@ export class DbQueryDateFilter {
       throw new SyntaxError('generateDateFilter(): invalid date');
     }
 
-    let isoDate = momentDate.toISOString();
+    let isoDate = momentDate.toDate();
     //let lessThanIsoDate = momentDate.add(1, 'day').toISOString();
 
     if (operation) {
@@ -108,11 +108,7 @@ export class DbQueryDateFilter {
     for (let value of values) {
       let op = this.getOperation(value);
       let theDateString = value.substr(1, value.length);
-      operations[op] = moment(
-        theDateString,
-        this.dateFormat,
-        true,
-      ).toISOString();
+      operations[op] = moment(theDateString, this.dateFormat, true).toDate();
     }
 
     return [{fieldName: fieldName, op: operations}];

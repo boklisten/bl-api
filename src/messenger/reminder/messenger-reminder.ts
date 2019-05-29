@@ -55,7 +55,7 @@ export class MessengerReminder {
       const notReturnedCustomerItems = await this.customerItemHandler.getNotReturned(
         message.customerId,
         message.info.deadline,
-        message.messageSubtype as any
+        message.messageSubtype as any,
       );
 
       const userDetail = await this.userDetailStorage.get(message.customerId);

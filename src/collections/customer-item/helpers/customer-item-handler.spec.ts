@@ -181,8 +181,8 @@ describe('CustomerItemHandler', () => {
         {
           fieldName: 'deadline',
           op: {
-            $gt: before.toISOString(),
-            $lt: after.toISOString(),
+            $gt: before,
+            $lt: after,
           },
         },
       ];
