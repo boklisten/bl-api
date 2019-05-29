@@ -2,7 +2,7 @@ import {Types} from 'mongoose';
 
 export type ObjectIdFilter = {
   fieldName: string;
-  value: Types.ObjectId;
+  value: Types.ObjectId | string | any[];
 };
 
 export class DbQueryObjectIdFilter {
@@ -26,11 +26,23 @@ export class DbQueryObjectIdFilter {
       for (let param in query) {
         if (validStringParams.indexOf(param) > -1) {
           if (Array.isArray(query[param])) {
-            objectIdFilters.push({fieldName: param, value: query[param]});
-          } else {
+            let valueArr = [];
+            query[param].forEach(paramValue => {
+              valueArr.push(this.getStringParamValue(paramValue));
+              valueArr.push(this.getObjectIdParamValue(paramValue));
+            });
             objectIdFilters.push({
               fieldName: param,
-              value: this.getStringParamValue(query[param]),
+              value: valueArr,
+            });
+          } else {
+            let valueArr = [
+              this.getStringParamValue(query[param]),
+              this.getObjectIdParamValue(query[param]),
+            ];
+            objectIdFilters.push({
+              fieldName: param,
+              value: valueArr,
             });
           }
         }
@@ -52,9 +64,18 @@ export class DbQueryObjectIdFilter {
     }
   }
 
-  private getStringParamValue(param: string): Types.ObjectId {
+  private getObjectIdParamValue(param: string): Types.ObjectId {
     if (this.validateStringParam(param)) {
       return new Types.ObjectId(param);
+    }
+    throw new TypeError(
+      'the paramterer of value "' + param + '" is not a valid string',
+    );
+  }
+
+  private getStringParamValue(param: string): string {
+    if (this.validateStringParam(param)) {
+      return param;
     }
     throw new TypeError(
       'the paramterer of value "' + param + '" is not a valid string',
