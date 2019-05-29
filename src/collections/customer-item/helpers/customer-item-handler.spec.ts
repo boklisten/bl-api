@@ -8,6 +8,7 @@ import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
 import {CustomerItemHandler} from './customer-item-handler';
 import {SystemUser} from '../../../auth/permission/permission.service';
 import {SEDbQuery} from '../../../query/se.db-query';
+import * as mongoose from 'mongoose';
 
 chai.use(chaiAsPromised);
 
@@ -160,7 +161,7 @@ describe('CustomerItemHandler', () => {
       getByQueryCustomerItemStub.onFirstCall().resolves([]);
 
       customerItemHandler
-        .getNotReturned('customer1', new Date(2012, 1, 1))
+        .getNotReturned('5c33b6137eab87644f7e75e2', new Date(2012, 1, 1))
         .then(notReturnedCustomerItems => {
           expect(notReturnedCustomerItems).to.eql([]);
           done();
@@ -187,8 +188,14 @@ describe('CustomerItemHandler', () => {
         },
       ];
 
-      expectedQuery.stringFilters = [
-        {fieldName: 'customer', value: 'customer1'},
+      expectedQuery.objectIdFilters = [
+        {
+          fieldName: 'customer',
+          value: [
+            '5c33b6137eab87644f7e75e2',
+            mongoose.Types.ObjectId('5c33b6137eab87644f7e75e2'),
+          ],
+        },
       ];
 
       expectedQuery.booleanFilters = [
@@ -199,7 +206,7 @@ describe('CustomerItemHandler', () => {
       getByQueryCustomerItemStub.withArgs(expectedQuery).resolves([]);
 
       customerItemHandler
-        .getNotReturned('customer1', deadline)
+        .getNotReturned('5c33b6137eab87644f7e75e2', deadline)
         .then(result => {
           expect(getByQueryCustomerItemStub).calledWith(expectedQuery);
           done();
@@ -228,7 +235,7 @@ describe('CustomerItemHandler', () => {
       getByQueryCustomerItemStub.returns(customerItems);
 
       customerItemHandler
-        .getNotReturned('customer1', new Date(2018, 11, 20))
+        .getNotReturned('5c33b6137eab87644f7e75e2', new Date(2018, 11, 20))
         .then(result => {
           expect(result).to.eql(customerItems);
 
@@ -243,7 +250,10 @@ describe('CustomerItemHandler', () => {
       getByQueryCustomerItemStub.rejects(new BlError('someting wrong'));
 
       expect(
-        customerItemHandler.getNotReturned('customer1', new Date()),
+        customerItemHandler.getNotReturned(
+          '5c33b6137eab87644f7e75e2',
+          new Date(),
+        ),
       ).to.be.rejectedWith(BlError);
     });
   });
