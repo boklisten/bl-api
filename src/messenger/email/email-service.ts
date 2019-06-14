@@ -66,12 +66,50 @@ export class EmailService implements MessengerService {
     this._dateFormat = 'DD.MM.YYYY';
     this._orderEmailHandler = new OrderEmailHandler(this._emailHandler);
     this._postOffice = inputPostOffice ? inputPostOffice : postOffice;
-    this._postOffice.setConfig({reminder: {mediums: {email: true, sms: true}}});
+    this._postOffice.overrideLogger(logger);
+    this._postOffice.setConfig({
+      reminder: {mediums: {email: true, sms: true}},
+      generic: {mediums: {email: true}},
+    });
   }
 
-  public send(messages: Message[], customerDetail: UserDetail) {}
+  public send(message: Message, customerDetail: UserDetail): Promise<boolean> {
+    if (message.messageType === 'generic') {
+      return this.sendGeneric(message, customerDetail);
+    }
+
+    throw `message type "${message.messageType}" not supported`;
+  }
 
   public sendMany(messages: Message[], customerDetails: UserDetail[]) {}
+
+  public async sendGeneric(
+    message: Message,
+    customerDetail: UserDetail,
+  ): Promise<boolean> {
+    const recipient = await this.customerDetailToRecipient(
+      message,
+      customerDetail,
+      [],
+    );
+
+    const messageOptions: MessageOptions = {
+      type: 'generic',
+      subtype: 'none',
+      subject: message.subject,
+      sequence_number: message.sequenceNumber,
+      htmlContent: message.htmlContent,
+      textBlocks: message.textBlocks,
+      mediums: this.getMessageOptionMediums(message),
+    };
+
+    try {
+      const result = await this._postOffice.send([recipient], messageOptions);
+      return true;
+    } catch (e) {
+      logger.error(`could not send generic mail: ${e}`);
+    }
+  }
 
   /**
    * Sends out a reminder to the email specified in customerDetail

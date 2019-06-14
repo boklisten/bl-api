@@ -22,7 +22,10 @@ import {
 class MockPostOffice extends PostOffice {
   constructor() {
     super(undefined, undefined);
-    this.setConfig({reminder: {mediums: {email: false}}});
+    this.setConfig({
+      reminder: {mediums: {email: false}},
+      generic: {mediums: {email: false}},
+    });
   }
 
   public async send(recipients: Recipient[], options: MessageOptions) {
@@ -45,6 +48,60 @@ describe('EmailService', () => {
   const itemStorageGetStub = sinon.stub(itemStorage, 'get');
   const emailHandlerRemindStub = sinon.stub(emailHandler, 'sendReminder');
   const postOfficeSendStub = sinon.stub(mockPostOffice, 'send');
+
+  describe('#send', () => {
+    it('should call postOffice.send when message.type is generic', done => {
+      postOfficeSendStub.resolves(true);
+
+      const message: Message = {
+        id: 'message1',
+        customerId: 'customer1',
+        messageMethod: 'email',
+        messageType: 'generic',
+        messageSubtype: 'all',
+        subject: 'This is the subject',
+        htmlContent: '<p>Hi hello</p>',
+      };
+
+      emailService
+        .send(message, {
+          id: 'abc',
+          email: 'some@email.org',
+        } as UserDetail)
+        .then(() => {
+          expect(postOfficeSendStub).to.have.been.called;
+          expect(postOfficeSendStub).to.have.been.calledWith();
+          done();
+        });
+    });
+  });
+
+  describe('#sendGeneric', () => {
+    it('should call postOffice.send', done => {
+      postOfficeSendStub.resolves(true);
+
+      const message: Message = {
+        id: 'message1',
+        customerId: 'customer1',
+        messageMethod: 'email',
+        messageType: 'generic',
+        messageSubtype: 'all',
+        subject: 'This is the subject',
+        htmlContent: '<p>Hi hello</p>',
+      };
+
+      emailService
+        .sendGeneric(message, {
+          id: 'abc',
+          email: 'some@email.org',
+        } as UserDetail)
+        .then(() => {
+          expect(postOfficeSendStub).to.have.been.called;
+          expect(postOfficeSendStub).to.have.been.calledWith();
+          done();
+        });
+    });
+  });
 
   describe('#remind', () => {
     it('should call emailHandler.sendReminder', done => {

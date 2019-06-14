@@ -34,8 +34,8 @@ export class Messenger implements MessengerService {
    * @param {Message[]} messages
    * @param {UserDetail} customerDetail
    */
-  public send(messages: Message[], customerDetail: UserDetail) {
-    this._emailService.send(messages, customerDetail);
+  public send(message: Message, customerDetail: UserDetail) {
+    this._emailService.send(message, customerDetail);
   }
 
   /**

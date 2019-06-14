@@ -29,6 +29,14 @@ export const messageSchema = {
     type: Schema.Types.Mixed,
     required: false,
   },
+  subject: {
+    type: Schema.Types.String,
+    required: false,
+  },
+  htmlContent: {
+    type: Schema.Types.String,
+    required: false,
+  },
   events: {
     type: [Schema.Types.Mixed],
     required: false,
