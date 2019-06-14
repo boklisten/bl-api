@@ -70,6 +70,39 @@ describe('MessageHelper', () => {
       }
     });
 
+    it('should return false if type, subtype, sequence, method and customerId is already in storage, but htmlContent is not the same as in storage', async () => {
+      const message: Message = {
+        id: 'abc',
+        messageType: 'reminder',
+        messageSubtype: 'partly-payment',
+        messageMethod: 'all',
+        sequenceNumber: 0,
+        htmlContent: '<h1>This is some new html content</h1>',
+        customerId: 'abc',
+      };
+
+      const storedMessage: Message = {
+        id: 'abc',
+        messageType: 'reminder',
+        messageSubtype: 'partly-payment',
+        messageMethod: 'all',
+        sequenceNumber: 0,
+        htmlContent: '<h1>This is the html content already stored</h1>',
+        customerId: 'abc',
+      };
+
+      messageStorageGetByQueryStub.callsFake(() => {
+        return Promise.resolve([storedMessage]);
+      });
+
+      try {
+        const isAdded = await messageHelper.isAdded(message);
+        return expect(isAdded).to.be.false;
+      } catch (e) {
+        throw e;
+      }
+    });
+
     it('should return false if type, subtype, sequence, method and customerId is not in storage', async () => {
       const message: Message = {
         id: 'abc',

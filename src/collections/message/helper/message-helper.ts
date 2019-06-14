@@ -30,7 +30,17 @@ export class MessageHelper {
 
     try {
       const docs = await this.messageStorage.getByQuery(dbQuery);
-      return docs && docs.length >= 1;
+      if (docs) {
+        for (let doc of docs) {
+          if (
+            JSON.stringify(doc.htmlContent) ===
+            JSON.stringify(message.htmlContent)
+          ) {
+            return true;
+          }
+        }
+      }
+      return false;
     } catch (e) {
       if (e instanceof BlError) {
         if (e.getCode() === 702) {
