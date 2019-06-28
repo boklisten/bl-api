@@ -105,6 +105,7 @@ describe('EmailService', () => {
 
   describe('#remind', () => {
     it('should call emailHandler.sendReminder', done => {
+      postOfficeSendStub.reset();
       postOfficeSendStub.resolves(true);
       itemStorageGetStub.resolves({id: 'item1', title: 'title'});
 
@@ -123,9 +124,39 @@ describe('EmailService', () => {
           [{id: 'customerItem1'}] as CustomerItem[],
         )
         .then(() => {
-          expect(postOfficeSendStub).to.have.been.called;
+          expect(postOfficeSendStub).to.have.been.calledOnce;
           done();
         });
+    });
+
+    it('should call emailHandler.sendReminder twice if userDetail has a valid guardian', done => {
+      postOfficeSendStub.reset();
+      postOfficeSendStub.resolves(true);
+      itemStorageGetStub.resolves({id: 'item1', title: 'title'});
+
+      const message: Message = {
+        id: 'message1',
+        messageType: 'reminder',
+        info: {
+          deadline: new Date(),
+        },
+      } as Message;
+
+      emailService
+        .remind(
+          message,
+          {
+            id: 'abc',
+            email: 'some@email.org',
+            guardian: {email: 'someOther@email.com', phone: '91804211'},
+          } as UserDetail,
+          [{id: 'customerItem1'}] as CustomerItem[],
+        )
+        .then(() => {
+          expect(postOfficeSendStub).to.have.been.calledTwice;
+          done();
+        })
+        .catch(err => done(err));
     });
 
     it('should reject if customerItem.item does not exist', done => {

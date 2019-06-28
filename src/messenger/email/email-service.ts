@@ -139,10 +139,34 @@ export class EmailService implements MessengerService {
 
     try {
       const result = await this._postOffice.send([recipient], messageOptions);
+
+      if (customerDetail.guardian) {
+        await this.sendToGuardian(customerDetail, recipient, messageOptions);
+      }
       return true;
     } catch (e) {
       logger.error(`could not send reminder: ${e}`);
     }
+  }
+
+  private async sendToGuardian(
+    customerDetail: UserDetail,
+    recipient: Recipient,
+    messageOptions: MessageOptions,
+  ): Promise<boolean> {
+    if (!customerDetail.guardian) {
+      return false;
+    }
+
+    if (!customerDetail.guardian.email || !customerDetail.guardian.phone) {
+      return false;
+    }
+
+    recipient.name = customerDetail.guardian.name;
+    recipient.email = customerDetail.guardian.email;
+    recipient.phone = customerDetail.guardian.phone;
+
+    return this._postOffice.send([recipient], messageOptions);
   }
 
   private getMessageOptionMediums(
