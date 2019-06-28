@@ -162,7 +162,6 @@ export class EmailService implements MessengerService {
       return false;
     }
 
-    recipient.name = customerDetail.guardian.name;
     recipient.email = customerDetail.guardian.email;
     recipient.phone = '+47' + customerDetail.guardian.phone;
 
