@@ -164,7 +164,7 @@ export class EmailService implements MessengerService {
 
     recipient.name = customerDetail.guardian.name;
     recipient.email = customerDetail.guardian.email;
-    recipient.phone = '+47' + ustomerDetail.guardian.phone;
+    recipient.phone = '+47' + customerDetail.guardian.phone;
 
     return this._postOffice.send([recipient], messageOptions);
   }
