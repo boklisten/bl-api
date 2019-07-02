@@ -14,6 +14,9 @@ export const invoiceSchema = {
     type: Schema.Types.Boolean,
     default: false,
   },
+  type: {
+    type: Schema.Types.String,
+  },
   toDebtCollection: {
     type: Schema.Types.Boolean,
     default: false,
@@ -26,6 +29,7 @@ export const invoiceSchema = {
         item: Schema.Types.ObjectId,
         numberOfItems: Schema.Types.String,
         cancel: Schema.Types.Boolean,
+        customerItemType: Schema.Types.String,
         payment: {
           unit: Schema.Types.Number,
           gross: Schema.Types.Number,
