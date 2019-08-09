@@ -70,6 +70,7 @@ export class EmailService implements MessengerService {
     this._postOffice.setConfig({
       reminder: {mediums: {email: true, sms: true}},
       generic: {mediums: {email: true}},
+      receipt: {mediums: {email: true}},
     });
   }
 

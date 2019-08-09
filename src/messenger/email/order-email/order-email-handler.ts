@@ -9,7 +9,9 @@ import {
   BlError,
   CustomerItem,
   Branch,
+  Message,
 } from '@wizardcoder/bl-model';
+import {logger} from '../../../logger/logger';
 import {EMAIL_SETTINGS} from '../email-settings';
 import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
 import {paymentSchema} from '../../../collections/payment/payment.schema';
@@ -22,6 +24,8 @@ import {DibsEasyPayment} from '../../../payment/dibs/dibs-easy-payment/dibs-easy
 import moment = require('moment');
 import {branchItemSchema} from '../../../collections/branch-item/branch-item.schema';
 import {branchSchema} from '../../../collections/branch/branch.schema';
+import {ReceiptEmailHandler} from '../receipt-email/receipt-email-handler';
+import {messageSchema} from '../../../collections/message/message.schema';
 
 export class OrderEmailHandler {
   private defaultCurrency = 'NOK';
@@ -33,12 +37,14 @@ export class OrderEmailHandler {
   private agreementTextBlock =
     'Vedlagt i denne mailen ligger en kontrakt som du trenger å skrive under på for å få leid bøkene. Kontrakten må du ha med deg når du kommer til oss på stand.';
   private guardianTextBlock = '';
+  private _receiptEmailHandler: ReceiptEmailHandler;
 
   constructor(
     private _emailHandler: EmailHandler,
     private _deliveryStorage?: BlDocumentStorage<Delivery>,
     private _paymentStorage?: BlDocumentStorage<Payment>,
     private _branchStorage?: BlDocumentStorage<Branch>,
+    private _messageStorage?: BlDocumentStorage<Message>,
   ) {
     this._deliveryStorage = _deliveryStorage
       ? _deliveryStorage
@@ -49,6 +55,11 @@ export class OrderEmailHandler {
     this._branchStorage = _branchStorage
       ? _branchStorage
       : new BlDocumentStorage('branches', branchSchema);
+    this._messageStorage = _messageStorage
+      ? _messageStorage
+      : new BlDocumentStorage('messages', messageSchema);
+
+    this._receiptEmailHandler = new ReceiptEmailHandler(this._messageStorage);
   }
 
   public async sendOrderReceipt(
@@ -91,6 +102,18 @@ export class OrderEmailHandler {
     if (this.paymentNeeded(order)) {
       this.addNoPaymentProvidedNotice(emailSetting);
     }
+    if (this.containsPartlyPayment(order)) {
+      try {
+        const payments = await this.retrievePayments(order.payments);
+        const delivery = await this.retrieveDelivery(order);
+        return await this._receiptEmailHandler.send(customerDetail, order, {
+          delivery: delivery,
+          payments: payments,
+        });
+      } catch (e) {
+        logger.log('error', e);
+      }
+    }
 
     return this._emailHandler.sendOrderReceipt(
       emailSetting,
@@ -98,6 +121,15 @@ export class OrderEmailHandler {
       emailUser,
       withAgreement,
     );
+  }
+
+  private containsPartlyPayment(order: Order) {
+    for (let orderItem of order.orderItems) {
+      if (orderItem.type === 'partly-payment') {
+        return true;
+      }
+    }
+    return false;
   }
 
   private paymentNeeded(order: Order): boolean {
@@ -206,6 +238,24 @@ export class OrderEmailHandler {
       }
     }
     return false;
+  }
+
+  private retrievePayments(payments: string[] | Payment[]): Promise<Payment[]> {
+    let paymentPromiseArr: Promise<Payment>[] = [];
+
+    for (let paymentId of payments) {
+      let pId = typeof paymentId === 'string' ? paymentId : paymentId.id;
+      paymentPromiseArr.push(this._paymentStorage.get(pId));
+    }
+
+    return Promise.all(paymentPromiseArr);
+  }
+
+  private retrieveDelivery(order: Order): Promise<Delivery> {
+    let deliveryId =
+      typeof order.delivery === 'string' ? order.delivery : order.delivery.id;
+
+    return this._deliveryStorage.get(deliveryId);
   }
 
   private extractEmailOrderPaymentFromOrder(
