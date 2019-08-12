@@ -47,14 +47,14 @@ export class MessengerReminder {
       throw new BlError('customerId is null or undefined');
     }
 
-    if (!message.info || message.info.deadline == null) {
+    if (!message.info || message.info['deadline'] == null) {
       throw new BlError('deadline is null or undefined');
     }
 
     try {
       const notReturnedCustomerItems = await this.customerItemHandler.getNotReturned(
         message.customerId,
-        message.info.deadline,
+        message.info['deadline'],
         message.messageSubtype as any,
       );
 

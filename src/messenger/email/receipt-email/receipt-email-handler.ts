@@ -6,6 +6,7 @@ import {
   CustomerItem,
   OrderItem,
   Message,
+  OrderItemType,
 } from '@wizardcoder/bl-model';
 import moment = require('moment');
 import {logger} from '../../../logger/logger';
@@ -31,6 +32,7 @@ export class ReceiptEmailHandler {
   ): Promise<any> {
     // should create a Message and store it in DB
     let message = this.createMessage(userDetail.id, order.id);
+
     message = await this._messageStorage.add(message, {
       id: 'SYSTEM',
       permission: 'super',
@@ -40,7 +42,11 @@ export class ReceiptEmailHandler {
     const emailDelivery = config.delivery
       ? this.deliveryToEmailDelivery(config.delivery)
       : null;
-    const emailPayment = this.paymentToEmailPayment(order, config.payments);
+    const emailPayment = this.paymentToEmailPayment(
+      order,
+      config.delivery,
+      config.payments,
+    );
     const emailItemList = this.customerItemsToEmailItemList(order);
     const emailOrder = this.orderToEmailOrder(order);
 
@@ -95,39 +101,63 @@ export class ReceiptEmailHandler {
   private deliveryToEmailDelivery(delivery: Delivery): EmailDelivery {
     return {
       method: delivery.method,
-      expectedDeliveryDate: delivery.info['estimatedDelivery'],
-      unitPrice: '',
+      expectedDeliveryDate: moment(delivery.info['estimatedDelivery']).format(
+        'DD.MM.YY',
+      ),
+      unitPrice: this.toCurrency(delivery['amount'] as any),
       taxPercentage: '',
-      totalTax: '',
-      total: '',
-      address: '',
+      totalTax: this.toCurrency(delivery['taxAmount'] as any),
+      total: this.toCurrency(delivery['amount'] as any),
+      address:
+        delivery.info['shipmentAddress']['address'] +
+        ', ' +
+        delivery.info['shipmentAddress']['postalCode'] +
+        ' ' +
+        delivery.info['shipmentAddress']['postalCity'],
     };
   }
 
   private paymentToEmailPayment(
     order: Order,
+    delivery: Delivery,
     payments: Payment[],
   ): EmailPayment {
+    let deliveryAmount = delivery ? delivery.amount : 0;
     let emailPayment: EmailPayment = {
-      total: (order.amount + this.calculateTotalLeftToPay(order)).toString(),
-      totalPayed: order.amount.toString(),
+      total: this.toCurrency(
+        order.amount + this.calculateTotalLeftToPay(order) + deliveryAmount,
+      ),
+      totalPayed: this.toCurrency(order.amount + deliveryAmount),
       reservation: payments.length <= 0 ? true : false,
       payments: [],
     };
 
     for (let payment of payments) {
-      let cardNumber = '';
+      let cardNumber = '****';
+      let paymentMethod = '';
       if (
         payment.info &&
         payment.info['paymentDetails'] &&
-        payment.info['paymentDetails']['maskedPan']
+        payment.info['paymentDetails']['cardDetails'] &&
+        payment.info['paymentDetails']['cardDetails']['maskedPan']
       ) {
-        cardNumber = '****' + payment.info['paymentDetails']['maskedPan'];
+        cardNumber += this.stripTo4LastDigits(
+          payment.info['paymentDetails']['cardDetails']['maskedPan'],
+        );
       }
+
+      if (
+        payment.info &&
+        payment.info['paymentDetails'] &&
+        payment.info['paymentDetails']['paymentMethod']
+      ) {
+        paymentMethod = payment.info['paymentDetails']['paymentMethod'];
+      }
+
       emailPayment.payments.push({
         id: payment.id,
-        amount: payment.amount.toString(),
-        method: payment.method,
+        amount: this.toCurrency(payment.amount),
+        method: paymentMethod,
         cardNumber: cardNumber,
         status: 'bekreftet',
       });
@@ -141,11 +171,46 @@ export class ReceiptEmailHandler {
     };
   }
 
+  private toCurrency(num: any): string {
+    return num + ' NOK';
+  }
+
+  private stripTo4LastDigits(cardNum: string) {
+    if (cardNum && cardNum.length > 4) {
+      let last4 = cardNum[cardNum.length - 4];
+      last4 += cardNum[cardNum.length - 3];
+      last4 += cardNum[cardNum.length - 2];
+      last4 += cardNum[cardNum.length - 1];
+      return last4;
+    }
+    return cardNum;
+  }
+
+  private translateOrderItemType(orderItemType: OrderItemType): string {
+    switch (orderItemType) {
+      case 'partly-payment':
+        return 'delbetaling';
+      case 'rent':
+        return 'lån';
+      case 'loan':
+        return 'lån';
+      case 'buy':
+        return 'kjøp';
+      case 'sell':
+        return 'solgt';
+      case 'buyback':
+        return 'tilbakekjøp';
+      default:
+        return '';
+    }
+  }
+
   private customerItemsToEmailItemList(order: Order): ItemList {
     let summary = {
-      total: order.amount.toString(),
+      total: this.toCurrency(order.amount),
       totalLeftToPay: '',
       totalTax: '',
+      totalTaxLeftToPay: '0',
       taxPercentage: '',
       taxPercentageLeftToPay: '',
     };
@@ -159,7 +224,7 @@ export class ReceiptEmailHandler {
       let leftToPay = '-';
 
       if (orderItem.type === 'partly-payment') {
-        leftToPay = orderItem.info['amountLeftToPay'].toString();
+        leftToPay = orderItem.info['amountLeftToPay'];
       }
 
       totalTax += orderItem.taxAmount;
@@ -168,14 +233,15 @@ export class ReceiptEmailHandler {
         id: orderItem.item,
         title: orderItem.title,
         deadline: moment(orderItem.info.to).format('DD.MM.YY'),
-        amount: orderItem.amount,
-        action: orderItem.type,
-        leftToPay: leftToPay,
+        amount: this.toCurrency(orderItem.amount),
+        action: this.translateOrderItemType(orderItem.type),
+        leftToPay: this.toCurrency(leftToPay),
       });
     }
 
-    summary.totalLeftToPay = totalLeftToPay.toString();
-    summary.totalTax = totalTax.toString();
+    summary.totalLeftToPay = this.toCurrency(totalLeftToPay);
+    summary.totalTax = this.toCurrency(totalTax);
+    summary.totalTaxLeftToPay = this.toCurrency(summary.taxPercentageLeftToPay);
 
     return {
       summary: summary,

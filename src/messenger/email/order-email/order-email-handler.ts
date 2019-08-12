@@ -252,10 +252,7 @@ export class OrderEmailHandler {
   }
 
   private retrieveDelivery(order: Order): Promise<Delivery> {
-    let deliveryId =
-      typeof order.delivery === 'string' ? order.delivery : order.delivery.id;
-
-    return this._deliveryStorage.get(deliveryId);
+    return this._deliveryStorage.get(order.delivery as string);
   }
 
   private extractEmailOrderPaymentFromOrder(
