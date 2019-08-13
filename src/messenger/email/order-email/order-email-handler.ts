@@ -31,7 +31,7 @@ export class OrderEmailHandler {
   private noPaymentNoticeText =
     'Dette er kun en reservasjon, du har ikke betalt enda. Du betaler først når du kommer til oss på stand.';
   private agreementTextBlock =
-    'Vedlagt i denne mailen ligger en kontrakt som du trenger å skrive under på for å få leid bøkene. Kontrakten må du ha med deg når du kommer til oss på stand.';
+    'Vedlagt i denne mailen ligger en kontrakt som du trenger å skrive under på for å få lånt bøkene. Kontrakten må du ha med deg når du kommer til oss på stand.';
   private guardianTextBlock = '';
 
   constructor(
@@ -71,6 +71,7 @@ export class OrderEmailHandler {
     );
 
     let emailOrder: EmailOrder = await this.orderToEmailOrder(order);
+    emailOrder.loan = withAgreement;
 
     let emailUser: EmailUser = {
       id: customerDetail.id,
@@ -421,7 +422,7 @@ export class OrderEmailHandler {
     let trans = '';
     if (this.localeSetting === 'nb') {
       if (orderItemType === 'rent') {
-        trans += 'leie';
+        trans += 'lån';
       } else if (orderItemType === 'return') {
         trans += 'returnert';
       } else if (orderItemType === 'extend') {
