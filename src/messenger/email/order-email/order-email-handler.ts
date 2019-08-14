@@ -33,6 +33,7 @@ export class OrderEmailHandler {
   private agreementTextBlock =
     'Vedlagt i denne mailen ligger en kontrakt som du trenger å skrive under på for å få lånt bøkene. Kontrakten må du ha med deg når du kommer til oss på stand.';
   private guardianTextBlock = '';
+  private utcOffset = 120;
 
   constructor(
     private _emailHandler: EmailHandler,
@@ -76,7 +77,9 @@ export class OrderEmailHandler {
     let emailUser: EmailUser = {
       id: customerDetail.id,
       dob: !isNullOrUndefined(customerDetail.dob)
-        ? moment(customerDetail.dob).format(this.standardDayFormat)
+        ? moment(customerDetail.dob)
+            .utcOffset(this.utcOffset)
+            .format(this.standardDayFormat)
         : '',
       name: customerDetail.name,
       email: customerDetail.email,
@@ -295,7 +298,9 @@ export class OrderEmailHandler {
       paymentId: '',
       status: this.translatePaymentConfirmed(),
       creationTime: !isNullOrUndefined(payment.creationTime)
-        ? moment(payment.creationTime).format(this.standardTimeFormat)
+        ? moment(payment.creationTime)
+            .utcOffset(this.utcOffset)
+            .format(this.standardTimeFormat)
         : null,
     };
 
@@ -362,9 +367,9 @@ export class OrderEmailHandler {
       amount: delivery.amount,
       address: deliveryAddress,
       estimatedDeliveryDate: delivery.info['estimatedDelivery']
-        ? moment(delivery.info['estimatedDelivery']).format(
-            this.standardDayFormat,
-          )
+        ? moment(delivery.info['estimatedDelivery'])
+            .utcOffset(this.utcOffset)
+            .format(this.standardDayFormat)
         : '',
     };
   }
@@ -385,7 +390,9 @@ export class OrderEmailHandler {
         status: this.translateOrderItemType(orderItem.type, orderItem.handout),
         deadline:
           orderItem.type === 'rent' || orderItem.type === 'extend'
-            ? moment(orderItem.info.to).format(this.standardDayFormat) + ''
+            ? moment(orderItem.info.to)
+                .utcOffset(this.utcOffset)
+                .format(this.standardDayFormat) + ''
             : null,
         price:
           orderItem.type !== 'return' && orderItem.amount
