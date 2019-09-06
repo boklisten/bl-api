@@ -13,6 +13,7 @@ import {
   UserDetail,
   Message,
   Invoice,
+  Company,
 } from '@wizardcoder/bl-model';
 
 import {ItemCollection} from '../collections/item/item.collection';
@@ -33,6 +34,7 @@ import {EmailValidation} from '../collections/email-validation/email-validation'
 import {EmailValidationCollection} from '../collections/email-validation/email-validation.collection';
 import {MessageCollection} from '../collections/message/message.collection';
 import {InvoiceCollection} from '../collections/invoice/invoice.collection';
+import {CompanyCollection} from '../collections/company/company.collection';
 
 export class CollectionEndpointCreator {
   private _responseHandler: SEResponseHandler;
@@ -78,6 +80,7 @@ export class CollectionEndpointCreator {
       ),
       new CollectionEndpoint<Message>(this._router, new MessageCollection()),
       new CollectionEndpoint<Invoice>(this._router, new InvoiceCollection()),
+      new CollectionEndpoint<Company>(this._router, new CompanyCollection()),
     ];
 
     for (const collectionEndpoint of collectionEndpoints) {

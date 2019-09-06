@@ -28,8 +28,10 @@ export const invoiceSchema = {
         title: Schema.Types.String,
         item: Schema.Types.ObjectId,
         numberOfItems: Schema.Types.String,
+        customerNumber: Schema.Types.String,
         cancel: Schema.Types.Boolean,
         customerItemType: Schema.Types.String,
+        organizationNumber: Schema.Types.String,
         payment: {
           unit: Schema.Types.Number,
           gross: Schema.Types.Number,
@@ -74,6 +76,7 @@ export const invoiceSchema = {
     },
     required: true,
   },
+  ourReference: Schema.Types.String,
   invoiceId: Schema.Types.String,
   reference: Schema.Types.String,
 };
