@@ -36,5 +36,11 @@ export class CompanyCollection implements BlCollection {
         permissions: ['admin', 'super'],
       },
     },
+    {
+      method: 'delete',
+      restriction: {
+        permissions: ['admin', 'super'],
+      },
+    },
   ];
 }
