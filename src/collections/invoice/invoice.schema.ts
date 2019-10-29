@@ -32,6 +32,7 @@ export const invoiceSchema = {
         cancel: Schema.Types.Boolean,
         customerItemType: Schema.Types.String,
         organizationNumber: Schema.Types.String,
+        productNumber: Schema.Types.String,
         payment: {
           unit: Schema.Types.Number,
           gross: Schema.Types.Number,
@@ -46,9 +47,14 @@ export const invoiceSchema = {
   customerInfo: {
     type: {
       userDetail: Schema.Types.String,
+      companyDetail: Schema.Types.String,
+      customerNumber: Schema.Types.String,
       name: Schema.Types.String,
       email: Schema.Types.String,
+      branchName: Schema.Types.String,
+      organizationNumber: Schema.Types.String,
       phone: Schema.Types.String,
+      dob: Schema.Types.String,
       postal: {
         address: Schema.Types.String,
         city: Schema.Types.String,
@@ -56,7 +62,6 @@ export const invoiceSchema = {
         country: Schema.Types.String,
       },
     },
-    required: true,
   },
   payment: {
     type: {
