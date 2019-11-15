@@ -25,6 +25,7 @@ class MockPostOffice extends PostOffice {
     this.setConfig({
       reminder: {mediums: {email: false}},
       generic: {mediums: {email: false}},
+      receipt: {mediums: {email: false}},
     });
   }
 
