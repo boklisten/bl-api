@@ -70,6 +70,7 @@ export class EmailService implements MessengerService {
     this._postOffice.setConfig({
       reminder: {mediums: {email: true, sms: true}},
       generic: {mediums: {email: true}},
+      receipt: {mediums: {email: false, sms: false}},
     });
   }
 
@@ -209,6 +210,13 @@ export class EmailService implements MessengerService {
       email: customerDetail.email,
       name: customerDetail.name,
       phone: '+47' + customerDetail.phone,
+      settings: {
+        text: {
+          deadline: message.info
+            ? this.formatDeadline(message.info['deadline'])
+            : '',
+        },
+      },
       itemList: await this.customerItemsToItemList(message, customerItems),
     };
   }
