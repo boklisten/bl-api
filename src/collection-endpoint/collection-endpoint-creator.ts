@@ -14,6 +14,7 @@ import {
   Message,
   Invoice,
   Company,
+  Match,
 } from '@wizardcoder/bl-model';
 
 import {ItemCollection} from '../collections/item/item.collection';
@@ -35,6 +36,7 @@ import {EmailValidationCollection} from '../collections/email-validation/email-v
 import {MessageCollection} from '../collections/message/message.collection';
 import {InvoiceCollection} from '../collections/invoice/invoice.collection';
 import {CompanyCollection} from '../collections/company/company.collection';
+import {MatchCollection} from '../collections/match/match.collection';
 
 export class CollectionEndpointCreator {
   private _responseHandler: SEResponseHandler;
@@ -79,6 +81,7 @@ export class CollectionEndpointCreator {
         new EmailValidationCollection(),
       ),
       new CollectionEndpoint<Message>(this._router, new MessageCollection()),
+      new CollectionEndpoint<Match>(this._router, new MatchCollection()),
       new CollectionEndpoint<Invoice>(this._router, new InvoiceCollection()),
       new CollectionEndpoint<Company>(this._router, new CompanyCollection()),
     ];
