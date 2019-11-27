@@ -66,6 +66,6 @@ export class MatchPostHook implements Hook {
       }
     }
 
-    return true;
+    return [match];
   }
 }
