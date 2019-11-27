@@ -23,6 +23,7 @@
   "dependencies": {
     "@sendgrid/mail": "^6.1.4",
     "@types/moment": "^2.13.0",
+    "@types/moment-timezone": "^0.5.12",
     "@types/validator": "^6.3.0",
     "@wizardcoder/bl-email": "^1.4.16",
     "@wizardcoder/bl-model": "^0.22.2",
@@ -40,6 +41,7 @@
     "html-pdf": "^2.2.0",
     "jsonwebtoken": "^8.1.0",
     "moment": "^2.20.1",
+    "moment-timezone": "^0.5.27",
     "mongodb": "~2.2.34",
     "mongoose": "~4.13.9",
     "passport": "^0.4.0",
