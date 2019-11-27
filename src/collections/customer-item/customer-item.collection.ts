@@ -84,6 +84,10 @@ export class CustomerItemCollection implements BlCollection {
           type: 'boolean',
         },
         {
+          fieldName: 'match',
+          type: 'boolean',
+        },
+        {
           fieldName: 'type',
           type: 'string',
         },

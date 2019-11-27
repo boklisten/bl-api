@@ -237,6 +237,7 @@ export class CustomerItemHandler {
         deadline: ['>' + before, '<' + after],
         returned: 'false',
         buyout: 'false',
+        match: 'false',
         type: type,
       };
 
@@ -244,6 +245,7 @@ export class CustomerItemHandler {
         {fieldName: 'customer', type: 'object-id'},
         {fieldName: 'deadline', type: 'date'},
         {fieldName: 'returned', type: 'boolean'},
+        {fieldName: 'match', type: 'boolean'},
         {fieldName: 'buyout', type: 'boolean'},
         {fieldName: 'type', type: 'string'},
       ]);
@@ -252,6 +254,7 @@ export class CustomerItemHandler {
         customer: customerId.toString(),
         deadline: ['>' + before, '<' + after],
         returned: 'false',
+        match: 'false',
         buyout: 'false',
       };
 
@@ -259,6 +262,7 @@ export class CustomerItemHandler {
         {fieldName: 'customer', type: 'object-id'},
         {fieldName: 'deadline', type: 'date'},
         {fieldName: 'returned', type: 'boolean'},
+        {fieldName: 'match', type: 'boolean'},
         {fieldName: 'buyout', type: 'boolean'},
       ]);
     }
