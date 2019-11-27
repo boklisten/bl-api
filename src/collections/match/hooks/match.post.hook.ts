@@ -23,7 +23,10 @@ export class MatchPostHook implements Hook {
       : new BlDocumentStorage('matches', matchSchema);
   }
 
-  async before(match: Match, accessToken: AccessToken): Promise<boolean> {
+  public async before(
+    match: Match,
+    accessToken: AccessToken,
+  ): Promise<boolean> {
     if (!match.sender || match.sender.userId !== accessToken.details) {
       throw new BlError(
         `Match.sender.userId does not match accessToken.details`,
@@ -44,7 +47,25 @@ export class MatchPostHook implements Hook {
     return true;
   }
 
-  async after(matches: Match[], accessToken: AccessToken): Promise<any> {
-    throw 'not implemented';
+  public async after(matches: Match[], accessToken: AccessToken): Promise<any> {
+    const match = matches[0];
+
+    for (let item of match.items) {
+      try {
+        const customerItem = await this.customerItemStorage.update(
+          item.customerItem,
+          {match: true, matchInfo: {id: match.id, time: new Date()}},
+          {id: accessToken.details, permission: accessToken.permission},
+        );
+      } catch (e) {
+        throw new BlError(
+          `could not update customerItem "${
+            item.customerItem
+          }" with match data`,
+        );
+      }
+    }
+
+    return true;
   }
 }

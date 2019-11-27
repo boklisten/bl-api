@@ -25,6 +25,7 @@ const customerItemStorage = new BlDocumentStorage<CustomerItem>(
 const matchStorage = new BlDocumentStorage<Match>('matches');
 
 const customerItemGetStub = sinon.stub(customerItemStorage, 'get');
+const customerItemUpdateStub = sinon.stub(customerItemStorage, 'update');
 
 const matchPostHook = new MatchPostHook(customerItemStorage, matchStorage);
 
@@ -117,4 +118,66 @@ describe('#before()', () => {
   });
 });
 
-describe('#after()', () => {});
+describe('#after()', () => {
+  it('should update all customerItems from Match.items with match details', done => {
+    const accessToken = {
+      details: 'userDetails1',
+      permission: 'customer',
+    } as AccessToken;
+
+    const match = {
+      id: 'match11',
+      sender: {
+        userId: 'userDetails1',
+      },
+      items: [
+        {
+          customerItem: 'customerItem1',
+        },
+      ],
+    } as Match;
+
+    matchPostHook
+      .after([match], accessToken)
+      .then(() => {
+        const args = customerItemUpdateStub.lastCall.args;
+
+        expect(args[0]).equal('customerItem1');
+        expect(args[1].matchInfo.id).equal('match11');
+        expect(args[1].match).true;
+        expect(typeof args[1].matchInfo.time).equal('object');
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should reject if customerItem could not be updated', () => {
+    const accessToken = {
+      details: 'userDetails1',
+      permission: 'customer',
+    } as AccessToken;
+
+    const match = {
+      id: 'match11',
+      sender: {
+        userId: 'userDetails1',
+      },
+      items: [
+        {
+          customerItem: 'customerItem16',
+        },
+      ],
+    } as Match;
+
+    customerItemUpdateStub.rejects(new BlError('could not be updated'));
+
+    return expect(
+      matchPostHook.after([match], accessToken),
+    ).to.eventually.be.rejectedWith(
+      BlError,
+      /could not update customerItem "customerItem16" with match data/,
+    );
+  });
+});
