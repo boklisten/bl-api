@@ -27,6 +27,13 @@ export const customerItemSchema = {
   state: {
     type: Schema.Types.String,
   },
+  match: Schema.Types.Boolean,
+  matchInfo: {
+    type: {
+      id: Schema.Types.ObjectId,
+      time: Schema.Types.Date,
+    },
+  },
   handout: {
     type: Schema.Types.Boolean,
     default: false,
@@ -75,6 +82,9 @@ export const customerItemSchema = {
     type: {
       order: {
         type: Schema.Types.ObjectId,
+      },
+      time: {
+        type: Schema.Types.Date,
       },
     },
     required: false,
