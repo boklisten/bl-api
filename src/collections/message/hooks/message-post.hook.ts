@@ -102,6 +102,8 @@ export class MessagePostHook implements Hook {
         return await this.onRemind(message);
       case 'generic':
         return await this.onGeneric(message);
+      case 'match':
+        return await this.onMatch(message);
       default:
         throw new BlError(
           `MessageType "${message.messageType}" is not supported`,
@@ -117,6 +119,17 @@ export class MessagePostHook implements Hook {
       return [message];
     } catch (e) {
       throw `could not send generic message: ${e}`;
+    }
+  }
+
+  private async onMatch(message: Message): Promise<Message[]> {
+    let userDetail: UserDetail;
+    try {
+      userDetail = await this.userDetailStorage.get(message.customerId);
+      await this.messenger.send(message, userDetail);
+      return [message];
+    } catch (e) {
+      throw `could not send match message: ${e}`;
     }
   }
 

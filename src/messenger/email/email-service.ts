@@ -71,12 +71,15 @@ export class EmailService implements MessengerService {
       reminder: {mediums: {email: true, sms: true}},
       generic: {mediums: {email: true}},
       receipt: {mediums: {email: false, sms: false}},
+      match: {mediums: {sms: false}},
     });
   }
 
   public send(message: Message, customerDetail: UserDetail): Promise<boolean> {
     if (message.messageType === 'generic') {
       return this.sendGeneric(message, customerDetail);
+    } else if (message.messageType === 'match') {
+      return this.sendMatch(message, customerDetail);
     }
 
     throw `message type "${message.messageType}" not supported`;
@@ -109,6 +112,34 @@ export class EmailService implements MessengerService {
       return true;
     } catch (e) {
       logger.error(`could not send generic mail: ${e}`);
+    }
+  }
+
+  public async sendMatch(
+    message: Message,
+    customerDetail: UserDetail,
+  ): Promise<boolean> {
+    const recipient = await this.customerDetailToRecipient(
+      message,
+      customerDetail,
+      [],
+    );
+
+    const messageOptions: MessageOptions = {
+      type: 'match',
+      subtype: 'none',
+      subject: message.subject,
+      sequence_number: message.sequenceNumber,
+      htmlContent: message.htmlContent,
+      textBlocks: message.textBlocks,
+      mediums: this.getMessageOptionMediums(message),
+    };
+
+    try {
+      const result = await this._postOffice.send([recipient], messageOptions);
+      return true;
+    } catch (e) {
+      logger.error(`could not send match message: ${e}`);
     }
   }
 
