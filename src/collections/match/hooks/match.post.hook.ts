@@ -52,7 +52,7 @@ export class MatchPostHook implements Hook {
 
     for (let item of match.items) {
       try {
-        const customerItem = await this.customerItemStorage.update(
+        await this.customerItemStorage.update(
           item.customerItem,
           {match: true, matchInfo: {id: match.id, time: new Date()}},
           {id: accessToken.details, permission: accessToken.permission},

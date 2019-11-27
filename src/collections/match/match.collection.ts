@@ -1,6 +1,7 @@
 import {BlCollection, BlEndpoint} from '../bl-collection';
 import {matchSchema} from './match.schema';
 import {Schema} from 'mongoose';
+import {MatchPostHook} from './hooks/match.post.hook';
 
 export class MatchCollection implements BlCollection {
   public collectionName = 'matches';
@@ -11,6 +12,7 @@ export class MatchCollection implements BlCollection {
       restriction: {
         permissions: ['customer', 'admin', 'super'],
       },
+      hook: new MatchPostHook(),
     },
   ];
 }
