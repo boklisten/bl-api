@@ -140,6 +140,7 @@ export class CustomerItemHandler {
           orders: customerItemOrders,
           buyoutInfo: {
             order: orderId,
+            time: new Date(),
           },
         },
         new SystemUser(),
@@ -180,6 +181,7 @@ export class CustomerItemHandler {
           buyback: true,
           buybackInfo: {
             order: orderId,
+            time: new Date(),
           },
         },
         new SystemUser(),

@@ -98,6 +98,9 @@ export const customerItemSchema = {
       order: {
         type: Schema.Types.ObjectId,
       },
+      time: {
+        type: Schema.Types.Date,
+      },
     },
     required: false,
   },
