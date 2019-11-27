@@ -22,6 +22,7 @@ import {DibsEasyPayment} from '../../../payment/dibs/dibs-easy-payment/dibs-easy
 import moment = require('moment');
 import {branchItemSchema} from '../../../collections/branch-item/branch-item.schema';
 import {branchSchema} from '../../../collections/branch/branch.schema';
+import {dateService} from '../../../blc/date.service';
 
 export class OrderEmailHandler {
   private defaultCurrency = 'NOK';
@@ -298,9 +299,12 @@ export class OrderEmailHandler {
       paymentId: '',
       status: this.translatePaymentConfirmed(),
       creationTime: !isNullOrUndefined(payment.creationTime)
-        ? moment(payment.creationTime)
-            .utcOffset(this.utcOffset)
-            .format(this.standardTimeFormat)
+        ? moment(
+            dateService.utcToLocalTimeString(
+              payment.creationTime,
+              'Europe/Oslo',
+            ),
+          ).format(this.standardTimeFormat)
         : null,
     };
 
