@@ -27,7 +27,10 @@ export const customerItemSchema = {
   state: {
     type: Schema.Types.String,
   },
-  match: Schema.Types.Boolean,
+  match: {
+    type: Schema.Types.Boolean,
+    default: false,
+  },
   matchInfo: {
     type: {
       id: Schema.Types.ObjectId,
