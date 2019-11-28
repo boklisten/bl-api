@@ -29,6 +29,16 @@ describe('DateService', () => {
       ).equal('20.12.2019');
     });
 
+    it('should be possible to display returned string on correct local format', () => {
+      const utcDate = '2019-12-20T00:00:00.000+01:00';
+
+      return expect(
+        moment(dateService.utcToLocalTimeString(utcDate, 'Europe/Oslo')).format(
+          'DD.MM.YYYY',
+        ),
+      ).equal('20.12.2019');
+    });
+
     it('should be possible to convert from timezone America/Los_Angeles to Europe/Oslo', () => {
       const utcDate = new Date(2018, 11, 20);
 
@@ -58,6 +68,13 @@ describe('DateService', () => {
           'Europe/Oslo',
         ),
       ).equal('2018-12-20T00:00:00.000+01:00');
+    });
+  });
+
+  describe('toPrintFormat', () => {
+    it('should return date on correct format', () => {
+      const date = '2019-12-20T22:00:00.000+01:00';
+      return expect(dateService.toPrintFormat(date)).equal('20.12.19');
     });
   });
 

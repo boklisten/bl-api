@@ -18,6 +18,10 @@ export class DateService {
       .format('YYYY-MM-DDTHH:mm:ss.SSSZ');
   }
 
+  public toPrintFormat(date: Date | string): string {
+    return moment(date).format('DD.MM.YY');
+  }
+
   public toEndOfDay(date: Date | string): Date {
     return moment(date)
       .endOf('day')
