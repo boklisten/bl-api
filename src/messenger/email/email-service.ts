@@ -71,7 +71,7 @@ export class EmailService implements MessengerService {
       reminder: {mediums: {email: true, sms: true}},
       generic: {mediums: {email: true}},
       receipt: {mediums: {email: false, sms: false}},
-      match: {mediums: {sms: false}},
+      match: {mediums: {sms: true}},
     });
   }
 
