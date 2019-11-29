@@ -20,6 +20,7 @@ import {
   Item,
   Message,
 } from '@wizardcoder/bl-model';
+import {dateService} from '../../blc/date.service';
 import {BlDocumentStorage} from '../../storage/blDocumentStorage';
 import {OrderItemType} from '@wizardcoder/bl-model/dist/order/order-item/order-item-type';
 import * as fs from 'fs';
@@ -34,7 +35,6 @@ import {EmailSetting} from '@wizardcoder/bl-email/dist/ts/template/email-setting
 import {EMAIL_SETTINGS} from './email-settings';
 import {EmailOrder} from '@wizardcoder/bl-email/dist/ts/template/email-order';
 import {EmailUser} from '@wizardcoder/bl-email/dist/ts/template/email-user';
-import moment = require('moment');
 import {isNullOrUndefined} from 'util';
 import {logger} from '../../logger/logger';
 import {itemSchema} from '../../collections/item/item.schema';
@@ -316,7 +316,7 @@ export class EmailService implements MessengerService {
 
   private formatDeadline(deadline) {
     return !isNullOrUndefined(deadline)
-      ? moment(deadline).format('DD.MM.YYYY')
+      ? dateService.toPrintFormat(deadline, 'Europe/Oslo')
       : '';
   }
 
@@ -337,7 +337,7 @@ export class EmailService implements MessengerService {
       id: customerDetail.id,
       name: customerDetail.name,
       dob: !isNullOrUndefined(customerDetail.dob)
-        ? moment(customerDetail.dob).format('DD.MM.YYYY')
+        ? dateService.format(customerDetail.dob, 'Europe/Oslo', 'DD.MM.YYYY')
         : '',
       email: customerDetail.email,
       address: customerDetail.address,
@@ -354,7 +354,11 @@ export class EmailService implements MessengerService {
 
       emailOrderItems.push({
         title: item.title,
-        deadline: moment(customerItem.deadline).format(this._dateFormat),
+        deadline: dateService.format(
+          customerItem.deadline,
+          'Europe/Oslo',
+          this._dateFormat,
+        ),
       });
     }
 
@@ -387,7 +391,7 @@ export class EmailService implements MessengerService {
       id: customerDetail.id,
       name: customerDetail.name,
       dob: !isNullOrUndefined(customerDetail.dob)
-        ? moment(customerDetail.dob).format('DD.MM.YYYY')
+        ? dateService.format(customerDetail.dob, 'Europe/Oslo', 'DD.MM.YYYY')
         : '',
       email: customerDetail.email,
       address: customerDetail.address,

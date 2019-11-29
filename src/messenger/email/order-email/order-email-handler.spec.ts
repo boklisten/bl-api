@@ -14,6 +14,7 @@ import {
 } from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
 import {OrderEmailHandler} from './order-email-handler';
+import {dateService} from '../../../blc/date.service';
 import {
   EmailHandler,
   EmailLog,
@@ -21,7 +22,7 @@ import {
 } from '@wizardcoder/bl-email';
 import {EMAIL_SETTINGS} from '../email-settings';
 import {isNullOrUndefined} from 'util';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 
 chai.use(chaiAsPromised);
 
@@ -32,7 +33,7 @@ describe('OrderEmailHandler', () => {
   let testDelivery: Delivery;
   let emailSendSuccessful: boolean;
   let standardTimeFormat = 'DD.MM.YYYY HH.mm.ss';
-  let standardDayFormat = 'DD.MM.YYYY';
+  let standardDayFormat = 'DD.MM.YY';
   const branchStorage = new BlDocumentStorage<Branch>('branches');
   const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
   const paymentStorage = new BlDocumentStorage<Payment>('payments');
@@ -341,7 +342,11 @@ describe('OrderEmailHandler', () => {
               testOrder.orderItems[0].amount.toString(),
             );
             expect(emailOrder.items[0].deadline).to.be.eq(
-              moment(testOrder.orderItems[0].info.to).format(standardDayFormat),
+              dateService.format(
+                testOrder.orderItems[0].info.to,
+                'Europe/Oslo',
+                standardDayFormat,
+              ),
             );
 
             done();
@@ -387,7 +392,11 @@ describe('OrderEmailHandler', () => {
             );
             expect(emailOrder.items[0].price).to.be.null;
             expect(emailOrder.items[0].deadline).to.be.eq(
-              moment(testOrder.orderItems[1].info.to).format(standardDayFormat),
+              dateService.format(
+                testOrder.orderItems[1].info.to,
+                'Europe/Oslo',
+                standardDayFormat,
+              ),
             );
 
             expect(emailOrder.items[1].title).to.be.eq(
@@ -395,7 +404,11 @@ describe('OrderEmailHandler', () => {
             );
             expect(emailOrder.items[1].price).to.be.null;
             expect(emailOrder.items[1].deadline).to.be.eq(
-              moment(testOrder.orderItems[1].info.to).format(standardDayFormat),
+              dateService.format(
+                testOrder.orderItems[1].info.to,
+                'Europe/Oslo',
+                standardDayFormat,
+              ),
             );
 
             done();
@@ -490,9 +503,10 @@ describe('OrderEmailHandler', () => {
               amount: testDelivery.amount,
               currency: 'NOK',
               address: expectedAddress,
-              estimatedDeliveryDate: moment(
+              estimatedDeliveryDate: dateService.toPrintFormat(
                 testDelivery.info['estimatedDelivery'],
-              ).format('DD.MM.YYYY'),
+                'Europe/Oslo',
+              ),
             });
 
             expect(emailOrder.showDelivery).to.be.true;
@@ -558,7 +572,11 @@ describe('OrderEmailHandler', () => {
             );
             expect(emailOrder.payment.payments[0].status).to.be.eq('bekreftet');
             expect(emailOrder.payment.payments[0].creationTime).to.be.eq(
-              moment(testPayment.creationTime).format(standardTimeFormat),
+              dateService.format(
+                testPayment.creationTime,
+                'Europe/Oslo',
+                standardTimeFormat,
+              ),
             );
 
             done();
@@ -626,7 +644,11 @@ describe('OrderEmailHandler', () => {
             );
             expect(emailOrder.payment.payments[0].status).to.be.eq('bekreftet');
             expect(emailOrder.payment.payments[0].creationTime).to.be.eq(
-              moment(payments[0].creationTime).format('DD.MM.YYYY HH.mm.ss'),
+              dateService.format(
+                payments[0].creationTime,
+                'Europe/Oslo',
+                'DD.MM.YYYY HH.mm.ss',
+              ),
             );
 
             expect(emailOrder.payment.payments[1].method).to.be.eq(
@@ -643,7 +665,11 @@ describe('OrderEmailHandler', () => {
             );
             expect(emailOrder.payment.payments[1].status).to.be.eq('bekreftet');
             expect(emailOrder.payment.payments[1].creationTime).to.be.eq(
-              moment(payments[1].creationTime).format('DD.MM.YYYY HH.mm.ss'),
+              dateService.format(
+                payments[1].creationTime,
+                'Europe/Oslo',
+                'DD.MM.YYYY HH.mm.ss',
+              ),
             );
 
             done();

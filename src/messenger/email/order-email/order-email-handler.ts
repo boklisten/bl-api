@@ -19,14 +19,14 @@ import {EmailOrder} from '@wizardcoder/bl-email/dist/ts/template/email-order';
 import {EmailUser} from '@wizardcoder/bl-email/dist/ts/template/email-user';
 import {isNullOrUndefined} from 'util';
 import {DibsEasyPayment} from '../../../payment/dibs/dibs-easy-payment/dibs-easy-payment';
-import moment = require('moment');
+import moment = require('moment-timezone');
 import {branchItemSchema} from '../../../collections/branch-item/branch-item.schema';
 import {branchSchema} from '../../../collections/branch/branch.schema';
 import {dateService} from '../../../blc/date.service';
 
 export class OrderEmailHandler {
   private defaultCurrency = 'NOK';
-  private standardDayFormat = 'DD.MM.YYYY';
+  private standardDayFormat = 'DD.MM.YY';
   private standardTimeFormat = 'DD.MM.YYYY HH.mm.ss';
   private localeSetting = 'nb';
   private noPaymentNoticeText =
@@ -78,9 +78,7 @@ export class OrderEmailHandler {
     let emailUser: EmailUser = {
       id: customerDetail.id,
       dob: !isNullOrUndefined(customerDetail.dob)
-        ? moment(customerDetail.dob)
-            .utcOffset(this.utcOffset)
-            .format(this.standardDayFormat)
+        ? dateService.toPrintFormat(customerDetail.dob, 'Europe/Oslo')
         : '',
       name: customerDetail.name,
       email: customerDetail.email,
@@ -299,12 +297,11 @@ export class OrderEmailHandler {
       paymentId: '',
       status: this.translatePaymentConfirmed(),
       creationTime: !isNullOrUndefined(payment.creationTime)
-        ? moment(
-            dateService.utcToLocalTimeString(
-              payment.creationTime,
-              'Europe/Oslo',
-            ),
-          ).format(this.standardTimeFormat)
+        ? dateService.format(
+            payment.creationTime,
+            'Europe/Oslo',
+            this.standardTimeFormat,
+          )
         : null,
     };
 
@@ -394,9 +391,7 @@ export class OrderEmailHandler {
         status: this.translateOrderItemType(orderItem.type, orderItem.handout),
         deadline:
           orderItem.type === 'rent' || orderItem.type === 'extend'
-            ? moment(orderItem.info.to)
-                .utcOffset(this.utcOffset)
-                .format(this.standardDayFormat) + ''
+            ? dateService.toPrintFormat(orderItem.info.to, 'Europe/Oslo')
             : null,
         price:
           orderItem.type !== 'return' && orderItem.amount

@@ -253,13 +253,13 @@ describe('EmailService', () => {
               id: '123',
               title: 'Signatur 1',
               leftToPay: '200 NOK',
-              deadline: '01.07.2018',
+              deadline: '01.07.18',
             },
             {
               id: '456',
               title: 'Terra Mater',
               leftToPay: '100 NOK',
-              deadline: '01.07.2018',
+              deadline: '01.07.18',
             },
           ]);
 

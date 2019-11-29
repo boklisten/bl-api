@@ -6,7 +6,7 @@ import {customerItemSchema} from '../customer-item.schema';
 import {Period} from '@wizardcoder/bl-model/dist/period/period';
 import {SEDbQuery} from '../../../query/se.db-query';
 import {SEDbQueryBuilder} from '../../../query/se.db-query-builder';
-import moment = require('moment');
+import moment = require('moment-timezone');
 import {logger} from '../../../logger/logger';
 
 export class CustomerItemHandler {
@@ -209,18 +209,14 @@ export class CustomerItemHandler {
       throw new BlError('deadline is null or undefined');
     }
 
-    const before = moment(deadline)
+    const before = moment
+      .tz(deadline, 'Europe/London')
       .subtract(2, 'day')
-      .hour(0)
-      .minute(0)
-      .second(0)
       .format('DDMMYYYYHHmm');
 
-    const after = moment(deadline)
+    const after = moment
+      .tz(deadline, 'Europe/London')
       .add(2, 'day')
-      .hour(0)
-      .minute(0)
-      .second(0)
       .format('DDMMYYYYHHmm');
 
     let query;
