@@ -8,8 +8,8 @@ chai.use(chaiAsPromised);
 describe('DateService', () => {
   describe('toLocalTime', () => {
     it('should return with date on correct localtime', () => {
-      const utcDate = new Date(2019, 11, 20);
-      const expectedDateString = '2019-12-20T00:00:00.000+01:00';
+      const utcDate = new Date(Date.UTC(2019, 11, 20));
+      const expectedDateString = '2019-12-20T01:00:00.000+01:00';
 
       return expect(
         dateService.utcToLocalTimeString(utcDate, 'Europe/Oslo'),
@@ -36,7 +36,7 @@ describe('DateService', () => {
     });
 
     it('should be possible to display returned string on local format', () => {
-      const utcDate = new Date(2019, 11, 20);
+      const utcDate = new Date(Date.UTC(2019, 11, 20));
 
       return expect(
         dateService.toPrintFormat(
@@ -58,7 +58,7 @@ describe('DateService', () => {
     });
 
     it('should be possible to convert from timezone America/Los_Angeles to Europe/Oslo', () => {
-      const utcDate = new Date(2018, 11, 20);
+      const utcDate = new Date(Date.UTC(2018, 11, 20));
 
       const americaDate = dateService.utcToLocalTimeString(
         utcDate,
@@ -67,7 +67,7 @@ describe('DateService', () => {
 
       return expect(
         dateService.utcToLocalTimeString(americaDate, 'Europe/Oslo'),
-      ).equal('2018-12-20T00:00:00.000+01:00');
+      ).equal('2018-12-20T01:00:00.000+01:00');
     });
 
     it('should convert to local time', () => {
