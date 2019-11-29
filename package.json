@@ -1,6 +1,6 @@
 {
   "name": "bl-api",
-  "version": "1.6.11",
+  "version": "1.7.0",
   "description": "",
   "main": "server.js",
   "scripts": {
