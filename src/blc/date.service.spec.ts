@@ -1,9 +1,6 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
-import * as sinon from 'sinon';
-import {BlError} from '@wizardcoder/bl-model';
-import moment = require('moment-timezone');
 import {dateService} from './date.service';
 
 chai.use(chaiAsPromised);

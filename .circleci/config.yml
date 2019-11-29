@@ -13,6 +13,9 @@ jobs:
       - run:
           name: Npm version
           command: "npm --version"
+      - run:
+          name: Current time
+          command: "date"
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run: 
