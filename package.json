@@ -27,7 +27,7 @@
     "@types/validator": "^6.3.0",
     "@wizardcoder/bl-email": "^1.4.16",
     "@wizardcoder/bl-model": "^0.22.3",
-    "@wizardcoder/bl-post-office": "^0.4.0",
+    "@wizardcoder/bl-post-office": "^0.4.1",
     "bluebird": "^3.5.1",
     "body-parser": "^1.19.0",
     "chalk": "^2.3.2",
