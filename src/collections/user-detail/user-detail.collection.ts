@@ -69,6 +69,10 @@ export class UserDetailCollection implements BlCollection {
           fieldName: 'postCode',
           type: 'string',
         },
+        {
+          fieldName: '_id',
+          type: 'object-id',
+        },
       ],
       restriction: {
         permissions: ['employee', 'manager', 'admin', 'super'],
