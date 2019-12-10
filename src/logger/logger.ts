@@ -26,7 +26,10 @@ export const logger = winston.createLogger({
   levels: customLevels.levels,
   format: winston.format.combine(
     winston.format.printf((info: any) => {
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' ||
+        process.env.NODE_ENV === 'dev'
+      ) {
         return `${info.level} ${info.message}`;
       }
       return colorizer.colorize(
