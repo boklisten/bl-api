@@ -67,7 +67,7 @@ export class MessagePostHook implements Hook {
         throw new BlError('no permission').code(904);
       }
     }
-
+    /*
     let alreadyAdded;
 
     try {
@@ -83,6 +83,7 @@ export class MessagePostHook implements Hook {
         }, seq: ${message.sequenceNumber}, customer: "${message.customerId}"`,
       ).code(701);
     }
+    */
 
     return true;
   }

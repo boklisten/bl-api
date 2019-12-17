@@ -70,6 +70,7 @@ describe('MessagePostHook', () => {
       ).to.eventually.be.rejectedWith(BlError, /no permission/);
     });
 
+    /*
     it('should reject if message is already added', () => {
       const accessToken = {
         permission: 'admin',
@@ -93,6 +94,8 @@ describe('MessagePostHook', () => {
         messagePostHook.before(body, accessToken),
       ).to.eventually.be.rejectedWith(BlError, /already added/);
     });
+
+  */
   });
 
   describe('#after', () => {
