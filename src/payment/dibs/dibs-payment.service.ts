@@ -95,6 +95,27 @@ export class DibsPaymentService {
       url: process.env.CLIENT_URI + APP_CONFIG.path.client.checkout,
       termsUrl: process.env.CLIENT_URI + APP_CONFIG.path.client.agreement.rent,
       ShippingCountries: [{countryCode: 'NOR'}],
+      /*
+      merchantHandlesConsumerData: false,
+      consumer: {
+        email: 'aholskil@gmail.com',
+        shippingAddress: {
+          addressLine1: 'Oslostien 10 A',
+          addressLine2: '',
+          postalCode: '0123',
+          city: 'OSLO',
+          country: 'NOR',
+        },
+        phoneNumber: {
+          prefix: '+47',
+          number: '91804211',
+        },
+        privatePerson: {
+          firstName: 'Albert',
+          lastName: 'Tårnfis',
+        },
+      },
+      */
     };
 
     return dibsEasyOrder;
@@ -127,17 +148,17 @@ export class DibsPaymentService {
   private validateOrderPayments(payments: string[]) {
     /*
 		let numOfDibsPayments = 0;
-		
+
 		for (let payment of payments) {
 			if (payment.method === "dibs") {
 				numOfDibsPayments += 1;
 			}
 		}
-		
+
 		if (numOfDibsPayments > 1) {
 			throw new BlError('order.payments include more than one payment with method "dibs"');
 		}
-		
+
 		if (numOfDibsPayments < 1) {
 			throw new BlError('order.payments does not include a payment with method "dibs"');
 		}
