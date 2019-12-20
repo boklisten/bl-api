@@ -15,9 +15,11 @@ export class OrderUserDetailValidator {
     return this._userDetailStorage
       .get(order.customer as string)
       .then((userDetail: UserDetail) => {
+        /*
         if (!userDetail.emailConfirmed) {
           throw new BlError('userDetail.emailConfirmed is not true');
         }
+        */
 
         return true;
       })

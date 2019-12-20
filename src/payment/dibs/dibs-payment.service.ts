@@ -1,4 +1,10 @@
-import {BlError, Delivery, Order, OrderItem} from '@wizardcoder/bl-model';
+import {
+  BlError,
+  Delivery,
+  Order,
+  OrderItem,
+  UserDetail,
+} from '@wizardcoder/bl-model';
 import {DibsEasyItem} from './dibs-easy-item/dibs-easy-item';
 import {DibsEasyOrder} from './dibs-easy-order/dibs-easy-order';
 import {HttpHandler} from '../../http/http.handler';
@@ -7,9 +13,11 @@ import {DibsEasyPayment} from './dibs-easy-payment/dibs-easy-payment';
 import {BlDocumentStorage} from '../../storage/blDocumentStorage';
 import {deliverySchema} from '../../collections/delivery/delivery.schema';
 import {TypedJSON} from 'typedjson-npm';
+import {UserDetailHelper} from '../../collections/user-detail/helpers/user-detail.helper';
 
 export class DibsPaymentService {
   private deliveryStorage: BlDocumentStorage<Delivery>;
+  private _userDetailHelper: UserDetailHelper;
   private _httpHandler: HttpHandler;
 
   constructor(
@@ -20,6 +28,7 @@ export class DibsPaymentService {
       ? deliveryStorage
       : new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
     this._httpHandler = httpHandler ? httpHandler : new HttpHandler();
+    this._userDetailHelper = new UserDetailHelper();
   }
 
   public getPaymentId(dibsEasyOrder: DibsEasyOrder): Promise<string> {
@@ -68,6 +77,7 @@ export class DibsPaymentService {
   }
 
   public orderToDibsEasyOrder(
+    userDetail: UserDetail,
     order: Order,
     delivery?: Delivery,
   ): DibsEasyOrder {
@@ -91,34 +101,40 @@ export class DibsPaymentService {
     dibsEasyOrder.order.amount = this.getTotalGrossAmount(items);
     dibsEasyOrder.order.currency = 'NOK';
 
+    let userDetailValid = this._userDetailHelper.isValid(userDetail);
+
     dibsEasyOrder.checkout = {
       url: process.env.CLIENT_URI + APP_CONFIG.path.client.checkout,
       termsUrl: process.env.CLIENT_URI + APP_CONFIG.path.client.agreement.rent,
       ShippingCountries: [{countryCode: 'NOR'}],
-      /*
-      merchantHandlesConsumerData: false,
-      consumer: {
-        email: 'aholskil@gmail.com',
-        shippingAddress: {
-          addressLine1: 'Oslostien 10 A',
-          addressLine2: '',
-          postalCode: '0123',
-          city: 'OSLO',
-          country: 'NOR',
-        },
-        phoneNumber: {
-          prefix: '+47',
-          number: '91804211',
-        },
-        privatePerson: {
-          firstName: 'Albert',
-          lastName: 'Tårnfis',
-        },
-      },
-      */
+      merchantHandlesConsumerData: userDetailValid, // if userDetail is not valid, the customer must reenter data
+      consumer: userDetailValid
+        ? this.userDetailToDibsEasyConsumer(userDetail)
+        : null,
     };
 
     return dibsEasyOrder;
+  }
+
+  private userDetailToDibsEasyConsumer(userDetail: UserDetail): any {
+    return {
+      email: userDetail.email,
+      shippingAddress: {
+        addressLine1: userDetail.address,
+        addressLine2: '',
+        postalCode: userDetail.postCode,
+        city: userDetail.postCity,
+        country: 'NOR',
+      },
+      phoneNumber: {
+        prefix: '+47',
+        number: userDetail.phone,
+      },
+      privatePerson: {
+        firstName: this._userDetailHelper.getFirstName(userDetail.name),
+        lastName: this._userDetailHelper.getLastName(userDetail.name),
+      },
+    };
   }
 
   private deliveryToDibsEasyItem(delivery: Delivery): DibsEasyItem {

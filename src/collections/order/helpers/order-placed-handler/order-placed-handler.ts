@@ -69,9 +69,9 @@ export class OrderPlacedHandler {
           order.customer as string,
         );
 
-        if (!userDetail.emailConfirmed) {
-          throw new BlError('userDetail.emailConfirmed is not true');
-        }
+        /*if (!userDetail.emailConfirmed) {*/
+        //throw new BlError('userDetail.emailConfirmed is not true');
+        /*}*/
       }
 
       await this.paymentHandler.confirmPayments(order, accessToken);

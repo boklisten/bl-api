@@ -6,24 +6,28 @@ import {
   Order,
   AccessToken,
   Delivery,
+  UserDetail,
 } from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
 import {paymentSchema} from '../../payment.schema';
 import {orderSchema} from '../../../order/order.schema';
 import {SystemUser} from '../../../../auth/permission/permission.service';
 import {deliverySchema} from '../../../delivery/delivery.schema';
+import {userDetailSchema} from '../../../user-detail/user-detail.schema';
 
 export class PaymentDibsHandler {
   private paymentStorage: BlDocumentStorage<Payment>;
   private orderStorage: BlDocumentStorage<Order>;
   private dibsPaymentService: DibsPaymentService;
   private deliveryStorage: BlDocumentStorage<Delivery>;
+  private userDetailStorage: BlDocumentStorage<UserDetail>;
 
   constructor(
     paymentStorage?: BlDocumentStorage<Payment>,
     orderStorage?: BlDocumentStorage<Order>,
     dibsPaymentService?: DibsPaymentService,
     deliveryStorage?: BlDocumentStorage<Delivery>,
+    userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
     this.paymentStorage = paymentStorage
       ? paymentStorage
@@ -37,19 +41,46 @@ export class PaymentDibsHandler {
     this.deliveryStorage = deliveryStorage
       ? deliveryStorage
       : new BlDocumentStorage('deliveries', deliverySchema);
+    this.userDetailStorage = userDetailStorage
+      ? userDetailStorage
+      : new BlDocumentStorage('userdetails', userDetailSchema);
   }
 
-  public handleDibsPayment(
+  public async handleDibsPayment(
     payment: Payment,
     accessToken: AccessToken,
   ): Promise<Payment> {
     let order: Order;
 
+    try {
+      const order = await this.orderStorage.get(payment.order as string);
+      const userDetail = await this.userDetailStorage.get(
+        payment.customer as string,
+      );
+      const dibsEasyOrder: DibsEasyOrder = await this.getDibsEasyOrder(
+        userDetail,
+        order,
+      );
+      const paymentId = await this.dibsPaymentService.getPaymentId(
+        dibsEasyOrder,
+      );
+      const updatedPayment = await this.paymentStorage.update(
+        payment.id,
+        {info: {paymentId: paymentId}},
+        {id: accessToken.sub, permission: accessToken.permission},
+      );
+
+      return updatedPayment;
+    } catch (createDibsPaymentError) {
+      throw createDibsPaymentError;
+    }
+    /*
     return this.orderStorage
       .get(payment.order as string)
       .then((theOrder: Order) => {
         order = theOrder;
-        return this.getDibsEasyOrder(theOrder);
+        let userDetail = {} as any;
+        return this.getDibsEasyOrder(userDetail, theOrder);
       })
       .then((dibsEasyOrder: DibsEasyOrder) => {
         return this.dibsPaymentService.getPaymentId(dibsEasyOrder);
@@ -67,16 +98,26 @@ export class PaymentDibsHandler {
       .catch((createDibsPaymentError: BlError) => {
         throw createDibsPaymentError;
       });
+*/
   }
 
-  private getDibsEasyOrder(order: Order): Promise<DibsEasyOrder> {
+  private getDibsEasyOrder(
+    userDetail: UserDetail,
+    order: Order,
+  ): Promise<DibsEasyOrder> {
     if (order.delivery) {
       return this.deliveryStorage
         .get(order.delivery as string)
         .then((delivery: Delivery) => {
-          return this.dibsPaymentService.orderToDibsEasyOrder(order, delivery);
+          return this.dibsPaymentService.orderToDibsEasyOrder(
+            userDetail,
+            order,
+            delivery,
+          );
         });
     }
-    return Promise.resolve(this.dibsPaymentService.orderToDibsEasyOrder(order));
+    return Promise.resolve(
+      this.dibsPaymentService.orderToDibsEasyOrder(userDetail, order),
+    );
   }
 }
