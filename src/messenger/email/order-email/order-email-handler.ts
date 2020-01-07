@@ -437,6 +437,12 @@ export class OrderEmailHandler {
         trans += 'kansellert';
       } else if (orderItemType === 'buy') {
         trans += 'kjøp';
+      } else if (orderItemType === 'partly-payment') {
+        trans += 'delbetaling';
+      } else if (orderItemType === 'buyback') {
+        trans += 'tilbakekjøp';
+      } else if (orderItemType === 'buyout') {
+        trans += 'utkjøp';
       }
 
       if (handout) {
