@@ -21,6 +21,7 @@ import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
 import * as sinonChai from 'sinon-chai';
 import {Matcher} from './matcher';
 import {dateService} from '../../../../blc/date.service';
+import {MatchHelper} from '../match-helper';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -34,7 +35,6 @@ chai.use(sinonChai);
 //
 const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
 const matcher = new Matcher(deliveryStorage);
-
 const deliveryGetStub = sinon.stub(deliveryStorage, 'get');
 
 describe('#match()', () => {
