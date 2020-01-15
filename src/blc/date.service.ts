@@ -35,6 +35,35 @@ export class DateService {
   ): string {
     return moment.tz(date, location).format(format);
   }
+
+  public between(
+    date: Date,
+    from: Date,
+    to: Date,
+    location: MomentLocation,
+  ): boolean {
+    return moment.tz(date, location).isBetween(from, to);
+  }
+
+  public betweenHours(
+    date: Date,
+    fromHour: number,
+    toHour: number,
+    location: MomentLocation,
+  ): boolean {
+    const from = moment
+      .tz()
+      .hour(fromHour)
+      .minute(0)
+      .second(0);
+    const to = moment
+      .tz()
+      .hour(toHour)
+      .minute(0)
+      .second(0);
+
+    return this.between(date, from.toDate(), to.toDate(), location);
+  }
 }
 
 export const dateService = new DateService();

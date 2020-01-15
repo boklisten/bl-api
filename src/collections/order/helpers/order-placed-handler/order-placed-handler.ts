@@ -64,15 +64,9 @@ export class OrderPlacedHandler {
     accessToken: AccessToken,
   ): Promise<Order> {
     try {
-      if (!isNullOrUndefined(order.customer)) {
-        let userDetail = await this.userDetailStorage.get(
-          order.customer as string,
-        );
-
-        /*if (!userDetail.emailConfirmed) {*/
-        //throw new BlError('userDetail.emailConfirmed is not true');
-        /*}*/
-      }
+      const userDetail = await this.userDetailStorage.get(
+        order.customer as string,
+      );
 
       await this.paymentHandler.confirmPayments(order, accessToken);
 
@@ -89,6 +83,7 @@ export class OrderPlacedHandler {
       await this._orderItemMovedFromOrderHandler.updateOrderItems(placedOrder);
       await this.updateUserDetailWithPlacedOrder(placedOrder, accessToken);
       this.sendOrderConfirmationMail(placedOrder);
+      // Matcher.match()
       return placedOrder;
     } catch (e) {
       throw new BlError('could not update order').add(e);

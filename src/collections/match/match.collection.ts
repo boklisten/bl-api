@@ -15,18 +15,17 @@ export class MatchCollection implements BlCollection {
       hook: new MatchPostHook(),
     },
     {
+      method: 'patch',
+    },
+    {
       method: 'getAll',
       restriction: {
         permissions: ['customer', 'employee', 'admin', 'super'],
       },
       validQueryParams: [{fieldName: 'sender.customerId', type: 'object-id'}],
     },
-
     {
       method: 'getId',
-      restriction: {
-        permissions: ['customer', 'employee', 'admin', 'super'],
-      },
     },
   ];
 }

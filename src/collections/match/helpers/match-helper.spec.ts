@@ -25,11 +25,6 @@ const customerItemStorage = new BlDocumentStorage<CustomerItem>(
   'customeritems',
 );
 
-const matchStorage = new BlDocumentStorage<Match>('matches');
-
-const customerItemGetStub = sinon.stub(customerItemStorage, 'get');
-const customerItemUpdateStub = sinon.stub(customerItemStorage, 'update');
-
 const matchHelper = new MatchHelper();
 
 describe('#convertOrderItemsToMatchItems()', () => {

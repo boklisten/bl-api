@@ -2,6 +2,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import {dateService} from './date.service';
+import moment = require('moment-timezone');
 
 chai.use(chaiAsPromised);
 
@@ -113,6 +114,41 @@ describe('DateService', () => {
       return expect(
         dateService.format(date, 'Europe/Oslo', 'DD.MM.YYYY HH:mm:ss'),
       ).equal('01.01.2020 10:12:20');
+    });
+  });
+
+  describe('between()', () => {
+    it('should return true if date is between from date and to date', () => {
+      const date = new Date(1900, 1, 10, 10, 12, 13);
+      const from = new Date(1900, 1, 10, 9);
+      const to = new Date(1900, 1, 10, 20);
+
+      return expect(dateService.between(date, from, to, 'Europe/Oslo')).to.be
+        .true;
+    });
+  });
+
+  describe('betweenHours()', () => {
+    it('should return true if date is between from hour and to hour', () => {
+      const date = moment()
+        .hour(12)
+        .minute(15)
+        .seconds(22)
+        .toDate();
+
+      return expect(dateService.betweenHours(date, 8, 18, 'Europe/Oslo')).to.be
+        .true;
+    });
+
+    it('should return false if date is not between from hour and to hour', () => {
+      const date = moment()
+        .hour(7)
+        .minute(15)
+        .seconds(22)
+        .toDate();
+
+      return expect(dateService.betweenHours(date, 8, 18, 'Europe/Oslo')).to.be
+        .false;
     });
   });
 });
