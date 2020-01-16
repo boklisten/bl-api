@@ -4,13 +4,11 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 import {
-  AccessToken,
   BlError,
   Match,
-  CustomerItem,
-  Message,
   UserDetail,
   OrderItem,
+  CustomerItem,
   MatchItem,
   MatchProfile,
 } from '@wizardcoder/bl-model';
@@ -73,5 +71,244 @@ describe('#convertUserDetailToMatchProfile()', () => {
     expect(matchProfile.phone, '12345678');
     expect(matchProfile.userId, 'user1');
     done();
+  });
+});
+
+describe('#findMatchingItemIds()', () => {
+  it('should return all items that are provided in match items #1', done => {
+    const matchItems = [
+      {
+        item: 'item1',
+      },
+      {
+        item: 'item2',
+      },
+      {
+        item: 'item5',
+      },
+    ] as MatchItem[];
+
+    const match = {
+      items: [
+        {
+          item: 'item1',
+        },
+        {
+          item: 'item3',
+        },
+        {
+          item: 'item4',
+        },
+        {
+          item: 'item2',
+        },
+      ],
+    } as Match;
+
+    expect(matchHelper.findMatchingItemIds(matchItems, match)).to.have.members([
+      match.items[0].item,
+      match.items[3].item,
+    ]);
+
+    done();
+  });
+
+  it('should return all items that matches the provided match items #2', done => {
+    const matchItems = [
+      {
+        item: 'item1',
+      },
+      {
+        item: 'item2',
+      },
+      {
+        item: 'item5',
+      },
+    ] as MatchItem[];
+
+    const match = {
+      items: [
+        {
+          item: 'item4',
+        },
+        {
+          item: 'item5',
+        },
+        {
+          item: 'item6',
+        },
+        {
+          item: 'item7',
+        },
+      ],
+    } as Match;
+
+    expect(matchHelper.findMatchingItemIds(matchItems, match)).to.have.members([
+      match.items[1].item,
+    ]);
+
+    done();
+  });
+
+  it('should return all items that matches the provided match items #3', done => {
+    const matchItems = [
+      {
+        item: 'item1',
+      },
+      {
+        item: 'item2',
+      },
+      {
+        item: 'item5',
+      },
+    ] as MatchItem[];
+
+    const matches = [
+      {
+        items: [
+          {
+            item: 'item4',
+          },
+          {
+            item: 'item5',
+          },
+          {
+            item: 'item6',
+          },
+          {
+            item: 'item7',
+          },
+        ],
+      },
+      {
+        items: [{item: 'item6'}, {item: 'item5'}],
+      },
+    ] as Match[];
+
+    for (let match of matches) {
+      expect(
+        matchHelper.findMatchingItemIds(matchItems, match),
+      ).to.have.members([match.items[1].item]);
+    }
+
+    done();
+  });
+
+  it('should throw error if none of the provided items are in match', done => {
+    const matchItems = [
+      {
+        item: 'item1',
+      },
+      {
+        item: 'item2',
+      },
+    ] as MatchItem[];
+
+    const match = {
+      items: [
+        {
+          item: 'item4',
+        },
+        {
+          item: 'item5',
+        },
+        {
+          item: 'item6',
+        },
+      ],
+    } as Match;
+
+    expect(() => {
+      matchHelper.findMatchingItemIds(matchItems, match);
+    }).throws(BlError, /no items found to be matching in match/);
+
+    done();
+  });
+
+  describe('#findMatchingItemIdsFromPartlyMatched()', () => {
+    it('should only return items that does not have matching items with a reciever', done => {
+      const matchItems = [
+        {
+          item: 'item1',
+        },
+        {
+          item: 'item2',
+        },
+        {
+          item: 'item3',
+        },
+        {
+          item: 'item4',
+        },
+      ] as MatchItem[];
+
+      const match = {
+        items: [
+          {
+            item: 'item1',
+            reciever: 'reciever1',
+          },
+          {
+            item: 'item2',
+          },
+          {
+            item: 'item3',
+            reciever: 'reciever1',
+          },
+          {
+            item: 'item4',
+          },
+        ],
+      } as Match;
+
+      expect(
+        matchHelper.findMatchingItemIdsFromPartlyMatched(matchItems, match),
+      ).to.have.members([match.items[1].item, match.items[3].item]);
+
+      done();
+    });
+
+    it('should reject if there are already more than one reciever on match', done => {
+      const matchItems = [
+        {
+          item: 'item1',
+        },
+        {
+          item: 'item2',
+        },
+        {
+          item: 'item3',
+        },
+        {
+          item: 'item4',
+        },
+      ] as MatchItem[];
+
+      const match = {
+        items: [
+          {
+            item: 'item1',
+            reciever: 'reciever1',
+          },
+          {
+            item: 'item2',
+            reciever: 'reciever3',
+          },
+          {
+            item: 'item3',
+            reciever: 'reciever2',
+          },
+          {
+            item: 'item4',
+          },
+        ],
+      } as Match;
+
+      expect(() => {
+        matchHelper.findMatchingItemIdsFromPartlyMatched(matchItems, match);
+      }).throws(BlError, /match already contains more than one reciever/);
+
+      done();
+    });
   });
 });
