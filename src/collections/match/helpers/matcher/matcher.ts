@@ -58,6 +58,14 @@ export class Matcher {
       order.orderItems,
     );
 
+    try {
+      let match = await this.matchFinder.find(matchItems);
+      console.log('-------MATCH FOUND-----------');
+      console.log(match);
+    } catch (e) {
+      throw e;
+    }
+
     throw 'not implemented';
   }
 
@@ -88,10 +96,14 @@ export class Matcher {
     const validBranches = [
       '5b6442ebd2e733002fae8a31',
       '5db00e6bcbfeed32123184c3',
-      '',
     ];
-    if (validBranches.indexOf(branchId) < 0) {
-      throw new BlError('trying to match with order not in matching-branches');
+
+    if (validBranches.indexOf(branchId.toString()) > -1) {
+      return true;
+    } else {
+      throw new BlError(
+        `trying to match with order.branch "${branchId}" not in matching-branches`,
+      );
     }
   }
 

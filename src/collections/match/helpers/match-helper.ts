@@ -34,7 +34,7 @@ export class MatchHelper {
     for (let matchItemId of matchItemIds) {
       for (let mi of match.items) {
         if (mi.item.toString() === matchItemId.toString() && !mi.reciever) {
-          matchedItems.push(mi.item);
+          matchedItems.push(mi.item.toString());
         }
       }
     }
@@ -57,8 +57,8 @@ export class MatchHelper {
     for (let matchItemId of matchItemIds) {
       for (let mi of match.items) {
         if (mi.reciever) {
-          if (recievers.indexOf(mi.reciever) < 0) {
-            recievers.push(mi.reciever);
+          if (recievers.indexOf(mi.reciever.toString()) < 0) {
+            recievers.push(mi.reciever.toString());
           }
         }
         if (mi.item.toString() === matchItemId.toString() && !mi.reciever) {

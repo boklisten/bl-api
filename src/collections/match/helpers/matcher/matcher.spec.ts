@@ -118,7 +118,11 @@ describe('#match()', () => {
       state: 'created',
       items: [{item: 'item3'}],
     };
-    matchFinderFindStub.withArgs([{item: 'item3'}]).resolves(match);
+    matchFinderFindStub
+      .withArgs([
+        {item: 'item3', customerItem: 'customerItem3', title: 'Signatur 4'},
+      ])
+      .resolves(match);
 
     deliveryGetStub.withArgs('delivery3').resolves({
       method: 'branch',

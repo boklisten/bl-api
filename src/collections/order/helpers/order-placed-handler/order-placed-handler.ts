@@ -19,6 +19,7 @@ import {Messenger} from '../../../../messenger/messenger';
 import {CustomerItemHandler} from '../../../customer-item/helpers/customer-item-handler';
 import {OrderItemMovedFromOrderHandler} from '../order-item-moved-from-order-handler/order-item-moved-from-order-handler';
 import {isNullOrUndefined} from 'util';
+import {Matcher} from '../../../match/helpers/matcher/matcher';
 
 export class OrderPlacedHandler {
   private customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -37,6 +38,7 @@ export class OrderPlacedHandler {
     messenger?: Messenger,
     customerItemHandler?: CustomerItemHandler,
     orderItemMovedFromOrderHandler?: OrderItemMovedFromOrderHandler,
+    private _matcher?: Matcher,
   ) {
     this.customerItemStorage = customerItemStorage
       ? customerItemStorage
@@ -57,6 +59,8 @@ export class OrderPlacedHandler {
     this._orderItemMovedFromOrderHandler = orderItemMovedFromOrderHandler
       ? orderItemMovedFromOrderHandler
       : new OrderItemMovedFromOrderHandler();
+
+    this._matcher = this._matcher ? this._matcher : new Matcher();
   }
 
   public async placeOrder(
@@ -83,7 +87,7 @@ export class OrderPlacedHandler {
       await this._orderItemMovedFromOrderHandler.updateOrderItems(placedOrder);
       await this.updateUserDetailWithPlacedOrder(placedOrder, accessToken);
       this.sendOrderConfirmationMail(placedOrder);
-      // Matcher.match()
+      //await this._matcher.match(placedOrder, userDeil);
       return placedOrder;
     } catch (e) {
       throw new BlError('could not update order').add(e);

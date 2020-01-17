@@ -44,17 +44,17 @@ export class MatchFinderPartlyMatch {
     matchItems: MatchItem[],
     matches: Match[],
   ): Promise<Match> {
-    let matchesWithCreatedState = matches.filter(
+    let matchesWithPartlyMatchedState = matches.filter(
       match => match.state === 'partly-matched',
     );
 
     let matchWithMostMatchedItems = null;
     let matchedItemsCount = 0;
 
-    for (let match of matchesWithCreatedState) {
+    for (let match of matchesWithPartlyMatchedState) {
       let matchedItemIds = [];
       try {
-        matchedItemIds = this.matchHelper.findMatchingItemIds(
+        matchedItemIds = this.matchHelper.findMatchingItemIdsFromPartlyMatched(
           matchItems,
           match,
         );
