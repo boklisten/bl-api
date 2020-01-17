@@ -22,6 +22,7 @@ import * as sinonChai from 'sinon-chai';
 import {Matcher} from './matcher';
 import {dateService} from '../../../../blc/date.service';
 import {MatchHelper} from '../match-helper';
+import {MatchFinder} from '../match-finder/match-finder';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -34,7 +35,10 @@ chai.use(sinonChai);
 //const customerItemGetStub = sinon.stub(customerItemStorage, 'get');
 //
 const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
-const matcher = new Matcher(deliveryStorage);
+const matchFinder = new MatchFinder();
+const matcher = new Matcher(deliveryStorage, matchFinder);
+
+const matchFinderFindStub = sinon.stub(matchFinder, 'find');
 const deliveryGetStub = sinon.stub(deliveryStorage, 'get');
 
 describe('#match()', () => {
@@ -106,5 +110,40 @@ describe('#match()', () => {
         BlError,
         /order.creationTime is not in time for the matching-window/,
       );
+  });
+
+  it('should resolve if a match is found', () => {
+    //matchFinderFindStub.withArgs([{item: 'item2'}]).rejects(new BlError('no match found'));
+    let match = {
+      state: 'created',
+      items: [{item: 'item3'}],
+    };
+    matchFinderFindStub.withArgs([{item: 'item3'}]).resolves(match);
+
+    deliveryGetStub.withArgs('delivery3').resolves({
+      method: 'branch',
+    });
+
+    const order = {
+      delivery: 'delivery3',
+      branch: '5db00e6bcbfeed32123184c3',
+      payments: ['payment1'],
+      orderItems: [
+        {
+          item: 'item3',
+          customerItem: 'customerItem3',
+          title: 'Signatur 4',
+        },
+      ],
+      creationTime: moment()
+        .hour(11)
+        .minutes(0)
+        .seconds(0)
+        .toDate(),
+    } as any;
+
+    const userDetail = {} as UserDetail;
+
+    return matcher.match(order, userDetail).should.eventually.be.true;
   });
 });

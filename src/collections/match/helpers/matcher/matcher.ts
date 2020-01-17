@@ -1,8 +1,17 @@
-import {Order, UserDetail, BlError, Delivery} from '@wizardcoder/bl-model';
+import {
+  Order,
+  UserDetail,
+  BlError,
+  Delivery,
+  Match,
+  MatchProfile,
+  MatchItem,
+} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
 import {deliverySchema} from '../../../delivery/delivery.schema';
 import {dateService} from '../../../../blc/date.service';
 import {MatchHelper} from '../match-helper';
+import {MatchFinder} from '../match-finder/match-finder';
 
 // branch id in PROD : 5b6442ebd2e733002fae8a31
 // branch id in DEV :
@@ -11,10 +20,15 @@ export class Matcher {
   private matchingWindow: {fromHour: number; toHour: number};
   private matchHelper: MatchHelper;
 
-  constructor(private deliveryStorage?: BlDocumentStorage<Delivery>) {
+  constructor(
+    private deliveryStorage?: BlDocumentStorage<Delivery>,
+    private matchFinder?: MatchFinder,
+  ) {
     this.deliveryStorage = this.deliveryStorage
       ? this.deliveryStorage
       : new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
+
+    this.matchFinder = this.matchFinder ? this.matchFinder : new MatchFinder();
 
     this.matchingWindow = {
       fromHour: 8,
@@ -37,10 +51,10 @@ export class Matcher {
     await this.validateDelivery(order);
     this.validateCreationTime(order);
 
-    const matchProfile = this.matchHelper.convertUserDetailToMatchProfile(
+    const matchProfile: MatchProfile = this.matchHelper.convertUserDetailToMatchProfile(
       userDetail,
     );
-    const matchItems = this.matchHelper.convertOrderItemsToMatchItems(
+    const matchItems: MatchItem[] = this.matchHelper.convertOrderItemsToMatchItems(
       order.orderItems,
     );
 
