@@ -12,6 +12,7 @@ import {deliverySchema} from '../../../delivery/delivery.schema';
 import {dateService} from '../../../../blc/date.service';
 import {MatchHelper} from '../match-helper';
 import {MatchFinder} from '../match-finder/match-finder';
+import {MatchUpdater} from '../match-updater/match-updater';
 
 // branch id in PROD : 5b6442ebd2e733002fae8a31
 // branch id in DEV :
@@ -23,11 +24,15 @@ export class Matcher {
   constructor(
     private deliveryStorage?: BlDocumentStorage<Delivery>,
     private matchFinder?: MatchFinder,
+    private matchUpdater?: MatchUpdater,
   ) {
     this.deliveryStorage = this.deliveryStorage
       ? this.deliveryStorage
       : new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
 
+    this.matchUpdater = this.matchUpdater
+      ? this.matchUpdater
+      : new MatchUpdater();
     this.matchFinder = this.matchFinder ? this.matchFinder : new MatchFinder();
 
     this.matchingWindow = {
@@ -60,13 +65,12 @@ export class Matcher {
 
     try {
       let match = await this.matchFinder.find(matchItems);
-      console.log('-------MATCH FOUND-----------');
-      console.log(match);
+      await this.matchUpdater.update(match, matchProfile, matchItems);
     } catch (e) {
       throw e;
     }
 
-    throw 'not implemented';
+    return true;
   }
 
   private async validateDelivery(order: Order): Promise<boolean> {

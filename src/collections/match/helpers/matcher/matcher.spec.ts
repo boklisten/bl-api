@@ -23,6 +23,7 @@ import {Matcher} from './matcher';
 import {dateService} from '../../../../blc/date.service';
 import {MatchHelper} from '../match-helper';
 import {MatchFinder} from '../match-finder/match-finder';
+import {MatchUpdater} from '../match-updater/match-updater';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -36,10 +37,12 @@ chai.use(sinonChai);
 //
 const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
 const matchFinder = new MatchFinder();
-const matcher = new Matcher(deliveryStorage, matchFinder);
+const matchUpdater = new MatchUpdater();
+const matcher = new Matcher(deliveryStorage, matchFinder, matchUpdater);
 
 const matchFinderFindStub = sinon.stub(matchFinder, 'find');
 const deliveryGetStub = sinon.stub(deliveryStorage, 'get');
+const matchUpdaterUpdate = sinon.stub(matchUpdater, 'update');
 
 describe('#match()', () => {
   it('should reject if order is not for correct branch', () => {
@@ -147,6 +150,9 @@ describe('#match()', () => {
     } as any;
 
     const userDetail = {} as UserDetail;
+
+    matchUpdaterUpdate.reset();
+    matchUpdaterUpdate.onFirstCall().resolves({});
 
     return matcher.match(order, userDetail).should.eventually.be.true;
   });
