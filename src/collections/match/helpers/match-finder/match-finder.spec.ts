@@ -40,7 +40,7 @@ describe('find()', () => {
 
     return expect(matchFinder.find(matchItems)).to.eventually.be.rejectedWith(
       BlError,
-      /no match was found/,
+      /no match found/,
     );
   });
 
@@ -66,7 +66,7 @@ describe('find()', () => {
     );
   });
 
-  it('should resolve with a match if match is found', () => {
+  it('should resolve with a match if full match is found', () => {
     const matches = [
       {
         state: 'created',
@@ -83,5 +83,77 @@ describe('find()', () => {
     const matchItems = [{item: 'item1'}] as MatchItem[];
 
     return expect(matchFinder.find(matchItems)).to.eventually.be.fulfilled;
+  });
+
+  it('should resolve with a match if partly match is found', () => {
+    const matches = [
+      {
+        state: 'partly-matched',
+        items: [
+          {
+            item: 'item1',
+            reciever: 'reciever1',
+          },
+          {
+            item: 'item2',
+          },
+        ],
+      },
+      {
+        state: 'done',
+        items: [
+          {
+            item: 'item5',
+            reciever: 'reciever1',
+          },
+        ],
+      },
+    ] as Match[];
+
+    matchGetAllStub.withArgs().resolves(matches);
+
+    const matchItems = [{item: 'item2'}] as MatchItem[];
+
+    return expect(matchFinder.find(matchItems)).to.eventually.deep.equal(
+      matches[0],
+    );
+  });
+
+  it('should reject if no Match is valid for a match', () => {
+    const matches = [
+      {
+        state: 'partly-matched',
+        items: [
+          {
+            item: 'item1',
+            reciever: 'reciever1',
+          },
+          {
+            item: 'item2',
+            reciever: 'reciever1',
+          },
+          {
+            item: 'item5',
+          },
+        ],
+      },
+
+      {
+        state: 'created',
+        items: [
+          {
+            item: 'item5',
+          },
+        ],
+      },
+    ] as Match[];
+
+    matchGetAllStub.withArgs().resolves(matches);
+
+    const matchItems = [{item: 'item2'}] as MatchItem[];
+
+    return matchFinder
+      .find(matchItems)
+      .should.be.rejectedWith(BlError, /no match found/);
   });
 });

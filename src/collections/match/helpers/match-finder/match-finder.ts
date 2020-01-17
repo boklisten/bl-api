@@ -1,6 +1,7 @@
 import {Match, MatchItem, BlError} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
 import {matchSchema} from '../../match.schema';
+import {MatchFinderPartlyMatch} from './match-finder-partly-match/match-finder-partly-match';
 
 // priority list
 // 1: full matches with 'created' orders
@@ -8,10 +9,13 @@ import {matchSchema} from '../../match.schema';
 // 3: partly-matches with 'created' orders
 
 export class MatchFinder {
+  private matchFinderPartlyMatch: MatchFinderPartlyMatch;
+
   constructor(private matchStorage?: BlDocumentStorage<Match>) {
     this.matchStorage = this.matchStorage
       ? this.matchStorage
       : new BlDocumentStorage<Match>('matches', matchSchema);
+    this.matchFinderPartlyMatch = new MatchFinderPartlyMatch();
   }
 
   public async find(matchItems: MatchItem[]): Promise<any> {
@@ -23,25 +27,26 @@ export class MatchFinder {
       throw new BlError('no match with valid state found');
     }
 
-    try {
-      const match = this.searchForFullMatch(matchItems, matches);
-      return match;
-    } catch (e) {
-      throw new BlError('no match was found');
-    }
-  }
-  /*
-  private searchForPartlyMatch(
-    matchItems: MatchItem[],
-    matches: Match[],
-  ): Match {
-    // find full matches with partly-matched orders
-    for (let match of matches) {
+    let match;
 
+    try {
+      match = this.searchForFullMatch(matchItems, matches);
+    } catch (e) {}
+
+    if (match) {
+      return match;
     }
-    throw 'funcc not implemented';
+
+    try {
+      match = await this.matchFinderPartlyMatch.find(matchItems, matches);
+    } catch (e) {}
+
+    if (match) {
+      return match;
+    }
+
+    throw new BlError('no match found');
   }
-  */
 
   private searchForFullMatch(matchItems: MatchItem[], matches: Match[]): Match {
     // check all matches for a match that is a full match
@@ -57,7 +62,7 @@ export class MatchFinder {
       }
     }
 
-    throw 'func not implemented';
+    throw new BlError('could not find full match');
   }
 
   private filterValidMatches(matches: Match[]) {
@@ -67,6 +72,7 @@ export class MatchFinder {
   }
   private extractItemIds(matchItems: MatchItem[]): string {
     return matchItems
+      .filter(matchItem => !matchItem.reciever)
       .map(matchItem => matchItem.item)
       .sort()
       .toString();

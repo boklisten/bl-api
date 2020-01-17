@@ -33,7 +33,7 @@ export class MatchHelper {
 
     for (let matchItemId of matchItemIds) {
       for (let mi of match.items) {
-        if (mi.item.toString() === matchItemId.toString()) {
+        if (mi.item.toString() === matchItemId.toString() && !mi.reciever) {
           matchedItems.push(mi.item);
         }
       }
