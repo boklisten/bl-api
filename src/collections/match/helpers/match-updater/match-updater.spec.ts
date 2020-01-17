@@ -3,6 +3,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
+import * as moment from 'moment-timezone';
 import {
   BlError,
   Match,
@@ -15,13 +16,19 @@ import {
 import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
 import {MatchUpdater} from './match-updater';
 import * as sinonChai from 'sinon-chai';
+import {OpeningHourHelper} from '../../../opening-hour/helpers/opening-hour-helper';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 const matchStorage = new BlDocumentStorage<Match>('matches');
 const matchUpdater = new MatchUpdater(matchStorage);
+const openingHourHelper = new OpeningHourHelper();
 const matchStorageUpdate = sinon.stub(matchStorage, 'update');
+const openingHourHelperNext = sinon.stub(
+  openingHourHelper,
+  'getNextAvailableOpeningHour',
+);
 
 describe('update()', () => {
   it('should resolve with updated match with state "fully-matched"', () => {
@@ -51,6 +58,16 @@ describe('update()', () => {
       },
     ] as MatchItem[];
 
+    let openingHour = {
+      from: moment()
+        .add(1, 'day')
+        .toDate(),
+      to: moment()
+        .add(1, 'day')
+        .toDate(),
+      branch: 'branch1',
+    };
+
     let expectedMatch = {
       state: 'fully-matched',
       recievers: [reciever],
@@ -61,9 +78,20 @@ describe('update()', () => {
           reciever: 'user1',
         },
       ],
+      meetingPoint: [
+        {
+          reciever: reciever.userId,
+          location: {
+            name: 'Metis Oslo',
+            description: 'Ved inngangen',
+          },
+          time: openingHour.from,
+        },
+      ],
     };
 
-    matchStorageUpdate.onFirstCall().resolves(expectedMatch);
+    //matchStorageUpdate.onFirstCall().resolves(expectedMatch);
+    openingHourHelperNext.onFirstCall().resolves(openingHour);
 
     return matchUpdater
       .update(match, reciever, matchedItems)

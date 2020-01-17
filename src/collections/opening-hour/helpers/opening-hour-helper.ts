@@ -4,7 +4,7 @@ import {OpeningHour, Branch, BlError} from '@wizardcoder/bl-model';
 import * as moment from 'moment-timezone';
 
 export class OpeningHourHelper {
-  constructor(private openingHourStorage: BlDocumentStorage<OpeningHour>) {
+  constructor(private openingHourStorage?: BlDocumentStorage<OpeningHour>) {
     this.openingHourStorage = this.openingHourStorage
       ? this.openingHourStorage
       : new BlDocumentStorage<OpeningHour>('openinghours', openingHourSchema);

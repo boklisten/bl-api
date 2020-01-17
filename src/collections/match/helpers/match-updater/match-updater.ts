@@ -6,15 +6,24 @@ import {
 } from '@wizardcoder/bl-model';
 import {matchSchema} from '../../match.schema';
 import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
+import {OpeningHourHelper} from '../../../opening-hour/helpers/opening-hour-helper';
 
 export class MatchUpdater {
-  constructor(private matchStorage?: BlDocumentStorage<Match>) {
+  constructor(
+    private matchStorage?: BlDocumentStorage<Match>,
+    private openingHourHelper?: OpeningHourHelper,
+  ) {
     this.matchStorage = this.matchStorage
       ? this.matchStorage
       : new BlDocumentStorage<Match>('matches', matchSchema);
+
+    this.openingHourHelper = this.openingHourHelper
+      ? this.openingHourHelper
+      : new OpeningHourHelper();
   }
 
   // updates the provided match
+  // checks if there is a opening hour available
   // sets the reciever on each of the provided items
   // inserts reciever in the match.recievers array
   // inserts an event, eiter "fully-matched" or "partly-matched"
@@ -35,12 +44,18 @@ export class MatchUpdater {
     match.state = this.getMatchState(match);
     match.events.push({type: match.state, time: new Date()});
 
+    /*
     let updatedMatch = await this.matchStorage.update(match.id, match, {
       id: 'SYSTEM',
       permission: 'super',
     });
+    */
 
-    return updatedMatch;
+    return match;
+  }
+
+  private addMeetingPoint(match: Match): Promise<Match> {
+    this.openingHourHelper.getNextAvailableOpeningHour();
   }
 
   private getMatchState(match: Match): MatchState {
