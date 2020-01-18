@@ -55,7 +55,8 @@ export class MatchUpdater {
   }
 
   private addMeetingPoint(match: Match): Promise<Match> {
-    this.openingHourHelper.getNextAvailableOpeningHour();
+    throw 'not implemented';
+    //this.openingHourHelper.getNextAvailableOpeningHour();
   }
 
   private getMatchState(match: Match): MatchState {
