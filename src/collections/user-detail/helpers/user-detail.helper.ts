@@ -115,17 +115,21 @@ export class UserDetailHelper {
   }
 
   public getFirstName(name: string) {
-    return name
-      .split(' ')
-      .slice(0, -1)
-      .join(' ');
+    let splitName = name.split(' ');
+    if (splitName.length <= 1) {
+      return name;
+    } else {
+      return splitName.slice(0, -1).join(' ');
+    }
   }
 
   public getLastName(name: string) {
-    return name
-      .split(' ')
-      .slice(-1)
-      .join(' ');
+    let splitName = name.split(' ');
+    if (splitName.length <= 1) {
+      return '';
+    } else {
+      return splitName.slice(-1).join(' ');
+    }
   }
 
   public getInvalidUserDetailFields(userDetail: UserDetail) {
