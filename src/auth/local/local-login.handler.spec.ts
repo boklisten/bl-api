@@ -1,206 +1,233 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import * as sinon from 'sinon';
-import {expect} from 'chai';
-import {LocalLoginHandler} from "./local-login.handler";
-import {localLoginSchema} from "../../collections/local-login/local-login.schema";
-import {LocalLogin} from "../../collections/local-login/local-login";
-import {SEDbQuery} from "../../query/se.db-query";
-import {Promise} from 'es6-promise';
-import {BlError} from "@wizardcoder/bl-model";
-import {BlDocumentStorage} from "../../storage/blDocumentStorage";
+import "mocha";
+import * as chai from "chai";
+import * as chaiAsPromised from "chai-as-promised";
+import * as sinon from "sinon";
+import { expect } from "chai";
+import { LocalLoginHandler } from "./local-login.handler";
+import { localLoginSchema } from "../../collections/local-login/local-login.schema";
+import { LocalLogin } from "../../collections/local-login/local-login";
+import { SEDbQuery } from "../../query/se.db-query";
+import { BlError } from "@wizardcoder/bl-model";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import * as local from "commander";
 
 chai.use(chaiAsPromised);
 
 const dummyLocalLogin = {
-	username: "albert@protonmail.com",
-	provider: "local",
-	providerId: "123",
-	hashedPassword: "abc",
-	salt: "car"
+  username: "albert@protonmail.com",
+  provider: "local",
+  providerId: "123",
+  hashedPassword: "abc",
+  salt: "car"
 };
 
-describe('LocalLoginHandler', () => {
+describe("LocalLoginHandler", () => {
+  let localLoginStorage = new BlDocumentStorage<LocalLogin>(
+    "locallogins",
+    localLoginSchema
+  );
+  let baseLocalLogin = {
+    id: "1",
+    username: "a",
+    providerId: "1",
+    hashedPassword: "b",
+    provider: "c",
+    salt: "h"
+  };
+  let testLocalLogin: LocalLogin = baseLocalLogin;
+  let testUsername = "";
+  let updateSuccess: boolean;
 
-	let localLoginStorage = new BlDocumentStorage<LocalLogin>('locallogins', localLoginSchema);
-	let baseLocalLogin = {id: '1', username: 'a', providerId: '1', hashedPassword: 'b', provider: 'c', salt: 'h'};
-	let testLocalLogin: LocalLogin = baseLocalLogin;
-	let testUsername = "";
-	let updateSuccess: boolean;
+  let localLoginHandler = new LocalLoginHandler(localLoginStorage);
 
+  beforeEach(() => {
+    testUsername = "albert@protonmail.com";
+    testLocalLogin = {
+      id: "abc",
+      username: "albert@gmail.com",
+      provider: "local",
+      providerId: "i",
+      hashedPassword: "abc",
+      salt: "l"
+    };
+    updateSuccess = true;
+  });
 
-	let localLoginHandler = new LocalLoginHandler(localLoginStorage);
+  sinon.stub(localLoginStorage, "getByQuery").callsFake((query: SEDbQuery) => {
+    return new Promise((resolve, reject) => {
+      if (query.stringFilters[0].value === testUsername) {
+        resolve([dummyLocalLogin]);
+      }
+      reject(new BlError("not found").code(702));
+    });
+  });
 
-	beforeEach(() => {
-		testUsername = "albert@protonmail.com";
-		testLocalLogin = {id: 'abc', username: 'albert@gmail.com', provider: 'local', providerId: 'i', hashedPassword: 'abc', salt: 'l'};
-		updateSuccess = true;
-	});
+  sinon
+    .stub(localLoginStorage, "add")
+    .callsFake((localLogin: any, user: any) => {
+      return new Promise((resolve, reject) => {
+        resolve(testLocalLogin);
+      });
+    });
 
-	sinon.stub(localLoginStorage, 'getByQuery').callsFake((query: SEDbQuery) => {
-		return new Promise((resolve, reject) => {
-			if (query.stringFilters[0].value === testUsername) {
-				resolve([dummyLocalLogin]);
-			}
-			reject(new BlError('not found').code(702));
-		});
-	});
+  sinon
+    .stub(localLoginStorage, "update")
+    .callsFake((id: string, data: any, user: any) => {
+      if (updateSuccess) {
+        return Promise.resolve(testLocalLogin);
+      }
 
-	sinon.stub(localLoginStorage, 'add').callsFake((localLogin: any, user: any) => {
-		return new Promise((resolve, reject) => {
-			resolve(testLocalLogin);
-		});
-	});
+      return Promise.reject(new BlError("could not update"));
+    });
 
+  describe("#create", () => {
+    describe("should reject with TypeError when", () => {
+      it("username is empty or undefined", () => {
+        testLocalLogin.username = "";
+        return localLoginHandler
+          .add(testLocalLogin)
+          .should.be.rejectedWith(BlError);
+      });
 
-	sinon.stub(localLoginStorage, 'update').callsFake((id: string, data: any, user: any) => {
-		if (updateSuccess) {
-			return Promise.resolve(testLocalLogin);
-		}
+      it("provider is empty or undefiend", () => {
+        testLocalLogin.provider = "";
+        return localLoginHandler
+          .add(testLocalLogin)
+          .should.be.rejectedWith(BlError);
+      });
 
-		return Promise.reject(new BlError('could not update'));
-	});
+      it("providerId is empty or undefined", () => {
+        testLocalLogin.providerId = "";
+        return localLoginHandler
+          .add(testLocalLogin)
+          .should.be.rejectedWith(BlError);
+      });
 
-	describe('#create', () => {
-		describe('should reject with TypeError when', () => {
+      it("hashedPassword is empty or undefined", () => {
+        testLocalLogin.hashedPassword = "";
+        return localLoginHandler
+          .add(testLocalLogin)
+          .should.be.rejectedWith(BlError);
+      });
 
-			it('username is empty or undefined', () => {
-				testLocalLogin.username = '';
-				return localLoginHandler.add(testLocalLogin)
-					.should.be.rejectedWith(BlError);
-			});
+      it("salt is empty or undefined", () => {
+        testLocalLogin.salt = "";
+        return localLoginHandler
+          .add(testLocalLogin)
+          .should.be.rejectedWith(BlError);
+      });
+    });
 
-			it('provider is empty or undefiend', () => {
-				testLocalLogin.provider = '';
-				return localLoginHandler.add(testLocalLogin)
-					.should.be.rejectedWith(BlError);
-			});
+    describe("should reject with TypeError when", () => {
+      it('username is "alb@"', () => {
+        testLocalLogin.username = "alb@";
+        return localLoginHandler
+          .add(testLocalLogin)
+          .should.be.rejectedWith(BlError);
+      });
 
-			it('providerId is empty or undefined', () => {
-				testLocalLogin.providerId = '';
-				return localLoginHandler.add(testLocalLogin)
-					.should.be.rejectedWith(BlError);
-			});
+      it('username is "bill@mail."', () => {
+        testLocalLogin.username = "bill@mail.";
+        return localLoginHandler
+          .add(testLocalLogin)
+          .should.be.rejectedWith(BlError);
+      });
 
-			it('hashedPassword is empty or undefined', () => {
-				testLocalLogin.hashedPassword = '';
-				return localLoginHandler.add(testLocalLogin)
-					.should.be.rejectedWith(BlError);
-			});
+      it('username is "alli @mail.com"', () => {
+        testLocalLogin.username = "alli @mail.com";
+        return localLoginHandler
+          .add(testLocalLogin)
+          .should.be.rejectedWith(BlError);
+      });
+    });
 
-			it('salt is empty or undefined', () => {
-				testLocalLogin.salt = '';
-				return localLoginHandler.add(testLocalLogin)
-					.should.be.rejectedWith(BlError);
-			});
-		});
+    it("should resolve when LocalLogin is valid", () => {
+      return localLoginHandler
+        .add(testLocalLogin)
+        .should.eventually.eq(testLocalLogin);
+    });
+  });
 
-		describe('should reject with TypeError when', () => {
+  describe("#get", () => {
+    describe("should reject with TypeError when", () => {
+      it("username is not a valid Email", () => {
+        testUsername = "al";
+        return localLoginHandler
+          .get(testUsername)
+          .should.be.rejectedWith(BlError);
+      });
 
-			it('username is "alb@"', () => {
-				testLocalLogin.username = 'alb@';
-				return localLoginHandler.add(testLocalLogin)
-					.should.be.rejectedWith(BlError);
-			});
+      it("username is not empty", () => {
+        testUsername = "";
+        return localLoginHandler
+          .get(testUsername)
+          .should.be.rejectedWith(BlError);
+      });
 
-			it('username is "bill@mail."', () => {
-				testLocalLogin.username = 'bill@mail.';
-				return localLoginHandler.add(testLocalLogin)
-					.should.be.rejectedWith(BlError);
-			});
+      it("username is null", () => {
+        testUsername = null;
+        return localLoginHandler
+          .get(testUsername)
+          .should.be.rejectedWith(BlError);
+      });
+    });
 
-			it('username is "alli @mail.com"', () => {
-				testLocalLogin.username = 'alli @mail.com';
-				return localLoginHandler.add(testLocalLogin)
-					.should.be.rejectedWith(BlError);
-			});
-		});
+    it("should reject with blError.code 702 when username is not found in db", done => {
+      localLoginHandler.get("notFound@mail.com").catch((blError: BlError) => {
+        expect(blError.getCode()).to.eql(702);
+        done();
+      });
+    });
 
+    it("should resolve with LocalLogin object when username is found", () => {
+      return localLoginHandler
+        .get(testUsername)
+        .should.eventually.eq(dummyLocalLogin);
+    });
+  });
 
+  describe("#setPassword", () => {
+    it("should reject if localLogin is not found", () => {
+      let testUsername = "notFound@mail.com";
 
-		it('should resolve when LocalLogin is valid', () => {
-			return localLoginHandler.add(testLocalLogin)
-				.should.eventually.eq(testLocalLogin);
-		});
+      return expect(
+        localLoginHandler.setPassword(testUsername, "password")
+      ).to.be.rejectedWith(
+        BlError,
+        /localLogin was not found with username "notFound@mail.com/
+      );
+    });
 
-	});
+    it("should reject if password is less than 6 characters", () => {
+      let testPassword = "short";
 
-	describe('#get', () => {
-		describe('should reject with TypeError when', () => {
+      return expect(
+        localLoginHandler.setPassword(testUsername, testPassword)
+      ).to.be.rejectedWith(BlError, /localLogin password to short/);
+    });
 
-			it('username is not a valid Email', () => {
-				testUsername = "al";
-				return localLoginHandler.get(testUsername)
-					.should.be.rejectedWith(BlError);
-			});
+    it("should reject if localLogin is not found by username", () => {
+      let notFoundUsername = "notFound@mail.com";
 
-			it('username is not empty', () => {
-				testUsername = "";
-				return localLoginHandler.get(testUsername)
-					.should.be.rejectedWith(BlError);
-			});
+      return expect(
+        localLoginHandler.setPassword(notFoundUsername, "password")
+      ).to.be.rejectedWith(
+        BlError,
+        /localLogin was not found with username "notFound@mail.com"/
+      );
+    });
 
-			it('username is null', () => {
-				testUsername = null;
-				return localLoginHandler.get(testUsername)
-					.should.be.rejectedWith(BlError);
-			});
+    it("should reject if localLogin.update rejects", () => {
+      updateSuccess = false;
 
-		});
+      return expect(
+        localLoginHandler.setPassword(testUsername, "password")
+      ).to.be.rejectedWith(BlError, /localLogin could not be updated/);
+    });
 
-
-		it('should reject with blError.code 702 when username is not found in db', (done) => {
-			localLoginHandler.get('notFound@mail.com').catch((blError: BlError) => {
-				expect(blError.getCode()).to.eql(702);
-				done();
-			});
-		});
-		
-		it('should resolve with LocalLogin object when username is found', () => {
-			return localLoginHandler.get(testUsername)
-				.should.eventually.eq(dummyLocalLogin);
-		});
-		
-		
-	});
-
-	describe('#setPassword', () => {
-		it('should reject if localLogin is not found', () => {
-			let testUsername = 'notFound@mail.com';
-
-			return expect(localLoginHandler.setPassword(testUsername, 'password'))
-				.to.be.rejectedWith(BlError, /localLogin was not found with username "notFound@mail.com/);
-		});
-
-		it('should reject if password is less than 6 characters', () => {
-			let testPassword = 'short';
-
-			return expect(localLoginHandler.setPassword(testUsername, testPassword))
-				.to.be.rejectedWith(BlError, /localLogin password to short/);
-		});
-
-		it('should reject if localLogin is not found by username', () => {
-			let notFoundUsername = 'notFound@mail.com';
-
-			return expect(localLoginHandler.setPassword(notFoundUsername, 'password'))
-				.to.be.rejectedWith(BlError, /localLogin was not found with username "notFound@mail.com"/);
-		});
-
-		it('should reject if localLogin.update rejects', () => {
-			updateSuccess = false;
-
-			return expect(localLoginHandler.setPassword(testUsername, 'password'))
-				.to.be.rejectedWith(BlError, /localLogin could not be updated/);
-		});
-
-		it('should resolve if valid username and password is set', () => {
-			return expect(localLoginHandler.setPassword(testUsername, 'password123'))
-				.to.be.fulfilled;
-		});
-
-	});
+    it("should resolve if valid username and password is set", () => {
+      return expect(localLoginHandler.setPassword(testUsername, "password123"))
+        .to.be.fulfilled;
+    });
+  });
 });
-
-
