@@ -1,6 +1,7 @@
 import { BlCollection, BlEndpoint } from "../bl-collection";
 import { Schema } from "mongoose";
 import { bookingSchema } from "./booking.schema";
+import { BookingPatchHook } from "./hook/booking-patch.hook";
 
 export class BookingCollection implements BlCollection {
   collectionName = "bookings";
@@ -16,6 +17,10 @@ export class BookingCollection implements BlCollection {
         {
           fieldName: "branch",
           type: "object-id"
+        },
+        {
+          fieldName: "customer",
+          type: "string"
         }
       ]
     },
@@ -30,6 +35,7 @@ export class BookingCollection implements BlCollection {
     },
     {
       method: "patch",
+      hook: new BookingPatchHook(),
       restriction: {
         permissions: ["customer", "employee", "manager", "admin", "super"]
       }
