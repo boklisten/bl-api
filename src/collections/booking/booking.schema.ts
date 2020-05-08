@@ -16,5 +16,9 @@ export const bookingSchema = {
   customer: {
     type: Schema.Types.ObjectId,
     required: false
+  },
+  booked: {
+    type: Schema.Types.Boolean,
+    default: false
   }
 };

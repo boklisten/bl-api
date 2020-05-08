@@ -5,6 +5,7 @@ import { bookingSchema } from "../booking.schema";
 import { PermissionService } from "../../../auth/permission/permission.service";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 import { DateService } from "../../../blc/date.service";
+import { isNullOrUndefined } from "util";
 
 export class BookingPatchHook extends Hook {
   private bookingStorage: BlDocumentStorage<Booking>;
@@ -54,8 +55,8 @@ export class BookingPatchHook extends Hook {
       )
     ) {
       for (let key of Object.keys(body)) {
-        if (key !== "customer") {
-          throw new BlError("can only update customer field");
+        if (key !== "customer" && key !== "booked") {
+          throw new BlError("can only update 'customer' and 'booked' fields");
         }
       }
 
@@ -82,7 +83,6 @@ export class BookingPatchHook extends Hook {
 
       activeBookings = await this.bookingStorage.getByQuery(query);
     } catch (e) {
-      console.log(e);
       if (e instanceof BlError) {
         if (e.getCode() === 702) {
           return true;
@@ -98,10 +98,22 @@ export class BookingPatchHook extends Hook {
     return false;
   }
 
-  public after(
+  public async after(
     bookings: Booking[],
     accessToken: AccessToken
   ): Promise<Booking[]> {
-    throw "not implemented";
+    for (let booking of bookings) {
+      if (!booking.booked && booking.customer) {
+        throw new BlError("booking.customer is set but booked is false");
+      }
+
+      if (booking.booked && isNullOrUndefined(booking.customer)) {
+        throw new BlError(
+          "booking.booked is set but customer is null or undefined"
+        );
+      }
+    }
+
+    return bookings;
   }
 }

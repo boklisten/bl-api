@@ -55,7 +55,7 @@ sinon.stub(bookingStorage, "getByQuery").callsFake(query => {
   if (query.objectIdFilters) {
     if (
       query.objectIdFilters.length &&
-      query.objectIdFilters[0].value == testBooking3.customer
+      query.objectIdFilters[0].value[0] == testBooking3.customer
     ) {
       return Promise.resolve([testBooking3]);
     }
@@ -96,7 +96,7 @@ describe("BookingPatchHook", () => {
         )
       ).to.eventually.be.rejectedWith(
         BlError,
-        /can only update customer field/
+        /can only update 'customer' and 'booked' fields/
       );
     });
 
@@ -148,5 +148,66 @@ describe("BookingPatchHook", () => {
     });
   });
 
-  describe("#after", () => {});
+  describe("#after", () => {
+    const bookingStorage = new BlDocumentStorage<Booking>("bookings");
+    const bookingPatchHook = new BookingPatchHook(bookingStorage);
+    const testId3 = "5ea6a45dc39947205e3ecdd3";
+
+    sinon.stub(bookingStorage, "get").callsFake(() => {
+      return Promise.resolve({});
+    });
+
+    sinon.stub(bookingStorage, "update").callsFake(() => {
+      return Promise.resolve(true);
+    });
+
+    it("should reject if booking have customer but 'booked' is false", () => {
+      const booking = {
+        customer: testId3,
+        from: new Date(),
+        to: new Date(),
+        booked: false
+      };
+
+      return expect(
+        bookingPatchHook.after([booking as Booking], {
+          permission: "customer",
+          details: testId3
+        } as any)
+      ).to.eventually.be.rejectedWith(
+        BlError,
+        /booking.customer is set but booked is false/
+      );
+      /*
+      let bookingStorageSpy = sinon.spy(bookingStorage, "update");
+
+      const updateBody = {
+        customer: testId2
+      };
+
+      try {
+        await bookingPatchHook.after([]);
+      } catch (e) {}
+      */
+    });
+
+    it("should reject if booking does not have customer but 'booked' is true", () => {
+      const booking = {
+        customer: null,
+        from: new Date(),
+        to: new Date(),
+        booked: true
+      };
+
+      return expect(
+        bookingPatchHook.after([booking as Booking], {
+          permission: "customer",
+          details: testId3
+        } as any)
+      ).to.eventually.be.rejectedWith(
+        BlError,
+        /booking.booked is set but customer is null or undefined/
+      );
+    });
+  });
 });

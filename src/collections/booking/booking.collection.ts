@@ -15,12 +15,20 @@ export class BookingCollection implements BlCollection {
           type: "date"
         },
         {
+          fieldName: "to",
+          type: "date"
+        },
+        {
           fieldName: "branch",
           type: "object-id"
         },
         {
           fieldName: "customer",
           type: "string"
+        },
+        {
+          fieldName: "booked",
+          type: "boolean"
         }
       ]
     },
