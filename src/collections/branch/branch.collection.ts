@@ -10,7 +10,21 @@ export class BranchCollection implements BlCollection {
   endpoints: BlEndpoint[] = [
     {
       method: "getAll",
-      hook: new BranchGetHook()
+      hook: new BranchGetHook(),
+      validQueryParams: [
+        {
+          fieldName: "name",
+          type: "string"
+        },
+        {
+          fieldName: "location.region",
+          type: "string"
+        },
+        {
+          fieldName: "location.bookable",
+          type: "boolean"
+        }
+      ]
     },
     {
       method: "getId",

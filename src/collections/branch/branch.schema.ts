@@ -173,5 +173,9 @@ export const branchSchema = {
   openingHours: {
     type: [Schema.Types.ObjectId],
     default: []
+  },
+  location: {
+    type: Schema.Types.Mixed,
+    required: false
   }
 };

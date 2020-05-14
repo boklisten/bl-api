@@ -26,7 +26,7 @@
     "@types/moment-timezone": "^0.5.12",
     "@types/validator": "^6.3.0",
     "@wizardcoder/bl-email": "^1.4.17",
-    "@wizardcoder/bl-model": "^0.23.1",
+    "@wizardcoder/bl-model": "^0.23.2",
     "@wizardcoder/bl-post-office": "^0.4.10",
     "bluebird": "^3.5.1",
     "body-parser": "^1.19.0",
