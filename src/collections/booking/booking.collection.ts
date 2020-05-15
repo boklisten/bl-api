@@ -47,6 +47,12 @@ export class BookingCollection implements BlCollection {
       restriction: {
         permissions: ["customer", "employee", "manager", "admin", "super"]
       }
+    },
+    {
+      method: "delete",
+      restriction: {
+        permissions: ["admin", "super"]
+      }
     }
   ];
 }
