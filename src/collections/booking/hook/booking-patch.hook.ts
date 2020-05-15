@@ -82,32 +82,36 @@ export class BookingPatchHook extends Hook {
 
     let activeBookings;
 
-    try {
-      let query = this.dbQueryBuilder.getDbQuery(
-        {
-          customer: accessToken.details,
-          from:
-            ">" +
-            this.dateService.format(new Date(), "Europe/Oslo", "DDMMYYYYHHMM")
-        },
-        [
-          { fieldName: "from", type: "date" },
-          { fieldName: "customer", type: "object-id" }
-        ]
-      );
+    if (body.customer && body.booked) {
+      try {
+        let query = this.dbQueryBuilder.getDbQuery(
+          {
+            customer: body.customer,
+            from:
+              ">" +
+              this.dateService.format(new Date(), "Europe/Oslo", "DDMMYYYYHHMM")
+          },
+          [
+            { fieldName: "from", type: "date" },
+            { fieldName: "customer", type: "object-id" }
+          ]
+        );
 
-      activeBookings = await this.bookingStorage.getByQuery(query);
-    } catch (e) {
-      if (e instanceof BlError) {
-        if (e.getCode() === 702) {
-          return true;
+        activeBookings = await this.bookingStorage.getByQuery(query);
+      } catch (e) {
+        if (e instanceof BlError) {
+          if (e.getCode() === 702) {
+            return true;
+          }
         }
+        throw e;
       }
-      throw e;
-    }
 
-    if (activeBookings && activeBookings.length > 0) {
-      throw new BlError("customer already has an active booking");
+      if (activeBookings && activeBookings.length > 0) {
+        throw new BlError("customer already has an active booking");
+      }
+    } else {
+      return true;
     }
 
     return false;
