@@ -1,43 +1,44 @@
 import {
   EmailHandler,
   EmailLog,
-  EmailTemplateInput,
-} from '@wizardcoder/bl-email';
+  EmailTemplateInput
+} from "@wizardcoder/bl-email";
 import {
   Recipient,
   MessageOptions,
   PostOffice,
-  postOffice,
-} from '@wizardcoder/bl-post-office';
+  postOffice
+} from "@wizardcoder/bl-post-office";
 import {
   BlError,
   Delivery,
   Order,
   OrderItem,
+  Booking,
   Payment,
   UserDetail,
   CustomerItem,
   Item,
-  Message,
-} from '@wizardcoder/bl-model';
-import {dateService} from '../../blc/date.service';
-import {BlDocumentStorage} from '../../storage/blDocumentStorage';
-import {OrderItemType} from '@wizardcoder/bl-model/dist/order/order-item/order-item-type';
-import * as fs from 'fs';
-import {EmailAttachment} from '@wizardcoder/bl-email/dist/ts/template/email-attachment';
-import {type} from 'os';
-import {OrderEmailHandler} from './order-email/order-email-handler';
+  Message
+} from "@wizardcoder/bl-model";
+import { dateService } from "../../blc/date.service";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
+import { OrderItemType } from "@wizardcoder/bl-model/dist/order/order-item/order-item-type";
+import * as fs from "fs";
+import { EmailAttachment } from "@wizardcoder/bl-email/dist/ts/template/email-attachment";
+import { type } from "os";
+import { OrderEmailHandler } from "./order-email/order-email-handler";
 import {
   MessengerService,
-  CustomerDetailWithCustomerItem,
-} from '../messenger-service';
-import {EmailSetting} from '@wizardcoder/bl-email/dist/ts/template/email-setting';
-import {EMAIL_SETTINGS} from './email-settings';
-import {EmailOrder} from '@wizardcoder/bl-email/dist/ts/template/email-order';
-import {EmailUser} from '@wizardcoder/bl-email/dist/ts/template/email-user';
-import {isNullOrUndefined} from 'util';
-import {logger} from '../../logger/logger';
-import {itemSchema} from '../../collections/item/item.schema';
+  CustomerDetailWithCustomerItem
+} from "../messenger-service";
+import { EmailSetting } from "@wizardcoder/bl-email/dist/ts/template/email-setting";
+import { EMAIL_SETTINGS } from "./email-settings";
+import { EmailOrder } from "@wizardcoder/bl-email/dist/ts/template/email-order";
+import { EmailUser } from "@wizardcoder/bl-email/dist/ts/template/email-user";
+import { isNullOrUndefined } from "util";
+import { logger } from "../../logger/logger";
+import { itemSchema } from "../../collections/item/item.schema";
 
 export class EmailService implements MessengerService {
   private _emailHandler: EmailHandler;
@@ -49,36 +50,37 @@ export class EmailService implements MessengerService {
   constructor(
     emailHandler?: EmailHandler,
     itemStorage?: BlDocumentStorage<Item>,
-    inputPostOffice?: PostOffice,
+    inputPostOffice?: PostOffice
   ) {
     this._emailHandler = emailHandler
       ? emailHandler
       : new EmailHandler({
           sendgrid: {
-            apiKey: process.env.SENDGRID_API_KEY,
+            apiKey: process.env.SENDGRID_API_KEY
           },
-          locale: 'nb',
+          locale: "nb"
         });
 
     this._itemStorage = itemStorage
       ? itemStorage
-      : new BlDocumentStorage<Item>('items', itemSchema);
-    this._dateFormat = 'DD.MM.YYYY';
+      : new BlDocumentStorage<Item>("items", itemSchema);
+    this._dateFormat = "DD.MM.YYYY";
     this._orderEmailHandler = new OrderEmailHandler(this._emailHandler);
     this._postOffice = inputPostOffice ? inputPostOffice : postOffice;
     this._postOffice.overrideLogger(logger);
     this._postOffice.setConfig({
-      reminder: {mediums: {email: true, sms: true}},
-      generic: {mediums: {email: true}},
-      receipt: {mediums: {email: false, sms: false}},
-      match: {mediums: {sms: true}},
+      reminder: { mediums: { email: true, sms: true } },
+      generic: { mediums: { email: true } },
+      receipt: { mediums: { email: false, sms: false } },
+      match: { mediums: { sms: true } },
+      booking: { mediums: { email: true } }
     });
   }
 
   public send(message: Message, customerDetail: UserDetail): Promise<boolean> {
-    if (message.messageType === 'generic') {
+    if (message.messageType === "generic") {
       return this.sendGeneric(message, customerDetail);
-    } else if (message.messageType === 'match') {
+    } else if (message.messageType === "match") {
       return this.sendMatch(message, customerDetail);
     }
 
@@ -89,22 +91,22 @@ export class EmailService implements MessengerService {
 
   public async sendGeneric(
     message: Message,
-    customerDetail: UserDetail,
+    customerDetail: UserDetail
   ): Promise<boolean> {
     const recipient = await this.customerDetailToRecipient(
       message,
       customerDetail,
-      [],
+      []
     );
 
     const messageOptions: MessageOptions = {
-      type: 'generic',
-      subtype: 'none',
+      type: "generic",
+      subtype: "none",
       subject: message.subject,
       sequence_number: message.sequenceNumber,
       htmlContent: message.htmlContent,
       textBlocks: message.textBlocks,
-      mediums: this.getMessageOptionMediums(message),
+      mediums: this.getMessageOptionMediums(message)
     };
 
     try {
@@ -115,24 +117,56 @@ export class EmailService implements MessengerService {
     }
   }
 
-  public async sendMatch(
+  public async sendBookingConfirmation(
     message: Message,
     customerDetail: UserDetail,
+    bookingDetails: {
+      date: string;
+      hour: string;
+      branch: string;
+      address: string;
+    }
   ): Promise<boolean> {
     const recipient = await this.customerDetailToRecipient(
       message,
       customerDetail,
-      [],
+      []
+    );
+
+    recipient["booking"] = bookingDetails;
+
+    const messageOptions: MessageOptions = {
+      type: "booking",
+      subtype: "confirmed",
+      mediums: { email: true }
+    };
+
+    try {
+      const result = await this._postOffice.send([recipient], messageOptions);
+      return true;
+    } catch (e) {
+      logger.error(`could not send booking confirmation: ${e}`);
+    }
+  }
+
+  public async sendMatch(
+    message: Message,
+    customerDetail: UserDetail
+  ): Promise<boolean> {
+    const recipient = await this.customerDetailToRecipient(
+      message,
+      customerDetail,
+      []
     );
 
     const messageOptions: MessageOptions = {
-      type: 'match',
-      subtype: 'none',
+      type: "match",
+      subtype: "none",
       subject: message.subject,
       sequence_number: message.sequenceNumber,
       htmlContent: message.htmlContent,
       textBlocks: message.textBlocks,
-      mediums: this.getMessageOptionMediums(message),
+      mediums: this.getMessageOptionMediums(message)
     };
 
     try {
@@ -153,20 +187,20 @@ export class EmailService implements MessengerService {
   public async remind(
     message: Message,
     customerDetail: UserDetail,
-    customerItems: CustomerItem[],
+    customerItems: CustomerItem[]
   ): Promise<boolean> {
     const recipient = await this.customerDetailToRecipient(
       message,
       customerDetail,
-      customerItems,
+      customerItems
     );
 
     const messageOptions: MessageOptions = {
-      type: 'reminder',
+      type: "reminder",
       subtype: message.messageSubtype as any,
       sequence_number: message.sequenceNumber,
       textBlocks: message.textBlocks,
-      mediums: this.getMessageOptionMediums(message),
+      mediums: this.getMessageOptionMediums(message)
     };
 
     try {
@@ -184,7 +218,7 @@ export class EmailService implements MessengerService {
   private async sendToGuardian(
     customerDetail: UserDetail,
     recipient: Recipient,
-    messageOptions: MessageOptions,
+    messageOptions: MessageOptions
   ): Promise<boolean> {
     if (!customerDetail.guardian) {
       return false;
@@ -195,32 +229,32 @@ export class EmailService implements MessengerService {
     }
 
     recipient.email = customerDetail.guardian.email;
-    recipient.phone = '+47' + customerDetail.guardian.phone;
+    recipient.phone = "+47" + customerDetail.guardian.phone;
 
     return this._postOffice.send([recipient], messageOptions);
   }
 
   private getMessageOptionMediums(
-    message: Message,
-  ): {email: boolean; sms: boolean; voice: boolean} {
+    message: Message
+  ): { email: boolean; sms: boolean; voice: boolean } {
     switch (message.messageMethod) {
-      case 'all':
-        return {email: true, sms: true, voice: false};
-      case 'email':
-        return {email: true, sms: false, voice: false};
-      case 'sms':
-        return {email: false, sms: true, voice: false};
+      case "all":
+        return { email: true, sms: true, voice: false };
+      case "email":
+        return { email: true, sms: false, voice: false };
+      case "sms":
+        return { email: false, sms: true, voice: false };
       default:
         return {
           email: false,
           sms: false,
-          voice: false,
+          voice: false
         };
     }
   }
 
   public remindMany(
-    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[],
+    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[]
   ) {}
 
   public orderPlaced(customerDetail: UserDetail, order: Order) {
@@ -233,55 +267,55 @@ export class EmailService implements MessengerService {
   private async customerDetailToRecipient(
     message: Message,
     customerDetail: UserDetail,
-    customerItems: CustomerItem[],
+    customerItems: CustomerItem[]
   ): Promise<Recipient> {
     return {
       message_id: message.id,
       user_id: customerDetail.id,
       email: customerDetail.email,
       name: customerDetail.name,
-      phone: '+47' + customerDetail.phone,
+      phone: "+47" + customerDetail.phone,
       settings: {
         text: {
           deadline: message.info
-            ? this.formatDeadline(message.info['deadline'])
-            : '',
-        },
+            ? this.formatDeadline(message.info["deadline"])
+            : ""
+        }
       },
-      itemList: await this.customerItemsToItemList(message, customerItems),
+      itemList: await this.customerItemsToItemList(message, customerItems)
     };
   }
 
   private async customerItemsToItemList(
     message: Message,
-    customerItems: CustomerItem[],
+    customerItems: CustomerItem[]
   ) {
-    if (message.messageSubtype === 'partly-payment') {
+    if (message.messageSubtype === "partly-payment") {
       return {
         summary: {
           total:
             this.getCustomerItemLeftToPayTotal(customerItems).toString() +
-            ' NOK',
-          totalTax: '0 NOK',
-          taxPercentage: '0',
+            " NOK",
+          totalTax: "0 NOK",
+          taxPercentage: "0"
         },
-        items: await this.customerItemsToEmailItems(message, customerItems),
+        items: await this.customerItemsToEmailItems(message, customerItems)
       };
     } else {
       return {
         summary: {
           total: null,
           totalTax: null,
-          taxPercentage: null,
+          taxPercentage: null
         },
-        items: await this.customerItemsToEmailItems(message, customerItems),
+        items: await this.customerItemsToEmailItems(message, customerItems)
       };
     }
   }
 
   private async customerItemsToEmailItems(
     message: Message,
-    customerItems: CustomerItem[],
+    customerItems: CustomerItem[]
   ) {
     let items = [];
 
@@ -296,32 +330,32 @@ export class EmailService implements MessengerService {
   private customerItemToEmailItem(
     message: Message,
     customerItem: CustomerItem,
-    item: Item,
+    item: Item
   ) {
-    if (message.messageSubtype === 'partly-payment') {
+    if (message.messageSubtype === "partly-payment") {
       return {
         id: this.getItemIsbn(item),
         title: item.title,
-        deadline: this.formatDeadline(message.info['deadline']),
-        leftToPay: customerItem.amountLeftToPay + ' NOK',
+        deadline: this.formatDeadline(message.info["deadline"]),
+        leftToPay: customerItem.amountLeftToPay + " NOK"
       };
     } else {
       return {
         id: this.getItemIsbn(item),
         title: item.title,
-        deadline: this.formatDeadline(message.info['deadline']),
+        deadline: this.formatDeadline(message.info["deadline"])
       };
     }
   }
 
   private formatDeadline(deadline) {
     return !isNullOrUndefined(deadline)
-      ? dateService.toPrintFormat(deadline, 'Europe/Oslo')
-      : '';
+      ? dateService.toPrintFormat(deadline, "Europe/Oslo")
+      : "";
   }
 
   private getItemIsbn(item: Item): string {
-    return item.info && item.info['isbn'] ? item.info['isbn'] : item.id;
+    return item.info && item.info["isbn"] ? item.info["isbn"] : item.id;
   }
 
   private getCustomerItemLeftToPayTotal(customerItems: CustomerItem[]): number {
@@ -337,10 +371,10 @@ export class EmailService implements MessengerService {
       id: customerDetail.id,
       name: customerDetail.name,
       dob: !isNullOrUndefined(customerDetail.dob)
-        ? dateService.format(customerDetail.dob, 'Europe/Oslo', 'DD.MM.YYYY')
-        : '',
+        ? dateService.format(customerDetail.dob, "Europe/Oslo", "DD.MM.YYYY")
+        : "",
       email: customerDetail.email,
-      address: customerDetail.address,
+      address: customerDetail.address
     };
   }
 
@@ -349,16 +383,16 @@ export class EmailService implements MessengerService {
 
     for (let customerItem of customerItems) {
       let itemId =
-        typeof customerItem.item === 'string' ? customerItem.item : '';
+        typeof customerItem.item === "string" ? customerItem.item : "";
       const item = await this._itemStorage.get(itemId);
 
       emailOrderItems.push({
         title: item.title,
         deadline: dateService.format(
           customerItem.deadline,
-          'Europe/Oslo',
-          this._dateFormat,
-        ),
+          "Europe/Oslo",
+          this._dateFormat
+        )
       });
     }
 
@@ -368,7 +402,7 @@ export class EmailService implements MessengerService {
   public deliveryInformation(
     customerDetail: UserDetail,
     order: Order,
-    delivery: Delivery,
+    delivery: Delivery
   ) {
     let emailSetting: EmailSetting = {
       toEmail: customerDetail.email,
@@ -378,32 +412,32 @@ export class EmailService implements MessengerService {
       textBlocks: [
         {
           text:
-            'Dine bøker er nå på vei! De vil bli levert til deg ved hjelp av Bring.',
+            "Dine bøker er nå på vei! De vil bli levert til deg ved hjelp av Bring."
         },
         {
           text:
-            'Vi anser nå disse bøkene som utlevert. Du er ansvarlig for bøkene fra du henter dem på postkontoret til innlevering er gjennomført. Om noe skulle skje med leveringen er det bare å ta kontakt. Fraktkostnader refunderes ikke for pakker som ikke blir hentet innen fristen.',
-        },
-      ],
+            "Vi anser nå disse bøkene som utlevert. Du er ansvarlig for bøkene fra du henter dem på postkontoret til innlevering er gjennomført. Om noe skulle skje med leveringen er det bare å ta kontakt. Fraktkostnader refunderes ikke for pakker som ikke blir hentet innen fristen."
+        }
+      ]
     };
 
     let emailUser: EmailUser = {
       id: customerDetail.id,
       name: customerDetail.name,
       dob: !isNullOrUndefined(customerDetail.dob)
-        ? dateService.format(customerDetail.dob, 'Europe/Oslo', 'DD.MM.YYYY')
-        : '',
+        ? dateService.format(customerDetail.dob, "Europe/Oslo", "DD.MM.YYYY")
+        : "",
       email: customerDetail.email,
-      address: customerDetail.address,
+      address: customerDetail.address
     };
 
-    let deliveryAddress = '';
+    let deliveryAddress = "";
 
-    if (delivery.info['shipmentAddress']) {
-      deliveryAddress = delivery.info['shipmentAddress'].name;
-      deliveryAddress += ', ' + delivery.info['shipmentAddress'].address;
-      deliveryAddress += ', ' + delivery.info['shipmentAddress'].postalCode;
-      deliveryAddress += ' ' + delivery.info['shipmentAddress'].postalCity;
+    if (delivery.info["shipmentAddress"]) {
+      deliveryAddress = delivery.info["shipmentAddress"].name;
+      deliveryAddress += ", " + delivery.info["shipmentAddress"].address;
+      deliveryAddress += ", " + delivery.info["shipmentAddress"].postalCode;
+      deliveryAddress += " " + delivery.info["shipmentAddress"].postalCity;
     }
 
     const emailOrder: EmailOrder = {
@@ -419,29 +453,29 @@ export class EmailService implements MessengerService {
       items: this.orderItemsToDeliveryInformationItems(order.orderItems),
       showDelivery: true,
       delivery: {
-        method: 'bring',
-        trackingNumber: delivery.info['trackingNumber'],
+        method: "bring",
+        trackingNumber: delivery.info["trackingNumber"],
         estimatedDeliveryDate: null,
         address: deliveryAddress,
         amount: null,
-        currency: null,
-      },
+        currency: null
+      }
     };
 
     this._emailHandler
       .sendDelivery(emailSetting, emailOrder, emailUser)
       .then(() => {})
       .catch(err => {
-        logger.log('warn', 'could not send delivery info by mail: ' + err);
+        logger.log("warn", "could not send delivery info by mail: " + err);
       });
   }
 
   private orderItemsToDeliveryInformationItems(orderItems: OrderItem[]) {
-    const emailInformaitionItems: {title: string; status: string}[] = [];
+    const emailInformaitionItems: { title: string; status: string }[] = [];
     for (let orderItem of orderItems) {
       emailInformaitionItems.push({
         title: orderItem.title,
-        status: 'utlevering via Bring',
+        status: "utlevering via Bring"
       });
     }
     return emailInformaitionItems;
@@ -449,18 +483,18 @@ export class EmailService implements MessengerService {
 
   public emailConfirmation(
     customerDetail: UserDetail,
-    confirmationCode: string,
+    confirmationCode: string
   ) {
     let emailSetting: EmailSetting = {
       toEmail: customerDetail.email,
       fromEmail: EMAIL_SETTINGS.types.emailConfirmation.fromEmail,
       subject: EMAIL_SETTINGS.types.emailConfirmation.subject,
-      userId: customerDetail.id,
+      userId: customerDetail.id
     };
 
     let emailVerificationUri = process.env.CLIENT_URI
       ? process.env.CLIENT_URI
-      : 'localhost:4200/';
+      : "localhost:4200/";
     emailVerificationUri +=
       EMAIL_SETTINGS.types.emailConfirmation.path + confirmationCode;
 
@@ -475,12 +509,12 @@ export class EmailService implements MessengerService {
       toEmail: customerDetail.email,
       fromEmail: EMAIL_SETTINGS.types.passwordReset.fromEmail,
       subject: EMAIL_SETTINGS.types.passwordReset.subject,
-      userId: customerDetail.id,
+      userId: customerDetail.id
     };
 
     let passwordResetUri = process.env.CLIENT_URI
       ? process.env.CLIENT_URI
-      : 'localhost:4200/';
+      : "localhost:4200/";
     passwordResetUri +=
       EMAIL_SETTINGS.types.passwordReset.path + passwordResetCode;
 

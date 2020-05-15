@@ -1,19 +1,31 @@
 import { Hook } from "../../../hook/hook";
-import { AccessToken, Booking, BlError } from "@wizardcoder/bl-model";
+import {
+  AccessToken,
+  Booking,
+  BlError,
+  UserDetail
+} from "@wizardcoder/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { bookingSchema } from "../booking.schema";
 import { PermissionService } from "../../../auth/permission/permission.service";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 import { DateService } from "../../../blc/date.service";
 import { isNullOrUndefined } from "util";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { EmailService } from "../../../messenger/email/email-service";
+import { BookingEmailService } from "../../../messenger/email/booking-email-service";
 
 export class BookingPatchHook extends Hook {
   private bookingStorage: BlDocumentStorage<Booking>;
   private permissionService: PermissionService;
   private dbQueryBuilder: SEDbQueryBuilder;
   private dateService: DateService;
+  private bookingEmailService: BookingEmailService;
 
-  constructor(bookingStorage?: BlDocumentStorage<Booking>) {
+  constructor(
+    bookingStorage?: BlDocumentStorage<Booking>,
+    bookingEmailService?: BookingEmailService
+  ) {
     super();
     this.bookingStorage = bookingStorage
       ? bookingStorage
@@ -21,6 +33,9 @@ export class BookingPatchHook extends Hook {
     this.permissionService = new PermissionService();
     this.dbQueryBuilder = new SEDbQueryBuilder();
     this.dateService = new DateService();
+    this.bookingEmailService = bookingEmailService
+      ? bookingEmailService
+      : new BookingEmailService();
   }
 
   public async before(
@@ -90,10 +105,12 @@ export class BookingPatchHook extends Hook {
       }
       throw e;
     }
+    /*
 
     if (activeBookings && activeBookings.length > 0) {
       throw new BlError("customer already has an active booking");
     }
+    */
 
     return false;
   }
@@ -112,6 +129,13 @@ export class BookingPatchHook extends Hook {
           "booking.booked is set but customer is null or undefined"
         );
       }
+
+      try {
+        const result = await this.bookingEmailService.sendBookingConfirmation(
+          booking,
+          { id: accessToken.details, permission: accessToken.permission }
+        );
+      } catch (e) {}
     }
 
     return bookings;
