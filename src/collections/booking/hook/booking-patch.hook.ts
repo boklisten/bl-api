@@ -82,7 +82,7 @@ export class BookingPatchHook extends Hook {
 
     let activeBookings;
 
-    if (body.customer && body.booked) {
+    if (body.customer) {
       try {
         let query = this.dbQueryBuilder.getDbQuery(
           {
