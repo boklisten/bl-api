@@ -105,12 +105,10 @@ export class BookingPatchHook extends Hook {
       }
       throw e;
     }
-    /*
 
     if (activeBookings && activeBookings.length > 0) {
       throw new BlError("customer already has an active booking");
     }
-    */
 
     return false;
   }
