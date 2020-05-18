@@ -64,6 +64,11 @@ export class DateService {
 
     return this.between(date, from.toDate(), to.toDate(), location);
   }
+
+  public isUnder18(birthday: Date | string): boolean {
+    let eightTeenYearsAgo = moment().subtract(18, "years");
+    return moment(birthday).isSameOrBefore(eightTeenYearsAgo, "day");
+  }
 }
 
 export const dateService = new DateService();

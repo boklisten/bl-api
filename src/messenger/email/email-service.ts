@@ -39,6 +39,7 @@ import { EmailUser } from "@wizardcoder/bl-email/dist/ts/template/email-user";
 import { isNullOrUndefined } from "util";
 import { logger } from "../../logger/logger";
 import { itemSchema } from "../../collections/item/item.schema";
+import { DateService } from "../../blc/date.service";
 
 export class EmailService implements MessengerService {
   private _emailHandler: EmailHandler;
@@ -46,6 +47,7 @@ export class EmailService implements MessengerService {
   private _dateFormat: string;
   private _itemStorage: BlDocumentStorage<Item>;
   private _postOffice: PostOffice;
+  private _dateService: DateService;
 
   constructor(
     emailHandler?: EmailHandler,
@@ -206,7 +208,11 @@ export class EmailService implements MessengerService {
     try {
       const result = await this._postOffice.send([recipient], messageOptions);
 
-      if (customerDetail.guardian) {
+      if (
+        customerDetail.dob &&
+        customerDetail.guardian &&
+        this._dateService.isUnder18(customerDetail.dob)
+      ) {
         await this.sendToGuardian(customerDetail, recipient, messageOptions);
       }
       return true;
