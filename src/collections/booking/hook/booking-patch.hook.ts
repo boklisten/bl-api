@@ -165,7 +165,6 @@ export class BookingPatchHook extends Hook {
         }
 
         if (subtype) {
-          console.log("should send mail", subtype);
           try {
             const result = await this.bookingEmailService.sendBookingEmail(
               accessToken.details,
@@ -173,10 +172,7 @@ export class BookingPatchHook extends Hook {
               subtype,
               { id: accessToken.details, permission: accessToken.permission }
             );
-            console.log("result", result);
-          } catch (e) {
-            console.log("error mail", e);
-          }
+          } catch (e) {}
         }
       }
     }
