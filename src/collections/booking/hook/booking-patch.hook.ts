@@ -111,6 +111,24 @@ export class BookingPatchHook extends Hook {
         throw new BlError("customer already has an active booking");
       }
     } else {
+      if (!this.permissionService.isAdmin(accessToken.permission)) {
+        let booking;
+        try {
+          booking = await this.bookingStorage.get(id);
+        } catch (e) {
+          throw e;
+        }
+        if (
+          booking &&
+          booking.customer.toString() !== accessToken.details.toString()
+        ) {
+          throw new BlError(
+            `user "${
+              accessToken.details
+            }" has no permission to cancel booking "${id}"`
+          );
+        }
+      }
       return true;
     }
 
@@ -132,12 +150,35 @@ export class BookingPatchHook extends Hook {
         );
       }
 
-      try {
-        const result = await this.bookingEmailService.sendBookingConfirmation(
-          booking,
-          { id: accessToken.details, permission: accessToken.permission }
-        );
-      } catch (e) {}
+      if (
+        !this.permissionService.isPermissionEqualOrOver(
+          accessToken.permission,
+          "admin"
+        )
+      ) {
+        let subtype = null;
+
+        if (booking.booked && booking.customer) {
+          subtype = "confirmed";
+        } else if (!booking.booked && isNullOrUndefined(booking.customer)) {
+          subtype = "canceled";
+        }
+
+        if (subtype) {
+          console.log("should send mail", subtype);
+          try {
+            const result = await this.bookingEmailService.sendBookingEmail(
+              accessToken.details,
+              booking,
+              subtype,
+              { id: accessToken.details, permission: accessToken.permission }
+            );
+            console.log("result", result);
+          } catch (e) {
+            console.log("error mail", e);
+          }
+        }
+      }
     }
 
     return bookings;

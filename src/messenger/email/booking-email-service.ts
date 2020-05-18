@@ -30,13 +30,15 @@ export class BookingEmailService {
     this.dateService = new DateService();
   }
 
-  public async sendBookingConfirmation(
+  public async sendBookingEmail(
+    userId: string,
     booking: Booking,
+    subtype: "confirmed" | "canceled",
     user: any
   ): Promise<boolean> {
     let message: Message = {
       messageType: "booking",
-      messageSubtype: "confirmed",
+      messageSubtype: subtype,
       messageMethod: "email",
       sequenceNumber: 0,
       customerId: booking.customer
@@ -46,7 +48,7 @@ export class BookingEmailService {
       message = await this.messageStorage.add(message, user);
     } catch (e) {}
 
-    let userDetail = await this.userDetailStorage.get(booking.customer);
+    let userDetail = await this.userDetailStorage.get(userId);
 
     let branch = await this.branchStorage.get(booking.branch);
     let address = "";
@@ -62,7 +64,7 @@ export class BookingEmailService {
       address: address
     };
 
-    return this.emailService.sendBookingConfirmation(
+    return this.emailService.sendBookingEmail(
       message,
       userDetail,
       bookingDetails

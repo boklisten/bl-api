@@ -41,11 +41,21 @@ const testBooking3 = {
   to: new Date()
 };
 
+const testBooking4 = {
+  id: "testBooking4",
+  customer: "testBooking4Customer",
+  booked: true,
+  from: new Date(),
+  to: new Date()
+};
+
 sinon.stub(bookingStorage, "get").callsFake(id => {
   if (id == testBooking.id) {
     return Promise.resolve(testBooking);
   } else if (id == testBooking2.id) {
     return Promise.resolve(testBooking2);
+  } else if (id == testBooking4.id) {
+    return Promise.resolve(testBooking4);
   } else {
     return Promise.reject(new BlError("not found").code(702));
   }
@@ -131,6 +141,37 @@ describe("BookingPatchHook", () => {
         BlError,
         /customer already has an active booking/
       );
+    });
+
+    it("should reject if customer is trying to cancel another customers booking", () => {
+      const updateBody = {
+        customer: null,
+        booked: false
+      };
+      const accessToken = {
+        details: testId,
+        permission: "customer"
+      };
+      return expect(
+        bookingPatchHook.before(updateBody, accessToken as any, "testBooking4")
+      ).to.eventually.be.rejectedWith(
+        BlError,
+        `user "${testId}" has no permission to cancel booking "testBooking4"`
+      );
+    });
+
+    it("should resolve if user is admin and trying to cancel another users booking", () => {
+      const updateBody = {
+        customer: null,
+        booked: false
+      };
+      const accessToken = {
+        details: testId,
+        permission: "admin"
+      };
+      return expect(
+        bookingPatchHook.before(updateBody, accessToken as any, "testBooking4")
+      ).to.eventually.be.true;
     });
 
     it("should resolve", () => {

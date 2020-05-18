@@ -117,7 +117,7 @@ export class EmailService implements MessengerService {
     }
   }
 
-  public async sendBookingConfirmation(
+  public async sendBookingEmail(
     message: Message,
     customerDetail: UserDetail,
     bookingDetails: {
@@ -137,7 +137,7 @@ export class EmailService implements MessengerService {
 
     const messageOptions: MessageOptions = {
       type: "booking",
-      subtype: "confirmed",
+      subtype: message.messageSubtype as any,
       mediums: { email: true }
     };
 
