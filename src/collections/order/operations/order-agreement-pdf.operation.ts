@@ -1,12 +1,12 @@
-import {userDetailSchema} from '../../user-detail/user-detail.schema';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {BlapiResponse, Order, UserDetail} from '@wizardcoder/bl-model';
-import {Messenger} from '../../../messenger/messenger';
-import {SEResponseHandler} from '../../../response/se.response.handler';
-import {BlApiRequest} from '../../../request/bl-api-request';
-import {NextFunction, Request, Response} from 'express';
-import {Operation} from '../../../operation/operation';
-import {orderSchema} from '../order.schema';
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlapiResponse, Order, UserDetail } from "@wizardcoder/bl-model";
+import { Messenger } from "../../../messenger/messenger";
+import { SEResponseHandler } from "../../../response/se.response.handler";
+import { BlApiRequest } from "../../../request/bl-api-request";
+import { NextFunction, Request, Response } from "express";
+import { Operation } from "../../../operation/operation";
+import { orderSchema } from "../order.schema";
 
 export class OrderAgreementPdfOperation implements Operation {
   private _messenger: Messenger;
@@ -17,15 +17,15 @@ export class OrderAgreementPdfOperation implements Operation {
   constructor(
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     resHandler?: SEResponseHandler,
-    orderStorage?: BlDocumentStorage<Order>,
+    orderStorage?: BlDocumentStorage<Order>
   ) {
     this._messenger = new Messenger();
     this._userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage('userdetails', userDetailSchema);
+      : new BlDocumentStorage("userdetails", userDetailSchema);
     this._orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage('orders', orderSchema);
+      : new BlDocumentStorage("orders", orderSchema);
     this._resHandler = resHandler ? resHandler : new SEResponseHandler();
   }
 
@@ -33,16 +33,16 @@ export class OrderAgreementPdfOperation implements Operation {
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
-    next?: NextFunction,
+    next?: NextFunction
   ): Promise<boolean> {
     const order = await this._orderStorage.get(blApiRequest.documentId);
     const customerDetail = await this._userDetailStorage.get(
-      order.customer as string,
+      order.customer as string
     );
 
     const orderReceiptPdf = await this._messenger.getOrderAgreementPdf(
       customerDetail,
-      order,
+      order
     );
 
     this._resHandler.sendResponse(res, new BlapiResponse([orderReceiptPdf]));

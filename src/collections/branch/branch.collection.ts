@@ -3,6 +3,7 @@ import { branchSchema } from "./branch.schema";
 import { Schema } from "mongoose";
 import { BranchPostHook } from "./hook/branch-post.hook";
 import { BranchGetHook } from "./hook/branch-get.hook";
+import { BranchBookingTimesOperation } from "./operations/branch-booking-times.operation";
 
 export class BranchCollection implements BlCollection {
   collectionName = "branches";
@@ -28,7 +29,13 @@ export class BranchCollection implements BlCollection {
     },
     {
       method: "getId",
-      hook: new BranchGetHook()
+      hook: new BranchGetHook(),
+      operations: [
+        {
+          name: "booking-dates",
+          operation: new BranchBookingTimesOperation()
+        }
+      ]
     },
     {
       method: "post",

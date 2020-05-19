@@ -1,12 +1,12 @@
-import {BlDocument, BlError, UserPermission} from '@wizardcoder/bl-model';
-import {BlStorageHandler} from '../blStorageHandler';
-import {MongooseModelCreator} from './mongoose-schema-creator';
-import {PermissionService} from '../../auth/permission/permission.service';
-import {SEDbQuery} from '../../query/se.db-query';
-import {NestedDocument} from '../nested-document';
-import {ExpandFilter} from '../../query/expand-filter/db-query-expand-filter';
-import * as mongoose from 'mongoose';
-import {logger} from '../../logger/logger';
+import { BlDocument, BlError, UserPermission } from "@wizardcoder/bl-model";
+import { BlStorageHandler } from "../blStorageHandler";
+import { MongooseModelCreator } from "./mongoose-schema-creator";
+import { PermissionService } from "../../auth/permission/permission.service";
+import { SEDbQuery } from "../../query/se.db-query";
+import { NestedDocument } from "../nested-document";
+import { ExpandFilter } from "../../query/expand-filter/db-query-expand-filter";
+import * as mongoose from "mongoose";
+import { logger } from "../../logger/logger";
 
 export class MongoDbBlStorageHandler<T extends BlDocument>
   implements BlStorageHandler<T> {
@@ -14,11 +14,11 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   private permissionService: PermissionService;
 
   constructor(collectionName: string, schema: any) {
-    let mongoose = require('mongoose');
-    mongoose.Promise = require('bluebird');
+    let mongoose = require("mongoose");
+    mongoose.Promise = require("bluebird");
     const mongooseModelCreator = new MongooseModelCreator(
       collectionName,
-      schema,
+      schema
     );
     this.mongooseModel = mongooseModelCreator.create();
     this.permissionService = new PermissionService();
@@ -26,15 +26,15 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public get(id: string, userPermission?: UserPermission): Promise<T> {
     return new Promise((resolve, reject) => {
-      let filter: any = {_id: id};
+      let filter: any = { _id: id };
 
       this.mongooseModel.findOne(filter, (error, doc) => {
         if (error) {
           return reject(
             this.handleError(
               new BlError(`error when trying to find document with id "${id}"`),
-              error,
-            ),
+              error
+            )
           );
         }
 
@@ -49,15 +49,15 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public getByQuery(
     dbQuery: SEDbQuery,
-    allowedNestedDocuments?: NestedDocument[],
+    allowedNestedDocuments?: NestedDocument[]
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
       logger.silly(
         `mongoose.find(${JSON.stringify(dbQuery.getFilter())}, ${JSON.stringify(
-          dbQuery.getOgFilter(),
+          dbQuery.getOgFilter()
         )}).limit(${dbQuery.getLimitFilter()}).skip(${dbQuery.getSkipFilter()}).sort(${JSON.stringify(
-          dbQuery.getSortFilter(),
-        )})`,
+          dbQuery.getSortFilter()
+        )})`
       );
       this.mongooseModel
         .find(dbQuery.getFilter(), dbQuery.getOgFilter())
@@ -69,13 +69,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
             return reject(
               this.handleError(
                 new BlError(`could not find document by the provided query`),
-                error,
-              ),
+                error
+              )
             );
           }
 
           if (docs.length <= 0) {
-            return reject(new BlError('not found').code(702));
+            return reject(new BlError("not found").code(702));
           }
 
           const expandFilters = dbQuery.getExpandFilter();
@@ -84,7 +84,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
             this.retrieveNestedDocuments(
               docs,
               allowedNestedDocuments,
-              expandFilters,
+              expandFilters
             )
               .then((docsWithNestedDocuments: T[]) => {
                 resolve(docsWithNestedDocuments);
@@ -107,23 +107,39 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         try {
           idArr.push(mongoose.Types.ObjectId(id));
         } catch (e) {
-          return Promise.reject(new BlError('id in array is not valid'));
+          return Promise.reject(new BlError("id in array is not valid"));
         }
       }
 
-      let filter: any = {_id: {$in: idArr}, active: true};
+      let filter: any = { _id: { $in: idArr }, active: true };
 
       if (userPermission && this.permissionService.isAdmin(userPermission)) {
-        filter = {_id: {$id: idArr}}; // if user have admin privileges, he can also get documents that are inactive
+        filter = { _id: { $id: idArr } }; // if user have admin privileges, he can also get documents that are inactive
       }
 
       this.mongooseModel.find(filter).exec((error, docs) => {
         if (error || docs.length <= 0) {
           return reject(
             this.handleError(
-              new BlError('error when trying to find document'),
-              error,
-            ),
+              new BlError("error when trying to find document"),
+              error
+            )
+          );
+        }
+        resolve(docs);
+      });
+    });
+  }
+
+  public aggregate(aggregation: any[]): Promise<T[]> {
+    return new Promise((resolve, reject) => {
+      this.mongooseModel.aggregate(aggregation, (error, docs) => {
+        if (error || docs === null) {
+          reject(
+            this.handleError(
+              new BlError("failed to aggregate documents"),
+              error
+            )
           );
         }
         resolve(docs);
@@ -133,7 +149,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public getAll(userPermission?: UserPermission): Promise<T[]> {
     return new Promise((resolve, reject) => {
-      let filter: any = {active: true};
+      let filter: any = { active: true };
 
       if (userPermission && this.permissionService.isAdmin(userPermission)) {
         filter = {}; // if user have admin privileges, he can also get documents that are inactive
@@ -142,7 +158,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       this.mongooseModel.find(filter, (error, docs) => {
         if (error || docs === null) {
           reject(
-            this.handleError(new BlError('failed to get all documnts'), error),
+            this.handleError(new BlError("failed to get all documnts"), error)
           );
         }
         resolve(docs);
@@ -152,7 +168,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public add(
     doc: T,
-    user?: {id: string; permission: UserPermission},
+    user?: { id: string; permission: UserPermission }
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       doc.creationTime = new Date();
@@ -168,9 +184,9 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         if (error) {
           return reject(
             this.handleError(
-              new BlError('error when trying to add document').data(doc),
-              error,
-            ),
+              new BlError("error when trying to add document").data(doc),
+              error
+            )
           );
         }
 
@@ -181,14 +197,14 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public addMany(docs: T[]): Promise<T[]> {
     return new Promise((resolve, reject) => {
-      reject(new BlError('not implemented'));
+      reject(new BlError("not implemented"));
     });
   }
 
   public update(
     id: string,
     data: any,
-    user: {id: string; permission: UserPermission},
+    user: { id: string; permission: UserPermission }
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       this.mongooseModel.findById(id, (error, document) => {
@@ -196,36 +212,36 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
           return reject(
             this.handleError(
               new BlError(`failed to find document with id ${id}`),
-              error,
-            ),
+              error
+            )
           );
         }
 
         if (document === null) {
           return reject(
-            new BlError(`could not find document with id "${id}"`).code(702),
+            new BlError(`could not find document with id "${id}"`).code(702)
           );
         }
 
-        if (data['user']) {
+        if (data["user"]) {
           return reject(
-            new BlError('can not change user restrictions after creation').code(
-              701,
-            ),
+            new BlError("can not change user restrictions after creation").code(
+              701
+            )
           );
         }
 
         document.set(data);
-        document.set({lastUpdated: new Date()});
+        document.set({ lastUpdated: new Date() });
 
         document.save((error, updatedDocument) => {
           if (error) {
             logger.error(`failed to save document: ${error}`);
             return reject(
               this.handleError(
-                new BlError(`failed to save the document`).store('data', data),
-                error,
-              ),
+                new BlError(`failed to save the document`).store("data", data),
+                error
+              )
             );
           }
 
@@ -235,29 +251,29 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     });
   }
 
-  public updateMany(docs: {id: string; data: any}[]): Promise<T[]> {
+  public updateMany(docs: { id: string; data: any }[]): Promise<T[]> {
     return new Promise((resolve, reject) => {
-      reject(new BlError('not implemented'));
+      reject(new BlError("not implemented"));
     });
   }
 
   public remove(
     id: string,
-    user: {id: string; permission: UserPermission},
+    user: { id: string; permission: UserPermission }
   ): Promise<T> {
     return new Promise((resolve, reject) => {
-      this.mongooseModel.deleteOne({_id: id}, (error, doc) => {
+      this.mongooseModel.deleteOne({ _id: id }, (error, doc) => {
         if (error) {
           return reject(
             this.handleError(
               new BlError(`could not remove document with id "${id}"`),
-              error,
-            ),
+              error
+            )
           );
         }
 
         if (doc === null) {
-          return reject(new BlError('not found').code(702).store('id', id));
+          return reject(new BlError("not found").code(702).store("id", id));
         }
 
         resolve(doc);
@@ -267,7 +283,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public removeMany(ids: string[]): Promise<T[]> {
     return new Promise((resolve, reject) => {
-      reject(new BlError('not implemented'));
+      reject(new BlError("not implemented"));
     });
   }
 
@@ -279,7 +295,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         })
         .catch(() => {
           reject(
-            new BlError(`document with id ${id} does not exist`).code(702),
+            new BlError(`document with id ${id} does not exist`).code(702)
           );
         });
     });
@@ -295,7 +311,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     docs: BlDocument[],
     allowedNestedDocuments: NestedDocument[],
     expandFilters: ExpandFilter[],
-    userPermission?: UserPermission,
+    userPermission?: UserPermission
   ): Promise<BlDocument[]> {
     const promiseArr: Promise<BlDocument>[] = [];
 
@@ -317,7 +333,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
     for (let doc of docs) {
       promiseArr.push(
-        this.getNestedDocuments(doc, allowedNestedDocuments, userPermission),
+        this.getNestedDocuments(doc, allowedNestedDocuments, userPermission)
       );
     }
 
@@ -325,14 +341,14 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       const docsWithExpandedDocs = await Promise.all(promiseArr);
       return docsWithExpandedDocs;
     } catch (e) {
-      throw new BlError('could not retrieve nested documents').code(702).add(e);
+      throw new BlError("could not retrieve nested documents").code(702).add(e);
     }
   }
 
   private async getNestedDocuments(
     doc: BlDocument,
     nestedDocuments: NestedDocument[],
-    userPermission?: UserPermission,
+    userPermission?: UserPermission
   ): Promise<any> {
     const nestedDocumentsPromArray: Promise<any>[] = [];
 
@@ -342,8 +358,8 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
           this.getNestedDocument(
             doc[nestedDocument.field],
             nestedDocument,
-            userPermission,
-          ),
+            userPermission
+          )
         );
       }
     }
@@ -364,26 +380,26 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   private getNestedDocument(
     id: string,
     nestedDocument: NestedDocument,
-    userPermission?: UserPermission,
+    userPermission?: UserPermission
   ): Promise<any> {
     const documentStorage = new MongoDbBlStorageHandler(
       nestedDocument.collection,
-      nestedDocument.mongooseSchema,
+      nestedDocument.mongooseSchema
     );
     return documentStorage.get(id, userPermission);
   }
 
   private handleError(blError: BlError, error: any): BlError {
     if (error) {
-      if (error.name === 'CastError') {
-        return blError.code(702).store('castError', error);
-      } else if (error.name == 'ValidationError') {
-        return blError.code(701).store('validationError', error);
+      if (error.name === "CastError") {
+        return blError.code(702).store("castError", error);
+      } else if (error.name == "ValidationError") {
+        return blError.code(701).store("validationError", error);
       } else {
         return blError.code(200);
       }
     } else {
-      return new BlError('EndpointMongoDb: unknown error')
+      return new BlError("EndpointMongoDb: unknown error")
         .add(blError)
         .code(200);
     }

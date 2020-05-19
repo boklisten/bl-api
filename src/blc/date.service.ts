@@ -69,6 +69,10 @@ export class DateService {
     let eightTeenYearsAgo = moment().subtract(18, "years");
     return moment(birthday).isSameOrBefore(eightTeenYearsAgo, "day");
   }
+
+  public toDate(dateString: string, format: string, location: MomentLocation) {
+    return moment.tz(dateString, format, location).toDate();
+  }
 }
 
 export const dateService = new DateService();
