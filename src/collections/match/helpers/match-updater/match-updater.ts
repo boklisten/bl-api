@@ -2,20 +2,20 @@ import {
   Match,
   MatchProfile,
   MatchItem,
-  MatchState,
-} from '@wizardcoder/bl-model';
-import {matchSchema} from '../../match.schema';
-import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
-import {OpeningHourHelper} from '../../../opening-hour/helpers/opening-hour-helper';
+  MatchState
+} from "@wizardcoder/bl-model";
+import { matchSchema } from "../../match.schema";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { OpeningHourHelper } from "../../../opening-hour/helpers/opening-hour-helper";
 
 export class MatchUpdater {
   constructor(
     private matchStorage?: BlDocumentStorage<Match>,
-    private openingHourHelper?: OpeningHourHelper,
+    private openingHourHelper?: OpeningHourHelper
   ) {
     this.matchStorage = this.matchStorage
       ? this.matchStorage
-      : new BlDocumentStorage<Match>('matches', matchSchema);
+      : new BlDocumentStorage<Match>("matches", matchSchema);
 
     this.openingHourHelper = this.openingHourHelper
       ? this.openingHourHelper
@@ -33,7 +33,7 @@ export class MatchUpdater {
   public async update(
     match: Match,
     reciever: MatchProfile,
-    matchedItems: MatchItem[],
+    matchedItems: MatchItem[]
   ): Promise<Match> {
     match.recievers = !match.recievers ? [] : match.recievers;
     match.events = !match.events ? [] : match.events;
@@ -42,7 +42,7 @@ export class MatchUpdater {
     this.updateMatchItems(match, reciever.userId, matchedItems);
 
     match.state = this.getMatchState(match);
-    match.events.push({type: match.state, time: new Date()});
+    match.events.push({ type: match.state, time: new Date() });
 
     /*
     let updatedMatch = await this.matchStorage.update(match.id, match, {
@@ -55,7 +55,7 @@ export class MatchUpdater {
   }
 
   private addMeetingPoint(match: Match): Promise<Match> {
-    throw 'not implemented';
+    throw "not implemented";
     //this.openingHourHelper.getNextAvailableOpeningHour();
   }
 
@@ -69,16 +69,16 @@ export class MatchUpdater {
     }
 
     if (matchedItemCount === match.items.length) {
-      return 'fully-matched';
+      return "fully-matched";
     } else {
-      return 'partly-matched';
+      return "partly-matched";
     }
   }
 
   private updateMatchItems(
     match: Match,
     recieverId: string,
-    matchedItems: MatchItem[],
+    matchedItems: MatchItem[]
   ) {
     let matchedItemCount = 0;
     for (let mi of match.items) {
