@@ -30,9 +30,7 @@ export class BranchBookingTimesOperation implements Operation {
     res?: Response,
     next?: NextFunction
   ): Promise<boolean> {
-    console.log("called run on booking-times");
     let bookingTimes: any[];
-    console.log("documentId", blApiRequest.documentId);
 
     let aggregation = [
       {
