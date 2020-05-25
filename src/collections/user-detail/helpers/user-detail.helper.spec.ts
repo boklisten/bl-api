@@ -1,17 +1,17 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import {expect} from 'chai';
-import * as sinon from 'sinon';
-import {AccessToken, BlError, UserDetail} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {UserDetailHelper} from './user-detail.helper';
-import {DibsEasyPayment} from '../../../payment/dibs/dibs-easy-payment/dibs-easy-payment';
+import "mocha";
+import * as chai from "chai";
+import * as chaiAsPromised from "chai-as-promised";
+import { expect } from "chai";
+import * as sinon from "sinon";
+import { AccessToken, BlError, UserDetail } from "@wizardcoder/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { UserDetailHelper } from "./user-detail.helper";
+import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 
 chai.use(chaiAsPromised);
 
-describe('UserDetailHelper', () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>('userdetails');
+describe("UserDetailHelper", () => {
+  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
   const userDetailHelper = new UserDetailHelper(userDetailStorage);
 
   let testUserDetail: UserDetail;
@@ -20,99 +20,99 @@ describe('UserDetailHelper', () => {
 
   beforeEach(() => {
     testUserDetail = {
-      id: 'userDetail1',
-      name: '',
-      email: 'bill@blapi.co',
-      phone: '',
-      address: '',
-      postCode: '',
-      postCity: '',
-      country: '',
+      id: "userDetail1",
+      name: "",
+      email: "bill@blapi.co",
+      phone: "",
+      address: "",
+      postCode: "",
+      postCity: "",
+      country: "",
       dob: new Date(),
-      branch: 'branch1',
+      branch: "branch1"
     };
 
     testAccessToken = {
-      sub: 'user1',
-      details: 'userDetail1',
+      sub: "user1",
+      details: "userDetail1"
     } as AccessToken;
 
     userDetailStorageUpdateSuccess = true;
   });
 
   let userDetailStorageUpdateStub = sinon
-    .stub(userDetailStorage, 'update')
+    .stub(userDetailStorage, "update")
     .callsFake((id: string, data: any, user: any) => {
       if (!userDetailStorageUpdateSuccess) {
-        return Promise.reject(new BlError('could not update'));
+        return Promise.reject(new BlError("could not update"));
       }
 
       let returnObj = Object.assign(testUserDetail, data);
       return Promise.resolve(returnObj);
     });
 
-  sinon.stub(userDetailStorage, 'get').callsFake((id: string) => {
+  sinon.stub(userDetailStorage, "get").callsFake((id: string) => {
     if (id !== testUserDetail.id) {
-      return Promise.reject(new BlError('not found'));
+      return Promise.reject(new BlError("not found"));
     }
 
     return Promise.resolve(testUserDetail);
   });
 
-  describe('#updateUserDetailBasedOnDibsEasyPayment', () => {
+  describe("#updateUserDetailBasedOnDibsEasyPayment", () => {
     let testDibsEasyPayment;
 
     beforeEach(() => {
       testDibsEasyPayment = {
         consumer: {
           privatePerson: {
-            email: 'bill@blapi.co',
-            firstName: 'Billy',
-            lastName: 'Joel',
-            merchantReference: 'ref123',
+            email: "bill@blapi.co",
+            firstName: "Billy",
+            lastName: "Joel",
+            merchantReference: "ref123",
             phoneNumber: {
-              number: '12345678',
-              prefix: '+47',
-            },
+              number: "12345678",
+              prefix: "+47"
+            }
           },
           shippingAddress: {
-            addressLine1: 'Trondheimsveien 10',
-            addressLine2: 'HO403',
-            city: 'OSLO',
-            country: 'NOR',
-            postalCode: '0560',
-          },
-        },
+            addressLine1: "Trondheimsveien 10",
+            addressLine2: "HO403",
+            city: "OSLO",
+            country: "NOR",
+            postalCode: "0560"
+          }
+        }
       };
     });
 
-    it('should update userDetail with values from dibsEasyPayment', done => {
+    it("should update userDetail with values from dibsEasyPayment", done => {
       userDetailHelper
         .updateUserDetailBasedOnDibsEasyPayment(
-          'userDetail1',
+          "userDetail1",
           testDibsEasyPayment as DibsEasyPayment,
-          testAccessToken,
+          testAccessToken
         )
         .then((updatedUserDetail: UserDetail) => {
           let name =
             testDibsEasyPayment.consumer.privatePerson.firstName +
-            ' ' +
+            " " +
             testDibsEasyPayment.consumer.privatePerson.lastName;
 
           expect(updatedUserDetail.name).to.eq(name);
           expect(updatedUserDetail.phone).to.eq(
-            testDibsEasyPayment.consumer.privatePerson.phoneNumber.number,
+            testDibsEasyPayment.consumer.privatePerson.phoneNumber.number
           );
           expect(updatedUserDetail.postCode).to.eq(
-            testDibsEasyPayment.consumer.shippingAddress.postalCode,
+            testDibsEasyPayment.consumer.shippingAddress.postalCode
           );
           expect(updatedUserDetail.postCity).to.eql(
-            testDibsEasyPayment.consumer.shippingAddress.city,
+            testDibsEasyPayment.consumer.shippingAddress.city
           );
 
           let expectedAddress =
             testDibsEasyPayment.consumer.shippingAddress.addressLine1 +
-            ' ' +
+            " " +
             testDibsEasyPayment.consumer.shippingAddress.addressLine2;
           expect(updatedUserDetail.address).to.eql(expectedAddress);
 
@@ -120,34 +120,39 @@ describe('UserDetailHelper', () => {
         });
     });
 
-    it('should only update the fields in userDetail that are not already populated', done => {
-      testUserDetail.name = 'Jenny Jensen';
+    it("should only update the fields in userDetail that are not already populated", done => {
+      testUserDetail.name = "Jenny Jensen";
 
-      testDibsEasyPayment.consumer.privatePerson['firstName'] = 'Johnny';
+      testDibsEasyPayment.consumer.privatePerson["firstName"] = "Johnny";
 
       userDetailHelper
         .updateUserDetailBasedOnDibsEasyPayment(
-          'userDetail1',
+          "userDetail1",
           testDibsEasyPayment,
-          testAccessToken,
+          testAccessToken
         )
         .then((updatedUserDetail: UserDetail) => {
-          expect(updatedUserDetail.name).to.eq('Jenny Jensen'); // this value was already stored
+          expect(updatedUserDetail.name).to.eq("Jenny Jensen"); // this value was already stored
           expect(updatedUserDetail.postCity).to.eq(
-            testDibsEasyPayment.consumer.shippingAddress.city,
+            testDibsEasyPayment.consumer.shippingAddress.city
           ); // this value was empty, should set it from dibsPayment
           done();
         });
     });
   });
-  describe('getFirstName()', () => {
-    it('should resolve with first name', done => {
-      const names: {n: string; f: string}[] = [
-        {n: 'Albert Einstein', f: 'Albert'},
-        {n: 'Willy-Wonk Wonka', f: 'Willy-Wonk'},
-        {n: 'Einar', f: 'Einar'},
-        {n: '', f: ''},
-        {n: 'S Hansen', f: 'S'},
+  describe("getFirstName()", () => {
+    it("should resolve with first name", done => {
+      const names: { n: string; f: string }[] = [
+        { n: "Albert Einstein", f: "Albert" },
+        { n: "Willy-Wonk Wonka", f: "Willy-Wonk" },
+        { n: "Einar", f: "Einar" },
+        { n: "", f: "" },
+        { n: "S Hansen", f: "S" },
+        { n: "Billy  Bob", f: "Billy" },
+        { n: "Negil Veganer ", f: "Negil" },
+        { n: " Bobby Bobson", f: "Bobby" },
+        { n: "       Bobby Bobson", f: "Bobby" },
+        { n: "       Bobby            Bobson", f: "Bobby" }
       ];
 
       for (let name of names) {
@@ -157,15 +162,18 @@ describe('UserDetailHelper', () => {
     });
   });
 
-  describe('getLastName()', () => {
-    it('should resolve with last name', done => {
-      const names: {n: string; f: string}[] = [
-        {n: 'Albert Einstein', f: 'Einstein'},
-        {n: 'Willy-Wonk Wonka', f: 'Wonka'},
-        {n: 'Einar', f: ''},
-        {n: '', f: ''},
-        {n: 'S Hansen', f: 'Hansen'},
-        {n: 'Wiliam Jens-book Jensen', f: 'Jensen'},
+  describe("getLastName()", () => {
+    it("should resolve with last name", done => {
+      const names: { n: string; f: string }[] = [
+        { n: "Albert Einstein", f: "Einstein" },
+        { n: "Willy-Wonk Wonka", f: "Wonka" },
+        { n: "Einar", f: "" },
+        { n: "", f: "" },
+        { n: "S Hansen", f: "Hansen" },
+        { n: "Wiliam Jens-book Jensen", f: "Jensen" },
+        { n: "Birger  Ruud", f: "Ruud" },
+        { n: "Jens Hansen ", f: "Hansen" },
+        { n: "     Bjorn   Belto ", f: "Belto" }
       ];
 
       for (let name of names) {
