@@ -6,8 +6,10 @@ type MomentLocation = "Europe/Oslo" | string;
  * single place for localization of time zones
  */
 export class DateService {
+  private defaultLocation: MomentLocation;
   constructor() {
-    moment.tz.setDefault("Europe/London");
+    this.defaultLocation = "Europe/London";
+    moment.tz.setDefault(this.defaultLocation);
   }
 
   public utcToLocalTimeString(
@@ -25,6 +27,13 @@ export class DateService {
     return moment
       .tz(date, location)
       .endOf("day")
+      .toDate();
+  }
+
+  public startOfDay(date: Date | string, location?: MomentLocation): Date {
+    return moment
+      .tz(date, location ? location : this.defaultLocation)
+      .startOf("day")
       .toDate();
   }
 

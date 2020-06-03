@@ -36,7 +36,7 @@ export class BranchBookingTimesOperation implements Operation {
       {
         $match: {
           branch: mongoose.Types.ObjectId(blApiRequest.documentId),
-          from: { $gt: new Date() },
+          from: { $gt: this.dateService.startOfDay(new Date()) },
           booked: false
         }
       },
