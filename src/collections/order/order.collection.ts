@@ -70,7 +70,7 @@ export class OrderCollection implements BlCollection {
     {
       method: "getAll",
       restriction: {
-        permissions: ["manager", "admin", "super"]
+        permissions: ["employee", "manager", "admin", "super"]
       },
       nestedDocuments: [
         {
@@ -114,7 +114,7 @@ export class OrderCollection implements BlCollection {
         },
         {
           fieldName: "customer",
-          type: "expand"
+          type: "object-id"
         }
       ]
     }
