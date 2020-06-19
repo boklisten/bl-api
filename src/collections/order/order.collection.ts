@@ -11,6 +11,7 @@ import { OrderPostHook } from "./hooks/order.post.hook";
 import { OrderReceiptPdfOperation } from "./operations/order-receipt-pdf.operation";
 import { OrderAgreementPdfOperation } from "./operations/order-agreement-pdf.operation";
 import { userDetailSchema } from "../user-detail/user-detail.schema";
+import { OrderPlaceOperation } from "./operations/place/order-place.operation";
 
 export class OrderCollection implements BlCollection {
   collectionName = "orders";
@@ -33,7 +34,17 @@ export class OrderCollection implements BlCollection {
       restriction: {
         permissions: ["customer", "employee", "manager", "admin", "super"],
         restricted: true
-      }
+      },
+      operations: [
+        {
+          name: "place",
+          operation: new OrderPlaceOperation(),
+          restriction: {
+            permissions: ["customer", "employee", "manager", "admin", "super"],
+            restricted: true
+          }
+        }
+      ]
     },
     {
       method: "getId",
