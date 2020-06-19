@@ -1,14 +1,14 @@
-import {NextFunction, Request, Response, Router} from 'express';
+import { NextFunction, Request, Response, Router } from "express";
 import {
   BlEndpointMethod,
-  BlEndpointOperation,
-} from '../collections/bl-collection';
-import {CollectionEndpointAuth} from './collection-endpoint-auth/collection-endpoint-auth';
+  BlEndpointOperation
+} from "../collections/bl-collection";
+import { CollectionEndpointAuth } from "./collection-endpoint-auth/collection-endpoint-auth";
 
-import {SEResponseHandler} from '../response/se.response.handler';
-import {AccessToken, BlError} from '@wizardcoder/bl-model';
-import {BlApiRequest} from '../request/bl-api-request';
-import {BlapiResponse} from '@wizardcoder/bl-model';
+import { SEResponseHandler } from "../response/se.response.handler";
+import { AccessToken, BlError } from "@wizardcoder/bl-model";
+import { BlApiRequest } from "../request/bl-api-request";
+import { BlapiResponse } from "@wizardcoder/bl-model";
 
 export class CollectionEndpointOperation {
   private _uri: string;
@@ -19,12 +19,12 @@ export class CollectionEndpointOperation {
     protected _router: Router,
     private collectionUri: string,
     private _method: BlEndpointMethod,
-    protected _operation: BlEndpointOperation,
+    protected _operation: BlEndpointOperation
   ) {
     this._uri = this.createUri(
       this.collectionUri,
       this._operation.name,
-      _method,
+      _method
     );
     this._collectionEndpointAuth = new CollectionEndpointAuth();
     this._responseHandler = new SEResponseHandler();
@@ -34,23 +34,23 @@ export class CollectionEndpointOperation {
     let uri = this.createUri(
       this.collectionUri,
       this._operation.name,
-      this._method,
+      this._method
     );
     switch (this._method) {
-      case 'getId':
+      case "getId":
         this._router.get(uri, this.handleRequest.bind(this));
         break;
-      case 'patch':
+      case "patch":
         this._router.patch(uri, this.handleRequest.bind(this));
         break;
-      case 'post':
+      case "post":
         this._router.post(uri, this.handleRequest.bind(this));
         break;
       default:
         throw new Error(
           `endpoint operation method "${
             this._method
-          }" is currently not supported`,
+          }" is currently not supported`
         );
     }
   }
@@ -58,17 +58,17 @@ export class CollectionEndpointOperation {
   private createUri(
     collectionUri: string,
     operationName: string,
-    operationMethod: BlEndpointMethod,
+    operationMethod: BlEndpointMethod
   ): string {
     let uri = collectionUri;
     if (
-      operationMethod === 'getId' ||
-      operationMethod === 'patch' ||
-      operationMethod == 'delete'
+      operationMethod === "getId" ||
+      operationMethod === "patch" ||
+      operationMethod == "delete"
     ) {
-      uri += '/:id';
+      uri += "/:id";
     }
-    uri += '/' + operationName;
+    uri += "/" + operationName;
     return uri;
   }
 
@@ -84,14 +84,14 @@ export class CollectionEndpointOperation {
           data: req.body,
           user: {
             id: accessToken.sub,
-            permission: accessToken.permission,
-          },
+            permission: accessToken.permission
+          }
         };
 
         this._operation.operation
           .run(blApiRequest, req, res, next)
           .then((blapiResponse: BlapiResponse | boolean) => {
-            if (typeof blapiResponse === 'boolean') {
+            if (typeof blapiResponse === "boolean") {
               return;
             }
 
@@ -102,7 +102,7 @@ export class CollectionEndpointOperation {
           });
       })
       .catch((blError: BlError) =>
-        this._responseHandler.sendErrorResponse(res, blError),
+        this._responseHandler.sendErrorResponse(res, blError)
       );
   }
 }
