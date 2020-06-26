@@ -51,8 +51,6 @@ export class OrderPlaceOperation implements Operation {
   ): Promise<boolean> {
     let order: Order;
 
-    console.log("user", blApiRequest.user);
-
     try {
       order = await this._orderStorage.get(blApiRequest.documentId);
     } catch (e) {
@@ -60,16 +58,16 @@ export class OrderPlaceOperation implements Operation {
       throw new ReferenceError(`order "${blApiRequest.documentId}" not found`);
     }
 
-    let customerItems: CustomerItem[];
+    let customerItems: CustomerItem[] = [];
 
     try {
       customerItems = await this._orderToCustomerItemGenerator.generate(order);
     } catch (e) {
-      console.log(e);
+      console.log("customerItem could not be created", e);
       throw e;
     }
 
-    if (customerItems.length > 0) {
+    if (customerItems && customerItems.length > 0) {
       try {
         for (let customerItem of customerItems) {
           customerItem = await this._customerItemStorage.add(
@@ -77,7 +75,9 @@ export class OrderPlaceOperation implements Operation {
             blApiRequest.user
           );
         }
+
         order = this.addCustomerItemIdToOrderItems(order, customerItems);
+
         await this._orderStorage.update(
           order.id,
           { orderItems: order.orderItems },

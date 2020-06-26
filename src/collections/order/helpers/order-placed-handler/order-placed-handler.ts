@@ -100,7 +100,8 @@ export class OrderPlacedHandler {
         if (
           orderItem.type === "extend" ||
           orderItem.type === "buyout" ||
-          orderItem.type === "buyback"
+          orderItem.type === "buyback" ||
+          orderItem.type === "cancel"
         ) {
           let customerItemId = null;
 
@@ -126,6 +127,12 @@ export class OrderPlacedHandler {
               );
             } else if (orderItem.type === "buyback") {
               await this._customerItemHandler.buyback(
+                customerItemId,
+                order.id,
+                orderItem
+              );
+            } else if (orderItem.type === "cancel") {
+              await this._customerItemHandler.cancel(
                 customerItemId,
                 order.id,
                 orderItem
