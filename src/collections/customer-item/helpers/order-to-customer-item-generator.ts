@@ -18,6 +18,10 @@ export class OrderToCustomerItemGenerator {
     let customerItems = [];
     let customerDetail: UserDetail;
 
+    if (!order.customer) {
+      return [];
+    }
+
     try {
       customerDetail = await this._userDetailStorage.get(
         order.customer as string

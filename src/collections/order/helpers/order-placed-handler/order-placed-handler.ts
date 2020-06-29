@@ -67,11 +67,15 @@ export class OrderPlacedHandler {
     order: Order,
     accessToken: AccessToken
   ): Promise<Order> {
-    try {
-      const userDetail = await this.userDetailStorage.get(
-        order.customer as string
-      );
+    let userDetail;
 
+    try {
+      userDetail = await this.userDetailStorage.get(order.customer as string);
+    } catch (e) {
+      userDetail = null;
+    }
+
+    try {
       await this.paymentHandler.confirmPayments(order, accessToken);
 
       const placedOrder = await this.orderStorage.update(
