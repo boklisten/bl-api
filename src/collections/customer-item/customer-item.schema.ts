@@ -12,6 +12,9 @@ export const customerItemSchema = {
   age: {
     type: Schema.Types.String
   },
+  blid: {
+    type: Schema.Types.String
+  },
   customer: {
     type: Schema.Types.Mixed,
     require: true

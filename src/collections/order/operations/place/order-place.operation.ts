@@ -2,13 +2,19 @@ import { NextFunction, Request, Response } from "express";
 import { Operation } from "../../../../operation/operation";
 import { BlApiRequest } from "../../../../request/bl-api-request";
 import { SEResponseHandler } from "../../../../response/se.response.handler";
-import { BlapiResponse, Order, CustomerItem } from "@wizardcoder/bl-model";
+import {
+  BlapiResponse,
+  Order,
+  CustomerItem,
+  UserDetail
+} from "@wizardcoder/bl-model";
 import { OrderToCustomerItemGenerator } from "../../../customer-item/helpers/order-to-customer-item-generator";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { orderSchema } from "../../order.schema";
 import { customerItemSchema } from "../../../customer-item/customer-item.schema";
 import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
 import { OrderValidator } from "../../helpers/order-validator/order-validator";
+import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 
 export class OrderPlaceOperation implements Operation {
   constructor(
@@ -17,7 +23,8 @@ export class OrderPlaceOperation implements Operation {
     private _orderStorage?: BlDocumentStorage<Order>,
     private _customerItemStorage?: BlDocumentStorage<CustomerItem>,
     private _orderPlacedHandler?: OrderPlacedHandler,
-    private _orderValidator?: OrderValidator
+    private _orderValidator?: OrderValidator,
+    private _userDetailStorage?: BlDocumentStorage<UserDetail>
   ) {
     this._resHandler = this._resHandler
       ? this._resHandler
@@ -38,9 +45,14 @@ export class OrderPlaceOperation implements Operation {
     this._orderPlacedHandler = this._orderPlacedHandler
       ? this._orderPlacedHandler
       : new OrderPlacedHandler();
+
     this._orderValidator = this._orderValidator
       ? this._orderValidator
       : new OrderValidator();
+
+    this._userDetailStorage = this._userDetailStorage
+      ? this._userDetailStorage
+      : new BlDocumentStorage("userdetails", userDetailSchema);
   }
 
   public async run(
@@ -54,7 +66,6 @@ export class OrderPlaceOperation implements Operation {
     try {
       order = await this._orderStorage.get(blApiRequest.documentId);
     } catch (e) {
-      console.log(e);
       throw new ReferenceError(`order "${blApiRequest.documentId}" not found`);
     }
 
@@ -63,19 +74,15 @@ export class OrderPlaceOperation implements Operation {
     try {
       customerItems = await this._orderToCustomerItemGenerator.generate(order);
     } catch (e) {
-      console.log("customerItem could not be created", e);
       throw e;
     }
 
     if (customerItems && customerItems.length > 0) {
       try {
-        for (let customerItem of customerItems) {
-          customerItem = await this._customerItemStorage.add(
-            customerItem,
-            blApiRequest.user
-          );
-        }
-
+        customerItems = await this.addCustomerItems(
+          customerItems,
+          blApiRequest.user
+        );
         order = this.addCustomerItemIdToOrderItems(order, customerItems);
 
         await this._orderStorage.update(
@@ -84,7 +91,6 @@ export class OrderPlaceOperation implements Operation {
           blApiRequest.user
         );
       } catch (e) {
-        console.log(e);
         throw e;
       }
     }
@@ -95,18 +101,80 @@ export class OrderPlaceOperation implements Operation {
         permission: blApiRequest.user.permission
       } as any);
     } catch (e) {
-      console.log(e);
       throw e;
     }
 
     try {
       await this._orderValidator.validate(order);
     } catch (e) {
-      console.log(e);
       throw e;
     }
 
+    if (customerItems && customerItems.length > 0) {
+      try {
+        // should add customerItems to customer if present
+        await this.addCustomerItemsToCustomer(
+          customerItems,
+          order.customer as string,
+          blApiRequest.user
+        );
+      } catch (e) {}
+    }
+
     this._resHandler.sendResponse(res, new BlapiResponse([order]));
+    return true;
+  }
+
+  private async addCustomerItems(
+    customerItems: CustomerItem[],
+    user: any
+  ): Promise<CustomerItem[]> {
+    let addedCustomerItems = [];
+    for (let customerItem of customerItems) {
+      try {
+        const ci = await this._customerItemStorage.add(customerItem, user);
+        addedCustomerItems.push(ci);
+      } catch (e) {}
+    }
+
+    return addedCustomerItems;
+  }
+
+  private async addCustomerItemsToCustomer(
+    customerItems: CustomerItem[],
+    customerId: string,
+    user: { id: string; permission: any }
+  ): Promise<boolean> {
+    let customerItemIds: string[] = customerItems.map(ci => {
+      return ci.id.toString();
+    });
+
+    let userDetail: UserDetail;
+
+    try {
+      userDetail = await this._userDetailStorage.get(customerId);
+    } catch (e) {
+      throw e;
+    }
+
+    let userDetailCustomerItemsIds = userDetail.customerItems
+      ? (userDetail.customerItems as string[])
+      : [];
+
+    userDetailCustomerItemsIds = userDetailCustomerItemsIds.concat(
+      customerItemIds
+    );
+
+    try {
+      await this._userDetailStorage.update(
+        customerId,
+        { customerItems: userDetailCustomerItemsIds },
+        user as any
+      );
+    } catch (e) {
+      throw e;
+    }
+
     return true;
   }
 

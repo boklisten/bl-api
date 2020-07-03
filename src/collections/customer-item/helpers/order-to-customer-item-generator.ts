@@ -32,9 +32,13 @@ export class OrderToCustomerItemGenerator {
 
     for (let orderItem of order.orderItems) {
       if (this.shouldCreateCustomerItem(orderItem)) {
-        customerItems.push(
-          this.convertOrderItemToCustomerItem(customerDetail, order, orderItem)
+        let customerItem = this.convertOrderItemToCustomerItem(
+          customerDetail,
+          order,
+          orderItem
         );
+        customerItem.viewableFor = [customerDetail.blid];
+        customerItems.push(customerItem);
       }
     }
 
@@ -78,6 +82,7 @@ export class OrderToCustomerItemGenerator {
       id: null,
       type: "partly-payment",
       item: orderItem.item,
+      blid: orderItem.blid,
       age: orderItem.age,
       customer: order.customer,
       deadline: orderItem.info.to,
@@ -100,6 +105,7 @@ export class OrderToCustomerItemGenerator {
       id: null,
       type: "rent",
       item: orderItem.item,
+      blid: orderItem.blid,
       age: orderItem.age,
       customer: order.customer,
       deadline: orderItem.info.to,
@@ -121,6 +127,7 @@ export class OrderToCustomerItemGenerator {
       id: null,
       type: "loan",
       item: orderItem.item,
+      blid: orderItem.blid,
       age: orderItem.age,
       customer: order.customer,
       deadline: orderItem.info.to,

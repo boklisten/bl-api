@@ -20,6 +20,9 @@ export let orderSchema = {
           type: Schema.Types.ObjectId,
           required: true
         },
+        blid: {
+          type: Schema.Types.String
+        },
         title: {
           type: Schema.Types.String,
           required: true
