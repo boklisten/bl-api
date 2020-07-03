@@ -15,7 +15,8 @@ import {
   Invoice,
   Company,
   Match,
-  Booking
+  Booking,
+  UniqueItem
 } from "@wizardcoder/bl-model";
 
 import { ItemCollection } from "../collections/item/item.collection";
@@ -39,6 +40,7 @@ import { InvoiceCollection } from "../collections/invoice/invoice.collection";
 import { CompanyCollection } from "../collections/company/company.collection";
 import { MatchCollection } from "../collections/match/match.collection";
 import { BookingCollection } from "../collections/booking/booking.collection";
+import { UniqueItemCollection } from "../collections/unique-item/unique-item.collection";
 
 export class CollectionEndpointCreator {
   private _responseHandler: SEResponseHandler;
@@ -86,7 +88,11 @@ export class CollectionEndpointCreator {
       new CollectionEndpoint<Match>(this._router, new MatchCollection()),
       new CollectionEndpoint<Invoice>(this._router, new InvoiceCollection()),
       new CollectionEndpoint<Company>(this._router, new CompanyCollection()),
-      new CollectionEndpoint<Booking>(this._router, new BookingCollection())
+      new CollectionEndpoint<Booking>(this._router, new BookingCollection()),
+      new CollectionEndpoint<UniqueItem>(
+        this._router,
+        new UniqueItemCollection()
+      )
     ];
 
     for (const collectionEndpoint of collectionEndpoints) {
