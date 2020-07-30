@@ -367,6 +367,7 @@ export class OrderEmailHandler {
       currency: this.defaultCurrency,
       amount: delivery.amount,
       address: deliveryAddress,
+      trackingNumber: delivery.info['trackingNumber'],
       estimatedDeliveryDate: delivery.info['estimatedDelivery']
         ? moment(delivery.info['estimatedDelivery'])
             .utcOffset(this.utcOffset)
