@@ -5,6 +5,7 @@ import {
   BlEndpoint
 } from "../bl-collection";
 import { uniqueItemSchema } from "./unique-item.schema";
+import { UniqueItemActiveOperation } from "./operations/unique-item-active.operation";
 
 export class UniqueItemCollection implements BlCollection {
   public collectionName = "uniqueitems";
@@ -19,6 +20,23 @@ export class UniqueItemCollection implements BlCollection {
       restriction: {
         permissions: ["employee", "manager", "admin", "super"]
       }
+    },
+    {
+      method: "getId",
+      restriction: {
+        permissions: ["employee", "manager", "admin", "super"]
+      },
+      operations: [
+        {
+          name: "active",
+          operation: new UniqueItemActiveOperation()
+          /*
+          restriction: {
+            permissions: [""employee", "manager", "admin", "super"]
+          }
+          */
+        }
+      ]
     },
     {
       method: "getAll",
