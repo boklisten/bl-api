@@ -1,11 +1,15 @@
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { Order, OrderItem, BlError } from "@wizardcoder/bl-model";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
+import { orderSchema } from "../../order.schema";
 
 export class OrderActive {
   private _queryBuilder: SEDbQueryBuilder;
 
   constructor(private _orderStorage: BlDocumentStorage<Order>) {
+    this._orderStorage = this._orderStorage
+      ? this._orderStorage
+      : new BlDocumentStorage("orders", orderSchema);
     this._queryBuilder = new SEDbQueryBuilder();
   }
 
