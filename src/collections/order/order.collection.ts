@@ -29,6 +29,12 @@ export class OrderCollection implements BlCollection {
       }
     },
     {
+      method: "delete",
+      restriction: {
+        permissions: ["admin", "super"]
+      }
+    },
+    {
       method: "patch",
       hook: new OrderPatchHook(),
       restriction: {
