@@ -7,7 +7,6 @@ import { BlError, AccessToken, UserDetail } from "@wizardcoder/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { UserCanDeleteUserDetail } from "./user-can-delete-user-detail";
 import { User } from "../../user/user";
-import { UserSchema } from "../../user/user.schema";
 
 chai.use(chaiAsPromised);
 
