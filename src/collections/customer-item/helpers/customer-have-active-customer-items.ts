@@ -8,7 +8,7 @@ export class CustomerHaveActiveCustomerItems {
   private queryBuilder: SEDbQueryBuilder;
   private customerItemActive: CustomerItemActive;
 
-  constructor(private _customerItemStorage: BlDocumentStorage<CustomerItem>) {
+  constructor(private _customerItemStorage?: BlDocumentStorage<CustomerItem>) {
     this._customerItemStorage = this._customerItemStorage
       ? this._customerItemStorage
       : new BlDocumentStorage("customeritems", customerItemSchema);

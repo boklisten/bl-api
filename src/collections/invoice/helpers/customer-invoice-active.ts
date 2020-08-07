@@ -8,7 +8,7 @@ export class CustomerInvoiceActive {
   private queryBuilder: SEDbQueryBuilder;
   private invoiceActive: InvoiceActive;
 
-  constructor(private invoiceStorage: BlDocumentStorage<Invoice>) {
+  constructor(private invoiceStorage?: BlDocumentStorage<Invoice>) {
     this.invoiceStorage = this.invoiceStorage
       ? this.invoiceStorage
       : new BlDocumentStorage("invoices", invoiceSchema);

@@ -6,7 +6,7 @@ import { orderSchema } from "../../order.schema";
 export class OrderActive {
   private _queryBuilder: SEDbQueryBuilder;
 
-  constructor(private _orderStorage: BlDocumentStorage<Order>) {
+  constructor(private _orderStorage?: BlDocumentStorage<Order>) {
     this._orderStorage = this._orderStorage
       ? this._orderStorage
       : new BlDocumentStorage("orders", orderSchema);
