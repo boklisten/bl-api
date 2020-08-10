@@ -11,6 +11,7 @@ chai.use(chaiAsPromised);
 import { CustomerHaveActiveCustomerItems } from "../../customer-item/helpers/customer-have-active-customer-items";
 import { CustomerInvoiceActive } from "../../invoice/helpers/customer-invoice-active";
 import { UserCanDeleteUserDetail } from "../helpers/user-can-delete-user-detail";
+import { UserDeleteAllInfo } from "../helpers/user-delete-all-info";
 
 describe("UserDetailDeleteHook", () => {
   const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
@@ -31,11 +32,15 @@ describe("UserDetailDeleteHook", () => {
   );
   const userCanDeleteUserDetail = new UserCanDeleteUserDetail();
   const canDeleteStub = sinon.stub(userCanDeleteUserDetail, "canDelete");
+  const userDeleteAllInfo = new UserDeleteAllInfo();
+  const deleteAllInfoStub = sinon.stub(userDeleteAllInfo, "deleteAllInfo");
+
   const userDetailDeleteHook = new UserDetailDeleteHook(
     orderActive,
     customerHaveActiveCustomerItems,
     customerInvoiceActive,
-    userCanDeleteUserDetail
+    userCanDeleteUserDetail,
+    userDeleteAllInfo
   );
 
   beforeEach(() => {
@@ -43,10 +48,12 @@ describe("UserDetailDeleteHook", () => {
     haveActiveCustomerItemsStub.reset();
     haveActiveCustomerItemsStub.reset();
     canDeleteStub.reset();
+    deleteAllInfoStub.reset();
   });
 
   describe("before()", () => {
     it("should reject if customer has active orders", () => {
+      canDeleteStub.resolves(true);
       haveActiveOrdersStub.resolves(true);
 
       const accessToken = {
@@ -61,6 +68,7 @@ describe("UserDetailDeleteHook", () => {
     });
 
     it("should reject if customer has active customer-items", () => {
+      canDeleteStub.resolves(true);
       haveActiveOrdersStub.resolves(false);
       haveActiveCustomerItemsStub.resolves(true);
 
@@ -76,6 +84,7 @@ describe("UserDetailDeleteHook", () => {
     });
 
     it("should reject if customer has active invoices", () => {
+      canDeleteStub.resolves(true);
       haveActiveOrdersStub.resolves(false);
       haveActiveCustomerItemsStub.resolves(false);
       haveActiveInvoicesStub.resolves(true);
@@ -108,11 +117,33 @@ describe("UserDetailDeleteHook", () => {
       ).to.eventually.be.rejectedWith(BlError, /no permission to delete user/);
     });
 
+    it("should reject if you does not have the permission to delete the user", () => {
+      haveActiveOrdersStub.resolves(false);
+      haveActiveCustomerItemsStub.resolves(false);
+      haveActiveInvoicesStub.resolves(false);
+      canDeleteStub.resolves(true);
+      deleteAllInfoStub.rejects(new BlError("user info could not be deleted"));
+
+      const accessToken = {
+        iss: "",
+        permission: "admin",
+        details: "user1"
+      } as AccessToken;
+
+      return expect(
+        userDetailDeleteHook.before({}, accessToken, testUserId)
+      ).to.eventually.be.rejectedWith(
+        BlError,
+        /user info could not be deleted/
+      );
+    });
+
     it("should resolve with true if user can be deleted", () => {
       haveActiveOrdersStub.resolves(false);
       haveActiveCustomerItemsStub.resolves(false);
       haveActiveInvoicesStub.resolves(false);
       canDeleteStub.resolves(true);
+      deleteAllInfoStub.resolves(true);
 
       const accessToken = {
         iss: "",
@@ -122,6 +153,18 @@ describe("UserDetailDeleteHook", () => {
 
       return expect(userDetailDeleteHook.before({}, accessToken, testUserId)).to
         .eventually.be.true;
+    });
+  });
+  describe("after()", () => {
+    it("should resolve", () => {
+      const accessToken = {
+        permission: "admin",
+        details: "user1"
+      } as AccessToken;
+
+      return expect(
+        userDetailDeleteHook.after([], accessToken)
+      ).to.eventually.be.eql([]);
     });
   });
 });
