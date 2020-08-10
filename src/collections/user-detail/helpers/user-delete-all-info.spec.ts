@@ -97,5 +97,54 @@ describe("UserDeleteAllInfo", () => {
         })
       ).to.be.true;
     });
+
+    it("should reject if there is more than one user with the same username", async () => {
+      const userIdToRemove = "5daf2cf19f92d901e41c10d4";
+      const userIdToRemove2 = "5daf2cf19f92d901e41c10d2";
+      const userDetailIdToRemove = "5daf2cf19f92d901e41c10d6";
+      const localLoginIdToRemove = "5daf2cf19f92d901e41c10ff";
+
+      userRemoveStub.resolves(true);
+      localLoginRemoveStub.resolves(true);
+
+      userGetByQueryStub.resolves([
+        { id: userIdToRemove, username: "user@1234.com" },
+        { id: userIdToRemove2, username: "user@1234.com" }
+      ]);
+
+      localLoginGetByQueryStub.resolves([{ id: localLoginIdToRemove }]);
+
+      const accessToken = {
+        details: "user777",
+        permission: "admin"
+      } as AccessToken;
+
+      return expect(
+        userDeleteAllInfo.deleteAllInfo(userDetailIdToRemove, accessToken)
+      ).to.eventually.be.rejectedWith(BlError, /multiple users was found/);
+    });
+
+    it("should resolve with true if user info was deleted", async () => {
+      const userIdToRemove = "5daf2cf19f92d901e41c10d4";
+      const userDetailIdToRemove = "5daf2cf19f92d901e41c10d6";
+      const localLoginIdToRemove = "5daf2cf19f92d901e41c10ff";
+
+      userRemoveStub.resolves(true);
+      localLoginRemoveStub.resolves(true);
+
+      userGetByQueryStub.resolves([
+        { id: userIdToRemove, username: "user@1234.com" }
+      ]);
+      localLoginGetByQueryStub.resolves([{ id: localLoginIdToRemove }]);
+
+      const accessToken = {
+        details: "user777",
+        permission: "admin"
+      } as AccessToken;
+
+      return expect(
+        userDeleteAllInfo.deleteAllInfo(userDetailIdToRemove, accessToken)
+      ).to.eventually.be.true;
+    });
   });
 });
