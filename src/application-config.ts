@@ -79,6 +79,9 @@ export const APP_CONFIG = {
     },
     local: {
       name: "local"
+    },
+    feide: {
+      name: "openid"
     }
   },
   token: {

@@ -1,16 +1,16 @@
-import {NextFunction, Response, Router, Request} from 'express';
+import { NextFunction, Response, Router, Request } from "express";
 
-import {OAuth2Strategy} from 'passport-google-oauth';
-import * as passport from 'passport';
-import {ApiPath} from '../../config/api-path';
-import {SEResponseHandler} from '../../response/se.response.handler';
-import {BlError} from '@wizardcoder/bl-model';
-import {TokenHandler} from '../token/token.handler';
-import * as blConfig from '../../application-config';
-import {UserHandler} from '../user/user.handler';
-import {User} from '../../collections/user/user';
-import {APP_CONFIG} from '../../application-config';
-import {LocalLoginHandler} from '../local/local-login.handler';
+import { OAuth2Strategy } from "passport-google-oauth";
+import * as passport from "passport";
+import { ApiPath } from "../../config/api-path";
+import { SEResponseHandler } from "../../response/se.response.handler";
+import { BlError } from "@wizardcoder/bl-model";
+import { TokenHandler } from "../token/token.handler";
+import * as blConfig from "../../application-config";
+import { UserHandler } from "../user/user.handler";
+import { User } from "../../collections/user/user";
+import { APP_CONFIG } from "../../application-config";
+import { LocalLoginHandler } from "../local/local-login.handler";
 
 export class GoogleAuth {
   private apiPath: ApiPath;
@@ -20,7 +20,7 @@ export class GoogleAuth {
     router: Router,
     private resHandler: SEResponseHandler,
     private tokenHandler: TokenHandler,
-    private userHandler: UserHandler,
+    private userHandler: UserHandler
   ) {
     this.apiPath = new ApiPath();
     this.createAuthGet(router);
@@ -35,12 +35,12 @@ export class GoogleAuth {
           passReqToCallback: true,
           callbackURL:
             process.env.BL_API_URI +
-            this.apiPath.createPath('auth/google/callback'),
+            this.apiPath.createPath("auth/google/callback")
         },
         (req, accessToken: any, refreshToken: any, profile: any, done: any) => {
           let provider = blConfig.APP_CONFIG.login.google.name;
           let providerId = profile.id;
-          let username = '';
+          let username = "";
 
           for (let profileEmail of profile.emails) {
             if (profileEmail.verified) {
@@ -52,10 +52,10 @@ export class GoogleAuth {
             return done(
               null,
               false,
-              new BlError('username not found by google')
+              new BlError("username not found by google")
                 .code(902)
-                .store('provider', provider)
-                .store('providerId', providerId),
+                .store("provider", provider)
+                .store("providerId", providerId)
             );
           }
 
@@ -74,10 +74,10 @@ export class GoogleAuth {
                         null,
                         null,
                         new BlError(
-                          'could not create default local login if none was found',
+                          "could not create default local login if none was found"
                         )
-                          .store('error', e)
-                          .code(902),
+                          .store("error", e)
+                          .code(902)
                       );
                     });
                 })
@@ -85,7 +85,7 @@ export class GoogleAuth {
                   done(
                     null,
                     null,
-                    new BlError('user not valid').code(902).add(userValidError),
+                    new BlError("user not valid").code(902).add(userValidError)
                   );
                 });
             },
@@ -100,50 +100,50 @@ export class GoogleAuth {
                   done(
                     null,
                     null,
-                    new BlError('could not create user')
-                      .store('username', username)
-                      .store('provider', provider)
-                      .store('providerId', providerId)
-                      .add(createError),
+                    new BlError("could not create user")
+                      .store("username", username)
+                      .store("provider", provider)
+                      .store("providerId", providerId)
+                      .add(createError)
                   );
-                },
+                }
               );
-            },
+            }
           );
-        },
-      ),
+        }
+      )
     );
   }
 
   private createTokens(username, done) {
     this.tokenHandler.createTokens(username).then(
-      (tokens: {accessToken: string; refreshToken: string}) => {
+      (tokens: { accessToken: string; refreshToken: string }) => {
         done(null, tokens);
       },
       (createTokenErrors: BlError) => {
         createTokenErrors.printStack();
 
         return done(
-          new BlError('could not create tokens')
+          new BlError("could not create tokens")
             .code(906)
-            .store('username', username)
-            .add(createTokenErrors),
+            .store("username", username)
+            .add(createTokenErrors)
         );
-      },
+      }
     );
   }
 
   private createAuthGet(router: Router) {
     router.get(
-      this.apiPath.createPath('auth/google'),
+      this.apiPath.createPath("auth/google"),
       passport.authenticate(blConfig.APP_CONFIG.login.google.name, {
-        scope: ['profile', 'email'],
-      }),
+        scope: ["profile", "email"]
+      })
     );
   }
 
   private createCallbackGet(router: Router) {
-    router.get(this.apiPath.createPath('auth/google/callback'), (req, res) => {
+    router.get(this.apiPath.createPath("auth/google/callback"), (req, res) => {
       passport.authenticate(
         blConfig.APP_CONFIG.login.google.name,
         (err, tokens, blError: BlError) => {
@@ -152,7 +152,7 @@ export class GoogleAuth {
           if (!tokens && (err || blError)) {
             return res.redirect(
               process.env.CLIENT_URI +
-                APP_CONFIG.path.client.auth.socialLoginFailure,
+                APP_CONFIG.path.client.auth.socialLoginFailure
             );
           }
 
@@ -161,10 +161,10 @@ export class GoogleAuth {
               res,
               tokens.accessToken,
               tokens.refreshToken,
-              this.apiPath.retrieveRefererPath(req.headers),
+              this.apiPath.retrieveRefererPath(req.headers)
             );
           }
-        },
+        }
       )(req, res);
     });
   }
