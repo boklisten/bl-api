@@ -1,139 +1,143 @@
-import {
-  BlCollection,
-  BlDocumentPermission,
-  BlEndpoint
-} from "../bl-collection";
-import { orderSchema } from "./order.schema";
-import { OrderValidator } from "./helpers/order-validator/order-validator";
-import { Schema } from "mongoose";
-import { OrderPatchHook } from "./hooks/order.patch.hook";
-import { OrderPostHook } from "./hooks/order.post.hook";
-import { OrderReceiptPdfOperation } from "./operations/order-receipt-pdf.operation";
-import { OrderAgreementPdfOperation } from "./operations/order-agreement-pdf.operation";
-import { userDetailSchema } from "../user-detail/user-detail.schema";
-import { OrderPlaceOperation } from "./operations/place/order-place.operation";
+import {BlCollection, BlDocumentPermission, BlEndpoint} from '../bl-collection';
+import {orderSchema} from './order.schema';
+import {OrderValidator} from './helpers/order-validator/order-validator';
+import {Schema} from 'mongoose';
+import {OrderPatchHook} from './hooks/order.patch.hook';
+import {OrderPostHook} from './hooks/order.post.hook';
+import {OrderReceiptPdfOperation} from './operations/order-receipt-pdf.operation';
+import {OrderAgreementPdfOperation} from './operations/order-agreement-pdf.operation';
+import {userDetailSchema} from '../user-detail/user-detail.schema';
+import {OrderPlaceOperation} from './operations/place/order-place.operation';
 
 export class OrderCollection implements BlCollection {
-  collectionName = "orders";
+  collectionName = 'orders';
   mongooseSchema = orderSchema;
   documentPermission: BlDocumentPermission = {
-    viewableForPermission: "employee"
+    viewableForPermission: 'employee',
   };
   endpoints: BlEndpoint[] = [
     {
-      method: "post",
+      method: 'post',
       hook: new OrderPostHook(),
       restriction: {
-        permissions: ["customer", "employee", "manager", "admin", "super"],
-        restricted: true
-      }
+        permissions: ['customer', 'employee', 'manager', 'admin', 'super'],
+        restricted: true,
+      },
     },
     {
-      method: "delete",
+      method: 'delete',
       restriction: {
-        permissions: ["admin", "super"]
-      }
+        permissions: ['admin', 'super'],
+      },
     },
     {
-      method: "patch",
+      method: 'patch',
       hook: new OrderPatchHook(),
       restriction: {
-        permissions: ["customer", "employee", "manager", "admin", "super"],
-        restricted: true
+        permissions: ['customer', 'employee', 'manager', 'admin', 'super'],
+        restricted: true,
       },
       operations: [
         {
-          name: "place",
+          name: 'place',
           operation: new OrderPlaceOperation(),
           restriction: {
-            permissions: ["customer", "employee", "manager", "admin", "super"],
-            restricted: true
-          }
-        }
-      ]
+            permissions: ['employee', 'manager', 'admin', 'super'],
+            restricted: true,
+          },
+        },
+        {
+          name: 'confirm',
+          operation: null,
+          restriction: {
+            permissions: ['customer', 'employee', 'manager', 'admin', 'super'],
+            restricted: true,
+          },
+        },
+      ],
     },
     {
-      method: "getId",
+      method: 'getId',
       nestedDocuments: [
         {
-          field: "customer",
+          field: 'customer',
           mongooseSchema: userDetailSchema,
-          collection: "userDetails"
-        }
+          collection: 'userDetails',
+        },
       ],
       restriction: {
-        permissions: ["customer", "employee", "manager", "admin", "super"],
-        restricted: true
+        permissions: ['customer', 'employee', 'manager', 'admin', 'super'],
+        restricted: true,
       },
       operations: [
         {
-          name: "receipt",
+          name: 'receipt',
           operation: new OrderReceiptPdfOperation(),
           restriction: {
-            permissions: ["customer", "employee", "manager", "admin", "super"],
-            restricted: true
-          }
+            permissions: ['customer', 'employee', 'manager', 'admin', 'super'],
+            restricted: true,
+          },
         },
         {
-          name: "agreement",
+          name: 'agreement',
           operation: new OrderAgreementPdfOperation(),
           restriction: {
-            permissions: ["customer", "employee", "manager", "admin", "super"],
-            restricted: true
-          }
-        }
-      ]
+            permissions: ['customer', 'employee', 'manager', 'admin', 'super'],
+            restricted: true,
+          },
+        },
+      ],
     },
     {
-      method: "getAll",
+      method: 'getAll',
       restriction: {
-        permissions: ["employee", "manager", "admin", "super"]
+        permissions: ['employee', 'manager', 'admin', 'super'],
       },
       nestedDocuments: [
         {
-          field: "customer",
-          collection: "userdetails",
-          mongooseSchema: userDetailSchema
-        }
+          field: 'customer',
+          collection: 'userdetails',
+          mongooseSchema: userDetailSchema,
+        },
       ],
       validQueryParams: [
         {
-          fieldName: "name",
-          type: "string"
+          fieldName: 'name',
+          type: 'string',
         },
         {
-          fieldName: "placed",
-          type: "boolean"
+          fieldName: 'placed',
+          type: 'boolean',
         },
         {
-          fieldName: "byCustomer",
-          type: "boolean"
+          fieldName: 'byCustomer',
+          type: 'boolean',
         },
         {
-          fieldName: "branch",
-          type: "string"
+          fieldName: 'branch',
+          type: 'string',
         },
         {
-          fieldName: "creationTime",
-          type: "date"
+          fieldName: 'creationTime',
+          type: 'date',
         },
         {
-          fieldName: "orderItems.delivered",
-          type: "boolean"
+          fieldName: 'orderItems.delivered',
+          type: 'boolean',
         },
         {
-          fieldName: "orderItems.handout",
-          type: "boolean"
+          fieldName: 'orderItems.handout',
+          type: 'boolean',
         },
         {
-          fieldName: "orderItems.movedToOrder",
-          type: "string"
+          fieldName: 'orderItems.movedToOrder',
+          type: 'string',
         },
         {
-          fieldName: "customer",
-          type: "object-id"
-        }
-      ]
-    }
+          fieldName: 'customer',
+          type: 'object-id',
+        },
+      ],
+    },
   ];
 }

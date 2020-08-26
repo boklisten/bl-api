@@ -6,20 +6,20 @@ import {
   AccessToken,
   Payment,
   UserDetail,
-  Delivery
-} from "@wizardcoder/bl-model";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { customerItemSchema } from "../../../customer-item/customer-item.schema";
-import { orderSchema } from "../../order.schema";
-import { PaymentHandler } from "../../../payment/helpers/payment-handler";
-import { userDetailSchema } from "../../../user-detail/user-detail.schema";
-import { EmailService } from "../../../../messenger/email/email-service";
-import { deliverySchema } from "../../../delivery/delivery.schema";
-import { Messenger } from "../../../../messenger/messenger";
-import { CustomerItemHandler } from "../../../customer-item/helpers/customer-item-handler";
-import { OrderItemMovedFromOrderHandler } from "../order-item-moved-from-order-handler/order-item-moved-from-order-handler";
-import { isNullOrUndefined } from "util";
-import { Matcher } from "../../../match/helpers/matcher/matcher";
+  Delivery,
+} from '@wizardcoder/bl-model';
+import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
+import {customerItemSchema} from '../../../customer-item/customer-item.schema';
+import {orderSchema} from '../../order.schema';
+import {PaymentHandler} from '../../../payment/helpers/payment-handler';
+import {userDetailSchema} from '../../../user-detail/user-detail.schema';
+import {EmailService} from '../../../../messenger/email/email-service';
+import {deliverySchema} from '../../../delivery/delivery.schema';
+import {Messenger} from '../../../../messenger/messenger';
+import {CustomerItemHandler} from '../../../customer-item/helpers/customer-item-handler';
+import {OrderItemMovedFromOrderHandler} from '../order-item-moved-from-order-handler/order-item-moved-from-order-handler';
+import {isNullOrUndefined} from 'util';
+import {Matcher} from '../../../match/helpers/matcher/matcher';
 
 export class OrderPlacedHandler {
   private customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -38,20 +38,20 @@ export class OrderPlacedHandler {
     messenger?: Messenger,
     customerItemHandler?: CustomerItemHandler,
     orderItemMovedFromOrderHandler?: OrderItemMovedFromOrderHandler,
-    private _matcher?: Matcher
+    private _matcher?: Matcher,
   ) {
     this.customerItemStorage = customerItemStorage
       ? customerItemStorage
-      : new BlDocumentStorage("customeritems", customerItemSchema);
+      : new BlDocumentStorage('customeritems', customerItemSchema);
     this.orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
+      : new BlDocumentStorage('orders', orderSchema);
     this.paymentHandler = paymentHandler
       ? paymentHandler
       : new PaymentHandler();
     this.userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage('userdetails', userDetailSchema);
     this._messenger = messenger ? messenger : new Messenger();
     this._customerItemHandler = customerItemHandler
       ? customerItemHandler
@@ -65,7 +65,7 @@ export class OrderPlacedHandler {
 
   public async placeOrder(
     order: Order,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Order> {
     let userDetail;
 
@@ -76,15 +76,20 @@ export class OrderPlacedHandler {
     }
 
     try {
-      await this.paymentHandler.confirmPayments(order, accessToken);
+      const payments = await this.paymentHandler.confirmPayments(
+        order,
+        accessToken,
+      );
+
+      const paymentIds = payments.map(payment => payment.id);
 
       const placedOrder = await this.orderStorage.update(
         order.id,
-        { placed: true },
+        {placed: true, payments: paymentIds},
         {
           id: accessToken.sub,
-          permission: accessToken.permission
-        }
+          permission: accessToken.permission,
+        },
       );
 
       await this.updateCustomerItemsIfPresent(placedOrder);
@@ -94,7 +99,7 @@ export class OrderPlacedHandler {
       //await this._matcher.match(placedOrder, userDeil);
       return placedOrder;
     } catch (e) {
-      throw new BlError("could not update order").add(e);
+      throw new BlError('could not update order').add(e);
     }
   }
 
@@ -102,10 +107,10 @@ export class OrderPlacedHandler {
     try {
       for (let orderItem of order.orderItems) {
         if (
-          orderItem.type === "extend" ||
-          orderItem.type === "buyout" ||
-          orderItem.type === "buyback" ||
-          orderItem.type === "cancel"
+          orderItem.type === 'extend' ||
+          orderItem.type === 'buyout' ||
+          orderItem.type === 'buyback' ||
+          orderItem.type === 'cancel'
         ) {
           let customerItemId = null;
 
@@ -116,30 +121,30 @@ export class OrderPlacedHandler {
           }
 
           if (customerItemId !== null) {
-            if (orderItem.type === "extend") {
+            if (orderItem.type === 'extend') {
               await this._customerItemHandler.extend(
                 customerItemId,
                 orderItem,
                 order.branch as string,
-                order.id
+                order.id,
               );
-            } else if (orderItem.type === "buyout") {
+            } else if (orderItem.type === 'buyout') {
               await this._customerItemHandler.buyout(
                 customerItemId,
                 order.id,
-                orderItem
+                orderItem,
               );
-            } else if (orderItem.type === "buyback") {
+            } else if (orderItem.type === 'buyback') {
               await this._customerItemHandler.buyback(
                 customerItemId,
                 order.id,
-                orderItem
+                orderItem,
               );
-            } else if (orderItem.type === "cancel") {
+            } else if (orderItem.type === 'cancel') {
               await this._customerItemHandler.cancel(
                 customerItemId,
                 order.id,
-                orderItem
+                orderItem,
               );
             }
           }
@@ -154,7 +159,7 @@ export class OrderPlacedHandler {
 
   private updateUserDetailWithPlacedOrder(
     order: Order,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     if (isNullOrUndefined(order.customer) || !order.customer) {
       return Promise.resolve(true);
@@ -173,26 +178,26 @@ export class OrderPlacedHandler {
             this.userDetailStorage
               .update(
                 order.customer as string,
-                { orders: orders },
-                { id: accessToken.sub, permission: accessToken.permission }
+                {orders: orders},
+                {id: accessToken.sub, permission: accessToken.permission},
               )
               .then((updatedUserDetail: UserDetail) => {
                 resolve(true);
               })
               .catch((updateUserDetailError: BlError) => {
                 reject(
-                  new BlError("could not update userDetail with placed order")
+                  new BlError('could not update userDetail with placed order'),
                 );
               });
           } else {
-            reject(new BlError("the order was already in userDetails"));
+            reject(new BlError('the order was already in userDetails'));
           }
         })
         .catch((getUserDetailError: BlError) => {
           reject(
             new BlError(`customer "${order.customer}" not found`).add(
-              getUserDetailError
-            )
+              getUserDetailError,
+            ),
           );
         });
     });
@@ -200,7 +205,7 @@ export class OrderPlacedHandler {
 
   private updateLastOrderItemsIfMovedFromOrder(
     order: Order,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       let movedFromOrderItems: {
@@ -209,7 +214,7 @@ export class OrderPlacedHandler {
         movedToOrderId: string;
       }[] = [];
 
-      reject(new Error(""));
+      reject(new Error(''));
     });
   }
 
