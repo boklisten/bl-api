@@ -104,14 +104,23 @@ export class PaymentHandler {
   }
 
   private confirmMethodCard(order: Order, payment: Payment): Promise<boolean> {
+    if (order.byCustomer) {
+      throw new BlError('payment method "card" is not permitted for customer');
+    }
     return Promise.resolve(true);
   }
 
   private confirmMethodVipps(order: Order, payment: Payment): Promise<boolean> {
+    if (order.byCustomer) {
+      throw new BlError('payment method "vipps" is not permitted for customer');
+    }
     return Promise.resolve(true);
   }
 
   private confirmMethodCash(order: Order, payment: Payment): Promise<boolean> {
+    if (order.byCustomer) {
+      throw new BlError('payment method "cash" is not permitted for customer');
+    }
     return Promise.resolve(true);
   }
 

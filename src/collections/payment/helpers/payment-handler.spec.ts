@@ -131,138 +131,161 @@ describe('PaymentHandler', () => {
         });
       }
 
-      describe('when paymentMethod is "dibs"', () => {
-        it('should reject if paymentDibsValidator.validate rejects', () => {
-          paymentStorageGetManyStub.resolves([
-            {amount: testOrder.amount, method: 'dibs', confirmed: false},
-          ]);
+      const employeeOnlyMethods = ['card', 'cash', 'vipps'];
 
-          paymentDibsValidatorStub.rejects(
-            new BlError('dibs payment not valid'),
+      for (let method of employeeOnlyMethods) {
+        it('should reject if order.byCustomer is set and payment.method only permitted to customer', () => {
+          const order = {
+            amount: 111,
+            payments: ['payment1'],
+            byCustomer: true,
+          } as Order;
+          const payments = [{method: method, amount: 111}];
+
+          paymentStorageGetManyStub.resolves(payments);
+
+          return expect(
+            paymentHandler.confirmPayments(order, testAccessToken),
+          ).to.eventually.be.rejectedWith(
+            BlError,
+            `payment method "${method}" is not permitted for customer`,
           );
-
-          return expect(
-            paymentHandler.confirmPayments(testOrder, testAccessToken),
-          ).to.be.rejectedWith(BlError, /dibs payment not valid/);
         });
-
-        it('should resolve if paymentDibsValidator.validate resolves', () => {
-          paymentStorageGetManyStub.resolves([
-            {amount: testOrder.amount, method: 'dibs', confirmed: false},
-          ]);
-
-          paymentDibsValidatorStub.resolves(true);
-
-          return expect(
-            paymentHandler.confirmPayments(testOrder, testAccessToken),
-          ).to.eventually.be.true;
-        });
-      });
-    });
-
-    describe('when there are multiple payments', () => {
-      it('should confirm if amount is equal to order', () => {
-        const order = {
-          amount: 300,
-          payments: ['payment1', 'payment2', 'payment3'],
-        } as Order;
-        const payments = [
-          {method: 'vipps', amount: 100},
-          {method: 'cash', amount: 100},
-          {method: 'card', amount: 100},
-        ];
-
-        paymentStorageGetManyStub.resolves(payments);
-
-        return expect(
-          paymentHandler.confirmPayments(order, testAccessToken),
-        ).to.eventually.be.eq(payments);
-      });
-
-      it('should reject if amount is not equal to order', () => {
-        const order = {
-          amount: 600,
-          payments: ['payment1', 'payment2'],
-        } as Order;
-        const payments = [
-          {method: 'cash', amount: 500},
-          {method: 'vipps', amount: 300},
-        ];
-
-        paymentStorageGetManyStub.resolves(payments);
-
-        return expect(
-          paymentHandler.confirmPayments(order, testAccessToken),
-        ).to.eventually.be.rejectedWith(
-          BlError,
-          /payment amounts does not equal order.amount/,
-        );
-      });
-
-      it('should reject if one or more of the payments are already confirmed', () => {
-        const order = {
-          amount: 400,
-          payments: ['payment1', 'payment2'],
-        } as Order;
-        const payments = [
-          {id: 'payment1', method: 'cash', amount: 100},
-          {id: 'payment2', method: 'vipps', amount: 300, confirmed: true},
-        ];
-
-        paymentStorageGetManyStub.resolves(payments);
-
-        return expect(
-          paymentHandler.confirmPayments(order, testAccessToken),
-        ).to.eventually.be.rejectedWith(
-          BlError,
-          /payment "payment2" is already confirmed/,
-        );
-      });
-
-      it('should reject if there are multiple payments and one of them are of methond dibs', () => {
-        const order = {
-          amount: 550,
-          payments: ['payment1', 'payment2', 'payments3'],
-        } as Order;
-        const payments = [
-          {id: 'payment1', method: 'cash', amount: 100},
-          {id: 'payment2', method: 'dibs', amount: 150},
-          {id: 'payment3', method: 'vipps', amount: 300},
-        ];
-
-        paymentStorageGetManyStub.resolves(payments);
-
-        return expect(
-          paymentHandler.confirmPayments(order, testAccessToken),
-        ).to.eventually.be.rejectedWith(
-          BlError,
-          /multiple payments found but "payment2" have method dibs/,
-        );
-      });
-
-      it('should reject if there are multiple payments with method "dibs"', () => {
-        const order = {
-          amount: 250,
-          payments: ['payment1', 'payment2'],
-        } as Order;
-        const payments = [
-          {id: 'payment1', method: 'dibs', amount: 100},
-          {id: 'payment2', method: 'dibs', amount: 150},
-        ];
-
-        paymentStorageGetManyStub.resolves(payments);
-
-        return expect(
-          paymentHandler.confirmPayments(order, testAccessToken),
-        ).to.eventually.be.rejectedWith(
-          BlError,
-          /multiple payments found but "payment1" have method dibs/,
-        );
-      });
+      }
     });
 
     describe('when paymentMethod is "dibs"', () => {
-      /*
+      it('should reject if paymentDibsValidator.validate rejects', () => {
+        paymentStorageGetManyStub.resolves([
+          {amount: testOrder.amount, method: 'dibs', confirmed: false},
+        ]);
+
+        paymentDibsValidatorStub.rejects(new BlError('dibs payment not valid'));
+
+        return expect(
+          paymentHandler.confirmPayments(testOrder, testAccessToken),
+        ).to.be.rejectedWith(BlError, /dibs payment not valid/);
+      });
+
+      it('should resolve if paymentDibsValidator.validate resolves', () => {
+        const payments = [
+          {amount: testOrder.amount, method: 'dibs', confirmed: false},
+        ];
+
+        paymentStorageGetManyStub.resolves(payments);
+
+        paymentDibsValidatorStub.resolves(true);
+
+        return expect(
+          paymentHandler.confirmPayments(testOrder, testAccessToken),
+        ).to.eventually.be.eq(payments);
+      });
+    });
+  });
+
+  describe('when there are multiple payments', () => {
+    it('should confirm if amount is equal to order', () => {
+      const order = {
+        amount: 300,
+        payments: ['payment1', 'payment2', 'payment3'],
+      } as Order;
+      const payments = [
+        {method: 'vipps', amount: 100},
+        {method: 'cash', amount: 100},
+        {method: 'card', amount: 100},
+      ];
+
+      paymentStorageGetManyStub.resolves(payments);
+
+      return expect(
+        paymentHandler.confirmPayments(order, testAccessToken),
+      ).to.eventually.be.eq(payments);
+    });
+
+    it('should reject if amount is not equal to order', () => {
+      const order = {
+        amount: 600,
+        payments: ['payment1', 'payment2'],
+      } as Order;
+      const payments = [
+        {method: 'cash', amount: 500},
+        {method: 'vipps', amount: 300},
+      ];
+
+      paymentStorageGetManyStub.resolves(payments);
+
+      return expect(
+        paymentHandler.confirmPayments(order, testAccessToken),
+      ).to.eventually.be.rejectedWith(
+        BlError,
+        /payment amounts does not equal order.amount/,
+      );
+    });
+
+    it('should reject if one or more of the payments are already confirmed', () => {
+      const order = {
+        amount: 400,
+        payments: ['payment1', 'payment2'],
+      } as Order;
+      const payments = [
+        {id: 'payment1', method: 'cash', amount: 100},
+        {id: 'payment2', method: 'vipps', amount: 300, confirmed: true},
+      ];
+
+      paymentStorageGetManyStub.resolves(payments);
+
+      return expect(
+        paymentHandler.confirmPayments(order, testAccessToken),
+      ).to.eventually.be.rejectedWith(
+        BlError,
+        /payment "payment2" is already confirmed/,
+      );
+    });
+
+    it('should reject if there are multiple payments and one of them are of methond dibs', () => {
+      const order = {
+        amount: 550,
+        payments: ['payment1', 'payment2', 'payments3'],
+      } as Order;
+      const payments = [
+        {id: 'payment1', method: 'cash', amount: 100},
+        {id: 'payment2', method: 'dibs', amount: 150},
+        {id: 'payment3', method: 'vipps', amount: 300},
+      ];
+
+      paymentStorageGetManyStub.resolves(payments);
+
+      return expect(
+        paymentHandler.confirmPayments(order, testAccessToken),
+      ).to.eventually.be.rejectedWith(
+        BlError,
+        /multiple payments found but "payment2" have method dibs/,
+      );
+    });
+
+    it('should reject if there are multiple payments with method "dibs"', () => {
+      const order = {
+        amount: 250,
+        payments: ['payment1', 'payment2'],
+      } as Order;
+      const payments = [
+        {id: 'payment1', method: 'dibs', amount: 100},
+        {id: 'payment2', method: 'dibs', amount: 150},
+      ];
+
+      paymentStorageGetManyStub.resolves(payments);
+
+      return expect(
+        paymentHandler.confirmPayments(order, testAccessToken),
+      ).to.eventually.be.rejectedWith(
+        BlError,
+        /multiple payments found but "payment1" have method dibs/,
+      );
+    });
+  });
+
+  describe('when paymentMethod is "dibs"', () => {
+    /*
       let testDibsEasyPayment: DibsEasyPayment;
 
       beforeEach(() => {
@@ -285,7 +308,7 @@ describe('PaymentHandler', () => {
         };
       });
        */
-      /*
+    /*
       sinon
         .stub(dibsPaymentService, 'fetchDibsPaymentData')
         .callsFake((dibsPaymentId: string) => {
@@ -374,6 +397,5 @@ describe('PaymentHandler', () => {
       });
 
       */
-    });
   });
 });
