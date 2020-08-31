@@ -8,6 +8,7 @@ import {OrderReceiptPdfOperation} from './operations/order-receipt-pdf.operation
 import {OrderAgreementPdfOperation} from './operations/order-agreement-pdf.operation';
 import {userDetailSchema} from '../user-detail/user-detail.schema';
 import {OrderPlaceOperation} from './operations/place/order-place.operation';
+import {OrderConfirmOperation} from './operations/confirm/order-confirm.operation';
 
 export class OrderCollection implements BlCollection {
   collectionName = 'orders';
@@ -48,7 +49,7 @@ export class OrderCollection implements BlCollection {
         },
         {
           name: 'confirm',
-          operation: null,
+          operation: new OrderConfirmOperation(),
           restriction: {
             permissions: ['customer', 'employee', 'manager', 'admin', 'super'],
             restricted: true,

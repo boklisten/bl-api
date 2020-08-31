@@ -65,7 +65,8 @@ export class PaymentHandler {
 
     for (let payment of payments) {
       if (payment.confirmed) {
-        throw new BlError(`payment "${payment.id}" is already confirmed`);
+        //throw new BlError(`payment "${payment.id}" is already confirmed`);
+        continue;
       }
 
       try {

@@ -190,7 +190,8 @@ export class OrderPlacedHandler {
                 );
               });
           } else {
-            reject(new BlError('the order was already in userDetails'));
+            resolve(true);
+            //reject(new BlError('the order was already in userDetails'));
           }
         })
         .catch((getUserDetailError: BlError) => {
