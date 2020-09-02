@@ -1,7 +1,6 @@
 import {NextFunction, Request, Response} from 'express';
 import {Operation} from '../../../../operation/operation';
 import {BlApiRequest} from '../../../../request/bl-api-request';
-import {OrderValidator} from '../../helpers/order-validator/order-validator';
 import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
 import {orderSchema} from '../../order.schema';
 import {SEResponseHandler} from '../../../../response/se.response.handler';
@@ -19,7 +18,6 @@ export class OrderConfirmOperation implements Operation {
   constructor(
     private _resHandler?: SEResponseHandler,
     private _orderStorage?: BlDocumentStorage<Order>,
-    private _orderValidator?: OrderValidator,
     private _orderPlacedHandler?: OrderPlacedHandler,
   ) {
     this._resHandler = this._resHandler
@@ -29,10 +27,6 @@ export class OrderConfirmOperation implements Operation {
     this._orderStorage = this._orderStorage
       ? this._orderStorage
       : new BlDocumentStorage('orders', orderSchema);
-
-    this._orderValidator = this._orderValidator
-      ? this._orderValidator
-      : new OrderValidator();
 
     this._orderPlacedHandler = this._orderPlacedHandler
       ? this._orderPlacedHandler
@@ -45,11 +39,6 @@ export class OrderConfirmOperation implements Operation {
     res?: Response,
     next?: NextFunction,
   ): Promise<boolean> {
-    // get order
-    // place order
-    // if all ok - resolve true
-    //
-
     const accessToken = {
       details: blApiRequest.user.id,
       permission: blApiRequest.user.permission,

@@ -9,29 +9,27 @@ import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
 import {OrderToCustomerItemGenerator} from '../../../customer-item/helpers/order-to-customer-item-generator';
 import {Order, BlError} from '@wizardcoder/bl-model';
 import {OrderConfirmOperation} from './order-confirm.operation';
-import {OrderValidator} from '../../helpers/order-validator/order-validator';
 import {OrderPlacedHandler} from '../../helpers/order-placed-handler/order-placed-handler';
 
 describe('OrderConfirmOperation', () => {
   const resHandler = new SEResponseHandler();
   const orderStorage = new BlDocumentStorage<Order>('orders');
-  const orderValidator = new OrderValidator();
   const orderPlacedHandler = new OrderPlacedHandler();
 
   const orderGetStub = sinon.stub(orderStorage, 'get');
-  const orderValidateStub = sinon.stub(orderValidator, 'validate');
   const orderPlaceStub = sinon.stub(orderPlacedHandler, 'placeOrder');
+  const sendResponseStub = sinon.stub(resHandler, 'sendResponse');
 
   const orderConfirmOperation = new OrderConfirmOperation(
     resHandler,
     orderStorage,
-    orderValidator,
     orderPlacedHandler,
   );
 
   beforeEach(() => {
     orderGetStub.reset();
-    orderValidateStub.reset();
+    sendResponseStub.reset();
+    orderPlaceStub.reset();
   });
 
   describe('run()', () => {
@@ -61,6 +59,7 @@ describe('OrderConfirmOperation', () => {
     it('should resolve if order is placed', () => {
       orderGetStub.resolves({id: 'order1'});
       orderPlaceStub.resolves(true);
+      sendResponseStub.returns(true);
 
       return expect(
         orderConfirmOperation.run({

@@ -92,22 +92,26 @@ export class OrderPlacedHandler {
         },
       );
 
-      await this.updateCustomerItemsIfPresent(placedOrder);
+      await this.updateCustomerItemsIfPresent(placedOrder, accessToken);
       await this._orderItemMovedFromOrderHandler.updateOrderItems(placedOrder);
       await this.updateUserDetailWithPlacedOrder(placedOrder, accessToken);
       this.sendOrderConfirmationMail(placedOrder);
-      //await this._matcher.match(placedOrder, userDeil);
+
       return placedOrder;
     } catch (e) {
       throw new BlError('could not update order').add(e);
     }
   }
 
-  private async updateCustomerItemsIfPresent(order: Order): Promise<Order> {
+  private async updateCustomerItemsIfPresent(
+    order: Order,
+    accessToken: AccessToken,
+  ): Promise<Order> {
     try {
       for (let orderItem of order.orderItems) {
         if (
           orderItem.type === 'extend' ||
+          orderItem.type === 'return' ||
           orderItem.type === 'buyout' ||
           orderItem.type === 'buyback' ||
           orderItem.type === 'cancel'
@@ -145,6 +149,14 @@ export class OrderPlacedHandler {
                 customerItemId,
                 order.id,
                 orderItem,
+              );
+            } else if (orderItem.type === 'return') {
+              await this._customerItemHandler.return(
+                customerItemId,
+                order.id,
+                orderItem,
+                order.branch as string,
+                accessToken.details,
               );
             }
           }
