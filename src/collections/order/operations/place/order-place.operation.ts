@@ -1,20 +1,20 @@
-import { NextFunction, Request, Response } from "express";
-import { Operation } from "../../../../operation/operation";
-import { BlApiRequest } from "../../../../request/bl-api-request";
-import { SEResponseHandler } from "../../../../response/se.response.handler";
+import {NextFunction, Request, Response} from 'express';
+import {Operation} from '../../../../operation/operation';
+import {BlApiRequest} from '../../../../request/bl-api-request';
+import {SEResponseHandler} from '../../../../response/se.response.handler';
 import {
   BlapiResponse,
   Order,
   CustomerItem,
-  UserDetail
-} from "@wizardcoder/bl-model";
-import { OrderToCustomerItemGenerator } from "../../../customer-item/helpers/order-to-customer-item-generator";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { orderSchema } from "../../order.schema";
-import { customerItemSchema } from "../../../customer-item/customer-item.schema";
-import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
-import { OrderValidator } from "../../helpers/order-validator/order-validator";
-import { userDetailSchema } from "../../../user-detail/user-detail.schema";
+  UserDetail,
+} from '@wizardcoder/bl-model';
+import {OrderToCustomerItemGenerator} from '../../../customer-item/helpers/order-to-customer-item-generator';
+import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
+import {orderSchema} from '../../order.schema';
+import {customerItemSchema} from '../../../customer-item/customer-item.schema';
+import {OrderPlacedHandler} from '../../helpers/order-placed-handler/order-placed-handler';
+import {OrderValidator} from '../../helpers/order-validator/order-validator';
+import {userDetailSchema} from '../../../user-detail/user-detail.schema';
 
 export class OrderPlaceOperation implements Operation {
   constructor(
@@ -24,7 +24,7 @@ export class OrderPlaceOperation implements Operation {
     private _customerItemStorage?: BlDocumentStorage<CustomerItem>,
     private _orderPlacedHandler?: OrderPlacedHandler,
     private _orderValidator?: OrderValidator,
-    private _userDetailStorage?: BlDocumentStorage<UserDetail>
+    private _userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
     this._resHandler = this._resHandler
       ? this._resHandler
@@ -36,11 +36,11 @@ export class OrderPlaceOperation implements Operation {
 
     this._orderStorage = this._orderStorage
       ? this._orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
+      : new BlDocumentStorage('orders', orderSchema);
 
     this._customerItemStorage = this._customerItemStorage
       ? this._customerItemStorage
-      : new BlDocumentStorage("customeritems", customerItemSchema);
+      : new BlDocumentStorage('customeritems', customerItemSchema);
 
     this._orderPlacedHandler = this._orderPlacedHandler
       ? this._orderPlacedHandler
@@ -52,14 +52,14 @@ export class OrderPlaceOperation implements Operation {
 
     this._userDetailStorage = this._userDetailStorage
       ? this._userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage('userdetails', userDetailSchema);
   }
 
   public async run(
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     let order: Order;
 
@@ -81,14 +81,14 @@ export class OrderPlaceOperation implements Operation {
       try {
         customerItems = await this.addCustomerItems(
           customerItems,
-          blApiRequest.user
+          blApiRequest.user,
         );
         order = this.addCustomerItemIdToOrderItems(order, customerItems);
 
         await this._orderStorage.update(
           order.id,
-          { orderItems: order.orderItems },
-          blApiRequest.user
+          {orderItems: order.orderItems},
+          blApiRequest.user,
         );
       } catch (e) {
         throw e;
@@ -98,7 +98,7 @@ export class OrderPlaceOperation implements Operation {
     try {
       await this._orderPlacedHandler.placeOrder(order, {
         sub: blApiRequest.user,
-        permission: blApiRequest.user.permission
+        permission: blApiRequest.user.permission,
       } as any);
     } catch (e) {
       throw e;
@@ -116,7 +116,7 @@ export class OrderPlaceOperation implements Operation {
         await this.addCustomerItemsToCustomer(
           customerItems,
           order.customer as string,
-          blApiRequest.user
+          blApiRequest.user,
         );
       } catch (e) {}
     }
@@ -127,7 +127,7 @@ export class OrderPlaceOperation implements Operation {
 
   private async addCustomerItems(
     customerItems: CustomerItem[],
-    user: any
+    user: any,
   ): Promise<CustomerItem[]> {
     let addedCustomerItems = [];
     for (let customerItem of customerItems) {
@@ -143,7 +143,7 @@ export class OrderPlaceOperation implements Operation {
   private async addCustomerItemsToCustomer(
     customerItems: CustomerItem[],
     customerId: string,
-    user: { id: string; permission: any }
+    user: {id: string; permission: any},
   ): Promise<boolean> {
     let customerItemIds: string[] = customerItems.map(ci => {
       return ci.id.toString();
@@ -162,14 +162,14 @@ export class OrderPlaceOperation implements Operation {
       : [];
 
     userDetailCustomerItemsIds = userDetailCustomerItemsIds.concat(
-      customerItemIds
+      customerItemIds,
     );
 
     try {
       await this._userDetailStorage.update(
         customerId,
-        { customerItems: userDetailCustomerItemsIds },
-        user as any
+        {customerItems: userDetailCustomerItemsIds},
+        user as any,
       );
     } catch (e) {
       throw e;
@@ -180,7 +180,7 @@ export class OrderPlaceOperation implements Operation {
 
   private addCustomerItemIdToOrderItems(
     order: Order,
-    customerItems: CustomerItem[]
+    customerItems: CustomerItem[],
   ) {
     for (let customerItem of customerItems) {
       for (let orderItem of order.orderItems) {

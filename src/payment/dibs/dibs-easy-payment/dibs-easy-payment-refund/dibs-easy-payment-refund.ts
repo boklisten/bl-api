@@ -1,18 +1,18 @@
-import { JsonMember, JsonObject } from "typedjson-npm";
-import { DibsEasyPaymentRefundOrderItem } from "./dibs-easy-payment-refund-order-item";
+import {JsonMember, JsonObject} from 'typedjson-npm';
+import {DibsEasyPaymentRefundOrderItem} from './dibs-easy-payment-refund-order-item';
 
 @JsonObject
 export class DibsEasyPaymentRefund {
-  @JsonMember()
+  @JsonMember({type: String})
   refundId: string;
-  @JsonMember()
+  @JsonMember({type: Number})
   amount: number;
-  @JsonMember()
+  @JsonMember({type: String})
   state: string;
-  @JsonMember()
+  @JsonMember({type: String})
   lastUpdated: string;
   @JsonMember({
-    elements: DibsEasyPaymentRefundOrderItem
+    elements: DibsEasyPaymentRefundOrderItem,
   })
   orderItems: DibsEasyPaymentRefundOrderItem[];
 }
