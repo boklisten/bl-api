@@ -4,6 +4,7 @@ import {paymentSchema} from './payment.schema';
 import {BlDocument} from '@wizardcoder/bl-model';
 import {PaymentPostHook} from './hooks/payment.post.hook';
 import {PaymentPatchHook} from './hooks/payment.patch.hook';
+import {PaymentGetAllHook} from './hooks/payment.get-all.hook';
 
 export class PaymentCollection implements BlCollection {
   public collectionName = 'payments';
@@ -22,6 +23,7 @@ export class PaymentCollection implements BlCollection {
     },
     {
       method: 'getAll',
+      hook: new PaymentGetAllHook(),
       restriction: {
         permissions: ['customer', 'employee', 'manager', 'admin', 'super'],
         restricted: true,

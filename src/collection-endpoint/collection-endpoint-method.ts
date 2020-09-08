@@ -99,7 +99,12 @@ export class CollectionEndpointMethod<T extends BlDocument> {
       .authenticate(this._endpoint.restriction, req, res, next)
       .then((accessToken?: AccessToken) => {
         userAccessToken = accessToken;
-        return this._endpoint.hook.before(req.body, accessToken, req.params.id);
+        return this._endpoint.hook.before(
+          req.body,
+          accessToken,
+          req.params.id,
+          req.query,
+        );
       })
       .then((hookData?: any) => {
         // this is the endpoint specific request handler
