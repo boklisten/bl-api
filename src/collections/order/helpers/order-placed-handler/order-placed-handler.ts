@@ -99,7 +99,7 @@ export class OrderPlacedHandler {
 
       return placedOrder;
     } catch (e) {
-      throw new BlError('could not update order').add(e);
+      throw new BlError('could not update order: ' + e).add(e);
     }
   }
 

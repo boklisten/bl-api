@@ -3,7 +3,13 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {AccessToken, BlError, Order, Payment} from '@wizardcoder/bl-model';
+import {
+  AccessToken,
+  BlError,
+  Order,
+  Payment,
+  Delivery,
+} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
 import {PaymentHandler} from './payment-handler';
 import {DibsPaymentService} from '../../../payment/dibs/dibs-payment.service';
@@ -24,11 +30,13 @@ describe('PaymentHandler', () => {
   const dibsPaymentService = new DibsPaymentService();
   const userDetailHelper = new UserDetailHelper();
   const paymentDibsValidator = new PaymentDibsValidator(dibsPaymentService);
+  const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
   const paymentHandler = new PaymentHandler(
     paymentStorage,
     dibsPaymentService,
     userDetailHelper,
     paymentDibsValidator,
+    deliveryStorage,
   );
 
   beforeEach(() => {
@@ -82,11 +90,13 @@ describe('PaymentHandler', () => {
   const paymentDibsValidatorStub = sinon.stub(paymentDibsValidator, 'validate');
   const paymentStorageGetManyStub = sinon.stub(paymentStorage, 'getMany');
   const paymentStorageUpdateStub = sinon.stub(paymentStorage, 'update');
+  const deliveryGetStub = sinon.stub(deliveryStorage, 'get');
 
   beforeEach(() => {
     paymentDibsValidatorStub.reset();
     paymentStorageGetManyStub.reset();
     paymentStorageUpdateStub.reset();
+    deliveryGetStub.reset();
   });
 
   describe('confirmPayments()', () => {
@@ -157,6 +167,8 @@ describe('PaymentHandler', () => {
           {amount: testOrder.amount, method: 'dibs', confirmed: false},
         ]);
 
+        deliveryGetStub.resolves({id: 'delivery1', amount: 0});
+
         paymentDibsValidatorStub.rejects(new BlError('dibs payment not valid'));
 
         return expect(
@@ -170,7 +182,7 @@ describe('PaymentHandler', () => {
         ];
 
         paymentStorageGetManyStub.resolves(payments);
-
+        deliveryGetStub.resolves({id: 'delivery1', amount: 0});
         paymentDibsValidatorStub.resolves(true);
 
         return expect(
