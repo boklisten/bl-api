@@ -23,10 +23,7 @@ describe('PaymentHandler', () => {
   const paymentStorage = new BlDocumentStorage<Payment>('payments');
   const dibsPaymentService = new DibsPaymentService();
   const userDetailHelper = new UserDetailHelper();
-  const paymentDibsValidator = new PaymentDibsValidator(
-    dibsPaymentService,
-    paymentStorage,
-  );
+  const paymentDibsValidator = new PaymentDibsValidator(dibsPaymentService);
   const paymentHandler = new PaymentHandler(
     paymentStorage,
     dibsPaymentService,
@@ -219,26 +216,6 @@ describe('PaymentHandler', () => {
       ).to.eventually.be.rejectedWith(
         BlError,
         /payment amounts does not equal order.amount/,
-      );
-    });
-
-    it('should reject if one or more of the payments are already confirmed', () => {
-      const order = {
-        amount: 400,
-        payments: ['payment1', 'payment2'],
-      } as Order;
-      const payments = [
-        {id: 'payment1', method: 'cash', amount: 100},
-        {id: 'payment2', method: 'vipps', amount: 300, confirmed: true},
-      ];
-
-      paymentStorageGetManyStub.resolves(payments);
-
-      return expect(
-        paymentHandler.confirmPayments(order, testAccessToken),
-      ).to.eventually.be.rejectedWith(
-        BlError,
-        /payment "payment2" is already confirmed/,
       );
     });
 

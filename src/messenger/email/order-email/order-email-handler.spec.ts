@@ -480,6 +480,7 @@ describe('OrderEmailHandler', () => {
       it('should have a delivery object when order.delivery is present and have method "bring"', done => {
         testOrder.delivery = 'delivery1';
         testDelivery.method = 'bring';
+        testDelivery.info['trackingNumber'] = 'trackingABC';
         let expectedAmount = testOrder.amount + testDelivery.amount;
 
         orderEmailHandler
@@ -503,6 +504,7 @@ describe('OrderEmailHandler', () => {
               amount: testDelivery.amount,
               currency: 'NOK',
               address: expectedAddress,
+              trackingNumber: testDelivery.info['trackingNumber'],
               estimatedDeliveryDate: dateService.toPrintFormat(
                 testDelivery.info['estimatedDelivery'],
                 'Europe/Oslo',

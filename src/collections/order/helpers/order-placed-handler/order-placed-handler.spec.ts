@@ -202,15 +202,16 @@ describe('OrderPlacedHandler', () => {
         });
     });
 
-    it('should reject if order.customer is not found', done => {
+    it('should reject if order.customer is not found', async () => {
       testOrder.customer = 'notFoundUserDetails';
 
-      orderPlacedHandler
-        .placeOrder(testOrder, testAccessToken)
-        .catch((err: BlError) => {
-          expect(err.errorStack[0].getMsg()).to.be.eq('user detail not found');
-          done();
-        });
+      try {
+        await orderPlacedHandler.placeOrder(testOrder, testAccessToken);
+      } catch (e) {
+        return expect(e.errorStack[0].getMsg()).to.eq(
+          'customer "notFoundUserDetails" not found',
+        );
+      }
     });
 
     it('should reject if userDetailStorage.updates rejects', done => {
