@@ -3,15 +3,22 @@ import {isNullOrUndefined} from 'util';
 import {DibsPaymentService} from '../../../../payment/dibs/dibs-payment.service';
 import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
 import {DibsEasyPayment} from '../../../../payment/dibs/dibs-easy-payment/dibs-easy-payment';
+import {paymentSchema} from '../../payment.schema';
 
-export class PaymentDibsValidator {
-  constructor(private _dibsPaymentService?: DibsPaymentService) {
+export class PaymentDibsConfirmer {
+  constructor(
+    private _dibsPaymentService?: DibsPaymentService,
+    private _paymentStorage?: BlDocumentStorage<Payment>,
+  ) {
     this._dibsPaymentService = _dibsPaymentService
       ? _dibsPaymentService
       : new DibsPaymentService();
+    this._paymentStorage = _paymentStorage
+      ? _paymentStorage
+      : new BlDocumentStorage('payments', paymentSchema);
   }
 
-  public async validate(
+  public async confirm(
     order: Order,
     payment: Payment,
     accessToken: AccessToken,
@@ -30,6 +37,18 @@ export class PaymentDibsValidator {
     }
 
     this.validateDibsEasyPayment(order, payment, dibsEasyPaymentDetails);
+
+    try {
+      await this._paymentStorage.update(
+        payment.id,
+        {info: dibsEasyPaymentDetails},
+        {id: accessToken.details, permission: accessToken.permission},
+      );
+    } catch (e) {
+      throw new BlError(
+        'payment could not be updated with dibs information:' + e,
+      );
+    }
 
     return true;
     /*

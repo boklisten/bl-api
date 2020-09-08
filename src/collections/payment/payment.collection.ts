@@ -23,7 +23,7 @@ export class PaymentCollection implements BlCollection {
     {
       method: 'getAll',
       restriction: {
-        permissions: ['customer', 'admin'],
+        permissions: ['customer', 'employee', 'manager', 'admin', 'super'],
         restricted: true,
       },
       validQueryParams: [

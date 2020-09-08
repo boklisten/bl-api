@@ -15,7 +15,7 @@ import {PaymentHandler} from './payment-handler';
 import {DibsPaymentService} from '../../../payment/dibs/dibs-payment.service';
 import {DibsEasyPayment} from '../../../payment/dibs/dibs-easy-payment/dibs-easy-payment';
 import {UserDetailHelper} from '../../user-detail/helpers/user-detail.helper';
-import {PaymentDibsValidator} from './dibs/payment-dibs-validator';
+import {PaymentDibsConfirmer} from './dibs/payment-dibs-confirmer';
 
 chai.use(chaiAsPromised);
 
@@ -29,13 +29,13 @@ describe('PaymentHandler', () => {
   const paymentStorage = new BlDocumentStorage<Payment>('payments');
   const dibsPaymentService = new DibsPaymentService();
   const userDetailHelper = new UserDetailHelper();
-  const paymentDibsValidator = new PaymentDibsValidator(dibsPaymentService);
+  const paymentDibsConfirmer = new PaymentDibsConfirmer(dibsPaymentService);
   const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
   const paymentHandler = new PaymentHandler(
     paymentStorage,
     dibsPaymentService,
     userDetailHelper,
-    paymentDibsValidator,
+    paymentDibsConfirmer,
     deliveryStorage,
   );
 
@@ -87,13 +87,13 @@ describe('PaymentHandler', () => {
     userDetailHelperDibsPaymentUpdateSuccess = true;
   });
 
-  const paymentDibsValidatorStub = sinon.stub(paymentDibsValidator, 'validate');
+  const paymentDibsConfirmStub = sinon.stub(paymentDibsConfirmer, 'confirm');
   const paymentStorageGetManyStub = sinon.stub(paymentStorage, 'getMany');
   const paymentStorageUpdateStub = sinon.stub(paymentStorage, 'update');
   const deliveryGetStub = sinon.stub(deliveryStorage, 'get');
 
   beforeEach(() => {
-    paymentDibsValidatorStub.reset();
+    paymentDibsConfirmStub.reset();
     paymentStorageGetManyStub.reset();
     paymentStorageUpdateStub.reset();
     deliveryGetStub.reset();
@@ -169,7 +169,7 @@ describe('PaymentHandler', () => {
 
         deliveryGetStub.resolves({id: 'delivery1', amount: 0});
 
-        paymentDibsValidatorStub.rejects(new BlError('dibs payment not valid'));
+        paymentDibsConfirmStub.rejects(new BlError('dibs payment not valid'));
 
         return expect(
           paymentHandler.confirmPayments(testOrder, testAccessToken),
@@ -183,7 +183,7 @@ describe('PaymentHandler', () => {
 
         paymentStorageGetManyStub.resolves(payments);
         deliveryGetStub.resolves({id: 'delivery1', amount: 0});
-        paymentDibsValidatorStub.resolves(true);
+        paymentDibsConfirmStub.resolves(true);
 
         return expect(
           paymentHandler.confirmPayments(testOrder, testAccessToken),
