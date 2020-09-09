@@ -54,8 +54,7 @@ export class PaymentCollection implements BlCollection {
     {
       method: 'delete',
       restriction: {
-        permissions: ['admin', 'manager'],
-        restricted: true,
+        permissions: ['admin', 'super'],
       },
     },
   ];
