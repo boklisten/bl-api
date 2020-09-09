@@ -5,32 +5,40 @@ import {expect} from 'chai';
 import * as sinon from 'sinon';
 import {AccessToken, BlError, Order, Payment} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
-import {PaymentDibsValidator} from './payment-dibs-validator';
+import {PaymentDibsConfirmer} from './payment-dibs-confirmer';
 import {DibsPaymentService} from '../../../../payment/dibs/dibs-payment.service';
 import {DibsEasyPayment} from '../../../../payment/dibs/dibs-easy-payment/dibs-easy-payment';
 import {UserDetailHelper} from '../../../user-detail/helpers/user-detail.helper';
 chai.use(chaiAsPromised);
 
-describe('PaymentDibsValidator', () => {
+describe('PaymentDibsConfirmer', () => {
   const dibsPaymentService = new DibsPaymentService();
   const dibsPaymentFetchStub = sinon.stub(
     dibsPaymentService,
     'fetchDibsPaymentData',
   );
-  const paymentDibsValidator = new PaymentDibsValidator(dibsPaymentService);
+  const paymentStorage = new BlDocumentStorage<Payment>('payments');
+  const paymentDibsConfirmer = new PaymentDibsConfirmer(
+    dibsPaymentService,
+    paymentStorage,
+  );
+
+  const updatePaymentStub = sinon.stub(paymentStorage, 'update');
+
   const accessToken = {} as AccessToken;
 
   beforeEach(() => {
     dibsPaymentFetchStub.reset();
+    updatePaymentStub.reset();
   });
 
-  describe('validate()', () => {
+  describe('confirm()', () => {
     it('should reject if payment.info.paymentId is not defined', () => {
       const payment = {id: 'payment1'} as Payment;
       const order = {payments: [payment.id]} as Order;
 
       return expect(
-        paymentDibsValidator.validate(order, payment, accessToken),
+        paymentDibsConfirmer.confirm(order, payment, accessToken),
       ).to.eventually.be.rejectedWith(
         BlError,
         /payment.info.paymentId is undefined/,
@@ -46,7 +54,7 @@ describe('PaymentDibsValidator', () => {
       const order = {payments: [payment.id]} as Order;
 
       return expect(
-        paymentDibsValidator.validate(order, payment, accessToken),
+        paymentDibsConfirmer.confirm(order, payment, accessToken),
       ).to.eventually.be.rejectedWith(
         BlError,
         /could not get dibs payment from dibs api/,
@@ -60,10 +68,38 @@ describe('PaymentDibsValidator', () => {
       const order = {id: 'order1', payments: [payment.id]} as Order;
 
       return expect(
-        paymentDibsValidator.validate(order, payment, accessToken),
+        paymentDibsConfirmer.confirm(order, payment, accessToken),
       ).to.eventually.be.rejectedWith(
         BlError,
         /dibsEasyPaymentDetails.orderDetails.reference is not equal to order.id/,
+      );
+    });
+
+    it('should reject if paymentStorage.update rejects', () => {
+      dibsPaymentFetchStub.resolves({
+        orderDetails: {amount: '12000', reference: 'order1'},
+        summary: {reservedAmount: '12000'},
+      });
+
+      const payment = {
+        id: 'payment1',
+        info: {paymentId: 'dibs1'},
+        amount: 120,
+      } as Payment;
+
+      const order = {
+        id: 'order1',
+        amount: 120,
+        payments: [payment.id],
+      } as Order;
+
+      updatePaymentStub.rejects(new BlError('could not update payment'));
+
+      return expect(
+        paymentDibsConfirmer.confirm(order, payment, accessToken),
+      ).to.eventually.be.rejectedWith(
+        BlError,
+        /payment could not be updated with dibs information/,
       );
     });
 
@@ -86,7 +122,7 @@ describe('PaymentDibsValidator', () => {
       } as Order;
 
       return expect(
-        paymentDibsValidator.validate(order, payment, accessToken),
+        paymentDibsConfirmer.confirm(order, payment, accessToken),
       ).to.eventually.be.rejectedWith(
         BlError,
         /dibsEasyPaymentDetails.summary.reservedAmount "10000" is not equal to payment.amount "11000"/,
@@ -99,18 +135,21 @@ describe('PaymentDibsValidator', () => {
         summary: {reservedAmount: '12000'},
       });
 
+      updatePaymentStub.resolves(true);
+
       const payment = {
         id: 'payment1',
         info: {paymentId: 'dibs1'},
         amount: 120,
       } as Payment;
+
       const order = {
         id: 'order1',
         amount: 120,
         payments: [payment.id],
       } as Order;
 
-      return expect(paymentDibsValidator.validate(order, payment, accessToken))
+      return expect(paymentDibsConfirmer.confirm(order, payment, accessToken))
         .to.eventually.be.true;
     });
   });

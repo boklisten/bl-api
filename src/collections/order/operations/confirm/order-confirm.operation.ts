@@ -60,7 +60,7 @@ export class OrderConfirmOperation implements Operation {
         accessToken,
       );
     } catch (e) {
-      throw new BlError('order could not be placed');
+      throw new BlError('order could not be placed:' + e);
     }
 
     this._resHandler.sendResponse(res, new BlapiResponse([placedOrder]));

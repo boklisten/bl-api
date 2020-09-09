@@ -3,13 +3,19 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {expect} from 'chai';
 import * as sinon from 'sinon';
-import {AccessToken, BlError, Order, Payment} from '@wizardcoder/bl-model';
+import {
+  AccessToken,
+  BlError,
+  Order,
+  Payment,
+  Delivery,
+} from '@wizardcoder/bl-model';
 import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
 import {PaymentHandler} from './payment-handler';
 import {DibsPaymentService} from '../../../payment/dibs/dibs-payment.service';
 import {DibsEasyPayment} from '../../../payment/dibs/dibs-easy-payment/dibs-easy-payment';
 import {UserDetailHelper} from '../../user-detail/helpers/user-detail.helper';
-import {PaymentDibsValidator} from './dibs/payment-dibs-validator';
+import {PaymentDibsConfirmer} from './dibs/payment-dibs-confirmer';
 
 chai.use(chaiAsPromised);
 
@@ -23,15 +29,14 @@ describe('PaymentHandler', () => {
   const paymentStorage = new BlDocumentStorage<Payment>('payments');
   const dibsPaymentService = new DibsPaymentService();
   const userDetailHelper = new UserDetailHelper();
-  const paymentDibsValidator = new PaymentDibsValidator(
-    dibsPaymentService,
-    paymentStorage,
-  );
+  const paymentDibsConfirmer = new PaymentDibsConfirmer(dibsPaymentService);
+  const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
   const paymentHandler = new PaymentHandler(
     paymentStorage,
     dibsPaymentService,
     userDetailHelper,
-    paymentDibsValidator,
+    paymentDibsConfirmer,
+    deliveryStorage,
   );
 
   beforeEach(() => {
@@ -82,14 +87,16 @@ describe('PaymentHandler', () => {
     userDetailHelperDibsPaymentUpdateSuccess = true;
   });
 
-  const paymentDibsValidatorStub = sinon.stub(paymentDibsValidator, 'validate');
+  const paymentDibsConfirmStub = sinon.stub(paymentDibsConfirmer, 'confirm');
   const paymentStorageGetManyStub = sinon.stub(paymentStorage, 'getMany');
   const paymentStorageUpdateStub = sinon.stub(paymentStorage, 'update');
+  const deliveryGetStub = sinon.stub(deliveryStorage, 'get');
 
   beforeEach(() => {
-    paymentDibsValidatorStub.reset();
+    paymentDibsConfirmStub.reset();
     paymentStorageGetManyStub.reset();
     paymentStorageUpdateStub.reset();
+    deliveryGetStub.reset();
   });
 
   describe('confirmPayments()', () => {
@@ -160,7 +167,9 @@ describe('PaymentHandler', () => {
           {amount: testOrder.amount, method: 'dibs', confirmed: false},
         ]);
 
-        paymentDibsValidatorStub.rejects(new BlError('dibs payment not valid'));
+        deliveryGetStub.resolves({id: 'delivery1', amount: 0});
+
+        paymentDibsConfirmStub.rejects(new BlError('dibs payment not valid'));
 
         return expect(
           paymentHandler.confirmPayments(testOrder, testAccessToken),
@@ -173,8 +182,8 @@ describe('PaymentHandler', () => {
         ];
 
         paymentStorageGetManyStub.resolves(payments);
-
-        paymentDibsValidatorStub.resolves(true);
+        deliveryGetStub.resolves({id: 'delivery1', amount: 0});
+        paymentDibsConfirmStub.resolves(true);
 
         return expect(
           paymentHandler.confirmPayments(testOrder, testAccessToken),
@@ -219,26 +228,6 @@ describe('PaymentHandler', () => {
       ).to.eventually.be.rejectedWith(
         BlError,
         /payment amounts does not equal order.amount/,
-      );
-    });
-
-    it('should reject if one or more of the payments are already confirmed', () => {
-      const order = {
-        amount: 400,
-        payments: ['payment1', 'payment2'],
-      } as Order;
-      const payments = [
-        {id: 'payment1', method: 'cash', amount: 100},
-        {id: 'payment2', method: 'vipps', amount: 300, confirmed: true},
-      ];
-
-      paymentStorageGetManyStub.resolves(payments);
-
-      return expect(
-        paymentHandler.confirmPayments(order, testAccessToken),
-      ).to.eventually.be.rejectedWith(
-        BlError,
-        /payment "payment2" is already confirmed/,
       );
     });
 
