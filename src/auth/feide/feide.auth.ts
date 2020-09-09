@@ -10,11 +10,12 @@ import {TokenHandler} from '../token/token.handler';
 import {SEResponseHandler} from '../../response/se.response.handler';
 import {User} from '../../collections/user/user';
 import {LocalLoginHandler} from '../local/local-login.handler';
+import {UserProvider} from '../user/user-provider/user-provider';
 
 export class FeideAuth {
   private apiPath: ApiPath;
   private httpHandler: HttpHandler;
-  private _localLoginHandler: LocalLoginHandler;
+  private _userProvider: UserProvider;
 
   constructor(
     router: Router,
@@ -23,11 +24,11 @@ export class FeideAuth {
     private userHandler: UserHandler,
   ) {
     this.apiPath = new ApiPath();
-    this._localLoginHandler = new LocalLoginHandler();
     this.createPassportStrategy();
     this.createAuthGet(router);
     this.createCallbackGet(router);
     this.httpHandler = new HttpHandler();
+    this._userProvider = new UserProvider();
   }
 
   private createPassportStrategy() {
@@ -42,68 +43,37 @@ export class FeideAuth {
             process.env.BL_API_URI +
             this.apiPath.createPath('auth/feide/callback'),
         },
-        (feideAccessToken, refreshToken, profile, done) => {
-          this.httpHandler
-            .get(process.env.FEIDE_USER_INFO_URL, 'Bearer ' + feideAccessToken)
-            .then(feideUserInfo => {
-              const feideUser = feideUserInfo['user'];
-              const feideEmail = feideUser['email'];
-              const feideName = feideUser['name'];
-              const feideUserId = feideUser['userid'];
-              const provider = APP_CONFIG.login.feide.name;
+        async (feideAccessToken, refreshToken, profile, done) => {
+          let feideUserInfo;
 
-              this.userHandler.get(provider, feideUserId).then(
-                (user: User) => {
-                  this.userHandler
-                    .valid(feideEmail)
-                    .then(() => {
-                      this._localLoginHandler
-                        .createDefaultLocalLoginIfNoneIsFound(feideEmail)
-                        .then(() => {
-                          this.createTokens(feideEmail, done);
-                        })
-                        .catch(e => {
-                          done(
-                            null,
-                            null,
-                            new BlError(
-                              'could not create default local login if none was found',
-                            )
-                              .store('error', e)
-                              .code(902),
-                          );
-                        });
-                    })
-                    .catch((userValidError: BlError) => {
-                      done(
-                        null,
-                        null,
-                        new BlError('user not valid')
-                          .code(902)
-                          .add(userValidError),
-                      );
-                    });
-                },
-                (existsError: BlError) => {
-                  this.userHandler
-                    .create(feideEmail, provider, feideUserId)
-                    .then(
-                      (user: User) => {
-                        this.createTokens(feideEmail, done);
-                      },
-                      (createError: BlError) => {
-                        createError.printStack();
+          try {
+            feideUserInfo = await this.httpHandler.get(
+              process.env.FEIDE_USER_INFO_URL,
+              'Bearer ' + feideAccessToken,
+            );
+          } catch (e) {
+            done(new Error('something went wrong with feide login'));
+          }
 
-                        done(null, null, new BlError('could not create user'));
-                      },
-                    );
-                },
-              );
-            })
-            .catch(e => {
-              console.log('feide failed to get info', e);
-              done(new Error('something went wrong with feide login'));
-            });
+          const feideUser = feideUserInfo['user'];
+          const feideEmail = feideUser['email'];
+          const feideName = feideUser['name'];
+          const feideUserId = feideUser['userid'];
+          const provider = APP_CONFIG.login.feide.name;
+
+          let user;
+
+          try {
+            user = await this._userProvider.loginOrCreate(
+              feideEmail,
+              provider,
+              feideUserId,
+            );
+          } catch (e) {
+            return done(null, null, new BlError('could not create user'));
+          }
+
+          this.createTokens(feideEmail, done);
         },
       ),
     );
