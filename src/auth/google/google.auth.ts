@@ -11,10 +11,12 @@ import {UserHandler} from '../user/user.handler';
 import {User} from '../../collections/user/user';
 import {APP_CONFIG} from '../../application-config';
 import {LocalLoginHandler} from '../local/local-login.handler';
+import {UserProvider} from '../user/user-provider/user-provider';
 
 export class GoogleAuth {
   private apiPath: ApiPath;
   private _localLoginHandler: LocalLoginHandler;
+  private _userProvider: UserProvider;
 
   constructor(
     router: Router,
@@ -26,7 +28,12 @@ export class GoogleAuth {
     this.createAuthGet(router);
     this.createCallbackGet(router);
     this._localLoginHandler = new LocalLoginHandler();
+    this._userProvider = new UserProvider();
 
+    this.createPassportStrategy();
+  }
+
+  private createPassportStrategy() {
     passport.use(
       new OAuth2Strategy(
         {
@@ -37,7 +44,13 @@ export class GoogleAuth {
             process.env.BL_API_URI +
             this.apiPath.createPath('auth/google/callback'),
         },
-        (req, accessToken: any, refreshToken: any, profile: any, done: any) => {
+        async (
+          req,
+          accessToken: any,
+          refreshToken: any,
+          profile: any,
+          done: any,
+        ) => {
           let provider = blConfig.APP_CONFIG.login.google.name;
           let providerId = profile.id;
           let username = '';
@@ -59,57 +72,23 @@ export class GoogleAuth {
             );
           }
 
-          this.userHandler.get(provider, providerId).then(
-            (user: User) => {
-              this.userHandler
-                .valid(username)
-                .then(() => {
-                  this._localLoginHandler
-                    .createDefaultLocalLoginIfNoneIsFound(username)
-                    .then(() => {
-                      this.createTokens(username, done);
-                    })
-                    .catch(e => {
-                      done(
-                        null,
-                        null,
-                        new BlError(
-                          'could not create default local login if none was found',
-                        )
-                          .store('error', e)
-                          .code(902),
-                      );
-                    });
-                })
-                .catch((userValidError: BlError) => {
-                  done(
-                    null,
-                    null,
-                    new BlError('user not valid').code(902).add(userValidError),
-                  );
-                });
-            },
-            (existsError: BlError) => {
-              this.userHandler.create(username, provider, providerId).then(
-                (user: User) => {
-                  this.createTokens(user.username, done);
-                },
-                (createError: BlError) => {
-                  createError.printStack();
+          let user;
 
-                  done(
-                    null,
-                    null,
-                    new BlError('could not create user')
-                      .store('username', username)
-                      .store('provider', provider)
-                      .store('providerId', providerId)
-                      .add(createError),
-                  );
-                },
-              );
-            },
-          );
+          try {
+            user = await this._userProvider.loginOrCreate(
+              username,
+              provider,
+              providerId,
+            );
+          } catch (e) {
+            return done(
+              null,
+              null,
+              new BlError('could not create user').code(902),
+            );
+          }
+
+          this.createTokens(username, done);
         },
       ),
     );
@@ -123,12 +102,7 @@ export class GoogleAuth {
       (createTokenErrors: BlError) => {
         createTokenErrors.printStack();
 
-        return done(
-          new BlError('could not create tokens')
-            .code(906)
-            .store('username', username)
-            .add(createTokenErrors),
-        );
+        return done(new BlError('could not create tokens').code(906));
       },
     );
   }

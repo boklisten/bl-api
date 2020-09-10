@@ -70,7 +70,11 @@ export class FeideAuth {
               feideUserId,
             );
           } catch (e) {
-            return done(null, null, new BlError('could not create user'));
+            return done(
+              null,
+              null,
+              new BlError('could not create user').code(902),
+            );
           }
 
           this.createTokens(feideEmail, done);
@@ -87,12 +91,7 @@ export class FeideAuth {
       (createTokenErrors: BlError) => {
         createTokenErrors.printStack();
 
-        return done(
-          new BlError('could not create tokens')
-            .code(906)
-            .store('username', username)
-            .add(createTokenErrors),
-        );
+        return done(new BlError('could not create tokens').code(906));
       },
     );
   }
