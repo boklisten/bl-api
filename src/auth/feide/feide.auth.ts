@@ -32,11 +32,12 @@ export class FeideAuth {
           tokenURL: process.env.FEIDE_TOKEN_URL,
           clientID: process.env.FEIDE_CLIENT_ID,
           clientSecret: process.env.FEIDE_SECRET,
+          passReqToCallback: true,
           callbackURL:
             process.env.BL_API_URI +
             this.apiPath.createPath('auth/feide/callback'),
         },
-        async (feideAccessToken, refreshToken, profile, done) => {
+        async (req, feideAccessToken, refreshToken, profile, done) => {
           let feideUserInfo;
 
           try {
