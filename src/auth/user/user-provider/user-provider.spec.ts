@@ -1,4 +1,5 @@
 import 'mocha';
+
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
@@ -8,25 +9,34 @@ import {BlError, UserDetail} from '@wizardcoder/bl-model';
 import {User} from '../../../collections/user/user';
 import {UserProvider} from './user-provider';
 import {LocalLoginHandler} from '../../local/local-login.handler';
+import {TokenHandler} from '../../token/token.handler';
 chai.use(chaiAsPromised);
 
 describe('UserProvider', () => {
   const userHandler = new UserHandler();
+  const tokenHandler = new TokenHandler(userHandler);
   const userGetStub = sinon.stub(userHandler, 'get');
   const userCreateStub = sinon.stub(userHandler, 'create');
   const userValidStub = sinon.stub(userHandler, 'valid');
   const localLoginHandler = new LocalLoginHandler();
+  const createTokenStub = sinon.stub(tokenHandler, 'createTokens');
+
   const createDefaultLocalLoginStub = sinon.stub(
     localLoginHandler,
     'createDefaultLocalLoginIfNoneIsFound',
   );
-  const userProvider = new UserProvider(userHandler, localLoginHandler);
+  const userProvider = new UserProvider(
+    userHandler,
+    localLoginHandler,
+    tokenHandler,
+  );
 
   beforeEach(() => {
     userGetStub.reset();
     userCreateStub.reset();
     userValidStub.reset();
     createDefaultLocalLoginStub.reset();
+    createTokenStub.reset();
   });
 
   describe('loginOrCreate()', () => {
@@ -64,28 +74,35 @@ describe('UserProvider', () => {
         ).to.eventually.be.rejectedWith(BlError, /user could not be created/);
       });
 
-      it('should resolve with a user object', () => {
+      it('should resolve with a user object and tokens', () => {
         const user = {};
         userGetStub.rejects(new BlError('user not found'));
         userCreateStub.resolves(user);
         userValidStub.resolves(true);
         createDefaultLocalLoginStub.resolves(true);
+        const tokens = {accessToken: 'atoken', refreshToken: 'rtoken'};
+        createTokenStub.resolves(tokens);
 
         return expect(
           userProvider.loginOrCreate('username@mail.com', 'feide', 'abcdefg'),
-        ).to.eventually.be.eq(user);
+        ).to.eventually.be.eql({user: user, tokens: tokens});
       });
     });
 
-    it('should resolve with a user object', () => {
-      const user = {id: 'user1'};
-      userGetStub.resolves(user);
-      userValidStub.resolves(true);
-      createDefaultLocalLoginStub.resolves(true);
+    context('if user does exist', () => {
+      it('should resolve with a user object and tokens', () => {
+        const user = {id: 'user1', username: 'user@mail.com'};
+        userGetStub.resolves(user);
+        userValidStub.resolves(true);
+        createDefaultLocalLoginStub.resolves(true);
 
-      return expect(
-        userProvider.loginOrCreate('username@mail.com', 'feide', 'abcdefg'),
-      ).to.eventually.be.eq(user);
+        const tokens = {accessToken: 'atoken', refreshToken: 'rtoken'};
+        createTokenStub.resolves(tokens);
+
+        return expect(
+          userProvider.loginOrCreate('username@mail.com', 'feide', 'abcdefg'),
+        ).to.eventually.be.eql({user: user, tokens: tokens});
+      });
     });
   });
 });

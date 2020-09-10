@@ -5,9 +5,6 @@ import * as passport from 'passport';
 import {ApiPath} from '../../config/api-path';
 import {SEResponseHandler} from '../../response/se.response.handler';
 import {BlError} from '@wizardcoder/bl-model';
-import {TokenHandler} from '../token/token.handler';
-import * as blConfig from '../../application-config';
-import {UserHandler} from '../user/user.handler';
 import {User} from '../../collections/user/user';
 import {APP_CONFIG} from '../../application-config';
 import {LocalLoginHandler} from '../local/local-login.handler';
@@ -18,12 +15,7 @@ export class GoogleAuth {
   private _localLoginHandler: LocalLoginHandler;
   private _userProvider: UserProvider;
 
-  constructor(
-    router: Router,
-    private resHandler: SEResponseHandler,
-    private tokenHandler: TokenHandler,
-    private userHandler: UserHandler,
-  ) {
+  constructor(router: Router, private resHandler: SEResponseHandler) {
     this.apiPath = new ApiPath();
     this.createAuthGet(router);
     this.createCallbackGet(router);
@@ -51,7 +43,7 @@ export class GoogleAuth {
           profile: any,
           done: any,
         ) => {
-          let provider = blConfig.APP_CONFIG.login.google.name;
+          let provider = APP_CONFIG.login.google.name;
           let providerId = profile.id;
           let username = '';
 
@@ -72,10 +64,10 @@ export class GoogleAuth {
             );
           }
 
-          let user;
+          let userAndTokens;
 
           try {
-            user = await this._userProvider.loginOrCreate(
+            userAndTokens = await this._userProvider.loginOrCreate(
               username,
               provider,
               providerId,
@@ -88,29 +80,16 @@ export class GoogleAuth {
             );
           }
 
-          this.createTokens(username, done);
+          done(null, userAndTokens);
         },
       ),
-    );
-  }
-
-  private createTokens(username, done) {
-    this.tokenHandler.createTokens(username).then(
-      (tokens: {accessToken: string; refreshToken: string}) => {
-        done(null, tokens);
-      },
-      (createTokenErrors: BlError) => {
-        createTokenErrors.printStack();
-
-        return done(new BlError('could not create tokens').code(906));
-      },
     );
   }
 
   private createAuthGet(router: Router) {
     router.get(
       this.apiPath.createPath('auth/google'),
-      passport.authenticate(blConfig.APP_CONFIG.login.google.name, {
+      passport.authenticate(APP_CONFIG.login.google.name, {
         scope: ['profile', 'email'],
       }),
     );
@@ -119,7 +98,7 @@ export class GoogleAuth {
   private createCallbackGet(router: Router) {
     router.get(this.apiPath.createPath('auth/google/callback'), (req, res) => {
       passport.authenticate(
-        blConfig.APP_CONFIG.login.google.name,
+        APP_CONFIG.login.google.name,
         (err, tokens, blError: BlError) => {
           const resHandler = new SEResponseHandler();
 

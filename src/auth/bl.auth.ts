@@ -53,28 +53,13 @@ export class BlAuth {
       userHandler,
     );
     let resHandler = new SEResponseHandler();
-    let appConfig = require('../application-config').APP_CONFIG;
 
-    let tokenConfig = new TokenConfig(
-      appConfig.token.access,
-      appConfig.token.refresh,
-    );
-    let tokenHandler = new TokenHandler(userHandler, tokenConfig);
+    let tokenHandler = new TokenHandler(userHandler);
 
     this.jwtAuth = new AccessTokenAuth(userHandler);
 
-    this.googleAuth = new GoogleAuth(
-      router,
-      resHandler,
-      tokenHandler,
-      userHandler,
-    );
-    this.facebookAuth = new FacebookAuth(
-      router,
-      resHandler,
-      tokenHandler,
-      userHandler,
-    );
+    this.googleAuth = new GoogleAuth(router, resHandler);
+    this.facebookAuth = new FacebookAuth(router, resHandler);
     this.localAuth = new LocalAuth(
       router,
       resHandler,
@@ -82,11 +67,6 @@ export class BlAuth {
       tokenHandler,
     );
     this.tokenEndpoint = new TokenEndpoint(router, resHandler, tokenHandler);
-    this.feideAuth = new FeideAuth(
-      router,
-      resHandler,
-      tokenHandler,
-      userHandler,
-    );
+    this.feideAuth = new FeideAuth(router, resHandler);
   }
 }

@@ -1,10 +1,7 @@
 import {Router} from 'express';
-
 import * as passport from 'passport';
 import {Strategy} from 'passport-facebook';
-import {UserHandler} from '../user/user.handler';
 import {ApiPath} from '../../config/api-path';
-import {TokenHandler} from '../token/token.handler';
 import {SEResponseHandler} from '../../response/se.response.handler';
 import {BlError} from '@wizardcoder/bl-model';
 import {User} from '../../collections/user/user';
@@ -17,12 +14,7 @@ export class FacebookAuth {
   private _localLoginHandler: LocalLoginHandler;
   private _userProvider: UserProvider;
 
-  constructor(
-    private router: Router,
-    private resHandler: SEResponseHandler,
-    private tokenHandler: TokenHandler,
-    private userHandler: UserHandler,
-  ) {
+  constructor(private router: Router, private resHandler: SEResponseHandler) {
     this.apiPath = new ApiPath();
     this._localLoginHandler = new LocalLoginHandler();
     this.createAuthGet(router);
@@ -66,9 +58,9 @@ export class FacebookAuth {
             );
           }
 
-          let user;
+          let userAndTokens;
           try {
-            user = await this._userProvider.loginOrCreate(
+            userAndTokens = await this._userProvider.loginOrCreate(
               username,
               provider,
               providerId,
@@ -81,24 +73,9 @@ export class FacebookAuth {
             );
           }
 
-          this.createTokens(username, done);
+          done(null, userAndTokens.tokens);
         },
       ),
-    );
-  }
-
-  private createTokens(username, done) {
-    this.tokenHandler.createTokens(username).then(
-      (tokens: {accessToken: string; refreshToken: string}) => {
-        done(null, tokens);
-      },
-      (createTokenError: BlError) => {
-        done(
-          new BlError('could not create tokens')
-            .add(createTokenError)
-            .store('username', username),
-        );
-      },
     );
   }
 

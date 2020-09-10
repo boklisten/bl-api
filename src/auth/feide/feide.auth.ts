@@ -5,8 +5,6 @@ import {Router} from 'express';
 import {APP_CONFIG} from '../../application-config';
 import {BlError} from '@wizardcoder/bl-model';
 import {HttpHandler} from '../../http/http.handler';
-import {UserHandler} from '../user/user.handler';
-import {TokenHandler} from '../token/token.handler';
 import {SEResponseHandler} from '../../response/se.response.handler';
 import {User} from '../../collections/user/user';
 import {LocalLoginHandler} from '../local/local-login.handler';
@@ -17,12 +15,7 @@ export class FeideAuth {
   private httpHandler: HttpHandler;
   private _userProvider: UserProvider;
 
-  constructor(
-    router: Router,
-    private resHandler: SEResponseHandler,
-    private tokenHandler: TokenHandler,
-    private userHandler: UserHandler,
-  ) {
+  constructor(router: Router, private resHandler: SEResponseHandler) {
     this.apiPath = new ApiPath();
     this.createPassportStrategy();
     this.createAuthGet(router);
@@ -61,10 +54,10 @@ export class FeideAuth {
           const feideUserId = feideUser['userid'];
           const provider = APP_CONFIG.login.feide.name;
 
-          let user;
+          let userAndTokens;
 
           try {
-            user = await this._userProvider.loginOrCreate(
+            userAndTokens = await this._userProvider.loginOrCreate(
               feideEmail,
               provider,
               feideUserId,
@@ -77,22 +70,9 @@ export class FeideAuth {
             );
           }
 
-          this.createTokens(feideEmail, done);
+          done(null, userAndTokens.tokens);
         },
       ),
-    );
-  }
-
-  private createTokens(username, done) {
-    this.tokenHandler.createTokens(username).then(
-      (tokens: {accessToken: string; refreshToken: string}) => {
-        done(null, tokens);
-      },
-      (createTokenErrors: BlError) => {
-        createTokenErrors.printStack();
-
-        return done(new BlError('could not create tokens').code(906));
-      },
     );
   }
 
