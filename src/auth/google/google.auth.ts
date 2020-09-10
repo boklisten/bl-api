@@ -7,20 +7,27 @@ import {SEResponseHandler} from '../../response/se.response.handler';
 import {BlError} from '@wizardcoder/bl-model';
 import {User} from '../../collections/user/user';
 import {APP_CONFIG} from '../../application-config';
-import {LocalLoginHandler} from '../local/local-login.handler';
 import {UserProvider} from '../user/user-provider/user-provider';
 
 export class GoogleAuth {
   private apiPath: ApiPath;
-  private _localLoginHandler: LocalLoginHandler;
   private _userProvider: UserProvider;
+  private _googlePassportStrategySettings;
 
-  constructor(router: Router, private resHandler: SEResponseHandler) {
+  constructor(private router: Router, private resHandler: SEResponseHandler) {
     this.apiPath = new ApiPath();
     this.createAuthGet(router);
     this.createCallbackGet(router);
-    this._localLoginHandler = new LocalLoginHandler();
     this._userProvider = new UserProvider();
+
+    this._googlePassportStrategySettings = {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+      passReqToCallback: true,
+      callbackURL:
+        process.env.BL_API_URI +
+        this.apiPath.createPath('auth/google/callback'),
+    };
 
     this.createPassportStrategy();
   }
@@ -28,14 +35,7 @@ export class GoogleAuth {
   private createPassportStrategy() {
     passport.use(
       new OAuth2Strategy(
-        {
-          clientID: process.env.GOOGLE_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_SECRET,
-          passReqToCallback: true,
-          callbackURL:
-            process.env.BL_API_URI +
-            this.apiPath.createPath('auth/google/callback'),
-        },
+        this._googlePassportStrategySettings,
         async (
           req,
           accessToken: any,
@@ -45,23 +45,16 @@ export class GoogleAuth {
         ) => {
           let provider = APP_CONFIG.login.google.name;
           let providerId = profile.id;
-          let username = '';
+          let username;
 
-          for (let profileEmail of profile.emails) {
-            if (profileEmail.verified) {
-              username = profileEmail.value;
-            }
+          try {
+            username = this.retrieveUsername(profile);
+          } catch (e) {
+            throw e;
           }
 
-          if (!username || username.length <= 0 || !providerId) {
-            return done(
-              null,
-              false,
-              new BlError('username not found by google')
-                .code(902)
-                .store('provider', provider)
-                .store('providerId', providerId),
-            );
+          if (!providerId) {
+            return done(null, false, new BlError('no providerId').code(902));
           }
 
           let userAndTokens;
@@ -84,6 +77,22 @@ export class GoogleAuth {
         },
       ),
     );
+  }
+
+  private retrieveUsername(profile): string {
+    let username;
+
+    for (let profileEmail of profile.emails) {
+      if (profileEmail.verified) {
+        username = profileEmail.value;
+      }
+    }
+
+    if (!username || username.length <= 0) {
+      throw new BlError('username not found by google').code(902);
+    }
+
+    return username;
   }
 
   private createAuthGet(router: Router) {
