@@ -4,19 +4,27 @@ import {Strategy} from 'passport-facebook';
 import {ApiPath} from '../../config/api-path';
 import {SEResponseHandler} from '../../response/se.response.handler';
 import {BlError} from '@wizardcoder/bl-model';
-import {User} from '../../collections/user/user';
 import {APP_CONFIG} from '../../application-config';
-import {LocalLoginHandler} from '../local/local-login.handler';
 import {UserProvider} from '../user/user-provider/user-provider';
 
 export class FacebookAuth {
   private apiPath: ApiPath;
-  private _localLoginHandler: LocalLoginHandler;
   private _userProvider: UserProvider;
+  private facebookPassportStrategySettings;
 
   constructor(private router: Router, private resHandler: SEResponseHandler) {
     this.apiPath = new ApiPath();
-    this._localLoginHandler = new LocalLoginHandler();
+
+    this.facebookPassportStrategySettings = {
+      clientID: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_SECRET,
+      callbackURL:
+        process.env.BL_API_URI +
+        this.apiPath.createPath('auth/facebook/callback'),
+      profileFields: ['id', 'email', 'name'],
+      enableProof: true,
+    };
+
     this.createAuthGet(router);
     this.createCallbackGet(router);
     this.createPassportStrategy();
@@ -26,40 +34,20 @@ export class FacebookAuth {
   private createPassportStrategy() {
     passport.use(
       new Strategy(
-        {
-          clientID: process.env.FACEBOOK_CLIENT_ID,
-          clientSecret: process.env.FACEBOOK_SECRET,
-          callbackURL:
-            process.env.BL_API_URI +
-            this.apiPath.createPath('auth/facebook/callback'),
-          profileFields: ['id', 'email', 'name'],
-          enableProof: true,
-        },
+        this.facebookPassportStrategySettings,
         async (
           accessToken: any,
           refreshToken: any,
           profile: any,
           done: any,
         ) => {
-          let provider = 'facebook';
-          let providerId = profile.id;
-
-          let username = '';
-
-          if (profile.emails && profile.emails[0] && profile.emails[0].value) {
-            username = profile.emails[0].value;
-          }
-
-          if (!username) {
-            return done(
-              null,
-              null,
-              new BlError('username not found from facebook').code(902),
-            );
-          }
+          const provider = APP_CONFIG.login.facebook.name;
+          const providerId = profile.id;
 
           let userAndTokens;
+
           try {
+            const username = this.extractUsername(profile);
             userAndTokens = await this._userProvider.loginOrCreate(
               username,
               provider,
@@ -72,11 +60,24 @@ export class FacebookAuth {
               new BlError('could not create user').code(902),
             );
           }
-
           done(null, userAndTokens.tokens);
         },
       ),
     );
+  }
+
+  private extractUsername(profile): string {
+    let username: string;
+
+    if (profile.emails && profile.emails[0] && profile.emails[0].value) {
+      username = profile.emails[0].value;
+    }
+
+    if (!username) {
+      throw new BlError('username not found from facebook').code(902);
+    }
+
+    return username;
   }
 
   private createAuthGet(router: Router) {
