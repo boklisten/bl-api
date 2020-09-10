@@ -73,7 +73,7 @@ export class GoogleAuth {
             );
           }
 
-          done(null, userAndTokens);
+          done(null, userAndTokens.tokens);
         },
       ),
     );

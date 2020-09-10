@@ -14,6 +14,12 @@ export const APP_CONFIG = {
       payment: 'payments',
     },
     host: 'boklisten',
+    dev: {
+      host: 'test.boklisten',
+    },
+    local: {
+      host: 'localhost',
+    },
   },
   server: {
     basePath: 'http://localhost:1337',

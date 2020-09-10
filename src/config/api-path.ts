@@ -1,52 +1,53 @@
-
-import {APP_CONFIG} from "../application-config";
+import {APP_CONFIG} from '../application-config';
+const URL = require('url');
 
 export class ApiPath {
-	private baseHost: string;
+  private baseHost: string;
 
-	constructor() {
-		this.baseHost = (APP_CONFIG.path.host) ? APP_CONFIG.path.host : 'boklisten';
-	}
-	
-	private getBasePath(): string {
-		return process.env.SERVER_PATH;
-	}
-	
-	public createPath(customPath: string): string {
-		return this.getBasePath() + customPath;
-	}
+  constructor() {
+    if (process.env.NODE_ENV == 'production') {
+      this.baseHost = APP_CONFIG.path.host;
+    } else if (process.env.NODE_ENV == 'dev') {
+      this.baseHost = APP_CONFIG.path.dev.host;
+    } else {
+      this.baseHost = APP_CONFIG.path.local.host;
+    }
+  }
 
-	public retrieveRefererPath(reqHeaders) {
-		let refererUrl = null;
+  private getBasePath(): string {
+    return process.env.SERVER_PATH;
+  }
 
-		const refererPath = reqHeaders['referer'];
-		const reffererPath = reqHeaders['refferer'];
+  public createPath(customPath: string): string {
+    return this.getBasePath() + customPath;
+  }
 
-		if (refererPath) {
-			refererUrl = this.retrieveBasePath(refererPath);
-		} else if (reffererPath) {
-			refererUrl = this.retrieveBasePath(refererPath);
-		}
+  public retrieveRefererPath(reqHeaders) {
+    let refererUrl = null;
 
-		if (refererUrl) {
-			if (refererUrl.indexOf(this.baseHost) <= -1) {
-				refererUrl = null;
-			}
-		}
+    const refererPath = reqHeaders['referer'];
+    const reffererPath = reqHeaders['refferer'];
 
-		return refererUrl;
-	}
+    if (refererPath) {
+      refererUrl = this.retrieveBasePath(refererPath);
+    } else if (reffererPath) {
+      refererUrl = this.retrieveBasePath(reffererPath);
+    }
 
-	private retrieveBasePath(url: string) {
-		let pathArray: string[];
-		try {
-			pathArray = url.split('/');
-		} catch (e) {
-			return null;
-		}
+    if (refererUrl) {
+      if (refererUrl.indexOf(this.baseHost) <= -1) {
+        refererUrl = null;
+      }
+    }
 
-		const protocol = pathArray[0];
-		const host = pathArray[2];
-		return protocol + '//' + host + '/';
-	}
+    return refererUrl;
+  }
+
+  private retrieveBasePath(href: string) {
+    const url = URL.parse(href);
+    const host = url.host;
+    const protocol = url.protocol;
+
+    return protocol + '//' + host + '/';
+  }
 }
