@@ -11,8 +11,21 @@ export class SystemUser {
 
 export class PermissionService {
   private systemUser: SystemUser = new SystemUser();
+  private validPermissions: string[];
 
-  constructor() {}
+  constructor() {
+    this.validPermissions = [
+      'customer',
+      'employee',
+      'manager',
+      'admin',
+      'super',
+    ];
+  }
+
+  public isPermission(permission: string): boolean {
+    return this.validPermissions.indexOf(permission) >= 0;
+  }
 
   public getLowestPermission(
     userPermissions: UserPermission[],
