@@ -1,165 +1,172 @@
-import { Schema } from "mongoose";
+import {Schema} from 'mongoose';
 
 export const customerItemSchema = {
   item: {
     type: Schema.Types.Mixed,
-    required: true
+    required: true,
   },
   type: {
     type: Schema.Types.String,
-    required: false
+    required: false,
   },
   age: {
-    type: Schema.Types.String
+    type: Schema.Types.String,
   },
   blid: {
-    type: Schema.Types.String
+    type: Schema.Types.String,
   },
   customer: {
     type: Schema.Types.Mixed,
-    require: true
+    require: true,
   },
   sharedItem: {
     type: Schema.Types.ObjectId,
-    required: false
+    required: false,
   },
   deadline: {
     type: Schema.Types.Date,
-    required: true
+    required: true,
   },
   state: {
-    type: Schema.Types.String
+    type: Schema.Types.String,
+  },
+  digital: {
+    type: Schema.Types.Boolean,
+    default: false,
+  },
+  digitalInfo: {
+    type: Schema.Types.Mixed,
   },
   match: {
     type: Schema.Types.Boolean,
-    default: false
+    default: false,
   },
   matchInfo: {
     type: {
       id: Schema.Types.ObjectId,
-      time: Schema.Types.Date
-    }
+      time: Schema.Types.Date,
+    },
   },
   handout: {
     type: Schema.Types.Boolean,
-    default: false
+    default: false,
   },
   handoutInfo: {
     handoutBy: {
       type: Schema.Types.String,
-      required: true
+      required: true,
     },
     handoutById: {
       type: Schema.Types.ObjectId,
-      required: true
+      required: true,
     },
     handoutEmployee: Schema.Types.ObjectId,
     time: {
-      type: Schema.Types.Date
-    }
+      type: Schema.Types.Date,
+    },
   },
   returned: {
     type: Schema.Types.Boolean,
-    required: true
+    required: true,
   },
   returnInfo: {
     type: {
       returnedTo: {
         type: Schema.Types.String,
-        required: true
+        required: true,
       },
       returnedToId: {
         type: Schema.Types.ObjectId,
-        required: true
+        required: true,
       },
       returnEmployee: Schema.Types.ObjectId,
       time: {
         type: Schema.Types.Date,
-        required: true
-      }
+        required: true,
+      },
     },
-    required: false
+    required: false,
   },
   cancel: {
     type: Schema.Types.Boolean,
-    default: false
+    default: false,
   },
   cancelInfo: {
     type: {
       order: {
-        type: Schema.Types.ObjectId
+        type: Schema.Types.ObjectId,
       },
       time: {
-        type: Schema.Types.Date
-      }
+        type: Schema.Types.Date,
+      },
     },
-    required: false
+    required: false,
   },
   buyout: {
     type: Schema.Types.Boolean,
-    default: false
+    default: false,
   },
   buyoutInfo: {
     type: {
       order: {
-        type: Schema.Types.ObjectId
+        type: Schema.Types.ObjectId,
       },
       time: {
-        type: Schema.Types.Date
-      }
+        type: Schema.Types.Date,
+      },
     },
-    required: false
+    required: false,
   },
   buyback: {
     type: Schema.Types.Boolean,
-    default: false
+    default: false,
   },
   buybackInfo: {
     type: {
       order: {
-        type: Schema.Types.ObjectId
+        type: Schema.Types.ObjectId,
       },
       time: {
-        type: Schema.Types.Date
-      }
+        type: Schema.Types.Date,
+      },
     },
-    required: false
+    required: false,
   },
 
   orders: {
     type: [Schema.Types.ObjectId],
-    default: []
+    default: [],
   },
   periodExtends: {
     type: [
       {
         from: {
           type: Schema.Types.Date,
-          required: true
+          required: true,
         },
         to: {
           type: Schema.Types.Date,
-          required: true
+          required: true,
         },
         periodType: {
           type: Schema.Types.String,
-          required: true
+          required: true,
         },
         time: {
           type: Schema.Types.Date,
-          required: true
-        }
-      }
+          required: true,
+        },
+      },
     ],
-    default: []
+    default: [],
   },
   totalAmount: {
     type: Schema.Types.Number,
-    required: false
+    required: false,
   },
   amountLeftToPay: {
     type: Schema.Types.Number,
-    required: false
+    required: false,
   },
   customerInfo: {
     type: {
@@ -173,11 +180,11 @@ export const customerItemSchema = {
         type: {
           name: Schema.Types.String,
           email: Schema.Types.String,
-          phone: Schema.Types.String
+          phone: Schema.Types.String,
         },
-        required: false
-      }
+        required: false,
+      },
     },
-    required: false
-  }
+    required: false,
+  },
 };

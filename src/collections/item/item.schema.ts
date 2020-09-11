@@ -9,6 +9,11 @@ export let itemSchema = {
     type: Schema.Types.String,
     required: true,
   },
+  digital: {
+    type: Schema.Types.Boolean,
+    default: false,
+    required: false,
+  },
   price: {
     type: Schema.Types.Number,
     required: true,
