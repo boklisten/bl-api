@@ -9,6 +9,7 @@ import {Schema} from 'mongoose';
 import {UserDetailValidOperation} from './operations/user-detail-valid.operation';
 import {UserDetailDeleteHook} from './hooks/user-detail-delete.hook';
 import {UserDetailPermissionOperation} from './operations/permission/user-detail-permission.operation';
+import {UserDetailReadPermissionOperation} from './operations/read-permission/user-detail-read-permission.operation';
 
 export class UserDetailCollection implements BlCollection {
   collectionName = 'userdetails';
@@ -30,6 +31,13 @@ export class UserDetailCollection implements BlCollection {
           restriction: {
             permissions: ['customer', 'employee', 'manager', 'admin', 'super'],
             restricted: true,
+          },
+        },
+        {
+          name: 'permission',
+          operation: new UserDetailReadPermissionOperation(),
+          restriction: {
+            permissions: ['admin', 'super'],
           },
         },
       ],
