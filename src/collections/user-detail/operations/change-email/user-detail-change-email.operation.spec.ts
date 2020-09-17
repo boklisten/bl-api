@@ -53,7 +53,8 @@ describe("UserDetailChangeEmailOperation", () => {
     return expect(
       userDetailChangeEmailOperation.run({
         documentId: "userDetail1",
-        data: { email: "" }
+        data: { email: "" },
+        user: { id: "admin1", permission: "admin" }
       })
     ).to.eventually.be.rejectedWith(BlError, /email is not valid/);
   });
@@ -64,7 +65,9 @@ describe("UserDetailChangeEmailOperation", () => {
     return expect(
       userDetailChangeEmailOperation.run({
         documentId: "userDetail1",
-        data: { email: "change@email.com" }
+        data: { email: "change@email.com" },
+
+        user: { id: "admin1", permission: "admin" }
       })
     ).to.eventually.be.rejectedWith(BlError, /user detail not found/);
   });
@@ -76,22 +79,50 @@ describe("UserDetailChangeEmailOperation", () => {
     return expect(
       userDetailChangeEmailOperation.run({
         documentId: "userDetail1",
-        data: { email: "change@email.com" }
+        data: { email: "change@email.com" },
+        user: { id: "admin1", permission: "admin" }
       })
     ).to.eventually.be.rejectedWith(BlError, /no user found/);
   });
 
+  const permissions: any[] = ["customer", "employee", "manager", "admin"];
+  let higherPermissions: any[] = ["customer", "employee", "manager", "admin"];
+  for (let permission of permissions) {
+    for (let higherPermission of higherPermissions) {
+      it(`should reject if blApiRequest.user.permission "${permission}" tries to change a higher permission "${higherPermission}"`, () => {
+        userDetailGetStub.resolves({
+          blid: "blid1",
+          email: "email@email.com"
+        });
+        userAggregateStub.resolves([
+          { username: "email@email.com", permission: higherPermission }
+        ]);
+
+        return expect(
+          userDetailChangeEmailOperation.run({
+            user: { id: "userDetail2", permission: permission },
+            documentId: "userDetail1",
+            data: { email: "e@mail.com", permission: "employee" }
+          })
+        ).to.eventually.be.rejectedWith(BlError, "no access to change email");
+      });
+    }
+
+    higherPermissions.shift();
+  }
+
   it("should reject if local login is not found", () => {
     userDetailGetStub.resolves({ blid: "blid1", email: "email@email.com" });
     userAggregateStub.resolves([
-      { blid: "blid1", username: "email@email.com" }
+      { blid: "blid1", username: "email@email.com", permission: "customer" }
     ]);
     localLoginAggregateStub.rejects(new BlError("local login not found"));
 
     return expect(
       userDetailChangeEmailOperation.run({
         documentId: "userDetail1",
-        data: { email: "change@email.com" }
+        data: { email: "change@email.com" },
+        user: { id: "admin1", permission: "admin" }
       })
     ).to.eventually.be.rejectedWith(BlError, /local login not found/);
   });
@@ -99,7 +130,7 @@ describe("UserDetailChangeEmailOperation", () => {
   it("should reject if the email is already in database", () => {
     userDetailGetStub.resolves({ blid: "blid1", email: "email@email.com" });
     userAggregateStub.resolves([
-      { blid: "blid1", username: "email@email.com" }
+      { blid: "blid1", username: "email@email.com", permission: "customer" }
     ]);
     localLoginAggregateStub.resolves([{ username: "email@email.com" }]);
     userHandlerGetByUsernameStub.resolves([
@@ -109,7 +140,8 @@ describe("UserDetailChangeEmailOperation", () => {
     return expect(
       userDetailChangeEmailOperation.run({
         documentId: "userDetail1",
-        data: { email: "alreadyAdded@email.com" }
+        data: { email: "alreadyAdded@email.com" },
+        user: { id: "admin1", permission: "admin" }
       })
     ).to.eventually.be.rejectedWith(
       BlError,
@@ -120,7 +152,7 @@ describe("UserDetailChangeEmailOperation", () => {
   it("should reject if userDetailStorage.update rejects", () => {
     userDetailGetStub.resolves({ blid: "blid1", email: "email@email.com" });
     userAggregateStub.resolves([
-      { blid: "blid1", username: "email@email.com" }
+      { blid: "blid1", username: "email@email.com", permission: "customer" }
     ]);
     localLoginAggregateStub.resolves([{ username: "email@email.com" }]);
     userHandlerGetByUsernameStub.rejects(new BlError("not found"));
@@ -129,7 +161,8 @@ describe("UserDetailChangeEmailOperation", () => {
     return expect(
       userDetailChangeEmailOperation.run({
         documentId: "userDetail1",
-        data: { email: "change@email.com" }
+        data: { email: "change@email.com" },
+        user: { id: "admin1", permission: "admin" }
       })
     ).to.eventually.be.rejectedWith(BlError, /could not update user detail/);
   });
@@ -137,7 +170,7 @@ describe("UserDetailChangeEmailOperation", () => {
   it("should reject if user.update rejects", () => {
     userDetailGetStub.resolves({ blid: "blid1", email: "email@email.com" });
     userAggregateStub.resolves([
-      { blid: "blid1", username: "email@email.com" }
+      { blid: "blid1", username: "email@email.com", permission: "customer" }
     ]);
     localLoginAggregateStub.resolves([{ username: "email@email.com" }]);
     userHandlerGetByUsernameStub.rejects(new BlError("not found"));
@@ -147,7 +180,8 @@ describe("UserDetailChangeEmailOperation", () => {
     return expect(
       userDetailChangeEmailOperation.run({
         documentId: "userDetail1",
-        data: { email: "change@email.com" }
+        data: { email: "change@email.com" },
+        user: { id: "admin1", permission: "admin" }
       })
     ).to.eventually.be.rejectedWith(BlError, /could not update user/);
   });
@@ -155,7 +189,7 @@ describe("UserDetailChangeEmailOperation", () => {
   it("should reject if user.update rejects", () => {
     userDetailGetStub.resolves({ blid: "blid1", email: "email@email.com" });
     userAggregateStub.resolves([
-      { blid: "blid1", username: "email@email.com" }
+      { blid: "blid1", username: "email@email.com", permission: "customer" }
     ]);
     localLoginAggregateStub.resolves([{ username: "email@email.com" }]);
     userHandlerGetByUsernameStub.rejects(new BlError("not found"));
@@ -166,7 +200,8 @@ describe("UserDetailChangeEmailOperation", () => {
     return expect(
       userDetailChangeEmailOperation.run({
         documentId: "userDetail1",
-        data: { email: "change@email.com" }
+        data: { email: "change@email.com" },
+        user: { id: "admin1", permission: "admin" }
       })
     ).to.eventually.be.rejectedWith(BlError, /could not update local login/);
   });
@@ -174,7 +209,7 @@ describe("UserDetailChangeEmailOperation", () => {
   it("should resolve", () => {
     userDetailGetStub.resolves({ blid: "blid1", email: "email@email.com" });
     userAggregateStub.resolves([
-      { blid: "blid1", username: "email@email.com" }
+      { blid: "blid1", username: "email@email.com", permission: "customer" }
     ]);
     localLoginAggregateStub.resolves([{ username: "email@email.com" }]);
     userHandlerGetByUsernameStub.rejects(new BlError("not found"));
@@ -186,7 +221,8 @@ describe("UserDetailChangeEmailOperation", () => {
     return expect(
       userDetailChangeEmailOperation.run({
         documentId: "userDetail1",
-        data: { email: "change@email.com" }
+        data: { email: "change@email.com" },
+        user: { id: "admin1", permission: "admin" }
       })
     ).to.eventually.be.true;
   });

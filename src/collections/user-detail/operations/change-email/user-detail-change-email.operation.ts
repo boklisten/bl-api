@@ -15,6 +15,8 @@ import { UserHandler } from "../../../../auth/user/user.handler";
 const emailValidator = require("validator");
 
 export class UserDetailChangeEmailOperation implements Operation {
+  private _permissionService: PermissionService;
+
   constructor(
     private _userDetailStorage?: BlDocumentStorage<UserDetail>,
     private _userStorage?: BlDocumentStorage<User>,
@@ -33,6 +35,7 @@ export class UserDetailChangeEmailOperation implements Operation {
       : new BlDocumentStorage("locallogins", localLoginSchema);
     this._userHandler = _userHandler ? _userHandler : new UserHandler();
     this._resHandler = _resHandler ? _resHandler : new SEResponseHandler();
+    this._permissionService = new PermissionService();
   }
 
   async run(
@@ -66,8 +69,16 @@ export class UserDetailChangeEmailOperation implements Operation {
       ]);
       user = users[0];
     } catch (e) {
-      console.log(e);
       throw e;
+    }
+
+    if (
+      !this._permissionService.isPermissionOver(
+        blApiRequest.user.permission,
+        user.permission
+      )
+    ) {
+      throw new BlError("no access to change email");
     }
 
     let localLogin;
