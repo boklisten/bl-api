@@ -97,6 +97,7 @@ describe("UserDetailChangeEmailOperation", () => {
         userAggregateStub.resolves([
           { username: "email@email.com", permission: higherPermission }
         ]);
+        localLoginAggregateStub.resolves([{ username: "email@email.com" }]);
 
         return expect(
           userDetailChangeEmailOperation.run({

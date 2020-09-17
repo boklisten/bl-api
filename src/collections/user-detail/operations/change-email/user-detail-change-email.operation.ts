@@ -45,60 +45,20 @@ export class UserDetailChangeEmailOperation implements Operation {
     next?: NextFunction
   ): Promise<boolean> {
     let userDetail: UserDetail;
+    let user: User;
+    let localLogin;
 
     const emailChange = blApiRequest.data["email"];
 
-    if (
-      isNullOrUndefined(emailChange) ||
-      !emailValidator.isEmail(emailChange)
-    ) {
-      throw new BlError("email is not valid").code(701);
-    }
-
     try {
+      this.validateEmail(emailChange);
       userDetail = await this._userDetailStorage.get(blApiRequest.documentId);
+      user = await this.getUser(userDetail.email, userDetail.blid);
+      localLogin = await this.getLocalLogin(userDetail.email);
+      this.validatePermission(blApiRequest.user.permission, user.permission);
+      await this.checkIfAlreadyAdded(emailChange);
     } catch (e) {
       throw e;
-    }
-
-    let user: User;
-
-    try {
-      const users = await this._userStorage.aggregate([
-        { $match: { username: userDetail.email, blid: userDetail.blid } }
-      ]);
-      user = users[0];
-    } catch (e) {
-      throw e;
-    }
-
-    if (
-      !this._permissionService.isPermissionOver(
-        blApiRequest.user.permission,
-        user.permission
-      )
-    ) {
-      throw new BlError("no access to change email");
-    }
-
-    let localLogin;
-
-    try {
-      const localLogins = await this._localLoginStorage.aggregate([
-        { $match: { username: userDetail.email } }
-      ]);
-      localLogin = localLogins[0];
-    } catch (e) {
-      throw e;
-    }
-
-    let alreadyAddedUser;
-    try {
-      alreadyAddedUser = await this._userHandler.getByUsername(emailChange);
-    } catch (e) {}
-
-    if (!isNullOrUndefined(alreadyAddedUser)) {
-      throw new BlError("email is already present in database").code(701);
     }
 
     try {
@@ -123,5 +83,66 @@ export class UserDetailChangeEmailOperation implements Operation {
 
     this._resHandler.sendResponse(res, new BlapiResponse([{ success: true }]));
     return true;
+  }
+
+  private async checkIfAlreadyAdded(email: string): Promise<boolean> {
+    let alreadyAddedUser;
+
+    try {
+      alreadyAddedUser = await this._userHandler.getByUsername(email);
+    } catch (e) {}
+
+    if (!isNullOrUndefined(alreadyAddedUser)) {
+      throw new BlError("email is already present in database").code(701);
+    }
+
+    return false;
+  }
+
+  private validatePermission(
+    userPermission,
+    permissionToEmailChangeUser
+  ): boolean {
+    if (
+      !this._permissionService.isPermissionOver(
+        userPermission,
+        permissionToEmailChangeUser
+      )
+    ) {
+      throw new BlError("no access to change email");
+    }
+    return true;
+  }
+
+  private async getUser(email: string, blid: string): Promise<User> {
+    let user;
+    try {
+      const users = await this._userStorage.aggregate([
+        { $match: { username: email, blid: blid } }
+      ]);
+      user = users[0];
+    } catch (e) {
+      throw e;
+    }
+    return user;
+  }
+
+  private async getLocalLogin(username: string): Promise<LocalLogin> {
+    let localLogin;
+    try {
+      const localLogins = await this._localLoginStorage.aggregate([
+        { $match: { username: username } }
+      ]);
+      localLogin = localLogins[0];
+    } catch (e) {
+      throw e;
+    }
+    return localLogin;
+  }
+
+  private validateEmail(email: string) {
+    if (isNullOrUndefined(email) || !emailValidator.isEmail(email)) {
+      throw new BlError("email is not valid").code(701);
+    }
   }
 }
