@@ -86,7 +86,7 @@ export class UserDetailChangeEmailOperation implements Operation {
       alreadyAddedUser = await this._userHandler.getByUsername(emailChange);
     } catch (e) {}
 
-    if (alreadyAddedUser || alreadyAddedUser.length > 0) {
+    if (!isNullOrUndefined(alreadyAddedUser)) {
       throw new BlError("email is already present in database").code(701);
     }
 
