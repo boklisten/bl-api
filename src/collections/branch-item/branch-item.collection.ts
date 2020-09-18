@@ -24,6 +24,12 @@ export class BranchItemCollection implements BlCollection {
     {
       method: "getAll",
       validQueryParams: [{ fieldName: "branch", type: "object-id" }]
+    },
+    {
+      method: "delete",
+      restriction: {
+        permissions: ["admin", "super"]
+      }
     }
   ];
 }
