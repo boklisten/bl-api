@@ -1,17 +1,17 @@
-import {SEDbQuery} from '../../query/se.db-query';
+import { SEDbQuery } from "../../query/se.db-query";
 
-import {Blid} from '../blid/blid';
-import {UserDetail, BlError} from '@wizardcoder/bl-model';
-import {User} from '../../collections/user/user';
-import {UserSchema} from '../../collections/user/user.schema';
-import {userDetailSchema} from '../../collections/user-detail/user-detail.schema';
-import {BlDocumentStorage} from '../../storage/blDocumentStorage';
-import {PasswordReset} from '../../collections/password-reset/password-reset';
-import {EmailValidationHelper} from '../../collections/email-validation/helpers/email-validation.helper';
-import {SystemUser} from '../permission/permission.service';
-import {LocalLoginHandler} from '../local/local-login.handler';
-import {LocalLoginValidator} from '../local/local-login.validator';
-import {LocalLogin} from '../../collections/local-login/local-login';
+import { Blid } from "../blid/blid";
+import { UserDetail, BlError } from "@wizardcoder/bl-model";
+import { User } from "../../collections/user/user";
+import { UserSchema } from "../../collections/user/user.schema";
+import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
+import { PasswordReset } from "../../collections/password-reset/password-reset";
+import { EmailValidationHelper } from "../../collections/email-validation/helpers/email-validation.helper";
+import { SystemUser } from "../permission/permission.service";
+import { LocalLoginHandler } from "../local/local-login.handler";
+import { LocalLoginValidator } from "../local/local-login.validator";
+import { LocalLogin } from "../../collections/local-login/local-login";
 
 export class UserHandler {
   private blid: Blid;
@@ -24,18 +24,18 @@ export class UserHandler {
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     userStorage?: BlDocumentStorage<User>,
     emailValidationHelper?: EmailValidationHelper,
-    localLoginHandler?: LocalLoginHandler,
+    localLoginHandler?: LocalLoginHandler
   ) {
     this.blid = new Blid();
     this.userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage('userdetails', userDetailSchema);
+      : new BlDocumentStorage("userdetails", userDetailSchema);
     this._emailValidationHelper = emailValidationHelper
       ? emailValidationHelper
       : new EmailValidationHelper();
     this.userStorage = userStorage
       ? userStorage
-      : new BlDocumentStorage('users', UserSchema);
+      : new BlDocumentStorage("users", UserSchema);
     this._localLoginHandler = localLoginHandler
       ? localLoginHandler
       : new LocalLoginHandler();
@@ -44,10 +44,10 @@ export class UserHandler {
   public getByUsername(username: string): Promise<User> {
     return new Promise((resolve, reject) => {
       if (!username)
-        return reject(new BlError('username is empty or undefined'));
+        return reject(new BlError("username is empty or undefined"));
 
       let dbQuery = new SEDbQuery();
-      dbQuery.stringFilters = [{fieldName: 'username', value: username}];
+      dbQuery.stringFilters = [{ fieldName: "username", value: username }];
 
       this.userStorage.getByQuery(dbQuery).then(
         (docs: User[]) => {
@@ -58,7 +58,7 @@ export class UserHandler {
               })
               .catch(() => {
                 reject(
-                  new BlError(`could not handle user with multiple entries`),
+                  new BlError(`could not handle user with multiple entries`)
                 );
               });
           } else {
@@ -69,9 +69,9 @@ export class UserHandler {
           reject(
             new BlError('could not find user with username "' + username + '"')
               .add(error)
-              .code(702),
+              .code(702)
           );
-        },
+        }
       );
     });
   }
@@ -95,7 +95,7 @@ export class UserHandler {
       selectedUser = users[0];
 
       return this.userStorage
-        .update(selectedUser, {primary: true}, new SystemUser())
+        .update(selectedUser, { primary: true }, new SystemUser())
         .then(primaryUser => {
           let promiseArr: Promise<User>[] = [];
 
@@ -103,9 +103,9 @@ export class UserHandler {
             promiseArr.push(
               this.userStorage.update(
                 users[i].id,
-                {movedToPrimary: selectedUser.id},
-                new SystemUser(),
-              ),
+                { movedToPrimary: selectedUser.id },
+                new SystemUser()
+              )
             );
           }
 
@@ -115,31 +115,31 @@ export class UserHandler {
             })
             .catch(() => {
               throw new BlError(
-                `user with multiple entries could not update the other entries with invalid`,
+                `user with multiple entries could not update the other entries with invalid`
               );
             });
         })
         .catch(updateUserErr => {
           throw new BlError(
-            'user with multiple entries could not update one to primary',
+            "user with multiple entries could not update one to primary"
           );
         });
     }
   }
 
   public get(provider: string, providerId: string): Promise<User> {
-    let blError = new BlError('').className('userHandler').methodName('exists');
+    let blError = new BlError("").className("userHandler").methodName("exists");
 
     return new Promise((resolve, reject) => {
       if (!provider || provider.length <= 0)
-        reject(blError.msg('provider is empty or undefined'));
+        reject(blError.msg("provider is empty or undefined"));
       if (!providerId || providerId.length <= 0)
-        reject(blError.msg('providerId is empty of undefined'));
+        reject(blError.msg("providerId is empty of undefined"));
 
       let dbQuery = new SEDbQuery();
       dbQuery.stringFilters = [
-        {fieldName: 'login.provider', value: provider},
-        {fieldName: 'login.providerId', value: providerId},
+        { fieldName: "login.provider", value: provider },
+        { fieldName: "login.providerId", value: providerId }
       ];
 
       this.userStorage
@@ -149,10 +149,10 @@ export class UserHandler {
         })
         .catch((error: BlError) => {
           reject(
-            new BlError('an error occured when getting user')
-              .store('provider', provider)
-              .store('providerId', providerId)
-              .add(error),
+            new BlError("an error occured when getting user")
+              .store("provider", provider)
+              .store("providerId", providerId)
+              .add(error)
           );
         });
     });
@@ -161,14 +161,14 @@ export class UserHandler {
   public async create(
     username: string,
     provider: string,
-    providerId: string,
+    providerId: string
   ): Promise<User> {
     if (!username || username.length <= 0)
-      throw new BlError('username is empty or undefined').code(907);
+      throw new BlError("username is empty or undefined").code(907);
     if (!provider || provider.length <= 0)
-      throw new BlError('provider is empty or undefined').code(907);
+      throw new BlError("provider is empty or undefined").code(907);
     if (!providerId || providerId.length <= 0)
-      throw new BlError('providerId is empty or undefined').code(907);
+      throw new BlError("providerId is empty or undefined").code(907);
 
     let userExists: User = null;
     try {
@@ -178,9 +178,9 @@ export class UserHandler {
     }
 
     if (userExists) {
-      if (provider === 'local') {
+      if (provider === "local") {
         throw new BlError(
-          `username "${username}" already exists, but trying to create new user with provider "local"`,
+          `username "${username}" already exists, but trying to create new user with provider "local"`
         ).code(903);
       } else if (this.isThirdPartyProvider(provider)) {
         // if user already exists and the creation is with google or facebook
@@ -194,7 +194,7 @@ export class UserHandler {
         return userExists;
       } else {
         throw new BlError(
-          `username "${username}" already exists, but could not link it with new provider "${provider}"`,
+          `username "${username}" already exists, but could not link it with new provider "${provider}"`
         );
       }
     }
@@ -204,7 +204,7 @@ export class UserHandler {
       let userDetail: any = {
         email: username,
         blid: blid,
-        emailConfirmed: this.isThirdPartyProvider(provider), // email is only valid on creation if using Google or Facebook
+        emailConfirmed: this.isThirdPartyProvider(provider) // email is only valid on creation if using Google or Facebook
       };
 
       if (this.isThirdPartyProvider(provider)) {
@@ -217,7 +217,7 @@ export class UserHandler {
 
       const addedUserDetail: UserDetail = await this.userDetailStorage.add(
         userDetail,
-        {id: blid, permission: 'customer'},
+        { id: blid, permission: "customer" }
       );
 
       if (!addedUserDetail.emailConfirmed) {
@@ -226,27 +226,27 @@ export class UserHandler {
 
       let newUser: any = {
         userDetail: addedUserDetail.id,
-        permission: 'customer',
+        permission: "customer",
         blid: blid,
         username: username,
         valid: false,
         login: {
           provider: provider,
-          providerId: providerId,
-        },
+          providerId: providerId
+        }
       };
 
       return await this.userStorage.add(newUser, {
         id: blid,
-        permission: newUser.permission,
+        permission: newUser.permission
       });
     } catch (e) {
-      let blError = new BlError('user creation failed').code(903);
+      let blError = new BlError("user creation failed").code(903);
 
       if (e instanceof BlError) {
         blError.add(e);
       } else {
-        blError.store('UserCreationError', e);
+        blError.store("UserCreationError", e);
       }
 
       throw blError;
@@ -255,7 +255,7 @@ export class UserHandler {
 
   private isThirdPartyProvider(provider: string): boolean {
     return (
-      provider === 'google' || provider === 'facebook' || provider === 'oauth2'
+      provider === "google" || provider === "facebook" || provider === "oauth2"
     );
   }
 
@@ -266,8 +266,8 @@ export class UserHandler {
         return true;
       })
       .catch((sendEmailValidationLinkError: BlError) => {
-        throw new BlError('could not send out email validation link').add(
-          sendEmailValidationLinkError,
+        throw new BlError("could not send out email validation link").add(
+          sendEmailValidationLinkError
         );
       });
   }
@@ -277,7 +277,7 @@ export class UserHandler {
       this.getByUsername(username)
         .then((user: User) => {
           if (!user.active) {
-            return reject(new BlError('user.active is false').code(913));
+            return reject(new BlError("user.active is false").code(913));
           }
 
           resolve(true);
@@ -291,14 +291,14 @@ export class UserHandler {
   public exists(provider: string, providerId: string): Promise<boolean> {
     if (!provider || !providerId) {
       return Promise.reject(
-        new BlError('provider or providerId is empty or undefinedl'),
+        new BlError("provider or providerId is empty or undefinedl")
       );
     }
 
     let dbQuery = new SEDbQuery();
     dbQuery.stringFilters = [
-      {fieldName: 'login.provider', value: provider},
-      {fieldName: 'login.providerId', value: providerId},
+      { fieldName: "login.provider", value: provider },
+      { fieldName: "login.providerId", value: providerId }
     ];
 
     return new Promise((resolve, reject) => {
@@ -308,7 +308,7 @@ export class UserHandler {
           resolve(true);
         })
         .catch((blError: BlError) => {
-          reject(new BlError('does not exist').add(blError));
+          reject(new BlError("does not exist").add(blError));
         });
     });
   }
