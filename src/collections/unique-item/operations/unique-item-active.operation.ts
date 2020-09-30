@@ -42,6 +42,7 @@ export class UniqueItemActiveOperation implements Operation {
       );
     } catch (e) {
       this.sendResponse(res, []);
+      return true;
     }
 
     this.sendResponse(res, activeCustomerItemIds);
