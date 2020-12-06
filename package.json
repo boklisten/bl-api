@@ -15,8 +15,8 @@
     "copy": "copyfiles \"./src/public/**\" \"./dist/public/\" --flat"
   },
   "engines": {
-    "node": "8.11.3",
-    "npm": "6.1.0"
+    "node": "10.0.0",
+    "npm": "5.6.0"
   },
   "author": "holskil",
   "license": "ISC",
