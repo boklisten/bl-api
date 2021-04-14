@@ -15,17 +15,17 @@ export class BranchCollection implements BlCollection {
       validQueryParams: [
         {
           fieldName: "name",
-          type: "string"
+          type: "string",
         },
         {
           fieldName: "location.region",
-          type: "string"
+          type: "string",
         },
         {
           fieldName: "location.bookable",
-          type: "boolean"
-        }
-      ]
+          type: "boolean",
+        },
+      ],
     },
     {
       method: "getId",
@@ -33,22 +33,22 @@ export class BranchCollection implements BlCollection {
       operations: [
         {
           name: "booking-dates",
-          operation: new BranchBookingTimesOperation()
-        }
-      ]
+          operation: new BranchBookingTimesOperation(),
+        },
+      ],
     },
     {
       method: "post",
       hook: new BranchPostHook(),
       restriction: {
-        permissions: ["admin", "super"]
-      }
+        permissions: ["admin", "super"],
+      },
     },
     {
       method: "patch",
       restriction: {
-        permissions: ["admin", "super"]
-      }
-    }
+        permissions: ["admin", "super"],
+      },
+    },
   ];
 }

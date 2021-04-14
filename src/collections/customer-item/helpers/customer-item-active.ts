@@ -1,4 +1,4 @@
-import { CustomerItem } from "@wizardcoder/bl-model";
+import { CustomerItem } from "@boklisten/bl-model";
 
 export class CustomerItemActive {
   public isActive(customerItem: CustomerItem): boolean {

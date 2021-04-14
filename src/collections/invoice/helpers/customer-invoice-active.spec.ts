@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import { BlError, Invoice } from "@wizardcoder/bl-model";
+import sinon from "sinon";
+import { BlError, Invoice } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { CustomerInvoiceActive } from "./customer-invoice-active";
 chai.use(chaiAsPromised);
@@ -31,7 +32,7 @@ describe("CustomerInvoiceActive", () => {
         toCreditNote: false,
         customerItemPayments: [],
         customerInfo: null,
-        payment: null
+        payment: null,
       };
 
       const inactiveInvoice2: Invoice = {
@@ -42,7 +43,7 @@ describe("CustomerInvoiceActive", () => {
         toCreditNote: true,
         customerItemPayments: [],
         customerInfo: null,
-        payment: null
+        payment: null,
       };
 
       getInvoicesByQueryStub.resolves([inactiveInvoice, inactiveInvoice2]);
@@ -60,7 +61,7 @@ describe("CustomerInvoiceActive", () => {
         toCreditNote: false,
         customerItemPayments: [],
         customerInfo: null,
-        payment: null
+        payment: null,
       };
 
       const inactiveInvoice2: Invoice = {
@@ -71,7 +72,7 @@ describe("CustomerInvoiceActive", () => {
         toCreditNote: false,
         customerItemPayments: [],
         customerInfo: null,
-        payment: null
+        payment: null,
       };
 
       getInvoicesByQueryStub.resolves([inactiveInvoice, inactiveInvoice2]);

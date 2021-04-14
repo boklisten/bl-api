@@ -1,20 +1,20 @@
-import {CollectionEndpointAuth} from './collection-endpoint-auth/collection-endpoint-auth';
-import {SEResponseHandler} from '../response/se.response.handler';
-import {NextFunction, Request, Response, Router} from 'express';
-import {BlDocumentPermission, BlEndpoint} from '../collections/bl-collection';
-import {ApiPath} from '../config/api-path';
+import { CollectionEndpointAuth } from "./collection-endpoint-auth/collection-endpoint-auth";
+import { SEResponseHandler } from "../response/se.response.handler";
+import { NextFunction, Request, Response, Router } from "express";
+import { BlDocumentPermission, BlEndpoint } from "../collections/bl-collection";
+import { ApiPath } from "../config/api-path";
 import {
   AccessToken,
   BlapiResponse,
   BlDocument,
   BlError,
-} from '@wizardcoder/bl-model';
-import {Hook} from '../hook/hook';
-import {BlDocumentStorage} from '../storage/blDocumentStorage';
-import {BlApiRequest} from '../request/bl-api-request';
-import {CollectionEndpointDocumentAuth} from './collection-endpoint-document/collection-endpoint-document-auth';
-import {CollectionEndpointOperation} from './collection-endpoint-operation';
-import {isBoolean, isNullOrUndefined} from 'util';
+} from "@boklisten/bl-model";
+import { Hook } from "../hook/hook";
+import { BlDocumentStorage } from "../storage/blDocumentStorage";
+import { BlApiRequest } from "../request/bl-api-request";
+import { CollectionEndpointDocumentAuth } from "./collection-endpoint-document/collection-endpoint-document-auth";
+import { CollectionEndpointOperation } from "./collection-endpoint-operation";
+import { isBoolean, isNullOrUndefined } from "util";
 
 declare var onRequest: any;
 
@@ -29,15 +29,13 @@ export class CollectionEndpointMethod<T extends BlDocument> {
     protected _endpoint: BlEndpoint,
     protected _collectionName: string,
     protected _documentStorage: BlDocumentStorage<T>,
-    protected documentPermission?: BlDocumentPermission,
+    protected documentPermission?: BlDocumentPermission
   ) {
     const apiPath = new ApiPath();
     this._collectionUri = apiPath.createPath(this._collectionName);
     this._collectionEndpointAuth = new CollectionEndpointAuth();
     this._responseHandler = new SEResponseHandler();
-    this._collectionEndpointDocumentAuth = new CollectionEndpointDocumentAuth<
-      T
-    >();
+    this._collectionEndpointDocumentAuth = new CollectionEndpointDocumentAuth<T>();
 
     if (!_endpoint.hook) {
       this._endpoint.hook = new Hook();
@@ -46,27 +44,27 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 
   public create() {
     switch (this._endpoint.method) {
-      case 'getAll':
+      case "getAll":
         this.routerGetAll();
         break;
-      case 'getId':
+      case "getId":
         this.routerGetId();
         break;
-      case 'post':
+      case "post":
         this.routerPost();
         break;
-      case 'patch':
+      case "patch":
         this.routerPatch();
         break;
-      case 'delete':
+      case "delete":
         this.routerDelete();
         break;
-      case 'put':
+      case "put":
         this.routerPut();
         break;
       default:
         throw new BlError(
-          `the endpoint "${this._endpoint.method}" is not supported`,
+          `the endpoint "${this._endpoint.method}" is not supported`
         );
     }
 
@@ -84,7 +82,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
           this._router,
           this._collectionUri,
           endpoint.method,
-          operation,
+          operation
         );
         collectionEndpointOperation.create();
       }
@@ -103,7 +101,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
           req.body,
           accessToken,
           req.params.id,
-          req.query,
+          req.query
         );
       })
       .then((hookData?: any) => {
@@ -131,15 +129,15 @@ export class CollectionEndpointMethod<T extends BlDocument> {
           this._endpoint.restriction,
           docs,
           blApiRequest,
-          this.documentPermission,
-        ),
+          this.documentPermission
+        )
       )
       .then((docs: T[]) => this._endpoint.hook.after(docs, userAccessToken))
       .then((docs: T[]) =>
-        this._responseHandler.sendResponse(res, new BlapiResponse(docs)),
+        this._responseHandler.sendResponse(res, new BlapiResponse(docs))
       )
       .catch((blError: BlError) =>
-        this._responseHandler.sendErrorResponse(res, blError),
+        this._responseHandler.sendErrorResponse(res, blError)
       );
   }
 
@@ -149,8 +147,8 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 
   private routerGetId() {
     this._router.get(
-      this._collectionUri + '/:id',
-      this.handleRequest.bind(this),
+      this._collectionUri + "/:id",
+      this.handleRequest.bind(this)
     );
   }
 
@@ -160,22 +158,22 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 
   private routerDelete() {
     this._router.delete(
-      this._collectionUri + '/:id',
-      this.handleRequest.bind(this),
+      this._collectionUri + "/:id",
+      this.handleRequest.bind(this)
     );
   }
 
   private routerPatch() {
     this._router.patch(
-      this._collectionUri + '/:id',
-      this.handleRequest.bind(this),
+      this._collectionUri + "/:id",
+      this.handleRequest.bind(this)
     );
   }
 
   private routerPut() {
     this._router.put(
-      this._collectionUri + '/:id',
-      this.handleRequest.bind(this),
+      this._collectionUri + "/:id",
+      this.handleRequest.bind(this)
     );
   }
 }

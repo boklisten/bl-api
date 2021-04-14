@@ -1,5 +1,5 @@
-import {IHook} from './IHook';
-import {BlDocument, AccessToken, BlError} from '@wizardcoder/bl-model';
+import { IHook } from "./IHook";
+import { BlDocument, AccessToken, BlError } from "@boklisten/bl-model";
 
 export class Hook implements IHook {
   constructor() {}
@@ -8,14 +8,14 @@ export class Hook implements IHook {
     body?: any,
     accessToken?: AccessToken,
     id?: string,
-    query?: any,
+    query?: any
   ): Promise<boolean | any> {
     return Promise.resolve(true);
   }
 
   public after(
     docs: BlDocument[],
-    accessToken?: AccessToken,
+    accessToken?: AccessToken
   ): Promise<BlDocument[]> {
     return Promise.resolve(docs ? docs : []);
   }

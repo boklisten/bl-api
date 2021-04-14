@@ -1,38 +1,38 @@
-import {Order, Payment, AccessToken, BlError} from '@wizardcoder/bl-model';
-import {isNullOrUndefined} from 'util';
-import {DibsPaymentService} from '../../../../payment/dibs/dibs-payment.service';
-import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
-import {DibsEasyPayment} from '../../../../payment/dibs/dibs-easy-payment/dibs-easy-payment';
-import {paymentSchema} from '../../payment.schema';
+import { Order, Payment, AccessToken, BlError } from "@boklisten/bl-model";
+import { isNullOrUndefined } from "util";
+import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.service";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { DibsEasyPayment } from "../../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import { paymentSchema } from "../../payment.schema";
 
 export class PaymentDibsConfirmer {
   constructor(
     private _dibsPaymentService?: DibsPaymentService,
-    private _paymentStorage?: BlDocumentStorage<Payment>,
+    private _paymentStorage?: BlDocumentStorage<Payment>
   ) {
     this._dibsPaymentService = _dibsPaymentService
       ? _dibsPaymentService
       : new DibsPaymentService();
     this._paymentStorage = _paymentStorage
       ? _paymentStorage
-      : new BlDocumentStorage('payments', paymentSchema);
+      : new BlDocumentStorage("payments", paymentSchema);
   }
 
   public async confirm(
     order: Order,
     payment: Payment,
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<boolean> {
     this.validatePaymentInfo(payment);
 
     let dibsEasyPaymentDetails;
     try {
       dibsEasyPaymentDetails = await this._dibsPaymentService.fetchDibsPaymentData(
-        payment.info['paymentId'],
+        payment.info["paymentId"]
       );
     } catch (getDibsPaymentError) {
-      throw new BlError('could not get dibs payment from dibs api').add(
-        getDibsPaymentError,
+      throw new BlError("could not get dibs payment from dibs api").add(
+        getDibsPaymentError
       );
     }
 
@@ -41,12 +41,12 @@ export class PaymentDibsConfirmer {
     try {
       await this._paymentStorage.update(
         payment.id,
-        {info: dibsEasyPaymentDetails},
-        {id: accessToken.details, permission: accessToken.permission},
+        { info: dibsEasyPaymentDetails },
+        { id: accessToken.details, permission: accessToken.permission }
       );
     } catch (e) {
       throw new BlError(
-        'payment could not be updated with dibs information:' + e,
+        "payment could not be updated with dibs information:" + e
       );
     }
 
@@ -89,27 +89,27 @@ export class PaymentDibsConfirmer {
   private validateDibsEasyPayment(
     order: Order,
     payment: Payment,
-    dibsEasyPaymentDetails: DibsEasyPayment,
+    dibsEasyPaymentDetails: DibsEasyPayment
   ): boolean {
     if (
       isNullOrUndefined(dibsEasyPaymentDetails.orderDetails) ||
       dibsEasyPaymentDetails.orderDetails.reference !== order.id
     ) {
       throw new BlError(
-        'dibsEasyPaymentDetails.orderDetails.reference is not equal to order.id',
+        "dibsEasyPaymentDetails.orderDetails.reference is not equal to order.id"
       );
     }
 
     if (
       isNullOrUndefined(dibsEasyPaymentDetails.summary) ||
       isNullOrUndefined(dibsEasyPaymentDetails.summary.reservedAmount) ||
-      parseInt('' + dibsEasyPaymentDetails.summary.reservedAmount, 10) !==
+      parseInt("" + dibsEasyPaymentDetails.summary.reservedAmount, 10) !==
         payment.amount * 100
     ) {
       throw new BlError(
         `dibsEasyPaymentDetails.summary.reservedAmount "${
           dibsEasyPaymentDetails.summary.reservedAmount
-        }" is not equal to payment.amount "${payment.amount * 100}"`,
+        }" is not equal to payment.amount "${payment.amount * 100}"`
       );
     }
     return false;
@@ -118,10 +118,10 @@ export class PaymentDibsConfirmer {
   private validatePaymentInfo(payment: Payment): boolean {
     if (
       isNullOrUndefined(payment.info) ||
-      isNullOrUndefined(payment.info['paymentId'])
+      isNullOrUndefined(payment.info["paymentId"])
     ) {
       throw new BlError(
-        'payment.method is "dibs" but payment.info.paymentId is undefined',
+        'payment.method is "dibs" but payment.info.paymentId is undefined'
       );
     }
 

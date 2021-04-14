@@ -1,5 +1,5 @@
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { Invoice, BlError } from "@wizardcoder/bl-model";
+import { Invoice, BlError } from "@boklisten/bl-model";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 import { invoiceSchema } from "../invoice.schema";
 import { InvoiceActive } from "./invoice-active";

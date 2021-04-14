@@ -1,9 +1,9 @@
-import {BlError, DeliveryInfoBring, Item} from '@wizardcoder/bl-model';
-import {HttpHandler} from '../../../../http/http.handler';
-import {BringDelivery} from './bringDelivery';
-import moment = require('moment');
-import {APP_CONFIG} from '../../../../application-config';
-import {isNullOrUndefined} from 'util';
+import { BlError, DeliveryInfoBring, Item } from "@boklisten/bl-model";
+import { HttpHandler } from "../../../../http/http.handler";
+import { BringDelivery } from "./bringDelivery";
+import moment = require("moment");
+import { APP_CONFIG } from "../../../../application-config";
+import { isNullOrUndefined } from "util";
 
 export type ShipmentAddress = {
   name: string;
@@ -32,7 +32,7 @@ export class BringDeliveryService {
   public getDeliveryInfoBring(
     facilityAddress: FacilityAddress,
     shipmentAddress: ShipmentAddress,
-    items: Item[],
+    items: Item[]
   ): Promise<DeliveryInfoBring> {
     if (
       isNullOrUndefined(facilityAddress) ||
@@ -40,29 +40,29 @@ export class BringDeliveryService {
     ) {
       return Promise.reject(
         new BlError(
-          'required fields facilityAddress or shipmentAddress are null or undefined',
-        ),
+          "required fields facilityAddress or shipmentAddress are null or undefined"
+        )
       );
     }
     if (!items || items.length <= 0) {
-      return Promise.reject(new BlError('items is empty or undefined'));
+      return Promise.reject(new BlError("items is empty or undefined"));
     }
 
     if (!facilityAddress.postalCode || facilityAddress.postalCode.length <= 0) {
       return Promise.reject(
-        new BlError('fromPostalCode is empty or undefined'),
+        new BlError("fromPostalCode is empty or undefined")
       );
     }
 
     if (!shipmentAddress.postalCode || shipmentAddress.postalCode.length <= 0) {
-      return Promise.reject(new BlError('toPostalCode is empty or undefined'));
+      return Promise.reject(new BlError("toPostalCode is empty or undefined"));
     }
 
     return new Promise((resolve, reject) => {
       let bringDelivery = this.createBringDelivery(
         facilityAddress,
         shipmentAddress,
-        items,
+        items
       );
       let queryString = this.httpHandler.createQueryString(bringDelivery);
 
@@ -75,7 +75,7 @@ export class BringDeliveryService {
             deliveryInfoBring = this.getDeliveryInfoBringFromBringResponse(
               facilityAddress,
               shipmentAddress,
-              responseData,
+              responseData
             );
           } catch (e) {
             if (e instanceof BlError) {
@@ -84,8 +84,8 @@ export class BringDeliveryService {
 
             return reject(
               new BlError(
-                'unkown error, could not parse the data from bring api',
-              ).store('error', e),
+                "unkown error, could not parse the data from bring api"
+              ).store("error", e)
             );
           }
 
@@ -100,15 +100,15 @@ export class BringDeliveryService {
   private createBringDelivery(
     facilityAddress: FacilityAddress,
     shipmentAddress: ShipmentAddress,
-    items: Item[],
+    items: Item[]
   ): BringDelivery {
     let bringDelivery: BringDelivery;
 
     let totalWeight = 0;
 
     for (const item of items) {
-      if (item.info && item.info['weight']) {
-        totalWeight += parseInt(item.info['weight']);
+      if (item.info && item.info["weight"]) {
+        totalWeight += parseInt(item.info["weight"]);
       } else {
         totalWeight += 500;
       }
@@ -131,7 +131,7 @@ export class BringDeliveryService {
   private getDeliveryInfoBringFromBringResponse(
     facilityAddress: FacilityAddress,
     shipmentAddress: ShipmentAddress,
-    responseData: any,
+    responseData: any
   ): DeliveryInfoBring {
     let deliveryInfoBring: DeliveryInfoBring = {
       amount: -1,
@@ -143,25 +143,25 @@ export class BringDeliveryService {
       to: shipmentAddress.postalCode,
     };
 
-    if (!responseData['Product']) {
-      throw new BlError('no products provided in response from bringApi');
+    if (!responseData["Product"]) {
+      throw new BlError("no products provided in response from bringApi");
     }
 
-    if (Array.isArray(responseData['Product'])) {
-      for (let product of responseData['Product']) {
+    if (Array.isArray(responseData["Product"])) {
+      for (let product of responseData["Product"]) {
         deliveryInfoBring = this.getBringProduct(deliveryInfoBring, product);
       }
     } else {
       deliveryInfoBring = this.getBringProduct(
         deliveryInfoBring,
-        responseData['Product'],
+        responseData["Product"]
       );
     }
 
     if (deliveryInfoBring.amount === -1) {
-      throw new BlError('could not parse the data from the bring api').store(
-        'responseData',
-        responseData,
+      throw new BlError("could not parse the data from the bring api").store(
+        "responseData",
+        responseData
       );
     }
 
@@ -170,29 +170,29 @@ export class BringDeliveryService {
 
   private getBringProduct(
     deliveryInfoBring: DeliveryInfoBring,
-    product,
+    product
   ): DeliveryInfoBring {
-    if (product['ProductId'] === 'SERVICEPAKKE') {
-      let priceInfo = product['Price'];
+    if (product["ProductId"] === "SERVICEPAKKE") {
+      let priceInfo = product["Price"];
       let priceWithoutAdditionalService =
-        priceInfo['PackagePriceWithoutAdditionalServices'];
+        priceInfo["PackagePriceWithoutAdditionalServices"];
       if (priceWithoutAdditionalService) {
         deliveryInfoBring.amount = parseInt(
-          priceWithoutAdditionalService['AmountWithVAT'],
+          priceWithoutAdditionalService["AmountWithVAT"]
         );
         deliveryInfoBring.taxAmount = parseInt(
-          priceWithoutAdditionalService['VAT'],
+          priceWithoutAdditionalService["VAT"]
         );
       }
 
-      let expectedDelivery = product['ExpectedDelivery'];
+      let expectedDelivery = product["ExpectedDelivery"];
       if (expectedDelivery) {
-        let workingDays = expectedDelivery['WorkingDays'];
+        let workingDays = expectedDelivery["WorkingDays"];
         if (workingDays) {
           deliveryInfoBring.estimatedDelivery = moment()
             .add(
               parseInt(workingDays) + APP_CONFIG.delivery.deliveryDays,
-              'days',
+              "days"
             )
             .toDate();
         }

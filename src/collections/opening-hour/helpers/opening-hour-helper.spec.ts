@@ -1,23 +1,24 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import {expect} from 'chai';
-import * as sinon from 'sinon';
-import {Branch, OpeningHour, BlError} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import * as sinonChai from 'sinon-chai';
-import {OpeningHourHelper} from './opening-hour-helper';
-import * as moment from 'moment-timezone';
+// @ts-nocheck
+import "mocha";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { expect } from "chai";
+import sinon from "sinon";
+import { Branch, OpeningHour, BlError } from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import sinonChai from "sinon-chai";
+import { OpeningHourHelper } from "./opening-hour-helper";
+import moment from "moment-timezone";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-const openingHourStorage = new BlDocumentStorage<OpeningHour>('openinghours');
+const openingHourStorage = new BlDocumentStorage<OpeningHour>("openinghours");
 const openingHourHelper = new OpeningHourHelper(openingHourStorage);
-const openingHourStorageGetMany = sinon.stub(openingHourStorage, 'getMany');
+const openingHourStorageGetMany = sinon.stub(openingHourStorage, "getMany");
 
-describe('getNextAvailableOpeningHour()', () => {
-  it('should reject if no opening hour is found in Branch', () => {
+describe("getNextAvailableOpeningHour()", () => {
+  it("should reject if no opening hour is found in Branch", () => {
     const branch = {
       openingHours: [],
     } as Branch;
@@ -26,27 +27,27 @@ describe('getNextAvailableOpeningHour()', () => {
       .getNextAvailableOpeningHour(branch)
       .should.eventually.be.rejectedWith(
         BlError,
-        /no opening hours found at branch/,
+        /no opening hours found at branch/
       );
   });
 
-  it('should reject if all opening hours are expired', () => {
+  it("should reject if all opening hours are expired", () => {
     const branch = {
-      openingHours: ['openingHour1', 'openingHour2'],
+      openingHours: ["openingHour1", "openingHour2"],
     } as Branch;
 
     openingHourStorageGetMany
-      .withArgs(['openingHour1', 'openingHour2'])
+      .withArgs(["openingHour1", "openingHour2"])
       .resolves([
         {
-          from: moment('2012-01-01').toDate(),
-          to: moment('2012-01-02').toDate(),
-          branch: 'branch1',
+          from: moment("2012-01-01").toDate(),
+          to: moment("2012-01-02").toDate(),
+          branch: "branch1",
         },
         {
-          from: moment('2012-01-03').toDate(),
-          to: moment('2012-01-03').toDate(),
-          branch: 'branch1',
+          from: moment("2012-01-03").toDate(),
+          to: moment("2012-01-03").toDate(),
+          branch: "branch1",
         },
       ]);
 
@@ -54,34 +55,30 @@ describe('getNextAvailableOpeningHour()', () => {
       .getNextAvailableOpeningHour(branch)
       .should.eventually.be.rejectedWith(
         BlError,
-        /no opening hours are found to be valid/,
+        /no opening hours are found to be valid/
       );
   });
 
-  it('should resolve with the first available opening hour', () => {
+  it("should resolve with the first available opening hour", () => {
     const branch = {
-      openingHours: ['openingHour3', 'openingHour4'],
+      openingHours: ["openingHour3", "openingHour4"],
     } as Branch;
 
     let openingHours = [
       {
-        from: moment('2012-01-01').toDate(),
-        to: moment('2012-01-02').toDate(),
-        branch: 'branch1',
+        from: moment("2012-01-01").toDate(),
+        to: moment("2012-01-02").toDate(),
+        branch: "branch1",
       },
       {
-        from: moment()
-          .add(1, 'day')
-          .toDate(),
-        to: moment()
-          .add(1, 'day')
-          .toDate(),
-        branch: 'branch1',
+        from: moment().add(1, "day").toDate(),
+        to: moment().add(1, "day").toDate(),
+        branch: "branch1",
       },
     ];
 
     openingHourStorageGetMany
-      .withArgs(['openingHour3', 'openingHour4'])
+      .withArgs(["openingHour3", "openingHour4"])
       .resolves(openingHours);
 
     return openingHourHelper
@@ -89,43 +86,31 @@ describe('getNextAvailableOpeningHour()', () => {
       .should.eventually.deep.equal(openingHours[1]);
   });
 
-  it('should resolve with the first available opening hour', () => {
+  it("should resolve with the first available opening hour", () => {
     const branch = {
-      openingHours: ['openingHour3', 'openingHour4'],
+      openingHours: ["openingHour3", "openingHour4"],
     } as Branch;
 
     let openingHours = [
       {
-        from: moment()
-          .add(4, 'day')
-          .toDate(),
-        to: moment()
-          .add(4, 'day')
-          .toDate(),
-        branch: 'branch1',
+        from: moment().add(4, "day").toDate(),
+        to: moment().add(4, "day").toDate(),
+        branch: "branch1",
       },
       {
-        from: moment()
-          .add(1, 'day')
-          .toDate(),
-        to: moment()
-          .add(1, 'day')
-          .toDate(),
-        branch: 'branch1',
+        from: moment().add(1, "day").toDate(),
+        to: moment().add(1, "day").toDate(),
+        branch: "branch1",
       },
       {
-        from: moment()
-          .add(2, 'day')
-          .toDate(),
-        to: moment()
-          .add(2, 'day')
-          .toDate(),
-        branch: 'branch1',
+        from: moment().add(2, "day").toDate(),
+        to: moment().add(2, "day").toDate(),
+        branch: "branch1",
       },
     ];
 
     openingHourStorageGetMany
-      .withArgs(['openingHour3', 'openingHour4'])
+      .withArgs(["openingHour3", "openingHour4"])
       .resolves(openingHours);
 
     return openingHourHelper
@@ -134,154 +119,105 @@ describe('getNextAvailableOpeningHour()', () => {
   });
 
   describe('when "after"-date is provided', () => {
-    it('should resolve with the first available opening hour #1', () => {
+    it("should resolve with the first available opening hour #1", () => {
       const branch = {
-        openingHours: ['openingHour3', 'openingHour4'],
+        openingHours: ["openingHour3", "openingHour4"],
       } as Branch;
 
       let openingHours = [
         {
-          from: moment()
-            .add(4, 'day')
-            .toDate(),
-          to: moment()
-            .add(4, 'day')
-            .toDate(),
-          branch: 'branch1',
+          from: moment().add(4, "day").toDate(),
+          to: moment().add(4, "day").toDate(),
+          branch: "branch1",
         },
         {
-          from: moment()
-            .add(1, 'day')
-            .toDate(),
-          to: moment()
-            .add(1, 'day')
-            .toDate(),
-          branch: 'branch1',
+          from: moment().add(1, "day").toDate(),
+          to: moment().add(1, "day").toDate(),
+          branch: "branch1",
         },
         {
-          from: moment()
-            .add(2, 'day')
-            .toDate(),
-          to: moment()
-            .add(2, 'day')
-            .toDate(),
-          branch: 'branch1',
+          from: moment().add(2, "day").toDate(),
+          to: moment().add(2, "day").toDate(),
+          branch: "branch1",
         },
       ];
 
       openingHourStorageGetMany
-        .withArgs(['openingHour3', 'openingHour4'])
+        .withArgs(["openingHour3", "openingHour4"])
         .resolves(openingHours);
 
       return openingHourHelper
         .getNextAvailableOpeningHour(
           branch,
-          moment()
-            .add(2, 'day')
-            .add(1, 'hour')
-            .toDate(),
+          moment().add(2, "day").add(1, "hour").toDate()
         )
         .should.eventually.deep.equal(openingHours[0]);
     });
 
-    it('should resolve with the first available opening hour #2', () => {
+    it("should resolve with the first available opening hour #2", () => {
       const branch = {
-        openingHours: ['openingHour3', 'openingHour4'],
+        openingHours: ["openingHour3", "openingHour4"],
       } as Branch;
 
       let openingHours = [
         {
-          from: moment()
-            .add(4, 'day')
-            .toDate(),
-          to: moment()
-            .add(4, 'day')
-            .toDate(),
-          branch: 'branch1',
+          from: moment().add(4, "day").toDate(),
+          to: moment().add(4, "day").toDate(),
+          branch: "branch1",
         },
         {
-          from: moment()
-            .add(1, 'day')
-            .toDate(),
-          to: moment()
-            .add(1, 'day')
-            .toDate(),
-          branch: 'branch1',
+          from: moment().add(1, "day").toDate(),
+          to: moment().add(1, "day").toDate(),
+          branch: "branch1",
         },
         {
-          from: moment()
-            .add(2, 'day')
-            .toDate(),
-          to: moment()
-            .add(2, 'day')
-            .toDate(),
-          branch: 'branch1',
+          from: moment().add(2, "day").toDate(),
+          to: moment().add(2, "day").toDate(),
+          branch: "branch1",
         },
       ];
 
       openingHourStorageGetMany
-        .withArgs(['openingHour3', 'openingHour4'])
+        .withArgs(["openingHour3", "openingHour4"])
         .resolves(openingHours);
 
       return openingHourHelper
-        .getNextAvailableOpeningHour(
-          branch,
-          moment()
-            .add(1, 'day')
-            .toDate(),
-        )
+        .getNextAvailableOpeningHour(branch, moment().add(1, "day").toDate())
         .should.eventually.deep.equal(openingHours[2]);
     });
 
     it('should reject if no opening hours are found to be valid after the "after"-date', () => {
       const branch = {
-        openingHours: ['openingHour3', 'openingHour4'],
+        openingHours: ["openingHour3", "openingHour4"],
       } as Branch;
 
       let openingHours = [
         {
-          from: moment()
-            .add(4, 'day')
-            .toDate(),
-          to: moment()
-            .add(4, 'day')
-            .toDate(),
-          branch: 'branch1',
+          from: moment().add(4, "day").toDate(),
+          to: moment().add(4, "day").toDate(),
+          branch: "branch1",
         },
         {
-          from: moment()
-            .add(1, 'day')
-            .toDate(),
-          to: moment()
-            .add(1, 'day')
-            .toDate(),
-          branch: 'branch1',
+          from: moment().add(1, "day").toDate(),
+          to: moment().add(1, "day").toDate(),
+          branch: "branch1",
         },
         {
-          from: moment()
-            .add(2, 'day')
-            .toDate(),
-          to: moment()
-            .add(2, 'day')
-            .toDate(),
-          branch: 'branch1',
+          from: moment().add(2, "day").toDate(),
+          to: moment().add(2, "day").toDate(),
+          branch: "branch1",
         },
       ];
 
       openingHourStorageGetMany
-        .withArgs(['openingHour3', 'openingHour4'])
+        .withArgs(["openingHour3", "openingHour4"])
         .resolves(openingHours);
 
       return openingHourHelper
-        .getNextAvailableOpeningHour(
-          branch,
-          moment()
-            .add(5, 'day')
-            .toDate(),
-        )
+        .getNextAvailableOpeningHour(branch, moment().add(5, "day").toDate())
         .should.eventually.be.rejectedWith(
           BlError,
-          /no opening hours are found to be valid/,
+          /no opening hours are found to be valid/
         );
     });
   });

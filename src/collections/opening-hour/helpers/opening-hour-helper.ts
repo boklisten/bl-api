@@ -1,33 +1,33 @@
-import {openingHourSchema} from '../opening-hour.schema';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {OpeningHour, Branch, BlError} from '@wizardcoder/bl-model';
-import * as moment from 'moment-timezone';
+import { openingHourSchema } from "../opening-hour.schema";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { OpeningHour, Branch, BlError } from "@boklisten/bl-model";
+import moment from "moment-timezone";
 
 export class OpeningHourHelper {
   constructor(private openingHourStorage?: BlDocumentStorage<OpeningHour>) {
     this.openingHourStorage = this.openingHourStorage
       ? this.openingHourStorage
-      : new BlDocumentStorage<OpeningHour>('openinghours', openingHourSchema);
+      : new BlDocumentStorage<OpeningHour>("openinghours", openingHourSchema);
   }
 
   public async getNextAvailableOpeningHour(
     branch: Branch,
-    after?: Date,
+    after?: Date
   ): Promise<OpeningHour> {
     if (!branch.openingHours || branch.openingHours.length <= 0) {
-      throw new BlError('no opening hours found at branch');
+      throw new BlError("no opening hours found at branch");
     }
 
     let firstAvailableOpeningHour;
 
     try {
       const openingHours = await this.openingHourStorage.getMany(
-        branch.openingHours as string[],
+        branch.openingHours as string[]
       );
 
       firstAvailableOpeningHour = this.getFirstAvailableOpeningHour(
         openingHours,
-        after,
+        after
       );
     } catch (e) {
       throw e;
@@ -41,7 +41,7 @@ export class OpeningHourHelper {
 
   private getFirstAvailableOpeningHour(
     openingHours: OpeningHour[],
-    after?: Date,
+    after?: Date
   ): OpeningHour {
     let firstAvailableOpeningHour;
 
@@ -65,7 +65,7 @@ export class OpeningHourHelper {
     if (firstAvailableOpeningHour) {
       return firstAvailableOpeningHour;
     } else {
-      throw new BlError('no opening hours are found to be valid');
+      throw new BlError("no opening hours are found to be valid");
     }
   }
 }

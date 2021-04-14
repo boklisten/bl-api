@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import * as moment from "moment-timezone";
+import sinon from "sinon";
+import moment from "moment-timezone";
 import {
   BlError,
   Match,
@@ -11,11 +12,11 @@ import {
   OrderItem,
   CustomerItem,
   MatchItem,
-  MatchProfile
-} from "@wizardcoder/bl-model";
+  MatchProfile,
+} from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { MatchUpdater } from "./match-updater";
-import * as sinonChai from "sinon-chai";
+import sinonChai from "sinon-chai";
 import { OpeningHourHelper } from "../../../opening-hour/helpers/opening-hour-helper";
 
 chai.use(chaiAsPromised);

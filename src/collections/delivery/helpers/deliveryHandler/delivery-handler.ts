@@ -6,13 +6,13 @@ import {
   Item,
   DeliveryInfoBring,
   Branch,
-} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
-import {orderSchema} from '../../../order/order.schema';
-import {itemSchema} from '../../../item/item.schema';
-import {BringDeliveryService} from '../deliveryBring/bringDelivery.service';
-import {deliverySchema} from '../../delivery.schema';
-import {branchSchema} from '../../../branch/branch.schema';
+} from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { orderSchema } from "../../../order/order.schema";
+import { itemSchema } from "../../../item/item.schema";
+import { BringDeliveryService } from "../deliveryBring/bringDelivery.service";
+import { deliverySchema } from "../../delivery.schema";
+import { branchSchema } from "../../../branch/branch.schema";
 
 export class DeliveryHandler {
   private orderStorage: BlDocumentStorage<Order>;
@@ -26,42 +26,42 @@ export class DeliveryHandler {
     branchStorage?: BlDocumentStorage<Branch>,
     itemStorage?: BlDocumentStorage<Item>,
     deliveryStorage?: BlDocumentStorage<Delivery>,
-    bringDeliveryService?: BringDeliveryService,
+    bringDeliveryService?: BringDeliveryService
   ) {
     this.orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage('orders', orderSchema);
+      : new BlDocumentStorage("orders", orderSchema);
     this.itemStorage = itemStorage
       ? itemStorage
-      : new BlDocumentStorage('items', itemSchema);
+      : new BlDocumentStorage("items", itemSchema);
     this.bringDeliveryService = bringDeliveryService
       ? bringDeliveryService
       : new BringDeliveryService();
     this.deliveryStorage = deliveryStorage
       ? deliveryStorage
-      : new BlDocumentStorage('deliveries', deliverySchema);
+      : new BlDocumentStorage("deliveries", deliverySchema);
     this.branchStorage = branchStorage
       ? branchStorage
-      : new BlDocumentStorage('branches', branchSchema);
+      : new BlDocumentStorage("branches", branchSchema);
   }
 
   public updateOrderBasedOnMethod(
     delivery: Delivery,
     order: Order,
-    accessToken?: AccessToken,
+    accessToken?: AccessToken
   ): Promise<Delivery> {
     switch (delivery.method) {
-      case 'branch':
+      case "branch":
         return this.updateOrderWithDeliveryMethodBranch(
           delivery,
           order,
-          accessToken,
+          accessToken
         );
-      case 'bring':
+      case "bring":
         return this.updateOrderWithDeliveryMethodBring(
           delivery,
           order,
-          accessToken,
+          accessToken
         );
     }
   }
@@ -69,7 +69,7 @@ export class DeliveryHandler {
   private updateOrderWithDeliveryMethodBranch(
     delivery: Delivery,
     order: Order,
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<Delivery> {
     return this.updateOrder(order, delivery, accessToken)
       .then(() => {
@@ -83,7 +83,7 @@ export class DeliveryHandler {
   private updateOrderWithDeliveryMethodBring(
     delivery: Delivery,
     order: Order,
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<Delivery> {
     return new Promise((resolve, reject) => {
       this.fetchItems(order).then((items: Item[]) => {
@@ -91,7 +91,7 @@ export class DeliveryHandler {
           order,
           delivery,
           items,
-          accessToken,
+          accessToken
         )
           .then((updatedDelivery: Delivery) => {
             this.updateOrder(order, updatedDelivery, accessToken)
@@ -102,11 +102,11 @@ export class DeliveryHandler {
                 return reject(blError);
               });
           })
-          .catch(bringDeliveryInfoError => {
+          .catch((bringDeliveryInfoError) => {
             reject(
-              new BlError('failed to get bring delivery info').add(
-                bringDeliveryInfoError,
-              ),
+              new BlError("failed to get bring delivery info").add(
+                bringDeliveryInfoError
+              )
             );
           });
       });
@@ -116,9 +116,9 @@ export class DeliveryHandler {
   private updateOrder(
     order: Order,
     delivery: Delivery,
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<boolean> {
-    let orderUpdateData = {delivery: delivery.id};
+    let orderUpdateData = { delivery: delivery.id };
 
     return this.orderStorage
       .update(order.id, orderUpdateData, {
@@ -130,7 +130,7 @@ export class DeliveryHandler {
       })
       .catch((blError: BlError) => {
         return Promise.reject(
-          new BlError('could not update order').add(blError),
+          new BlError("could not update order").add(blError)
         );
       });
   }
@@ -158,14 +158,14 @@ export class DeliveryHandler {
     order: Order,
     delivery: Delivery,
     items: Item[],
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<Delivery> {
     return new Promise((resolve, reject) => {
       this.bringDeliveryService
         .getDeliveryInfoBring(
-          delivery.info['facilityAddress'],
-          delivery.info['shipmentAddress'],
-          items,
+          delivery.info["facilityAddress"],
+          delivery.info["shipmentAddress"],
+          items
         )
         .then((deliveryInfoBring: DeliveryInfoBring) => {
           this.branchStorage
@@ -181,16 +181,16 @@ export class DeliveryHandler {
                 amount = 0;
               }
 
-              if (delivery.info['trackingNumber']) {
-                deliveryInfoBring['trackingNumber'] =
-                  delivery.info['trackingNumber'];
+              if (delivery.info["trackingNumber"]) {
+                deliveryInfoBring["trackingNumber"] =
+                  delivery.info["trackingNumber"];
               }
 
               this.deliveryStorage
                 .update(
                   delivery.id,
-                  {amount: amount, info: deliveryInfoBring},
-                  {id: accessToken.sub, permission: accessToken.permission},
+                  { amount: amount, info: deliveryInfoBring },
+                  { id: accessToken.sub, permission: accessToken.permission }
                 )
                 .then((updatedDelivery: Delivery) => {
                   resolve(updatedDelivery);
@@ -203,7 +203,7 @@ export class DeliveryHandler {
               reject(getBranchError);
             });
         })
-        .catch(blError => {
+        .catch((blError) => {
           reject(blError);
         });
     });

@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import { SeCrypto } from "./se.crypto";
-import { BlError } from "@wizardcoder/bl-model";
+import { BlError } from "@boklisten/bl-model";
 
 chai.use(chaiAsPromised);
 let shuld = chai.should();
@@ -51,7 +52,7 @@ describe("SeCrypto", () => {
         seCrypto.hash(testMsg, "dog").then(
           (hashedPassword: string) => {
             seCrypto.hash(testMsg, "dot").then(
-              anotherHashedPassword => {
+              (anotherHashedPassword) => {
                 if (anotherHashedPassword !== hashedPassword) resolve(true);
                 reject(true);
               },

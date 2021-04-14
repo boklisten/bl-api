@@ -1,69 +1,78 @@
-
-
 export type SortFilter = {
-	fieldName: string,
-	direction: 1 | -1
-}
+  fieldName: string;
+  direction: 1 | -1;
+};
 export class DbQuerySortFilter {
+  constructor() {}
 
-	constructor() {
+  public getSortFilters(query: any, validSortParams: string[]): SortFilter[] {
+    if (
+      !query ||
+      (Object.keys(query).length === 0 && query.constructor === Object)
+    ) {
+      throw new TypeError("query can not be undefined or empty");
+    }
 
-	}
+    if (!query.sort) return [];
 
-	public getSortFilters(query: any, validSortParams: string[]): SortFilter[] {
-		if (!query || Object.keys(query).length === 0 && query.constructor === Object) {
-			throw new TypeError('query can not be undefined or empty');
-		}
+    return this.generateSortFilters(query.sort, validSortParams);
+  }
 
-		if (!query.sort) return [];
+  private generateSortFilters(
+    sort: any,
+    validSortParams: string[]
+  ): SortFilter[] {
+    let sortFilters: SortFilter[] = [];
+    let sortArray = [];
+    if (!Array.isArray(sort)) {
+      if (typeof sort !== "string")
+        throw new TypeError(
+          'sort of value "' + sort + '" is not of type Array[string] or string'
+        );
+      sortArray.push(sort);
+    } else {
+      sortArray = sort;
+    }
 
-		return this.generateSortFilters(query.sort, validSortParams);
+    for (let sortValue of sortArray) {
+      if (this.validSortValue(sortValue, validSortParams)) {
+        sortFilters.push(this.getSortFilter(sortValue));
+      }
+    }
 
-	}
+    return sortFilters;
+  }
 
-	private generateSortFilters(sort: any, validSortParams: string[]): SortFilter[] {
-		let sortFilters: SortFilter[] = [];
-		let sortArray = [];
-		if (!Array.isArray(sort)) {
-			if (typeof sort !== 'string') throw new TypeError('sort of value "'+ sort +  '" is not of type Array[string] or string');
-			sortArray.push(sort);
-		} else {
-			sortArray = sort;
-		}
+  private getSortFilter(sortValue: string): SortFilter {
+    return {
+      fieldName: this.getBaseSortParam(sortValue),
+      direction: this.getDirection(sortValue),
+    };
+  }
 
-		for (let sortValue of sortArray) {
-			if (this.validSortValue(sortValue, validSortParams)) {
-				sortFilters.push(this.getSortFilter(sortValue));
-			}
-		}
+  private validSortValue(
+    sortValue: string,
+    validSortParams: string[]
+  ): boolean {
+    let sval = this.getBaseSortParam(sortValue);
 
-		return sortFilters;
+    if (validSortParams.indexOf(sval) <= -1)
+      throw ReferenceError(
+        'sort parameter "' + sval + '" is not in validSortParams'
+      );
 
-	}
+    return true;
+  }
 
-	private getSortFilter(sortValue: string): SortFilter {
-		return {fieldName: this.getBaseSortParam(sortValue), direction: this.getDirection(sortValue)};
-	}
+  private getBaseSortParam(sortValue: string) {
+    if (sortValue[0] === "-") {
+      return sortValue.substr(1, sortValue.length);
+    }
+    return sortValue;
+  }
 
-	private validSortValue(sortValue: string, validSortParams: string[]): boolean {
-		let sval = this.getBaseSortParam(sortValue);
-
-		if (validSortParams.indexOf(sval) <= -1) throw ReferenceError('sort parameter "' + sval +'" is not in validSortParams');
-
-		return true;
-
-	}
-
-	private getBaseSortParam(sortValue: string) {
-		if (sortValue[0] === '-') {
-			return sortValue.substr(1, sortValue.length);
-		}
-		return sortValue;
-	}
-
-	private getDirection(sortValue: string): 1 | -1 {
-		if (sortValue[0] === '-') return -1;
-		return 1;
-	}
-
+  private getDirection(sortValue: string): 1 | -1 {
+    if (sortValue[0] === "-") return -1;
+    return 1;
+  }
 }

@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { UserSchema } from "../../../user/user.schema";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { User } from "../../../user/user";
-import { BlapiResponse, BlError, UserDetail } from "@wizardcoder/bl-model";
+import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { userDetailSchema } from "../../user-detail.schema";
 import { PermissionService } from "../../../../auth/permission/permission.service";
 import { isNullOrUndefined } from "util";
@@ -63,7 +63,7 @@ export class UserDetailPermissionOperation implements Operation {
 
     try {
       const users = await this._userStorage.aggregate([
-        { $match: { blid: userDetail.blid } }
+        { $match: { blid: userDetail.blid } },
       ]);
       user = users[0];
     } catch (e) {

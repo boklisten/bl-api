@@ -1,6 +1,6 @@
 export type ExpandFilter = {
-  fieldName: string
-}
+  fieldName: string;
+};
 
 /**
  * Expand filter is used to retrieve linked documents
@@ -11,13 +11,17 @@ export type ExpandFilter = {
  * Order document on return
  */
 export class DbQueryExpandFilter {
+  constructor() {}
 
-  constructor() {
-  }
-
-  public getExpandFilters(query: any, validExpandParams: string[]): ExpandFilter[] {
-    if (!query || Object.keys(query).length === 0 && query.constructor === Object) {
-			throw new TypeError('query can not be undefined or empty');
+  public getExpandFilters(
+    query: any,
+    validExpandParams: string[]
+  ): ExpandFilter[] {
+    if (
+      !query ||
+      (Object.keys(query).length === 0 && query.constructor === Object)
+    ) {
+      throw new TypeError("query can not be undefined or empty");
     }
 
     if (!query.expand || !validExpandParams || validExpandParams.length <= 0) {
@@ -27,7 +31,10 @@ export class DbQueryExpandFilter {
     return this.generateExpandFilter(query.expand, validExpandParams);
   }
 
-  private generateExpandFilter(expand: string | string[], validExpandParams: string[]): ExpandFilter[] {
+  private generateExpandFilter(
+    expand: string | string[],
+    validExpandParams: string[]
+  ): ExpandFilter[] {
     let expandFilterArray = [];
 
     if (!Array.isArray(expand)) {
@@ -41,7 +48,7 @@ export class DbQueryExpandFilter {
     for (let expandFilter of expandFilterArray) {
       if (validExpandParams.indexOf(expandFilter) <= -1) {
       }
-      expandFilters.push({fieldName: expandFilter});
+      expandFilters.push({ fieldName: expandFilter });
     }
 
     return expandFilters;

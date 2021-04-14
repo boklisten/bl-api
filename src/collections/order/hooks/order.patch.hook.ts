@@ -4,8 +4,8 @@ import {
   BlError,
   Order,
   UserDetail,
-  Delivery
-} from "@wizardcoder/bl-model";
+  Delivery,
+} from "@boklisten/bl-model";
 import { isNullOrUndefined } from "util";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
@@ -71,7 +71,7 @@ export class OrderPatchHook extends Hook {
       if (order.placed) {
         this.orderPlacedHandler
           .placeOrder(order, accessToken)
-          .then(placedOrder => {
+          .then((placedOrder) => {
             resolve([placedOrder]);
           })
           .catch((orderPlacedError: BlError) => {
@@ -93,7 +93,7 @@ export class OrderPatchHook extends Hook {
                   { placed: false },
                   {
                     id: accessToken.sub,
-                    permission: accessToken.permission
+                    permission: accessToken.permission,
                   }
                 )
                 .then(() => {

@@ -1,105 +1,105 @@
 export const APP_CONFIG = {
   path: {
     client: {
-      checkout: 'cart/confirm',
+      checkout: "cart/confirm",
       agreement: {
-        rent: 'info/agreement/rent',
+        rent: "info/agreement/rent",
       },
       auth: {
-        failure: 'auth/authentication/failure',
-        socialLoginFailure: 'auth/social/failure',
+        failure: "auth/authentication/failure",
+        socialLoginFailure: "auth/social/failure",
       },
     },
     dibs: {
-      payment: 'payments',
+      payment: "payments",
     },
-    host: 'boklisten',
+    host: "boklisten",
     dev: {
-      host: 'test.boklisten',
+      host: "test.boklisten",
     },
     local: {
-      host: 'localhost',
+      host: "localhost",
     },
   },
   server: {
-    basePath: 'http://localhost:1337',
+    basePath: "http://localhost:1337",
   },
   url: {
     bring: {
-      shipmentInfo: 'https://api.bring.com/shippingguide/products/all.json',
+      shipmentInfo: "https://api.bring.com/shippingguide/products/all.json",
     },
     blWeb: {
-      base: 'https://localhost:4200',
+      base: "https://localhost:4200",
     },
   },
   dev: {
     server: {
-      host: 'https://localhost',
+      host: "https://localhost",
       port: 1337,
-      path: 'api',
-      version: 'v1',
+      path: "api",
+      version: "v1",
     },
     client: {
-      base: 'https://localhost:4200/',
+      base: "https://localhost:4200/",
     },
     mongoDb: {
-      basePath: 'mongodb://',
-      host: 'localhost',
+      basePath: "mongodb://",
+      host: "localhost",
       port: 27017,
-      dbName: 'bl_dev_environment',
+      dbName: "bl_dev_environment",
     },
     redis: {
-      basePath: '',
-      host: '',
+      basePath: "",
+      host: "",
       port: 0,
-      dbName: '',
+      dbName: "",
     },
   },
   prod: {
     server: {
-      host: '',
+      host: "",
       port: 0,
-      path: '',
-      version: '',
+      path: "",
+      version: "",
     },
     mongoDb: {
-      basePath: '',
-      host: '',
+      basePath: "",
+      host: "",
       port: 0,
-      dbName: '',
+      dbName: "",
     },
     redis: {
-      basePath: '',
-      host: '',
+      basePath: "",
+      host: "",
       port: 0,
-      dbName: '',
+      dbName: "",
     },
   },
   test: true,
   login: {
     google: {
-      name: 'google',
+      name: "google",
     },
     facebook: {
-      name: 'facebook',
+      name: "facebook",
     },
     local: {
-      name: 'local',
+      name: "local",
     },
     feide: {
-      name: 'oauth2',
+      name: "oauth2",
     },
   },
   token: {
     refresh: {
-      iss: 'boklisten.no',
-      aud: 'boklisten.no',
-      expiresIn: '365d', // 250d = aprox 8 months
+      iss: "boklisten.no",
+      aud: "boklisten.no",
+      expiresIn: "365d", // 250d = aprox 8 months
     },
     access: {
-      iss: 'boklisten.no',
-      aud: 'boklisten.no',
-      expiresIn: '10 minutes',
+      iss: "boklisten.no",
+      aud: "boklisten.no",
+      expiresIn: "10 minutes",
     },
   },
   date: {

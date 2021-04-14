@@ -1,11 +1,11 @@
-import {UserPermission} from "@wizardcoder/bl-model";
+import { UserPermission } from "@boklisten/bl-model";
 
 export class BlApiRequest {
-	documentId?: string;
-	query?: any;
-	data?: any;
-	user?: {
-		id: string,
-		permission: UserPermission
+  documentId?: string;
+  query?: any;
+  data?: any;
+  user?: {
+    id: string;
+    permission: UserPermission;
   };
 }

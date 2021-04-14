@@ -1,14 +1,14 @@
-import {User} from '../../../collections/user/user';
-import {UserHandler} from '../user.handler';
-import {LocalLoginHandler} from '../../local/local-login.handler';
-import {TokenHandler} from '../../token/token.handler';
-import {BlError} from '@wizardcoder/bl-model';
+import { User } from "../../../collections/user/user";
+import { UserHandler } from "../user.handler";
+import { LocalLoginHandler } from "../../local/local-login.handler";
+import { TokenHandler } from "../../token/token.handler";
+import { BlError } from "@boklisten/bl-model";
 
 export class UserProvider {
   constructor(
     private _userHandler?: UserHandler,
     private _localLoginHandler?: LocalLoginHandler,
-    private _tokenHandler?: TokenHandler,
+    private _tokenHandler?: TokenHandler
   ) {
     this._userHandler = _userHandler ? _userHandler : new UserHandler();
 
@@ -24,10 +24,10 @@ export class UserProvider {
   public async loginOrCreate(
     username: string,
     provider: string,
-    providerId: string,
+    providerId: string
   ): Promise<{
     user: User;
-    tokens: {accessToken: string; refreshToken: string};
+    tokens: { accessToken: string; refreshToken: string };
   }> {
     let user;
     let tokens;
@@ -36,20 +36,20 @@ export class UserProvider {
       user = await this.getUser(username, provider, providerId);
       await this._userHandler.valid(username);
       await this._localLoginHandler.createDefaultLocalLoginIfNoneIsFound(
-        username,
+        username
       );
       tokens = await this._tokenHandler.createTokens(username);
     } catch (e) {
       throw e;
     }
 
-    return {user: user, tokens: tokens};
+    return { user: user, tokens: tokens };
   }
 
   private async getUser(
     username: string,
     provider: string,
-    providerId: string,
+    providerId: string
   ): Promise<User> {
     let user;
     try {

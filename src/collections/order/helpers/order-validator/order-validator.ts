@@ -7,15 +7,15 @@ import {
   OrderItem,
   Payment,
   Delivery,
-} from '@wizardcoder/bl-model';
-import {BranchValidator} from './branch-validator/branch-validator';
-import {ItemValidator} from './item-validator/item-validator';
-import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
-import {OrderPlacedValidator} from './order-placed-validator/order-placed-validator';
-import {OrderItemValidator} from './order-item-validator/order-item-validator';
-import {branchSchema} from '../../../branch/branch.schema';
-import {OrderFieldValidator} from './order-field-validator/order-field-validator';
-import {OrderUserDetailValidator} from './order-user-detail-validator/order-user-detail-validator';
+} from "@boklisten/bl-model";
+import { BranchValidator } from "./branch-validator/branch-validator";
+import { ItemValidator } from "./item-validator/item-validator";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { OrderPlacedValidator } from "./order-placed-validator/order-placed-validator";
+import { OrderItemValidator } from "./order-item-validator/order-item-validator";
+import { branchSchema } from "../../../branch/branch.schema";
+import { OrderFieldValidator } from "./order-field-validator/order-field-validator";
+import { OrderUserDetailValidator } from "./order-user-detail-validator/order-user-detail-validator";
 
 export class OrderValidator {
   private orderPlacedValidator: OrderPlacedValidator;
@@ -31,7 +31,7 @@ export class OrderValidator {
     branchValidator?: BranchValidator,
     branchStorage?: BlDocumentStorage<Branch>,
     orderFieldValidator?: OrderFieldValidator,
-    orderUserDetailValidator?: OrderUserDetailValidator,
+    orderUserDetailValidator?: OrderUserDetailValidator
   ) {
     this.orderItemValidator = orderItemValidator
       ? orderItemValidator
@@ -44,7 +44,7 @@ export class OrderValidator {
       : new BranchValidator();
     this.branchStorage = branchStorage
       ? branchStorage
-      : new BlDocumentStorage<Branch>('branches', branchSchema);
+      : new BlDocumentStorage<Branch>("branches", branchSchema);
     this.orderFieldValidator = orderFieldValidator
       ? orderFieldValidator
       : new OrderFieldValidator();
@@ -70,7 +70,7 @@ export class OrderValidator {
         return Promise.reject(e);
       }
       return Promise.reject(
-        new BlError('order could not be validated').store('error', e),
+        new BlError("order could not be validated").store("error", e)
       );
     }
     return Promise.resolve(true);
@@ -78,7 +78,7 @@ export class OrderValidator {
 
   private mustHaveCustomer(order: Order): boolean {
     for (let orderItem of order.orderItems) {
-      if (orderItem.type !== 'buy') {
+      if (orderItem.type !== "buy") {
         return true;
       }
     }

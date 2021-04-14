@@ -3,7 +3,7 @@ import { BlApiRequest } from "../../../request/bl-api-request";
 import { NextFunction, Request, Response } from "express";
 import { Messenger } from "../../../messenger/messenger";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlapiResponse, Order, UserDetail } from "@wizardcoder/bl-model";
+import { BlapiResponse, Order, UserDetail } from "@boklisten/bl-model";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { orderSchema } from "../order.schema";
 import { SEResponseHandler } from "../../../response/se.response.handler";

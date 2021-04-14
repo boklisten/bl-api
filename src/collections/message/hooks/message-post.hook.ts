@@ -1,14 +1,14 @@
-import {Hook} from '../../../hook/hook';
-import {AccessToken, Message, BlError, UserDetail} from '@wizardcoder/bl-model';
-import {isNullOrUndefined} from 'util';
-import {MessengerReminder} from '../../../messenger/reminder/messenger-reminder';
-import {PermissionService} from '../../../auth/permission/permission.service';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {messageSchema} from '../message.schema';
-import {MessageHelper} from '../helper/message-helper';
-import {logger} from '../../../logger/logger';
-import {Messenger} from '../../../messenger/messenger';
-import {userDetailSchema} from '../../user-detail/user-detail.schema';
+import { Hook } from "../../../hook/hook";
+import { AccessToken, Message, BlError, UserDetail } from "@boklisten/bl-model";
+import { isNullOrUndefined } from "util";
+import { MessengerReminder } from "../../../messenger/reminder/messenger-reminder";
+import { PermissionService } from "../../../auth/permission/permission.service";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { messageSchema } from "../message.schema";
+import { MessageHelper } from "../helper/message-helper";
+import { logger } from "../../../logger/logger";
+import { Messenger } from "../../../messenger/messenger";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
 
 export class MessagePostHook implements Hook {
   private messengerReminder: MessengerReminder;
@@ -23,14 +23,14 @@ export class MessagePostHook implements Hook {
     messageStorage?: BlDocumentStorage<Message>,
     messageHelper?: MessageHelper,
     messenger?: Messenger,
-    userDetailStorage?: BlDocumentStorage<UserDetail>,
+    userDetailStorage?: BlDocumentStorage<UserDetail>
   ) {
     this.messengerReminder = messengerReminder
       ? messengerReminder
       : new MessengerReminder();
     this.messageStorage = messageStorage
       ? messageStorage
-      : new BlDocumentStorage('messages', messageSchema);
+      : new BlDocumentStorage("messages", messageSchema);
     this.permissionService = new PermissionService();
     this.messageHelper = messageHelper
       ? messageHelper
@@ -38,33 +38,33 @@ export class MessagePostHook implements Hook {
     this.messenger = messenger ? messenger : new Messenger();
     this.userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage('userdetails', userDetailSchema);
+      : new BlDocumentStorage("userdetails", userDetailSchema);
   }
 
   async before(
     message: Message,
     accessToken: AccessToken,
-    id?: string,
+    id?: string
   ): Promise<boolean> {
-    if (typeof message.messageType === 'undefined' || !message.messageType) {
-      throw new BlError('messageType is not defined').code(701);
+    if (typeof message.messageType === "undefined" || !message.messageType) {
+      throw new BlError("messageType is not defined").code(701);
     }
 
     if (
-      typeof message.messageSubtype === 'undefined' ||
+      typeof message.messageSubtype === "undefined" ||
       !message.messageSubtype
     ) {
-      throw new BlError('messageSubtype is not defined').code(701);
+      throw new BlError("messageSubtype is not defined").code(701);
     }
 
-    if (message.messageType === 'reminder') {
+    if (message.messageType === "reminder") {
       if (
         !this.permissionService.isPermissionEqualOrOver(
           accessToken.permission,
-          'admin',
+          "admin"
         )
       ) {
-        throw new BlError('no permission').code(904);
+        throw new BlError("no permission").code(904);
       }
     }
     /*
@@ -90,24 +90,24 @@ export class MessagePostHook implements Hook {
 
   async after(
     messages: Message[],
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<Message[]> {
     if (isNullOrUndefined(messages) || messages.length <= 0) {
-      throw new BlError('no messages provided');
+      throw new BlError("no messages provided");
     }
 
     const message = messages[0];
 
     switch (message.messageType) {
-      case 'reminder':
+      case "reminder":
         return await this.onRemind(message);
-      case 'generic':
+      case "generic":
         return await this.onGeneric(message);
-      case 'match':
+      case "match":
         return await this.onMatch(message);
       default:
         throw new BlError(
-          `MessageType "${message.messageType}" is not supported`,
+          `MessageType "${message.messageType}" is not supported`
         );
     }
   }

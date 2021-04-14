@@ -1,7 +1,6 @@
-import {BlDocument} from "@wizardcoder/bl-model";
-
+import { BlDocument } from "@boklisten/bl-model";
 
 export class EmailValidation extends BlDocument {
-	email: string;
-	userDetail: string;
+  email: string;
+  userDetail: string;
 }

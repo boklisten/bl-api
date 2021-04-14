@@ -1,13 +1,13 @@
-import {Order, OrderItem, BlError, Branch, Item} from '@wizardcoder/bl-model';
-import {isNullOrUndefined, isNumber} from 'util';
-import {OrderItemExtendValidator} from './order-item-extend-validator/order-item-extend-validator';
-import {BlDocumentStorage} from '../../../../../storage/blDocumentStorage';
-import {branchSchema} from '../../../../branch/branch.schema';
-import {itemSchema} from '../../../../item/item.schema';
-import {OrderItemBuyValidator} from './order-item-buy-validator/order-item-buy-validator';
-import {OrderItemRentValidator} from './order-item-rent-validator/order-item-rent-validator';
-import {OrderFieldValidator} from '../order-field-validator/order-field-validator';
-import {PriceService} from '../../../../../price/price.service';
+import { Order, OrderItem, BlError, Branch, Item } from "@boklisten/bl-model";
+import { isNullOrUndefined, isNumber } from "util";
+import { OrderItemExtendValidator } from "./order-item-extend-validator/order-item-extend-validator";
+import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
+import { branchSchema } from "../../../../branch/branch.schema";
+import { itemSchema } from "../../../../item/item.schema";
+import { OrderItemBuyValidator } from "./order-item-buy-validator/order-item-buy-validator";
+import { OrderItemRentValidator } from "./order-item-rent-validator/order-item-rent-validator";
+import { OrderFieldValidator } from "../order-field-validator/order-field-validator";
+import { PriceService } from "../../../../../price/price.service";
 import { OrderItemPartlyPaymentValidator } from "./order-item-partly-payment-validator/order-item-partly-payment-validator";
 
 export class OrderItemValidator {
@@ -27,14 +27,14 @@ export class OrderItemValidator {
     orderItemRentValidator?: OrderItemRentValidator,
     orderItemBuyValidator?: OrderItemBuyValidator,
     orderItemExtendValidator?: OrderItemExtendValidator,
-    orderItemPartlyPaymentValidator?: OrderItemPartlyPaymentValidator,
+    orderItemPartlyPaymentValidator?: OrderItemPartlyPaymentValidator
   ) {
     this.branchStorage = branchStorage
       ? branchStorage
-      : new BlDocumentStorage('branches', branchSchema);
+      : new BlDocumentStorage("branches", branchSchema);
     this.itemStorage = itemStorage
       ? itemStorage
-      : new BlDocumentStorage('items', itemSchema);
+      : new BlDocumentStorage("items", itemSchema);
 
     this.orderItemFieldValidator = orderItemFieldValidator
       ? orderItemFieldValidator
@@ -48,8 +48,10 @@ export class OrderItemValidator {
     this.orderItemExtendValidator = orderItemExtendValidator
       ? orderItemExtendValidator
       : new OrderItemExtendValidator();
-    this.priceService = new PriceService({roundDown: true});
-    this.orderItemPartlyPaymentValidator = (orderItemPartlyPaymentValidator) ? orderItemPartlyPaymentValidator : new OrderItemPartlyPaymentValidator();
+    this.priceService = new PriceService({ roundDown: true });
+    this.orderItemPartlyPaymentValidator = orderItemPartlyPaymentValidator
+      ? orderItemPartlyPaymentValidator
+      : new OrderItemPartlyPaymentValidator();
   }
 
   public async validate(branch: Branch, order: Order): Promise<boolean> {
@@ -67,10 +69,10 @@ export class OrderItemValidator {
         return Promise.reject(e);
       }
       return Promise.reject(
-        new BlError('unknown error, orderItem could not be validated').store(
-          'error',
-          e,
-        ),
+        new BlError("unknown error, orderItem could not be validated").store(
+          "error",
+          e
+        )
       );
     }
   }
@@ -78,54 +80,50 @@ export class OrderItemValidator {
   private async validateOrderItemBasedOnType(
     branch: Branch,
     item: Item,
-    orderItem: OrderItem,
+    orderItem: OrderItem
   ): Promise<boolean> {
     switch (orderItem.type) {
-      case 'rent':
+      case "rent":
         return await this.orderItemRentValidator.validate(
           branch,
           orderItem,
-          item,
+          item
         );
-      case 'partly-payment':
-        return await this.orderItemPartlyPaymentValidator.validate(orderItem, item, branch);
-      case 'buy':
+      case "partly-payment":
+        return await this.orderItemPartlyPaymentValidator.validate(
+          orderItem,
+          item,
+          branch
+        );
+      case "buy":
         return await this.orderItemBuyValidator.validate(
           branch,
           orderItem,
-          item,
+          item
         );
-      case 'extend':
+      case "extend":
         return await this.orderItemExtendValidator.validate(branch, orderItem);
     }
   }
 
   private validateOrderItemAmounts(orderItem: OrderItem) {
     let expectedTotalAmount = this.priceService.sanitize(
-      orderItem.unitPrice + orderItem.taxAmount,
+      orderItem.unitPrice + orderItem.taxAmount
     );
 
     if (orderItem.amount !== expectedTotalAmount) {
       throw new BlError(
-        `orderItem.amount "${
-          orderItem.amount
-        }" is not equal to orderItem.unitPrice "${
-          orderItem.unitPrice
-        }" + orderItem.taxAmount "${orderItem.taxAmount}"`,
+        `orderItem.amount "${orderItem.amount}" is not equal to orderItem.unitPrice "${orderItem.unitPrice}" + orderItem.taxAmount "${orderItem.taxAmount}"`
       );
     }
 
     let expectedTaxAmount = this.priceService.sanitize(
-      orderItem.unitPrice * orderItem.taxRate,
+      orderItem.unitPrice * orderItem.taxRate
     );
 
     if (orderItem.taxAmount !== expectedTaxAmount) {
       throw new BlError(
-        `orderItem.taxAmount "${
-          orderItem.taxAmount
-        }" is not equal to orderItem.unitPrice "${
-          orderItem.unitPrice
-        }" * orderItem.taxRate "${orderItem.taxRate}"`,
+        `orderItem.taxAmount "${orderItem.taxAmount}" is not equal to orderItem.unitPrice "${orderItem.unitPrice}" * orderItem.taxRate "${orderItem.taxRate}"`
       );
     }
   }
@@ -139,9 +137,7 @@ export class OrderItemValidator {
 
     if (expectedTotalAmount !== order.amount) {
       throw new BlError(
-        `order.amount is "${
-          order.amount
-        }" but total of orderItems amount is "${expectedTotalAmount}"`,
+        `order.amount is "${order.amount}" but total of orderItems amount is "${expectedTotalAmount}"`
       );
     }
 

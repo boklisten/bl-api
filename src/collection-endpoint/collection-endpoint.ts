@@ -1,22 +1,22 @@
-import {BlDocument, BlError} from '@wizardcoder/bl-model';
-import {Router} from 'express';
+import { BlDocument, BlError } from "@boklisten/bl-model";
+import { Router } from "express";
 import {
   BlCollection,
   BlDocumentPermission,
   BlEndpoint,
   BlEndpointRestriction,
-} from '../collections/bl-collection';
-import {BlDocumentStorage} from '../storage/blDocumentStorage';
-import {SEResponseHandler} from '../response/se.response.handler';
-import {PermissionService} from '../auth/permission/permission.service';
-import {ApiPath} from '../config/api-path';
-import {CollectionEndpointGetAll} from './collection-endpoint-get-all/collection-endpoint-get-all';
-import {CollectionEndpointGetId} from './collection-endpoint-get-id/collection-endpoint-get-id';
-import {CollectionEndpointPost} from './collection-endpoint-post/collection-endpoint-post';
-import {CollectionEndpointDelete} from './collection-endpoint-delete/collection-endpoint-delete';
-import {CollectionEndpointPatch} from './collection-endpoint-patch/collection-endpoint-patch';
-import {Hook} from '../hook/hook';
-import {logger} from '../logger/logger';
+} from "../collections/bl-collection";
+import { BlDocumentStorage } from "../storage/blDocumentStorage";
+import { SEResponseHandler } from "../response/se.response.handler";
+import { PermissionService } from "../auth/permission/permission.service";
+import { ApiPath } from "../config/api-path";
+import { CollectionEndpointGetAll } from "./collection-endpoint-get-all/collection-endpoint-get-all";
+import { CollectionEndpointGetId } from "./collection-endpoint-get-id/collection-endpoint-get-id";
+import { CollectionEndpointPost } from "./collection-endpoint-post/collection-endpoint-post";
+import { CollectionEndpointDelete } from "./collection-endpoint-delete/collection-endpoint-delete";
+import { CollectionEndpointPatch } from "./collection-endpoint-patch/collection-endpoint-patch";
+import { Hook } from "../hook/hook";
+import { logger } from "../logger/logger";
 
 export class CollectionEndpoint<T extends BlDocument> {
   private _documentStorage: BlDocumentStorage<T>;
@@ -26,7 +26,7 @@ export class CollectionEndpoint<T extends BlDocument> {
   constructor(private _router: Router, private _collection: BlCollection) {
     this._documentStorage = new BlDocumentStorage<T>(
       _collection.collectionName,
-      _collection.mongooseSchema,
+      _collection.mongooseSchema
     );
     this._permissionService = new PermissionService();
     this._apiPath = new ApiPath();
@@ -35,26 +35,24 @@ export class CollectionEndpoint<T extends BlDocument> {
   public create() {
     for (const endpoint of this._collection.endpoints) {
       switch (endpoint.method) {
-        case 'getAll':
+        case "getAll":
           this.createGetAll(endpoint);
           break;
-        case 'getId':
+        case "getId":
           this.createGetId(endpoint);
           break;
-        case 'post':
+        case "post":
           this.createPost(endpoint);
           break;
-        case 'patch':
+        case "patch":
           this.createPatch(endpoint);
           break;
-        case 'delete':
+        case "delete":
           this.createDelete(endpoint);
           break;
         default:
           throw new BlError(
-            `the collection endpoint method "${
-              endpoint.method
-            }" is not supported`,
+            `the collection endpoint method "${endpoint.method}" is not supported`
           );
       }
     }
@@ -65,28 +63,28 @@ export class CollectionEndpoint<T extends BlDocument> {
       let method: string = endpoint.method;
       let uri = this._collection.collectionName;
 
-      if (method === 'getAll' || method === 'getId') {
-        method = 'get';
+      if (method === "getAll" || method === "getId") {
+        method = "get";
       }
 
       if (
-        endpoint.method === 'getId' ||
-        endpoint.method === 'patch' ||
-        endpoint.method === 'delete' ||
-        endpoint.method === 'put'
+        endpoint.method === "getId" ||
+        endpoint.method === "patch" ||
+        endpoint.method === "delete" ||
+        endpoint.method === "put"
       ) {
-        uri += '/:id';
+        uri += "/:id";
       }
 
-      let methodOutput = method.toUpperCase() + (method.length < 5 ? '  ' : '');
-      let output = methodOutput + '\t' + uri;
+      let methodOutput = method.toUpperCase() + (method.length < 5 ? "  " : "");
+      let output = methodOutput + "\t" + uri;
 
       logger.silly(output);
 
       if (endpoint.operations) {
         for (let operation of endpoint.operations) {
-          let operationUri = uri + '/' + operation.name;
-          let operationOutput = methodOutput + '\t' + operationUri;
+          let operationUri = uri + "/" + operation.name;
+          let operationOutput = methodOutput + "\t" + operationUri;
           logger.silly(operationOutput);
         }
       }
@@ -95,21 +93,21 @@ export class CollectionEndpoint<T extends BlDocument> {
 
   private getRestrictionPrintout(restriction: BlEndpointRestriction): string {
     let permissionService: PermissionService = new PermissionService();
-    let output = '';
+    let output = "";
 
     if (restriction && restriction.permissions) {
       output +=
-        '[' +
+        "[" +
         permissionService.getLowestPermission(restriction.permissions) +
-        ']';
+        "]";
     } else {
-      output += '[everyone]';
+      output += "[everyone]";
     }
 
-    output += '';
+    output += "";
 
     if (restriction && restriction.restricted) {
-      output += ' -R';
+      output += " -R";
     }
     return output;
   }
@@ -120,7 +118,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission,
+      this._collection.documentPermission
     );
     collectionEndpointGetAll.create();
   }
@@ -131,7 +129,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission,
+      this._collection.documentPermission
     );
     collectionEndpointGetId.create();
   }
@@ -142,7 +140,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission,
+      this._collection.documentPermission
     );
     collectionEndpointPost.create();
   }
@@ -153,7 +151,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission,
+      this._collection.documentPermission
     );
     collectionEndpointDelete.create();
   }
@@ -164,7 +162,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission,
+      this._collection.documentPermission
     );
     collectionEndpointPatch.create();
   }

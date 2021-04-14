@@ -1,6 +1,6 @@
-import {BlError, Order, UserDetail} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../../../storage/blDocumentStorage';
-import {userDetailSchema} from '../../../../user-detail/user-detail.schema';
+import { BlError, Order, UserDetail } from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
+import { userDetailSchema } from "../../../../user-detail/user-detail.schema";
 
 export class OrderUserDetailValidator {
   private _userDetailStorage: BlDocumentStorage<UserDetail>;
@@ -8,7 +8,7 @@ export class OrderUserDetailValidator {
   constructor(userDetailStorage?: BlDocumentStorage<UserDetail>) {
     this._userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage('userdetails', userDetailSchema);
+      : new BlDocumentStorage("userdetails", userDetailSchema);
   }
 
   public validate(order: Order): Promise<boolean> {
@@ -24,8 +24,8 @@ export class OrderUserDetailValidator {
         return true;
       })
       .catch((userDetailValidateError: BlError) => {
-        throw new BlError('userDetail could not be validated').add(
-          userDetailValidateError,
+        throw new BlError("userDetail could not be validated").add(
+          userDetailValidateError
         );
       });
   }

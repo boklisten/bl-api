@@ -1,5 +1,4 @@
-
 export class Message {
-	text: string;
-	type?: 'warning' | 'alert' | 'regular'
+  text: string;
+  type?: "warning" | "alert" | "regular";
 }

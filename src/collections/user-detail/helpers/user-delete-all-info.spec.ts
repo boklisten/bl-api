@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import { BlError, AccessToken, UserDetail } from "@wizardcoder/bl-model";
+import sinon from "sinon";
+import { BlError, AccessToken, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { User } from "../../user/user";
 import { UserDeleteAllInfo } from "./user-delete-all-info";
@@ -44,13 +45,13 @@ describe("UserDeleteAllInfo", () => {
       localLoginRemoveStub.resolves(true);
 
       userGetByQueryStub.resolves([
-        { id: userIdToRemove, username: "user@1234.com" }
+        { id: userIdToRemove, username: "user@1234.com" },
       ]);
       localLoginGetByQueryStub.resolves([{ id: localLoginIdToRemove }]);
 
       const accessToken = {
         details: "user777",
-        permission: "admin"
+        permission: "admin",
       } as AccessToken;
 
       const result = await userDeleteAllInfo.deleteAllInfo(
@@ -61,7 +62,7 @@ describe("UserDeleteAllInfo", () => {
       return expect(
         userRemoveStub.getCall(0).calledWithMatch(userIdToRemove, {
           id: accessToken.details,
-          permission: accessToken.permission
+          permission: accessToken.permission,
         })
       ).to.be.true;
     });
@@ -75,14 +76,14 @@ describe("UserDeleteAllInfo", () => {
       localLoginRemoveStub.resolves(true);
 
       userGetByQueryStub.resolves([
-        { id: userIdToRemove, username: "user@1234.com" }
+        { id: userIdToRemove, username: "user@1234.com" },
       ]);
 
       localLoginGetByQueryStub.resolves([{ id: localLoginIdToRemove }]);
 
       const accessToken = {
         details: "user777",
-        permission: "admin"
+        permission: "admin",
       } as AccessToken;
 
       const result = await userDeleteAllInfo.deleteAllInfo(
@@ -93,7 +94,7 @@ describe("UserDeleteAllInfo", () => {
       return expect(
         localLoginRemoveStub.getCall(0).calledWithMatch(localLoginIdToRemove, {
           id: accessToken.details,
-          permission: accessToken.permission
+          permission: accessToken.permission,
         })
       ).to.be.true;
     });
@@ -109,14 +110,14 @@ describe("UserDeleteAllInfo", () => {
 
       userGetByQueryStub.resolves([
         { id: userIdToRemove, username: "user@1234.com" },
-        { id: userIdToRemove2, username: "user@1234.com" }
+        { id: userIdToRemove2, username: "user@1234.com" },
       ]);
 
       localLoginGetByQueryStub.resolves([{ id: localLoginIdToRemove }]);
 
       const accessToken = {
         details: "user777",
-        permission: "admin"
+        permission: "admin",
       } as AccessToken;
 
       return expect(
@@ -133,13 +134,13 @@ describe("UserDeleteAllInfo", () => {
       localLoginRemoveStub.resolves(true);
 
       userGetByQueryStub.resolves([
-        { id: userIdToRemove, username: "user@1234.com" }
+        { id: userIdToRemove, username: "user@1234.com" },
       ]);
       localLoginGetByQueryStub.resolves([{ id: localLoginIdToRemove }]);
 
       const accessToken = {
         details: "user777",
-        permission: "admin"
+        permission: "admin",
       } as AccessToken;
 
       return expect(

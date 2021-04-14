@@ -1,4 +1,4 @@
-import {EmailService} from './email/email-service';
+import { EmailService } from "./email/email-service";
 import {
   BlError,
   Delivery,
@@ -6,14 +6,14 @@ import {
   UserDetail,
   CustomerItem,
   Message,
-} from '@wizardcoder/bl-model';
+} from "@boklisten/bl-model";
 import {
   MessengerService,
   CustomerDetailWithCustomerItem,
-} from './messenger-service';
-import {BlDocumentStorage} from '../storage/blDocumentStorage';
-import {deliverySchema} from '../collections/delivery/delivery.schema';
-import {PdfService} from './pdf/pdf-service';
+} from "./messenger-service";
+import { BlDocumentStorage } from "../storage/blDocumentStorage";
+import { deliverySchema } from "../collections/delivery/delivery.schema";
+import { PdfService } from "./pdf/pdf-service";
 
 export class Messenger implements MessengerService {
   private _emailService: EmailService;
@@ -23,8 +23,8 @@ export class Messenger implements MessengerService {
   constructor() {
     this._emailService = new EmailService();
     this._deliveryStorage = new BlDocumentStorage<Delivery>(
-      'deliveries',
-      deliverySchema,
+      "deliveries",
+      deliverySchema
     );
     this._pdfService = new PdfService();
   }
@@ -55,7 +55,7 @@ export class Messenger implements MessengerService {
   public remind(
     message: Message,
     customerDetail: UserDetail,
-    customerItems: CustomerItem[],
+    customerItems: CustomerItem[]
   ) {
     this._emailService.remind(message, customerDetail, customerItems);
   }
@@ -65,7 +65,7 @@ export class Messenger implements MessengerService {
    * @param {CustomerDetailWithCustomerItem[]} customerDetails with customerItems to remind about
    */
   public remindMany(
-    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[],
+    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[]
   ) {
     this._emailService.remindMany(customerDetailsWithCustomerItems);
   }
@@ -98,7 +98,7 @@ export class Messenger implements MessengerService {
   }
 
   public sendDeliveryInformation(customerDetail: UserDetail, order: Order) {
-    let deliveryId = typeof order.delivery === 'string' ? order.delivery : '';
+    let deliveryId = typeof order.delivery === "string" ? order.delivery : "";
     this._deliveryStorage
       .get(deliveryId)
       .then((delivery: Delivery) => {
@@ -114,7 +114,7 @@ export class Messenger implements MessengerService {
    */
   public emailConfirmation(
     customerDetail: UserDetail,
-    confirmationCode: string,
+    confirmationCode: string
   ) {
     this._emailService.emailConfirmation(customerDetail, confirmationCode);
   }

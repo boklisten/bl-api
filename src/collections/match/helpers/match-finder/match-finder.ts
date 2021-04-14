@@ -1,7 +1,7 @@
-import {Match, MatchItem, BlError} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
-import {matchSchema} from '../../match.schema';
-import {MatchFinderPartlyMatch} from './match-finder-partly-match/match-finder-partly-match';
+import { Match, MatchItem, BlError } from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { matchSchema } from "../../match.schema";
+import { MatchFinderPartlyMatch } from "./match-finder-partly-match/match-finder-partly-match";
 
 // priority list
 // 1: full matches with 'created' orders
@@ -14,7 +14,7 @@ export class MatchFinder {
   constructor(private matchStorage?: BlDocumentStorage<Match>) {
     this.matchStorage = this.matchStorage
       ? this.matchStorage
-      : new BlDocumentStorage<Match>('matches', matchSchema);
+      : new BlDocumentStorage<Match>("matches", matchSchema);
     this.matchFinderPartlyMatch = new MatchFinderPartlyMatch();
   }
 
@@ -24,7 +24,7 @@ export class MatchFinder {
     matches = this.filterValidMatches(matches);
 
     if (!matches || matches.length <= 0) {
-      throw new BlError('no match with valid state found');
+      throw new BlError("no match with valid state found");
     }
 
     let match;
@@ -45,7 +45,7 @@ export class MatchFinder {
       return match;
     }
 
-    throw new BlError('no match found');
+    throw new BlError("no match found");
   }
 
   private searchForFullMatch(matchItems: MatchItem[], matches: Match[]): Match {
@@ -62,18 +62,18 @@ export class MatchFinder {
       }
     }
 
-    throw new BlError('could not find full match');
+    throw new BlError("could not find full match");
   }
 
   private filterValidMatches(matches: Match[]) {
     return matches.filter(
-      match => match.state === 'created' || match.state === 'partly-matched',
+      (match) => match.state === "created" || match.state === "partly-matched"
     );
   }
   private extractItemIds(matchItems: MatchItem[]): string {
     return matchItems
-      .filter(matchItem => !matchItem.reciever)
-      .map(matchItem => matchItem.item)
+      .filter((matchItem) => !matchItem.reciever)
+      .map((matchItem) => matchItem.item)
       .sort()
       .toString();
   }

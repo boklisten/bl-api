@@ -1,3 +1,1 @@
-
-
-export type UserPermission = "customer" | "employee" | "admin"
+export type UserPermission = "customer" | "employee" | "admin";

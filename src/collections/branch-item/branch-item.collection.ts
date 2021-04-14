@@ -7,29 +7,29 @@ export class BranchItemCollection implements BlCollection {
   mongooseSchema = branchItemSchema;
   endpoints: BlEndpoint[] = [
     {
-      method: "getId"
+      method: "getId",
     },
     {
       method: "post",
       restriction: {
-        permissions: ["admin", "super"]
-      }
+        permissions: ["admin", "super"],
+      },
     },
     {
       method: "patch",
       restriction: {
-        permissions: ["admin", "super"]
-      }
+        permissions: ["admin", "super"],
+      },
     },
     {
       method: "getAll",
-      validQueryParams: [{ fieldName: "branch", type: "object-id" }]
+      validQueryParams: [{ fieldName: "branch", type: "object-id" }],
     },
     {
       method: "delete",
       restriction: {
-        permissions: ["admin", "super"]
-      }
-    }
+        permissions: ["admin", "super"],
+      },
+    },
   ];
 }

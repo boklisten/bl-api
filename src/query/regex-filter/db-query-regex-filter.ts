@@ -1,53 +1,60 @@
-
 export type RegexFilter = {
-	fieldName: string,
-	op: {
-		$regex: string,
-		$options: string
-	}
-}
+  fieldName: string;
+  op: {
+    $regex: string;
+    $options: string;
+  };
+};
 
 export class DbQueryRegexFilter {
+  constructor() {}
 
-	constructor() {
+  getRegexFilters(query: any, validRegexParams: string[]): RegexFilter[] {
+    if (
+      !query ||
+      (Object.keys(query).length === 0 && query.constructor === Object)
+    ) {
+      throw new TypeError("query can not be undefined or empty");
+    }
 
-	}
+    let searchString = query.s;
 
-	getRegexFilters(query: any, validRegexParams: string[]): RegexFilter[] {
-		if (!query || Object.keys(query).length === 0 && query.constructor === Object) {
-			throw new TypeError('query can not be undefined or empty');
-		}
+    if (!searchString) return [];
 
-		let searchString = query.s;
+    searchString = this.sanitizeSearchString(searchString);
 
+    if (searchString.length < 3)
+      throw new TypeError(
+        'search string "' + searchString + '" is under 3 chars long'
+      );
 
-		if (!searchString) return [];
+    return this.generateRegexFilters(searchString, validRegexParams);
+  }
 
-		searchString = this.sanitizeSearchString(searchString);
+  private sanitizeSearchString(searchString: string) {
+    let searchStringArr = searchString.split(" ");
+    let returnString = "";
+    for (let word of searchStringArr) {
+      if (returnString.length > 0) {
+        returnString += "[^\\\\S]";
+      }
+      returnString += word;
+    }
+    return returnString;
+  }
 
-		if (searchString.length < 3) throw new TypeError('search string "' + searchString+ '" is under 3 chars long');
+  private generateRegexFilters(
+    searchString: string,
+    validRegexParams: string[]
+  ): RegexFilter[] {
+    let regexFilters: RegexFilter[] = [];
 
-		return this.generateRegexFilters(searchString, validRegexParams);
-	}
-
-	private sanitizeSearchString(searchString: string) {
-		let searchStringArr = searchString.split(' ');
-		let returnString = '';
-		for (let word of searchStringArr) {
-			if (returnString.length > 0) {
-				returnString += '[^\\\\S]';
-			}
-			returnString += word;
-		}
-		return returnString;
-	}
-
-	private generateRegexFilters(searchString: string, validRegexParams: string[]): RegexFilter[] {
-		let regexFilters: RegexFilter[]  = [];
-
-		for (let validRegexParam of validRegexParams) {
-			regexFilters.push({fieldName: validRegexParam, op: {$regex: searchString, $options: 'imx'}});
-		}
-		return regexFilters;
-	}
+    for (let validRegexParam of validRegexParams) {
+      regexFilters.push({
+        fieldName: validRegexParam,
+        op: { $regex: searchString, $options: "imx" },
+      });
+    }
+    return regexFilters;
+  }
 }

@@ -1,4 +1,1 @@
-
-export class CustomerItemPatchHook {
-
-}
+export class CustomerItemPatchHook {}

@@ -1,4 +1,4 @@
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
 
 export class MongooseModelCreator {
   constructor(private collectionName: string, private schema: any) {}
@@ -11,13 +11,13 @@ export class MongooseModelCreator {
 
     //remove fields that the client shall not see
     mongooseSchema.set("toJSON", {
-      transform: function(doc, ret, options) {
+      transform: function (doc, ret, options) {
         ret.id = ret._id;
         delete ret.user;
         delete ret._id;
         delete ret.__v;
         delete ret.viewableFor;
-      }
+      },
     });
 
     return this.createMongooseModel(mongooseSchema);
@@ -36,17 +36,17 @@ export class MongooseModelCreator {
 
   createMongooseSchema(mschema: any): mongoose.Schema {
     mschema["blid"] = {
-      type: mongoose.Schema.Types.String
+      type: mongoose.Schema.Types.String,
     };
 
     mschema["lastUpdated"] = {
       type: mongoose.Schema.Types.Date,
-      default: Date.now()
+      default: Date.now(),
     };
 
     mschema["creationTime"] = {
       type: mongoose.Schema.Types.Date,
-      default: Date.now()
+      default: Date.now(),
     };
 
     mschema["comments"] = {
@@ -56,42 +56,42 @@ export class MongooseModelCreator {
           msg: mongoose.Schema.Types.String,
           creationTime: {
             type: mongoose.Schema.Types.Date,
-            default: Date.now()
+            default: Date.now(),
           },
-          user: mongoose.Schema.Types.ObjectId
-        }
-      ]
+          user: mongoose.Schema.Types.ObjectId,
+        },
+      ],
     };
 
     mschema["active"] = {
       type: mongoose.Schema.Types.Boolean,
-      default: true
+      default: true,
     };
 
     mschema["user"] = {
       type: {
         id: mongoose.Schema.Types.String,
-        permission: mongoose.Schema.Types.String
-      }
+        permission: mongoose.Schema.Types.String,
+      },
     };
 
     mschema["viewableFor"] = {
       type: [mongoose.Schema.Types.String],
-      default: []
+      default: [],
     };
 
     mschema["viewableForPermission"] = {
-      type: mongoose.Schema.Types.String
+      type: mongoose.Schema.Types.String,
     };
 
     mschema["editableFor"] = {
       type: [mongoose.Schema.Types.String],
-      default: []
+      default: [],
     };
 
     mschema["archived"] = {
       type: mongoose.Schema.Types.Boolean,
-      default: false
+      default: false,
     };
 
     return new mongoose.Schema(mschema);

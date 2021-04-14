@@ -1,64 +1,63 @@
+import { BlError } from "@boklisten/bl-model";
 
-
-import {BlError} from "@wizardcoder/bl-model";
-
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 export class SeCrypto {
+  constructor() {}
 
-	constructor() {
+  public cipher(msg: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (msg.length <= 0)
+        reject(
+          new BlError("msg to short").className("SeCrypto").methodName("cipher")
+        );
 
-	}
+      let msgCipher = crypto.createCipher("aes128", msg);
 
-	public cipher(msg: string): Promise<string> {
-		return new Promise((resolve, reject) => {
+      let encryptedMsg = "";
 
-			if (msg.length <= 0) reject(new BlError('msg to short').className('SeCrypto').methodName('cipher'));
+      msgCipher.on("readable", () => {
+        const data = msgCipher.read();
+        if (data) {
+          encryptedMsg += data.toString("hex");
+        }
+      });
 
-			let msgCipher = crypto.createCipher('aes128', msg);
+      msgCipher.on("end", () => {
+        resolve(encryptedMsg);
+      });
 
-			let encryptedMsg = '';
+      msgCipher.end();
+    });
+  }
 
-			msgCipher.on('readable', () => {
-				const data = msgCipher.read();
-				if (data) {
-					encryptedMsg += data.toString('hex');
-				}
-			});
+  public hash(msg: string, salt: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let blError = new BlError("").className("SeCrypto").methodName("hash");
 
-			msgCipher.on('end', () => {
-				resolve(encryptedMsg);
-			});
+      if (!msg || msg.length <= 0)
+        return reject(blError.msg("msg is empty or undefined"));
+      if (!salt || salt.length <= 0)
+        return reject(blError.msg("salt is empty or undefined"));
 
-			msgCipher.end();
-		});
-	}
-	
-	public hash(msg: string, salt: string): Promise<string> {
-		return new Promise((resolve, reject) => {
-			let blError = new BlError('').className('SeCrypto').methodName('hash');
-			
-			if (!msg || msg.length <= 0) return reject(blError.msg('msg is empty or undefined'));
-			if (!salt || salt.length <= 0) return reject(blError.msg('salt is empty or undefined'));
-			
-			const cryptoHash = crypto.createHash('sha256');
-			
-			cryptoHash.on('readable', () => {
-				const data = cryptoHash.read();
-				if (data) {
-					let hashedPassword = data.toString('hex');
-					return resolve(hashedPassword);
-				}
-				return reject(blError.msg('could not hash the provided message'));
-			});
-			
-			cryptoHash.write(msg + salt);
-			
-			cryptoHash.end();
-		});
-	}
+      const cryptoHash = crypto.createHash("sha256");
 
-	public random(): string {
-		return crypto.randomBytes(20).toLocaleString('hex');
-	}
+      cryptoHash.on("readable", () => {
+        const data = cryptoHash.read();
+        if (data) {
+          let hashedPassword = data.toString("hex");
+          return resolve(hashedPassword);
+        }
+        return reject(blError.msg("could not hash the provided message"));
+      });
+
+      cryptoHash.write(msg + salt);
+
+      cryptoHash.end();
+    });
+  }
+
+  public random(): string {
+    return crypto.randomBytes(20).toLocaleString("hex");
+  }
 }

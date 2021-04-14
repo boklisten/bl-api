@@ -1,8 +1,9 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as sinon from "sinon";
+import chai from "chai";
+import sinon from "sinon";
 import { expect } from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
 import {
   BlError,
@@ -10,8 +11,8 @@ import {
   CustomerItem,
   Order,
   OrderItem,
-  UserDetail
-} from "@wizardcoder/bl-model";
+  UserDetail,
+} from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { CustomerItemActiveBlid } from "./customer-item-active-blid";
 chai.use(chaiAsPromised);
@@ -43,7 +44,7 @@ describe("CustomerItemActiveBlid", () => {
         customer: "customer1",
         deadline: new Date(),
         handout: true,
-        returned: false
+        returned: false,
       };
 
       const customerItem2 = {
@@ -53,7 +54,7 @@ describe("CustomerItemActiveBlid", () => {
         customer: "customer2",
         deadline: new Date(),
         handout: true,
-        returned: true
+        returned: true,
       };
 
       getByQueryCustomerItemStub.resolves([customerItem1, customerItem2]);
@@ -71,7 +72,7 @@ describe("CustomerItemActiveBlid", () => {
         customer: "customer1",
         deadline: new Date(),
         handout: true,
-        returned: true
+        returned: true,
       };
 
       getByQueryCustomerItemStub.resolves([customerItem]);

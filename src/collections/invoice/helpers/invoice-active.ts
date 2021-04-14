@@ -1,4 +1,4 @@
-import { Invoice } from "@wizardcoder/bl-model";
+import { Invoice } from "@boklisten/bl-model";
 
 export class InvoiceActive {
   public isActive(invoice: Invoice): boolean {

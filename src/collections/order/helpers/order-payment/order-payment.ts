@@ -1,13 +1,7 @@
-
-
-import {Order} from "@wizardcoder/bl-model";
+import { Order } from "@boklisten/bl-model";
 
 export class OrderPayment {
-	constructor() {
-	
-	}
-	
-	public getPayment(order: Order) {
-	
-	}
+  constructor() {}
+
+  public getPayment(order: Order) {}
 }

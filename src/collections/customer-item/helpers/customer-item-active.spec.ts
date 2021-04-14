@@ -1,7 +1,8 @@
 import { CustomerItemActive } from "./customer-item-active";
+// @ts-nocheck
 import "mocha";
 import { expect } from "chai";
-import { CustomerItem } from "@wizardcoder/bl-model";
+import { CustomerItem } from "@boklisten/bl-model";
 
 describe("CustomerItemActive", () => {
   describe("isActive()", () => {
@@ -16,7 +17,7 @@ describe("CustomerItemActive", () => {
         deadline: new Date(),
         handout: true,
         returned: true,
-        buyout: false
+        buyout: false,
       };
 
       return expect(customerItemActive.isActive(customerItem)).false;
@@ -31,7 +32,7 @@ describe("CustomerItemActive", () => {
         deadline: new Date(),
         handout: true,
         returned: false,
-        buyout: true
+        buyout: true,
       };
 
       return expect(customerItemActive.isActive(customerItem)).false;
@@ -47,7 +48,7 @@ describe("CustomerItemActive", () => {
         handout: true,
         returned: false,
         buyout: false,
-        cancel: true
+        cancel: true,
       };
 
       return expect(customerItemActive.isActive(customerItem)).false;
@@ -64,7 +65,7 @@ describe("CustomerItemActive", () => {
         returned: false,
         buyout: false,
         cancel: false,
-        buyback: true
+        buyback: true,
       };
 
       return expect(customerItemActive.isActive(customerItem)).false;
@@ -79,7 +80,7 @@ describe("CustomerItemActive", () => {
         deadline: new Date(),
         handout: true,
         returned: false,
-        buyout: false
+        buyout: false,
       };
 
       return expect(customerItemActive.isActive(customerItem)).true;

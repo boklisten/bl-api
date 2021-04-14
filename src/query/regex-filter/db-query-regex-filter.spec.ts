@@ -1,50 +1,55 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import {expect} from 'chai';
-import {DbQueryRegexFilter} from "./db-query-regex-filter";
+// @ts-nocheck
+import "mocha";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { expect } from "chai";
+import { DbQueryRegexFilter } from "./db-query-regex-filter";
 
 chai.use(chaiAsPromised);
 
-describe('DbQueryRegexFilter', () => {
-	let dbQueryRegexFilter: DbQueryRegexFilter = new DbQueryRegexFilter();
+describe("DbQueryRegexFilter", () => {
+  let dbQueryRegexFilter: DbQueryRegexFilter = new DbQueryRegexFilter();
 
-	describe('getRegexFilters()', () => {
+  describe("getRegexFilters()", () => {
+    it("should return empty array when searchString is empty", () => {
+      expect(dbQueryRegexFilter.getRegexFilters({ name: "hello" }, [])).to.eql(
+        []
+      );
+    });
 
-		it('should return empty array when searchString is empty', () => {
-			expect(dbQueryRegexFilter.getRegexFilters({name: 'hello'}, [])).to.eql([]);
-		});
+    it("should throw TypeError when search fieldName is under 3 characters long", () => {
+      expect(() => {
+        dbQueryRegexFilter.getRegexFilters({ s: "si" }, ["name"]);
+      }).to.throw(TypeError);
+    });
 
+    it("should return empty array when validSearchParams is empty", () => {
+      expect(dbQueryRegexFilter.getRegexFilters({ s: "hello" }, [])).to.eql([]);
+    });
 
-		it('should throw TypeError when search fieldName is under 3 characters long', () => {
-			expect(() => {
-				dbQueryRegexFilter.getRegexFilters({s: 'si'}, ['name'])
-			}).to.throw(TypeError)
-		});
+    it('should return array like [{name: {$regex: "sig", $options: "imx"}}]', () => {
+      let result = [
+        { fieldName: "name", op: { $regex: "sig", $options: "imx" } },
+      ];
+      expect(dbQueryRegexFilter.getRegexFilters({ s: "sig" }, ["name"])).to.eql(
+        result
+      );
+    });
 
-		it('should return empty array when validSearchParams is empty', () => {
-			expect(dbQueryRegexFilter.getRegexFilters({s: 'hello'}, [])).to.eql([]);
-		});
+    it("should return array containing regexfilter objects for all params in validRegexParams", () => {
+      let result = [
+        { fieldName: "name", op: { $regex: "hello", $options: "imx" } },
+        { fieldName: "message", op: { $regex: "hello", $options: "imx" } },
+        { fieldName: "info", op: { $regex: "hello", $options: "imx" } },
+        { fieldName: "desc", op: { $regex: "hello", $options: "imx" } },
+      ];
 
-		it('should return array like [{name: {$regex: "sig", $options: "imx"}}]', () => {
-			let result = [{fieldName: 'name', op: {$regex: 'sig', $options: 'imx'}}];
-			expect(dbQueryRegexFilter.getRegexFilters({s: 'sig'}, ['name'])).to.eql(result);
-		});
+      let validRegexParams = ["name", "message", "info", "desc"];
+      let query = { s: "hello" };
 
-		it('should return array containing regexfilter objects for all params in validRegexParams', () => {
-			let result = [
-				{fieldName: 'name', op: {$regex: 'hello', $options: 'imx'}},
-				{fieldName: 'message', op: {$regex: 'hello', $options: 'imx'}},
-				{fieldName: 'info', op: {$regex: 'hello', $options: 'imx'}},
-				{fieldName: 'desc', op: {$regex: 'hello', $options: 'imx'}},
-			];
-
-			let validRegexParams = ['name', 'message', 'info', 'desc'];
-			let query = {s: 'hello'};
-
-			expect(dbQueryRegexFilter.getRegexFilters(query, validRegexParams)).to.eql(result);
-
-		});
-
-	});
+      expect(
+        dbQueryRegexFilter.getRegexFilters(query, validRegexParams)
+      ).to.eql(result);
+    });
+  });
 });

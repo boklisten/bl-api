@@ -1,13 +1,13 @@
-import {NextFunction, Response, Router, Request} from 'express';
+import { NextFunction, Response, Router, Request } from "express";
 
-import {OAuth2Strategy} from 'passport-google-oauth';
-import * as passport from 'passport';
-import {ApiPath} from '../../config/api-path';
-import {SEResponseHandler} from '../../response/se.response.handler';
-import {BlError} from '@wizardcoder/bl-model';
-import {User} from '../../collections/user/user';
-import {APP_CONFIG} from '../../application-config';
-import {UserProvider} from '../user/user-provider/user-provider';
+import { OAuth2Strategy } from "passport-google-oauth";
+import passport from "passport";
+import { ApiPath } from "../../config/api-path";
+import { SEResponseHandler } from "../../response/se.response.handler";
+import { BlError } from "@boklisten/bl-model";
+import { User } from "../../collections/user/user";
+import { APP_CONFIG } from "../../application-config";
+import { UserProvider } from "../user/user-provider/user-provider";
 
 export class GoogleAuth {
   private apiPath: ApiPath;
@@ -26,7 +26,7 @@ export class GoogleAuth {
       passReqToCallback: true,
       callbackURL:
         process.env.BL_API_URI +
-        this.apiPath.createPath('auth/google/callback'),
+        this.apiPath.createPath("auth/google/callback"),
     };
 
     this.createPassportStrategy();
@@ -41,7 +41,7 @@ export class GoogleAuth {
           accessToken: any,
           refreshToken: any,
           profile: any,
-          done: any,
+          done: any
         ) => {
           let provider = APP_CONFIG.login.google.name;
           let providerId = profile.id;
@@ -54,7 +54,7 @@ export class GoogleAuth {
           }
 
           if (!providerId) {
-            return done(null, false, new BlError('no providerId').code(902));
+            return done(null, false, new BlError("no providerId").code(902));
           }
 
           let userAndTokens;
@@ -63,19 +63,19 @@ export class GoogleAuth {
             userAndTokens = await this._userProvider.loginOrCreate(
               username,
               provider,
-              providerId,
+              providerId
             );
           } catch (e) {
             return done(
               null,
               null,
-              new BlError('could not create user').code(902),
+              new BlError("could not create user").code(902)
             );
           }
 
           done(null, userAndTokens.tokens);
-        },
-      ),
+        }
+      )
     );
   }
 
@@ -89,7 +89,7 @@ export class GoogleAuth {
     }
 
     if (!username || username.length <= 0) {
-      throw new BlError('username not found by google').code(902);
+      throw new BlError("username not found by google").code(902);
     }
 
     return username;
@@ -97,15 +97,15 @@ export class GoogleAuth {
 
   private createAuthGet(router: Router) {
     router.get(
-      this.apiPath.createPath('auth/google'),
+      this.apiPath.createPath("auth/google"),
       passport.authenticate(APP_CONFIG.login.google.name, {
-        scope: ['profile', 'email'],
-      }),
+        scope: ["profile", "email"],
+      })
     );
   }
 
   private createCallbackGet(router: Router) {
-    router.get(this.apiPath.createPath('auth/google/callback'), (req, res) => {
+    router.get(this.apiPath.createPath("auth/google/callback"), (req, res) => {
       passport.authenticate(
         APP_CONFIG.login.google.name,
         (err, tokens, blError: BlError) => {
@@ -114,7 +114,7 @@ export class GoogleAuth {
           if (!tokens && (err || blError)) {
             return res.redirect(
               process.env.CLIENT_URI +
-                APP_CONFIG.path.client.auth.socialLoginFailure,
+                APP_CONFIG.path.client.auth.socialLoginFailure
             );
           }
 
@@ -123,10 +123,10 @@ export class GoogleAuth {
               res,
               tokens.accessToken,
               tokens.refreshToken,
-              this.apiPath.retrieveRefererPath(req.headers),
+              this.apiPath.retrieveRefererPath(req.headers)
             );
           }
-        },
+        }
       )(req, res);
     });
   }

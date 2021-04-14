@@ -6,29 +6,29 @@ import {
   Match,
   MatchProfile,
   MatchItem,
-} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
-import {deliverySchema} from '../../../delivery/delivery.schema';
-import {dateService} from '../../../../blc/date.service';
-import {MatchHelper} from '../match-helper';
-import {MatchFinder} from '../match-finder/match-finder';
-import {MatchUpdater} from '../match-updater/match-updater';
+} from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { deliverySchema } from "../../../delivery/delivery.schema";
+import { dateService } from "../../../../blc/date.service";
+import { MatchHelper } from "../match-helper";
+import { MatchFinder } from "../match-finder/match-finder";
+import { MatchUpdater } from "../match-updater/match-updater";
 
 // branch id in PROD : 5b6442ebd2e733002fae8a31
 // branch id in DEV :
 // branch id in LOCAL : 5db00e6bcbfeed32123184c3
 export class Matcher {
-  private matchingWindow: {fromHour: number; toHour: number};
+  private matchingWindow: { fromHour: number; toHour: number };
   private matchHelper: MatchHelper;
 
   constructor(
     private deliveryStorage?: BlDocumentStorage<Delivery>,
     private matchFinder?: MatchFinder,
-    private matchUpdater?: MatchUpdater,
+    private matchUpdater?: MatchUpdater
   ) {
     this.deliveryStorage = this.deliveryStorage
       ? this.deliveryStorage
-      : new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
+      : new BlDocumentStorage<Delivery>("deliveries", deliverySchema);
 
     this.matchUpdater = this.matchUpdater
       ? this.matchUpdater
@@ -57,10 +57,10 @@ export class Matcher {
     this.validateCreationTime(order);
 
     const matchProfile: MatchProfile = this.matchHelper.convertUserDetailToMatchProfile(
-      userDetail,
+      userDetail
     );
     const matchItems: MatchItem[] = this.matchHelper.convertOrderItemsToMatchItems(
-      order.orderItems,
+      order.orderItems
     );
 
     try {
@@ -79,9 +79,9 @@ export class Matcher {
     }
     try {
       const delivery: Delivery = await this.deliveryStorage.get(
-        order.delivery as string,
+        order.delivery as string
       );
-      if (delivery.method !== 'branch') {
+      if (delivery.method !== "branch") {
         throw new BlError('delivery does not have method "branch"');
       }
       return true;
@@ -92,21 +92,21 @@ export class Matcher {
 
   private validatePayment(payments: any[]) {
     if (!payments || payments.length <= 0) {
-      throw new BlError('payment is not present on order');
+      throw new BlError("payment is not present on order");
     }
   }
 
   private validateBranch(branchId) {
     const validBranches = [
-      '5b6442ebd2e733002fae8a31',
-      '5db00e6bcbfeed32123184c3',
+      "5b6442ebd2e733002fae8a31",
+      "5db00e6bcbfeed32123184c3",
     ];
 
     if (validBranches.indexOf(branchId.toString()) > -1) {
       return true;
     } else {
       throw new BlError(
-        `trying to match with order.branch "${branchId}" not in matching-branches`,
+        `trying to match with order.branch "${branchId}" not in matching-branches`
       );
     }
   }
@@ -117,11 +117,11 @@ export class Matcher {
         order.creationTime,
         this.matchingWindow.fromHour,
         this.matchingWindow.toHour,
-        'Europe/Oslo',
+        "Europe/Oslo"
       )
     ) {
       throw new BlError(
-        'order.creationTime is not in time for the matching-window',
+        "order.creationTime is not in time for the matching-window"
       );
     }
   }

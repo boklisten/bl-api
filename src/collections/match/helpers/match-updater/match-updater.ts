@@ -2,8 +2,8 @@ import {
   Match,
   MatchProfile,
   MatchItem,
-  MatchState
-} from "@wizardcoder/bl-model";
+  MatchState,
+} from "@boklisten/bl-model";
 import { matchSchema } from "../../match.schema";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { OpeningHourHelper } from "../../../opening-hour/helpers/opening-hour-helper";

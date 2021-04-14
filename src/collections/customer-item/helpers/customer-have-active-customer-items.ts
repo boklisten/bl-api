@@ -1,5 +1,5 @@
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlError, CustomerItem } from "@wizardcoder/bl-model";
+import { BlError, CustomerItem } from "@boklisten/bl-model";
 import { customerItemSchema } from "../customer-item.schema";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 import { CustomerItemActive } from "./customer-item-active";
@@ -18,7 +18,7 @@ export class CustomerHaveActiveCustomerItems {
 
   public async haveActiveCustomerItems(userId: string): Promise<boolean> {
     const dbQuery = this.queryBuilder.getDbQuery({ customer: userId }, [
-      { fieldName: "customer", type: "object-id" }
+      { fieldName: "customer", type: "object-id" },
     ]);
     let customerItems: CustomerItem[];
 

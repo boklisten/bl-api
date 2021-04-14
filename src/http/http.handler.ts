@@ -1,9 +1,9 @@
-import {BlError} from '@wizardcoder/bl-model';
-const querystring = require('querystring');
-const qs = require('qs');
-const request = require('request');
-const rp = require('request-promise');
-import {logger} from '../logger/logger';
+import { BlError } from "@boklisten/bl-model";
+const querystring = require("querystring");
+const qs = require("qs");
+const request = require("request");
+const rp = require("request-promise");
+import { logger } from "../logger/logger";
 
 export class HttpHandler {
   constructor() {}
@@ -17,7 +17,7 @@ export class HttpHandler {
       };
 
       if (authorization) {
-        options['headers']['Authorization'] = authorization;
+        options["headers"]["Authorization"] = authorization;
       }
 
       logger.debug(`R-> POST ${url}`);
@@ -37,8 +37,8 @@ export class HttpHandler {
 
           return reject(
             new BlError(
-              `the request to "${url}" responded with status ${res.statusCode}`,
-            ).store('body', body),
+              `the request to "${url}" responded with status ${res.statusCode}`
+            ).store("body", body)
           );
         }
       });
@@ -48,27 +48,27 @@ export class HttpHandler {
   public getWithQuery(
     url: string,
     queryString: string,
-    authorization?: string,
+    authorization?: string
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       let options = {
-        uri: url + '?' + queryString,
+        uri: url + "?" + queryString,
         json: true,
       };
 
       logger.debug(`R-> GET ${options.uri}`);
 
       rp(options)
-        .then(jsonResponse => {
+        .then((jsonResponse) => {
           resolve(jsonResponse);
         })
-        .catch(error => {
+        .catch((error) => {
           logger.verbose(`<-R ERROR ${error}`);
 
           reject(
-            new BlError('could not get page with query')
-              .store('responseError', error)
-              .store('uri', url + '?' + queryString),
+            new BlError("could not get page with query")
+              .store("responseError", error)
+              .store("uri", url + "?" + queryString)
           );
         });
     });
@@ -83,22 +83,22 @@ export class HttpHandler {
       };
 
       if (authorization) {
-        options['headers']['Authorization'] = authorization;
+        options["headers"]["Authorization"] = authorization;
       }
 
       logger.debug(`R-> GET ${options.uri}`);
 
       rp(options)
-        .then(jsonResponse => {
+        .then((jsonResponse) => {
           resolve(jsonResponse);
         })
-        .catch(error => {
+        .catch((error) => {
           logger.verbose(`<-R ERROR ${error}`);
 
           reject(
             new BlError(
-              `could not get the requested resource at "${url}"`,
-            ).store('error', error),
+              `could not get the requested resource at "${url}"`
+            ).store("error", error)
           );
         });
     });

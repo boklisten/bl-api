@@ -1,7 +1,7 @@
-import {Message, BlError} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {SEDbQueryBuilder} from '../../../query/se.db-query-builder';
-import {logger} from '../../../logger/logger';
+import { Message, BlError } from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { logger } from "../../../logger/logger";
 
 export class MessageHelper {
   private queryBuilder: SEDbQueryBuilder;
@@ -20,12 +20,12 @@ export class MessageHelper {
         customerId: message.customerId,
       },
       [
-        {fieldName: 'messageType', type: 'string'},
-        {fieldName: 'messageSubtype', type: 'string'},
-        {fieldName: 'messageMethod', type: 'string'},
-        {fieldName: 'customerId', type: 'string'},
-        {fieldName: 'sequenceNumber', type: 'number'},
-      ],
+        { fieldName: "messageType", type: "string" },
+        { fieldName: "messageSubtype", type: "string" },
+        { fieldName: "messageMethod", type: "string" },
+        { fieldName: "customerId", type: "string" },
+        { fieldName: "sequenceNumber", type: "number" },
+      ]
     );
 
     try {

@@ -1,13 +1,13 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import {expect} from 'chai';
-import * as sinon from 'sinon';
-import {BlError, CustomerItem} from '@wizardcoder/bl-model';
+// @ts-nocheck
+import "mocha";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { expect } from "chai";
+import sinon from "sinon";
+import { BlError, CustomerItem } from "@boklisten/bl-model";
 
 chai.use(chaiAsPromised);
 
-describe('CustomerItemPatchHook', () => {
-	let testCustomerItem: CustomerItem;
-
+describe("CustomerItemPatchHook", () => {
+  let testCustomerItem: CustomerItem;
 });

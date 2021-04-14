@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import { LocalLoginCreator } from "./local-login-creator";
-import { BlError } from "@wizardcoder/bl-model";
+import { BlError } from "@boklisten/bl-model";
 import { HashedPasswordGenerator } from "../password/hashed-password-generator";
 import { SaltGenerator } from "../salt/salt-generator";
 import { SeCrypto } from "../../../crypto/se.crypto";

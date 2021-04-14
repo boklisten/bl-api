@@ -2,7 +2,7 @@ import {
   BlCollection,
   BlDocumentPermission,
   BlEndpoint,
-  BlEndpointRestriction
+  BlEndpointRestriction,
 } from "../bl-collection";
 import { userDetailSchema } from "./user-detail.schema";
 import { Schema } from "mongoose";
@@ -16,14 +16,14 @@ export class UserDetailCollection implements BlCollection {
   collectionName = "userdetails";
   mongooseSchema = userDetailSchema;
   documentPermission: BlDocumentPermission = {
-    viewableForPermission: "employee"
+    viewableForPermission: "employee",
   };
   endpoints: BlEndpoint[] = [
     {
       method: "getId",
       restriction: {
         permissions: ["customer", "employee", "manager", "admin", "super"],
-        restricted: true
+        restricted: true,
       },
       operations: [
         {
@@ -31,87 +31,87 @@ export class UserDetailCollection implements BlCollection {
           operation: new UserDetailValidOperation(),
           restriction: {
             permissions: ["customer", "employee", "manager", "admin", "super"],
-            restricted: true
-          }
+            restricted: true,
+          },
         },
         {
           name: "permission",
           operation: new UserDetailReadPermissionOperation(),
           restriction: {
-            permissions: ["admin", "super"]
-          }
-        }
-      ]
+            permissions: ["admin", "super"],
+          },
+        },
+      ],
     },
     {
       method: "patch",
       restriction: {
         permissions: ["customer", "employee", "manager", "admin", "super"],
-        restricted: true
+        restricted: true,
       },
       operations: [
         {
           name: "permission",
           operation: new UserDetailPermissionOperation(),
           restriction: {
-            permissions: ["admin", "super"]
-          }
+            permissions: ["admin", "super"],
+          },
         },
         {
           name: "email",
           operation: new UserDetailChangeEmailOperation(),
           restriction: {
-            permissions: ["manager", "admin", "super"]
-          }
-        }
-      ]
+            permissions: ["manager", "admin", "super"],
+          },
+        },
+      ],
     },
     {
       method: "delete",
       restriction: {
-        permissions: ["admin", "super"]
+        permissions: ["admin", "super"],
       },
-      hook: new UserDetailDeleteHook()
+      hook: new UserDetailDeleteHook(),
     },
     {
       method: "getAll",
       validQueryParams: [
         {
           fieldName: "email",
-          type: "string"
+          type: "string",
         },
         {
           fieldName: "branch",
-          type: "object-id"
+          type: "object-id",
         },
         {
           fieldName: "name",
-          type: "string"
+          type: "string",
         },
         {
           fieldName: "phone",
-          type: "string"
+          type: "string",
         },
         {
           fieldName: "address",
-          type: "string"
+          type: "string",
         },
         {
           fieldName: "postCity",
-          type: "string"
+          type: "string",
         },
         {
           fieldName: "postCode",
-          type: "string"
+          type: "string",
         },
         {
           fieldName: "_id",
-          type: "object-id"
-        }
+          type: "object-id",
+        },
       ],
       restriction: {
-        permissions: ["employee", "manager", "admin", "super"]
-      }
-    }
+        permissions: ["employee", "manager", "admin", "super"],
+      },
+    },
   ];
 }

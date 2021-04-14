@@ -1,8 +1,8 @@
-import {BlError, BlapiErrorResponse} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../storage/blDocumentStorage';
-import {BlErrorLog} from '../collections/bl-error-log/bl-error-log';
-import {blErrorLogSchema} from '../collections/bl-error-log/bl-error-log.schema';
-import {logger} from '../logger/logger';
+import { BlError, BlapiErrorResponse } from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../storage/blDocumentStorage";
+import { BlErrorLog } from "../collections/bl-error-log/bl-error-log";
+import { blErrorLogSchema } from "../collections/bl-error-log/bl-error-log.schema";
+import { logger } from "../logger/logger";
 
 export class BlErrorHandler {
   private _errorLogStorage: BlDocumentStorage<BlErrorLog>;
@@ -10,14 +10,14 @@ export class BlErrorHandler {
   constructor(errorLogStorage?: BlDocumentStorage<BlErrorLog>) {
     this._errorLogStorage = errorLogStorage
       ? errorLogStorage
-      : new BlDocumentStorage<BlErrorLog>('blerrorlogs', blErrorLogSchema);
+      : new BlDocumentStorage<BlErrorLog>("blerrorlogs", blErrorLogSchema);
   }
 
   public createBlapiErrorResponse(err): BlapiErrorResponse {
     let blError = err;
 
     if (!(err instanceof BlError)) {
-      blError = new BlError('unknown error').store('error', err);
+      blError = new BlError("unknown error").store("error", err);
     }
     this.printErrorStack(blError);
     this.storeError(blError);
@@ -27,7 +27,7 @@ export class BlErrorHandler {
     return new BlapiErrorResponse(
       blErrorResponse.httpStatus,
       blErrorResponse.code,
-      blErrorResponse.msg,
+      blErrorResponse.msg
     );
   }
 
@@ -40,12 +40,12 @@ export class BlErrorHandler {
     }
 
     this._errorLogStorage
-      .add(new BlErrorLog(blError), {id: 'SYSTEM', permission: 'super'})
-      .then(addedErrorLog => {})
-      .catch(blErrorAddError => {
+      .add(new BlErrorLog(blError), { id: "SYSTEM", permission: "super" })
+      .then((addedErrorLog) => {})
+      .catch((blErrorAddError) => {
         logger.warn(
-          'blErrorHandler: there was a error saving the BlErrorLog: ' +
-            blErrorAddError,
+          "blErrorHandler: there was a error saving the BlErrorLog: " +
+            blErrorAddError
         );
       });
   }
@@ -71,7 +71,7 @@ export class BlErrorHandler {
     if (blError.getStore() && blError.getStore().length > 0) {
       for (let storeData of blError.getStore()) {
         logger.verbose(
-          `! (${blError.getCode()}) ${JSON.stringify(storeData.value)}`,
+          `! (${blError.getCode()}) ${JSON.stringify(storeData.value)}`
         );
       }
     }
@@ -81,7 +81,7 @@ export class BlErrorHandler {
     let blapiErrorResponse: BlapiErrorResponse = {
       httpStatus: 500,
       code: blError.getCode(),
-      msg: 'server error',
+      msg: "server error",
       data: null,
     };
 
@@ -102,13 +102,13 @@ export class BlErrorHandler {
     let blapiErrorResponse: BlapiErrorResponse = {
       httpStatus: 500,
       code: code,
-      msg: 'server error',
+      msg: "server error",
       data: null,
     };
 
     switch (code) {
       case 200:
-        blapiErrorResponse.msg = 'server error';
+        blapiErrorResponse.msg = "server error";
         break;
     }
 
@@ -119,13 +119,13 @@ export class BlErrorHandler {
     let blapiErrorResponse: BlapiErrorResponse = {
       httpStatus: 500,
       code: code,
-      msg: 'server error',
+      msg: "server error",
       data: null,
     };
 
     switch (code) {
       case 800:
-        blapiErrorResponse.msg = 'server error';
+        blapiErrorResponse.msg = "server error";
         break;
     }
 
@@ -136,18 +136,18 @@ export class BlErrorHandler {
     let blapiErrorResponse: BlapiErrorResponse = {
       httpStatus: 400,
       code: code,
-      msg: 'bad format',
+      msg: "bad format",
       data: null,
     };
 
     switch (code) {
       case 701:
         blapiErrorResponse.httpStatus = 400;
-        blapiErrorResponse.msg = 'bad format';
+        blapiErrorResponse.msg = "bad format";
         break;
       case 702:
         blapiErrorResponse.httpStatus = 404;
-        blapiErrorResponse.msg = 'not found';
+        blapiErrorResponse.msg = "not found";
         break;
     }
     return blapiErrorResponse;
@@ -157,40 +157,40 @@ export class BlErrorHandler {
     let blapiErrorResponse: BlapiErrorResponse = {
       httpStatus: 401,
       code: code,
-      msg: 'authentication failure',
+      msg: "authentication failure",
       data: null,
     };
 
     switch (code) {
       case 901:
-        blapiErrorResponse.msg = 'password is wrong';
+        blapiErrorResponse.msg = "password is wrong";
         break;
       case 902:
-        blapiErrorResponse.msg = 'user is not valid';
+        blapiErrorResponse.msg = "user is not valid";
         break;
       case 903:
         blapiErrorResponse.httpStatus = 400;
-        blapiErrorResponse.msg = 'username already exists';
+        blapiErrorResponse.msg = "username already exists";
         break;
       case 904:
         blapiErrorResponse.httpStatus = 403;
-        blapiErrorResponse.msg = 'forbidden';
+        blapiErrorResponse.msg = "forbidden";
         break;
       case 905:
-        blapiErrorResponse.msg = 'invalid token';
+        blapiErrorResponse.msg = "invalid token";
         break;
       case 906:
-        blapiErrorResponse.msg = 'token creation failed';
+        blapiErrorResponse.msg = "token creation failed";
         break;
       case 907:
-        blapiErrorResponse.msg = 'user creation failed';
+        blapiErrorResponse.msg = "user creation failed";
         blapiErrorResponse.httpStatus = 400;
         break;
       case 908:
-        blapiErrorResponse.msg = 'username or password is wrong';
+        blapiErrorResponse.msg = "username or password is wrong";
         break;
       case 909:
-        blapiErrorResponse.msg = 'refreshToken not valid';
+        blapiErrorResponse.msg = "refreshToken not valid";
         break;
     }
 

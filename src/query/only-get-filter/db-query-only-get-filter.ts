@@ -1,47 +1,50 @@
-
-
-
 export type OnlyGetFilter = {
-	fieldName: string,
-	value: number
-}
+  fieldName: string;
+  value: number;
+};
 
 export class DbQueryOnlyGetFilter {
+  constructor() {}
 
-	constructor() {}
+  public getOnlyGetFilters(
+    query: any,
+    validOnlyGetParams: string[]
+  ): OnlyGetFilter[] {
+    if (
+      !query ||
+      (Object.keys(query).length === 0 && query.constructor === Object)
+    ) {
+      throw new TypeError("query can not be undefined or empty");
+    }
 
-	public getOnlyGetFilters(query: any, validOnlyGetParams: string[]): OnlyGetFilter[] {
+    if (!query.og) return [];
+    if (validOnlyGetParams.length <= 0) return [];
 
-		if (!query || Object.keys(query).length === 0 && query.constructor === Object) {
-			throw new TypeError('query can not be undefined or empty');
-		}
+    return this.generateOnlyGetFilters(query.og, validOnlyGetParams);
+  }
 
-		if (!query.og) return [];
-		if (validOnlyGetParams.length <= 0) return [];
+  private generateOnlyGetFilters(
+    og: any,
+    validOnlyGetParams: string[]
+  ): OnlyGetFilter[] {
+    let onlyGetParamArray = [];
 
-		return this.generateOnlyGetFilters(query.og, validOnlyGetParams);
-	}
+    if (!Array.isArray(og)) {
+      onlyGetParamArray.push(og);
+    } else {
+      onlyGetParamArray = og;
+    }
 
+    let onlyGetFilters: OnlyGetFilter[] = [];
 
-	private generateOnlyGetFilters(og: any, validOnlyGetParams: string[]): OnlyGetFilter[] {
-		let onlyGetParamArray = [];
+    for (let onlyGetParam of onlyGetParamArray) {
+      if (validOnlyGetParams.indexOf(onlyGetParam) <= -1)
+        throw ReferenceError(
+          'the parameter "' + onlyGetParam + '" is not in validOnlyGetParams'
+        );
+      onlyGetFilters.push({ fieldName: onlyGetParam, value: 1 });
+    }
 
-		if (!Array.isArray(og)) {
-			onlyGetParamArray.push(og);
-		} else {
-			onlyGetParamArray = og;
-		}
-
-
-		let onlyGetFilters: OnlyGetFilter[] = [];
-
-
-		for (let onlyGetParam of onlyGetParamArray) {
-			if (validOnlyGetParams.indexOf(onlyGetParam) <= -1) throw ReferenceError('the parameter "' + onlyGetParam + '" is not in validOnlyGetParams');
-			onlyGetFilters.push({fieldName: onlyGetParam, value: 1});
-		}
-
-		return onlyGetFilters;
-
-	}
+    return onlyGetFilters;
+  }
 }

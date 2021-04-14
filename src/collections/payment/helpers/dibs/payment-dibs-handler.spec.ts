@@ -1,8 +1,9 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import {expect} from 'chai';
-import * as sinon from 'sinon';
+// @ts-nocheck
+import "mocha";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { expect } from "chai";
+import sinon from "sinon";
 import {
   AccessToken,
   BlError,
@@ -10,30 +11,30 @@ import {
   Order,
   Payment,
   UserDetail,
-} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
-import {DibsPaymentService} from '../../../../payment/dibs/dibs-payment.service';
-import {DibsEasyOrder} from '../../../../payment/dibs/dibs-easy-order/dibs-easy-order';
-import {PaymentDibsHandler} from './payment-dibs-handler';
+} from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.service";
+import { DibsEasyOrder } from "../../../../payment/dibs/dibs-easy-order/dibs-easy-order";
+import { PaymentDibsHandler } from "./payment-dibs-handler";
 
 chai.use(chaiAsPromised);
 
-describe('PaymentDibsHandler', () => {
-  const orderStorage = new BlDocumentStorage<Order>('orders');
-  const paymentStorage = new BlDocumentStorage<Payment>('payments');
+describe("PaymentDibsHandler", () => {
+  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const paymentStorage = new BlDocumentStorage<Payment>("payments");
   const dibsPaymentService = new DibsPaymentService();
-  const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
-  const userDetailStorage = new BlDocumentStorage<UserDetail>('userDetails');
+  const deliveryStorage = new BlDocumentStorage<Delivery>("deliveries");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>("userDetails");
 
   const paymentDibsHandler = new PaymentDibsHandler(
     paymentStorage,
     orderStorage,
     dibsPaymentService,
     deliveryStorage,
-    userDetailStorage,
+    userDetailStorage
   );
 
-  describe('handleDibsPayment()', () => {
+  describe("handleDibsPayment()", () => {
     let testOrder: Order;
     let testPayment: Payment;
     let paymentUpdated: boolean;
@@ -47,32 +48,32 @@ describe('PaymentDibsHandler', () => {
 
     beforeEach(() => {
       testOrder = {
-        id: 'order1',
+        id: "order1",
         amount: 200,
         orderItems: [],
-        branch: 'branch1',
-        customer: 'customer1',
+        branch: "branch1",
+        customer: "customer1",
         byCustomer: true,
       };
 
       testPayment = {
-        id: 'payment1',
-        method: 'dibs',
-        order: 'order1',
+        id: "payment1",
+        method: "dibs",
+        order: "order1",
         amount: 200,
-        customer: 'customer1',
-        branch: 'branch1',
+        customer: "customer1",
+        branch: "branch1",
       };
 
       testAccessToken = {
-        iss: '',
-        aud: '',
+        iss: "",
+        aud: "",
         iat: 0,
         exp: 0,
-        sub: 'user1',
-        username: '',
-        permission: 'customer',
-        details: 'userDetails',
+        sub: "user1",
+        username: "",
+        permission: "customer",
+        details: "userDetails",
       };
 
       testDibsEasyOrder = {
@@ -80,10 +81,10 @@ describe('PaymentDibsHandler', () => {
           reference: testOrder.id,
           items: [
             {
-              reference: 'item1',
-              name: 'Signatur 3',
+              reference: "item1",
+              name: "Signatur 3",
               quantity: 1,
-              unit: 'book',
+              unit: "book",
               unitPrice: 20000,
               taxRate: 0,
               taxAmount: 0,
@@ -92,26 +93,26 @@ describe('PaymentDibsHandler', () => {
             },
           ],
           amount: 20000,
-          currency: 'NOK',
+          currency: "NOK",
         },
         checkout: {
-          url: '',
-          termsUrl: '',
+          url: "",
+          termsUrl: "",
           ShippingCountries: [
             {
-              countryCode: 'NOR',
+              countryCode: "NOR",
             },
           ],
         },
       };
 
       testDelivery = {
-        id: 'delivery1',
-        method: 'bring',
+        id: "delivery1",
+        method: "bring",
         info: {
-          branch: 'branch1',
+          branch: "branch1",
         },
-        order: 'order1',
+        order: "order1",
         amount: 100,
       };
 
@@ -119,88 +120,92 @@ describe('PaymentDibsHandler', () => {
       paymentUpdated = true;
       getPaymentIdConfirm = true;
       getDibsEasyOrderConfirm = true;
-      testPaymentId = 'dibsPaymentId1';
+      testPaymentId = "dibsPaymentId1";
     });
 
     sinon
-      .stub(dibsPaymentService, 'orderToDibsEasyOrder')
+      .stub(dibsPaymentService, "orderToDibsEasyOrder")
       .callsFake((order: Order) => {
         return getDibsEasyOrderConfirm
           ? Promise.resolve(testDibsEasyOrder)
-          : Promise.reject(new BlError('could not create dibs easy order'));
+          : Promise.reject(new BlError("could not create dibs easy order"));
       });
 
-    sinon.stub(userDetailStorage, 'get').callsFake((id: string) => {
-      return {id: 'customer1', name: 'Billy Bob', email: 'billy@boklisten.co'};
+    sinon.stub(userDetailStorage, "get").callsFake((id: string) => {
+      return {
+        id: "customer1",
+        name: "Billy Bob",
+        email: "billy@boklisten.co",
+      };
     });
 
     sinon
-      .stub(dibsPaymentService, 'getPaymentId')
+      .stub(dibsPaymentService, "getPaymentId")
       .callsFake((dibsEasyOrder: DibsEasyOrder) => {
         return getPaymentIdConfirm
           ? Promise.resolve(testPaymentId)
-          : Promise.reject(new BlError('could not create paymentId'));
+          : Promise.reject(new BlError("could not create paymentId"));
       });
 
-    sinon.stub(paymentStorage, 'update').callsFake((id: string, data: any) => {
+    sinon.stub(paymentStorage, "update").callsFake((id: string, data: any) => {
       if (!paymentUpdated) {
-        return Promise.reject(new BlError('could not update payment'));
+        return Promise.reject(new BlError("could not update payment"));
       }
-      if (data['info']) {
-        testPayment.info = data['info'];
+      if (data["info"]) {
+        testPayment.info = data["info"];
       }
       return Promise.resolve(testPayment);
     });
 
-    sinon.stub(orderStorage, 'get').callsFake((id: string) => {
+    sinon.stub(orderStorage, "get").callsFake((id: string) => {
       return id === testOrder.id
         ? Promise.resolve(testOrder)
-        : Promise.reject(new BlError('order not found'));
+        : Promise.reject(new BlError("order not found"));
     });
 
-    sinon.stub(orderStorage, 'update').callsFake((id: string, data: any) => {
+    sinon.stub(orderStorage, "update").callsFake((id: string, data: any) => {
       if (!orderUpdated) {
-        return Promise.reject(new BlError('could not update'));
+        return Promise.reject(new BlError("could not update"));
       }
 
-      if (data['payments']) {
-        testOrder['payments'] = data['payments'];
+      if (data["payments"]) {
+        testOrder["payments"] = data["payments"];
       }
 
       return Promise.resolve(testOrder);
     });
 
-    it('should reject if order is not found', () => {
-      testPayment.order = 'notFoundOrder';
+    it("should reject if order is not found", () => {
+      testPayment.order = "notFoundOrder";
 
       return expect(
-        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken),
+        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken)
       ).to.be.rejectedWith(BlError, /order not found/);
     });
 
-    it('should reject if dibsPaymentService.orderToDibsEasyOrder rejects', () => {
+    it("should reject if dibsPaymentService.orderToDibsEasyOrder rejects", () => {
       getDibsEasyOrderConfirm = false;
 
       return expect(
-        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken),
+        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken)
       ).to.be.rejectedWith(BlError, /could not create dibs easy order/);
     });
 
-    it('should reject if dibs paymentId could not be created', () => {
+    it("should reject if dibs paymentId could not be created", () => {
       getPaymentIdConfirm = false;
 
       return expect(
-        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken),
+        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken)
       ).to.be.rejectedWith(BlError);
     });
 
-    it('should resolve with a payment including the correct paymentId', done => {
-      testPaymentId = 'testDibsPaymentId1';
+    it("should resolve with a payment including the correct paymentId", (done) => {
+      testPaymentId = "testDibsPaymentId1";
 
       paymentDibsHandler
         .handleDibsPayment(testPayment, testAccessToken)
         .then((payment: Payment) => {
-          expect(payment.info['paymentId']).to.eql(testPaymentId);
+          expect(payment.info["paymentId"]).to.eql(testPaymentId);
           done();
         });
     });

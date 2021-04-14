@@ -3,119 +3,119 @@ import { Schema } from "mongoose";
 export let orderSchema = {
   amount: {
     type: Schema.Types.Number,
-    required: true
+    required: true,
   },
   orderItems: {
     type: [
       {
         type: {
           type: Schema.Types.String,
-          required: true
+          required: true,
         },
         age: {
           type: Schema.Types.String,
-          required: false
+          required: false,
         },
         item: {
           type: Schema.Types.ObjectId,
-          required: true
+          required: true,
         },
         blid: {
-          type: Schema.Types.String
+          type: Schema.Types.String,
         },
         title: {
           type: Schema.Types.String,
-          required: true
+          required: true,
         },
         amount: {
           type: Schema.Types.Number,
-          required: true
+          required: true,
         },
         unitPrice: {
           type: Schema.Types.Number,
-          required: true
+          required: true,
         },
         delivered: {
           type: Schema.Types.Boolean,
           required: false,
-          default: false
+          default: false,
         },
         taxRate: {
           type: Schema.Types.Number,
-          required: true
+          required: true,
         },
         taxAmount: {
           type: Schema.Types.Number,
-          required: true
+          required: true,
         },
         customerItem: {
           type: Schema.Types.ObjectId,
-          required: false
+          required: false,
         },
         info: {
           type: Schema.Types.Mixed,
-          required: false
+          required: false,
         },
         handout: {
           type: Schema.Types.Boolean,
-          required: false
+          required: false,
         },
         movedFromOrder: {
           type: Schema.Types.ObjectId,
-          required: false
+          required: false,
         },
         movedToOrder: {
           type: Schema.Types.ObjectId,
-          required: false
+          required: false,
         },
         discount: {
           type: {
             amount: {
               type: Schema.Types.Number,
-              required: true
+              required: true,
             },
             coupon: {
               type: Schema.Types.String,
-              required: true
-            }
+              required: true,
+            },
           },
-          required: false
-        }
-      }
+          required: false,
+        },
+      },
     ],
-    default: []
+    default: [],
   },
   branch: {
     type: Schema.Types.ObjectId,
-    required: true
+    required: true,
   },
   customer: {
-    type: Schema.Types.Mixed
+    type: Schema.Types.Mixed,
   },
   byCustomer: {
     type: Schema.Types.Boolean,
-    required: true
+    required: true,
   },
   employee: {
-    type: Schema.Types.ObjectId
+    type: Schema.Types.ObjectId,
   },
   placed: {
     type: Schema.Types.Boolean,
-    default: false
+    default: false,
   },
   payments: {
     type: [Schema.Types.String],
-    default: []
+    default: [],
   },
   delivery: {
-    type: Schema.Types.ObjectId
+    type: Schema.Types.ObjectId,
   },
   handoutByDelivery: {
     type: Schema.Types.Boolean,
-    required: false
+    required: false,
   },
   notification: {
     type: Schema.Types.Mixed,
-    required: false
-  }
+    required: false,
+  },
 };

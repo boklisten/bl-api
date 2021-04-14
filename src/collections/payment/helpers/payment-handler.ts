@@ -4,15 +4,15 @@ import {
   Order,
   Payment,
   Delivery,
-} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {paymentSchema} from '../payment.schema';
-import {DibsPaymentService} from '../../../payment/dibs/dibs-payment.service';
-import {DibsEasyPayment} from '../../../payment/dibs/dibs-easy-payment/dibs-easy-payment';
-import {isNullOrUndefined} from 'util';
-import {UserDetailHelper} from '../../user-detail/helpers/user-detail.helper';
-import {PaymentDibsConfirmer} from './dibs/payment-dibs-confirmer';
-import {deliverySchema} from '../../delivery/delivery.schema';
+} from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { paymentSchema } from "../payment.schema";
+import { DibsPaymentService } from "../../../payment/dibs/dibs-payment.service";
+import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import { isNullOrUndefined } from "util";
+import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
+import { PaymentDibsConfirmer } from "./dibs/payment-dibs-confirmer";
+import { deliverySchema } from "../../delivery/delivery.schema";
 
 export class PaymentHandler {
   private paymentStorage: BlDocumentStorage<Payment>;
@@ -24,11 +24,11 @@ export class PaymentHandler {
     dibsPaymentService?: DibsPaymentService,
     userDetailHelper?: UserDetailHelper,
     private _paymentDibsConfirmer?: PaymentDibsConfirmer,
-    private _deliveryStorage?: BlDocumentStorage<Delivery>,
+    private _deliveryStorage?: BlDocumentStorage<Delivery>
   ) {
     this.paymentStorage = paymentStorage
       ? paymentStorage
-      : new BlDocumentStorage('payments', paymentSchema);
+      : new BlDocumentStorage("payments", paymentSchema);
     this.dibsPaymentService = dibsPaymentService
       ? dibsPaymentService
       : new DibsPaymentService();
@@ -40,12 +40,12 @@ export class PaymentHandler {
       : new PaymentDibsConfirmer();
     this._deliveryStorage = _deliveryStorage
       ? _deliveryStorage
-      : new BlDocumentStorage('deliveries', deliverySchema);
+      : new BlDocumentStorage("deliveries", deliverySchema);
   }
 
   public async confirmPayments(
     order: Order,
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<Payment[]> {
     if (!order.payments || order.payments.length <= 0) {
       return [];
@@ -56,7 +56,7 @@ export class PaymentHandler {
     try {
       payments = await this.paymentStorage.getMany(order.payments as string[]);
     } catch (e) {
-      throw new BlError('one or more payments was not found');
+      throw new BlError("one or more payments was not found");
     }
 
     try {
@@ -69,7 +69,7 @@ export class PaymentHandler {
   private async confirmAllPayments(
     order: Order,
     payments: Payment[],
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<Payment[]> {
     await this.validateOrderAmount(order, payments);
     this.validatePaymentMethods(payments);
@@ -83,8 +83,8 @@ export class PaymentHandler {
         await this.confirmPayment(order, payment, accessToken);
         await this.paymentStorage.update(
           payment.id,
-          {confirmed: true},
-          {id: accessToken.sub, permission: accessToken.permission},
+          { confirmed: true },
+          { id: accessToken.sub, permission: accessToken.permission }
         );
       } catch (e) {
         throw e;
@@ -96,20 +96,20 @@ export class PaymentHandler {
   private confirmPayment(
     order: Order,
     payment: Payment,
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<boolean> {
     switch (payment.method) {
-      case 'dibs':
+      case "dibs":
         return this.confirmMethodDibs(order, payment, accessToken);
-      case 'card':
+      case "card":
         return this.confirmMethodCard(order, payment);
-      case 'cash':
+      case "cash":
         return this.confirmMethodCash(order, payment);
-      case 'vipps':
+      case "vipps":
         return this.confirmMethodVipps(order, payment);
       default:
         return Promise.reject(
-          new BlError(`payment method "${payment.method}" not supported`),
+          new BlError(`payment method "${payment.method}" not supported`)
         );
     }
   }
@@ -138,9 +138,9 @@ export class PaymentHandler {
   private validatePaymentMethods(payments: Payment[]) {
     if (payments.length > 1) {
       for (let payment of payments) {
-        if (payment.method == 'dibs') {
+        if (payment.method == "dibs") {
           throw new BlError(
-            `multiple payments found but "${payment.id}" have method dibs`,
+            `multiple payments found but "${payment.id}" have method dibs`
           );
         }
       }
@@ -150,12 +150,12 @@ export class PaymentHandler {
 
   private async validateOrderAmount(
     order,
-    payments: Payment[],
+    payments: Payment[]
   ): Promise<boolean> {
     let total = 0;
     let orderTotal = order.amount;
 
-    payments.forEach(payment => {
+    payments.forEach((payment) => {
       total += payment.amount;
     });
 
@@ -170,7 +170,7 @@ export class PaymentHandler {
 
     if (total !== orderTotal) {
       throw new BlError(
-        'total of payment amounts does not equal order.amount + delivery.amount',
+        "total of payment amounts does not equal order.amount + delivery.amount"
       );
     }
 
@@ -180,7 +180,7 @@ export class PaymentHandler {
   private async confirmMethodDibs(
     order: Order,
     payment: Payment,
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<boolean> {
     return this._paymentDibsConfirmer.confirm(order, payment, accessToken);
   }

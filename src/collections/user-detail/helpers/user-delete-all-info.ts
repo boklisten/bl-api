@@ -3,7 +3,7 @@ import { User } from "../../user/user";
 import { UserSchema } from "../../user/user.schema";
 import { LocalLogin } from "../../local-login/local-login";
 import { localLoginSchema } from "../../local-login/local-login.schema";
-import { AccessToken, BlError } from "@wizardcoder/bl-model";
+import { AccessToken, BlError } from "@boklisten/bl-model";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 
 export class UserDeleteAllInfo {
@@ -37,7 +37,7 @@ export class UserDeleteAllInfo {
     accessToken: AccessToken
   ): Promise<User> {
     const dbQuery = this.queryBuilder.getDbQuery({ userDetail: userDetailId }, [
-      { fieldName: "userDetail", type: "object-id" }
+      { fieldName: "userDetail", type: "object-id" },
     ]);
 
     const users = await this.userStorage.getByQuery(dbQuery);
@@ -52,7 +52,7 @@ export class UserDeleteAllInfo {
 
     await this.userStorage.remove(user.id, {
       id: accessToken.details,
-      permission: accessToken.permission
+      permission: accessToken.permission,
     });
 
     return user;
@@ -74,7 +74,7 @@ export class UserDeleteAllInfo {
 
     await this.localLoginStorage.remove(localLogin.id, {
       id: accessToken.details,
-      permission: accessToken.permission
+      permission: accessToken.permission,
     });
 
     return true;

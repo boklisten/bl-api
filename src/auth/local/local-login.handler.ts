@@ -1,144 +1,220 @@
-import {LocalLogin} from "../../collections/local-login/local-login";
-import {SEDbQuery} from "../../query/se.db-query";
-import {BlapiErrorResponse, BlError} from "@wizardcoder/bl-model";
-import {isEmail} from 'validator';
-import {BlDocumentStorage} from "../../storage/blDocumentStorage";
-import {localLoginSchema} from "../../collections/local-login/local-login.schema";
-import {isNullOrUndefined} from "util";
-import {HashedPasswordGenerator} from "./password/hashed-password-generator";
-import {SaltGenerator} from "./salt/salt-generator";
-import {SeCrypto} from "../../crypto/se.crypto";
-import {SystemUser} from "../permission/permission.service";
-import {LocalLoginCreator} from "./local-login-creator/local-login-creator";
+import { LocalLogin } from "../../collections/local-login/local-login";
+import { SEDbQuery } from "../../query/se.db-query";
+import { BlapiErrorResponse, BlError } from "@boklisten/bl-model";
+import isEmail from "validator/lib/isEmail";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
+import { localLoginSchema } from "../../collections/local-login/local-login.schema";
+import { isNullOrUndefined } from "util";
+import { HashedPasswordGenerator } from "./password/hashed-password-generator";
+import { SaltGenerator } from "./salt/salt-generator";
+import { SeCrypto } from "../../crypto/se.crypto";
+import { SystemUser } from "../permission/permission.service";
+import { LocalLoginCreator } from "./local-login-creator/local-login-creator";
 
 export class LocalLoginHandler {
-	private localLoginStorage: BlDocumentStorage<LocalLogin>;
-	private _hashedPasswordGenerator: HashedPasswordGenerator;
-	private _localLoginCreator: LocalLoginCreator;
-	private _seCrypto: SeCrypto;
-	
-	constructor(localLoginStorage?: BlDocumentStorage<LocalLogin>,
-				hashedPasswordGenerator?: HashedPasswordGenerator,
-				localLoginCreator?: LocalLoginCreator,
-				) {
-		this._seCrypto = new SeCrypto();
-		this.localLoginStorage = (localLoginStorage) ? localLoginStorage : new BlDocumentStorage('locallogins', localLoginSchema);
-		this._hashedPasswordGenerator = (hashedPasswordGenerator) ? hashedPasswordGenerator : new HashedPasswordGenerator(new SaltGenerator(), this._seCrypto);
-		this._localLoginCreator = (localLoginCreator) ? localLoginCreator : new LocalLoginCreator();
-	}
-	
-	public get(username: string): Promise<LocalLogin> {
-		
-		return new Promise((resolve, reject) => {
-			if (!username || !isEmail(username)) return reject(new BlError(`username "${username}" is not a valid email`));
-			
-			let dbQuery = new SEDbQuery();
-			dbQuery.stringFilters = [
-				{fieldName: 'username', value: username}
-			];
-			
-			this.localLoginStorage.getByQuery(dbQuery).then((localLogins: LocalLogin[]) => {
+  private localLoginStorage: BlDocumentStorage<LocalLogin>;
+  private _hashedPasswordGenerator: HashedPasswordGenerator;
+  private _localLoginCreator: LocalLoginCreator;
+  private _seCrypto: SeCrypto;
 
-					if (localLogins.length !== 1) {
-						return reject(new BlError('could not get LocalLogin by the provided username "' + username + '"').store('username', username));
-					}
-					return resolve(localLogins[0]);
-				}).catch((error: BlError) => {
-					return reject(new BlError(`could not get localLogin with username "${username}"`).code(702).add(error));
-				});
-		});
-	}
+  constructor(
+    localLoginStorage?: BlDocumentStorage<LocalLogin>,
+    hashedPasswordGenerator?: HashedPasswordGenerator,
+    localLoginCreator?: LocalLoginCreator
+  ) {
+    this._seCrypto = new SeCrypto();
+    this.localLoginStorage = localLoginStorage
+      ? localLoginStorage
+      : new BlDocumentStorage("locallogins", localLoginSchema);
+    this._hashedPasswordGenerator = hashedPasswordGenerator
+      ? hashedPasswordGenerator
+      : new HashedPasswordGenerator(new SaltGenerator(), this._seCrypto);
+    this._localLoginCreator = localLoginCreator
+      ? localLoginCreator
+      : new LocalLoginCreator();
+  }
 
-	public async createDefaultLocalLoginIfNoneIsFound(username: string): Promise<boolean> {
-		let localLogin: LocalLogin = null;
+  public get(username: string): Promise<LocalLogin> {
+    return new Promise((resolve, reject) => {
+      if (!username || !isEmail(username))
+        return reject(
+          new BlError(`username "${username}" is not a valid email`)
+        );
 
-		try {
-			localLogin = await this.get(username);
-		} catch (e) {
-			localLogin = null;
+      let dbQuery = new SEDbQuery();
+      dbQuery.stringFilters = [{ fieldName: "username", value: username }];
 
-			if (e instanceof BlError) {
-				if (e.getCode() === 702) {
-					let createDefaultLocalLogin = await this.createDefaultLocalLogin(username);
-				}
-			} else {
-				throw new BlError('could not create default localLogin')
-			}
-		}
+      this.localLoginStorage
+        .getByQuery(dbQuery)
+        .then((localLogins: LocalLogin[]) => {
+          if (localLogins.length !== 1) {
+            return reject(
+              new BlError(
+                'could not get LocalLogin by the provided username "' +
+                  username +
+                  '"'
+              ).store("username", username)
+            );
+          }
+          return resolve(localLogins[0]);
+        })
+        .catch((error: BlError) => {
+          return reject(
+            new BlError(`could not get localLogin with username "${username}"`)
+              .code(702)
+              .add(error)
+          );
+        });
+    });
+  }
 
-		return true;
-	}
+  public async createDefaultLocalLoginIfNoneIsFound(
+    username: string
+  ): Promise<boolean> {
+    let localLogin: LocalLogin = null;
 
-	public async createDefaultLocalLogin(username: string): Promise<boolean> {
-		let alreadyAddedLocalLogin = null;
+    try {
+      localLogin = await this.get(username);
+    } catch (e) {
+      localLogin = null;
 
-		try {
-			alreadyAddedLocalLogin = await this.get(username);
-		} catch (e) {
-			alreadyAddedLocalLogin = null;
-		}
+      if (e instanceof BlError) {
+        if (e.getCode() === 702) {
+          let createDefaultLocalLogin = await this.createDefaultLocalLogin(
+            username
+          );
+        }
+      } else {
+        throw new BlError("could not create default localLogin");
+      }
+    }
 
-		if (alreadyAddedLocalLogin) {
-			return true;
-		}
+    return true;
+  }
 
-		try {
-			const randomPassword = this._seCrypto.random();
+  public async createDefaultLocalLogin(username: string): Promise<boolean> {
+    let alreadyAddedLocalLogin = null;
 
-			const defaultLocalLogin = await this._localLoginCreator.create(username, randomPassword);
-			await this.localLoginStorage.add(defaultLocalLogin, new SystemUser());
+    try {
+      alreadyAddedLocalLogin = await this.get(username);
+    } catch (e) {
+      alreadyAddedLocalLogin = null;
+    }
 
-			return true;
-		} catch (e) {
-			throw new BlError('could not create default localLogin').store('localLoginCreationError', e);
-		}
-	}
+    if (alreadyAddedLocalLogin) {
+      return true;
+    }
 
-	public setPassword(username: string, password: string): Promise<boolean> {
-		return new Promise((resolve, reject) => {
-			if (isNullOrUndefined(password) || password.length < 6) {
-				return reject(new BlError('localLogin password to short'));
-			}
+    try {
+      const randomPassword = this._seCrypto.random();
 
-			this.get(username).then((localLogin: LocalLogin) => {
-				this._hashedPasswordGenerator.generate(password).then((hashedPasswordAndSalt: {hashedPassword: string, salt: string}) => {
-					localLogin.hashedPassword = hashedPasswordAndSalt.hashedPassword;
-					localLogin.salt = hashedPasswordAndSalt.salt;
+      const defaultLocalLogin = await this._localLoginCreator.create(
+        username,
+        randomPassword
+      );
+      await this.localLoginStorage.add(defaultLocalLogin, new SystemUser());
 
-					this.localLoginStorage.update(
-						localLogin.id,
-						{hashedPassword: hashedPasswordAndSalt.hashedPassword, salt: hashedPasswordAndSalt.salt},
-						new SystemUser()
-						).then(() => {
-							resolve(true);
-					}).catch((updateLocalLoginError) => {
-						reject(new BlError('localLogin could not be updated').add(updateLocalLoginError));
-					});
+      return true;
+    } catch (e) {
+      throw new BlError("could not create default localLogin").store(
+        "localLoginCreationError",
+        e
+      );
+    }
+  }
 
-				}).catch((hashPasswordError) => {
-					reject(hashPasswordError);
-				})
-			}).catch((getLocalLoginError: BlError) => {
-				reject(new BlError(`localLogin was not found with username "${username}"`).code(702).add(getLocalLoginError));
-			});
-		});
-	}
-	
-	public add(localLogin: LocalLogin): Promise<LocalLogin> {
-		return new Promise((resolve, reject) => {
-			let blError = new BlError('').className('LocalLoginHandler').methodName('add');
-			if (!localLogin.username || localLogin.username.length <= 0) return reject(blError.msg('username of LocalLogin needs to be provided'));
-			if (!localLogin.provider || localLogin.provider.length <= 0) return reject(blError.msg('provider of LocalLogin needs to be provided'));
-			if (!localLogin.providerId || localLogin.providerId.length <= 0) return reject(blError.msg('providerId of LocalLogin needs to be provided'));
-			if (!localLogin.hashedPassword || localLogin.hashedPassword.length <= 0) return reject(blError.msg('hashedPassword of LocalLogin needs to be provided'));
-			if (!localLogin.salt || localLogin.salt.length <= 0) return reject(blError.msg('salt of LocalLogin needs to be provided'));
-			if (!isEmail(localLogin.username)) return reject(blError.msg('username "' + localLogin.username + '" is not a valid email'));
-			
-			this.localLoginStorage.add(localLogin, {id: 'SYSTEM', permission: "admin"}).then((localLogin: LocalLogin) => {
-				return resolve(localLogin);
-			}).catch((error: BlapiErrorResponse) => {
-				return reject(error);
-			});
-		});
-	}
+  public setPassword(username: string, password: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (isNullOrUndefined(password) || password.length < 6) {
+        return reject(new BlError("localLogin password to short"));
+      }
+
+      this.get(username)
+        .then((localLogin: LocalLogin) => {
+          this._hashedPasswordGenerator
+            .generate(password)
+            .then(
+              (hashedPasswordAndSalt: {
+                hashedPassword: string;
+                salt: string;
+              }) => {
+                localLogin.hashedPassword =
+                  hashedPasswordAndSalt.hashedPassword;
+                localLogin.salt = hashedPasswordAndSalt.salt;
+
+                this.localLoginStorage
+                  .update(
+                    localLogin.id,
+                    {
+                      hashedPassword: hashedPasswordAndSalt.hashedPassword,
+                      salt: hashedPasswordAndSalt.salt,
+                    },
+                    new SystemUser()
+                  )
+                  .then(() => {
+                    resolve(true);
+                  })
+                  .catch((updateLocalLoginError) => {
+                    reject(
+                      new BlError("localLogin could not be updated").add(
+                        updateLocalLoginError
+                      )
+                    );
+                  });
+              }
+            )
+            .catch((hashPasswordError) => {
+              reject(hashPasswordError);
+            });
+        })
+        .catch((getLocalLoginError: BlError) => {
+          reject(
+            new BlError(`localLogin was not found with username "${username}"`)
+              .code(702)
+              .add(getLocalLoginError)
+          );
+        });
+    });
+  }
+
+  public add(localLogin: LocalLogin): Promise<LocalLogin> {
+    return new Promise((resolve, reject) => {
+      let blError = new BlError("")
+        .className("LocalLoginHandler")
+        .methodName("add");
+      if (!localLogin.username || localLogin.username.length <= 0)
+        return reject(
+          blError.msg("username of LocalLogin needs to be provided")
+        );
+      if (!localLogin.provider || localLogin.provider.length <= 0)
+        return reject(
+          blError.msg("provider of LocalLogin needs to be provided")
+        );
+      if (!localLogin.providerId || localLogin.providerId.length <= 0)
+        return reject(
+          blError.msg("providerId of LocalLogin needs to be provided")
+        );
+      if (!localLogin.hashedPassword || localLogin.hashedPassword.length <= 0)
+        return reject(
+          blError.msg("hashedPassword of LocalLogin needs to be provided")
+        );
+      if (!localLogin.salt || localLogin.salt.length <= 0)
+        return reject(blError.msg("salt of LocalLogin needs to be provided"));
+      if (!isEmail(localLogin.username))
+        return reject(
+          blError.msg(
+            'username "' + localLogin.username + '" is not a valid email'
+          )
+        );
+
+      this.localLoginStorage
+        .add(localLogin, { id: "SYSTEM", permission: "admin" })
+        .then((localLogin: LocalLogin) => {
+          return resolve(localLogin);
+        })
+        .catch((error: BlapiErrorResponse) => {
+          return reject(error);
+        });
+    });
+  }
 }

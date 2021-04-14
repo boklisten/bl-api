@@ -1,11 +1,11 @@
-import {Delivery, Order, BlError, AccessToken} from '@wizardcoder/bl-model';
-import {Hook} from '../../../hook/hook';
-import {DeliveryValidator} from '../helpers/deliveryValidator/delivery-validator';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {isNullOrUndefined} from 'util';
-import {orderSchema} from '../../order/order.schema';
-import {DeliveryHandler} from '../helpers/deliveryHandler/delivery-handler';
-import {deliverySchema} from '../delivery.schema';
+import { Delivery, Order, BlError, AccessToken } from "@boklisten/bl-model";
+import { Hook } from "../../../hook/hook";
+import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { isNullOrUndefined } from "util";
+import { orderSchema } from "../../order/order.schema";
+import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
+import { deliverySchema } from "../delivery.schema";
 
 export class DeliveryPatchHook extends Hook {
   private deliveryValidator?: DeliveryValidator;
@@ -17,7 +17,7 @@ export class DeliveryPatchHook extends Hook {
     deliveryValidator?: DeliveryValidator,
     deliveryStorage?: BlDocumentStorage<Delivery>,
     orderStorage?: BlDocumentStorage<Order>,
-    deliveryHandler?: DeliveryHandler,
+    deliveryHandler?: DeliveryHandler
   ) {
     super();
     this.deliveryValidator = deliveryValidator
@@ -25,10 +25,10 @@ export class DeliveryPatchHook extends Hook {
       : new DeliveryValidator();
     this.deliveryStorage = deliveryStorage
       ? deliveryStorage
-      : new BlDocumentStorage<Delivery>('deliveries', deliverySchema);
+      : new BlDocumentStorage<Delivery>("deliveries", deliverySchema);
     this.orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage<Order>('orders', orderSchema);
+      : new BlDocumentStorage<Order>("orders", orderSchema);
     this.deliveryHandler = deliveryHandler
       ? deliveryHandler
       : new DeliveryHandler();
@@ -36,15 +36,15 @@ export class DeliveryPatchHook extends Hook {
 
   before(body: any, accessToken?: AccessToken, id?: string): Promise<boolean> {
     if (body === null || isNullOrUndefined(body)) {
-      return Promise.reject(new BlError('body is undefined'));
+      return Promise.reject(new BlError("body is undefined"));
     }
 
     if (isNullOrUndefined(id)) {
-      return Promise.reject(new BlError('id is undefined'));
+      return Promise.reject(new BlError("id is undefined"));
     }
 
     if (isNullOrUndefined(accessToken)) {
-      return Promise.reject(new BlError('accessToken is undefined'));
+      return Promise.reject(new BlError("accessToken is undefined"));
     }
 
     return this.tryToValidatePatch(body, accessToken, id)
@@ -88,25 +88,25 @@ export class DeliveryPatchHook extends Hook {
   private tryToValidatePatch(
     body: any,
     accessToken: AccessToken,
-    id: string,
+    id: string
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.deliveryStorage
         .get(id)
         .then((delivery: Delivery) => {
-          if (body['info']) {
-            delivery.info = body['info'];
+          if (body["info"]) {
+            delivery.info = body["info"];
           }
 
-          if (body['amount'] >= 0) {
-            delivery.amount = body['amount'];
+          if (body["amount"] >= 0) {
+            delivery.amount = body["amount"];
           }
 
-          if (body['order']) {
-            delivery.order = body['order'];
+          if (body["order"]) {
+            delivery.order = body["order"];
           }
-          if (body['method']) {
-            delivery.method = body['method'];
+          if (body["method"]) {
+            delivery.method = body["method"];
           }
 
           this.orderStorage
@@ -119,15 +119,15 @@ export class DeliveryPatchHook extends Hook {
                 })
                 .catch((blError: BlError) => {
                   return reject(
-                    new BlError('patched delivery could not be validated')
+                    new BlError("patched delivery could not be validated")
                       .add(blError)
-                      .store('delivery', delivery),
+                      .store("delivery", delivery)
                   );
                 });
             })
             .catch((blError: BlError) => {
               return reject(
-                new BlError(`order "${delivery.order}" not found`).add(blError),
+                new BlError(`order "${delivery.order}" not found`).add(blError)
               );
             });
         })

@@ -12,47 +12,47 @@ export class BookingCollection implements BlCollection {
       validQueryParams: [
         {
           fieldName: "from",
-          type: "date"
+          type: "date",
         },
         {
           fieldName: "to",
-          type: "date"
+          type: "date",
         },
         {
           fieldName: "branch",
-          type: "object-id"
+          type: "object-id",
         },
         {
           fieldName: "customer",
-          type: "string"
+          type: "string",
         },
         {
           fieldName: "booked",
-          type: "boolean"
-        }
-      ]
+          type: "boolean",
+        },
+      ],
     },
     {
-      method: "getId"
+      method: "getId",
     },
     {
       method: "post",
       restriction: {
-        permissions: ["admin", "super"]
-      }
+        permissions: ["admin", "super"],
+      },
     },
     {
       method: "patch",
       hook: new BookingPatchHook(),
       restriction: {
-        permissions: ["customer", "employee", "manager", "admin", "super"]
-      }
+        permissions: ["customer", "employee", "manager", "admin", "super"],
+      },
     },
     {
       method: "delete",
       restriction: {
-        permissions: ["admin", "super"]
-      }
-    }
+        permissions: ["admin", "super"],
+      },
+    },
   ];
 }

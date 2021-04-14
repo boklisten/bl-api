@@ -1,7 +1,7 @@
 import { SEDbQuery } from "../../query/se.db-query";
 
 import { Blid } from "../blid/blid";
-import { UserDetail, BlError } from "@wizardcoder/bl-model";
+import { UserDetail, BlError } from "@boklisten/bl-model";
 import { User } from "../../collections/user/user";
 import { UserSchema } from "../../collections/user/user.schema";
 import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
@@ -96,7 +96,7 @@ export class UserHandler {
 
       return this.userStorage
         .update(selectedUser, { primary: true }, new SystemUser())
-        .then(primaryUser => {
+        .then((primaryUser) => {
           let promiseArr: Promise<User>[] = [];
 
           for (let i = 1; i < users.length; i++) {
@@ -119,7 +119,7 @@ export class UserHandler {
               );
             });
         })
-        .catch(updateUserErr => {
+        .catch((updateUserErr) => {
           throw new BlError(
             "user with multiple entries could not update one to primary"
           );
@@ -139,7 +139,7 @@ export class UserHandler {
       let dbQuery = new SEDbQuery();
       dbQuery.stringFilters = [
         { fieldName: "login.provider", value: provider },
-        { fieldName: "login.providerId", value: providerId }
+        { fieldName: "login.providerId", value: providerId },
       ];
 
       this.userStorage
@@ -204,7 +204,7 @@ export class UserHandler {
       let userDetail: any = {
         email: username,
         blid: blid,
-        emailConfirmed: this.isThirdPartyProvider(provider) // email is only valid on creation if using Google or Facebook
+        emailConfirmed: this.isThirdPartyProvider(provider), // email is only valid on creation if using Google or Facebook
       };
 
       if (this.isThirdPartyProvider(provider)) {
@@ -232,13 +232,13 @@ export class UserHandler {
         valid: false,
         login: {
           provider: provider,
-          providerId: providerId
-        }
+          providerId: providerId,
+        },
       };
 
       return await this.userStorage.add(newUser, {
         id: blid,
-        permission: newUser.permission
+        permission: newUser.permission,
       });
     } catch (e) {
       let blError = new BlError("user creation failed").code(903);
@@ -298,7 +298,7 @@ export class UserHandler {
     let dbQuery = new SEDbQuery();
     dbQuery.stringFilters = [
       { fieldName: "login.provider", value: provider },
-      { fieldName: "login.providerId", value: providerId }
+      { fieldName: "login.providerId", value: providerId },
     ];
 
     return new Promise((resolve, reject) => {

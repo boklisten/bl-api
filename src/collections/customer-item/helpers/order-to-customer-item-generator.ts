@@ -2,8 +2,8 @@ import {
   Order,
   CustomerItem,
   OrderItem,
-  UserDetail
-} from "@wizardcoder/bl-model";
+  UserDetail,
+} from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 
@@ -92,7 +92,7 @@ export class OrderToCustomerItemGenerator {
       amountLeftToPay: orderItem["info"]["amountLeftToPay"],
       totalAmount: orderItem.amount,
       orders: [order.id],
-      customerInfo: this.createCustomerInfo(customerDetail)
+      customerInfo: this.createCustomerInfo(customerDetail),
     };
   }
 
@@ -114,7 +114,7 @@ export class OrderToCustomerItemGenerator {
       returned: false,
       totalAmount: orderItem.amount,
       orders: [order.id],
-      customerInfo: this.createCustomerInfo(customerDetail)
+      customerInfo: this.createCustomerInfo(customerDetail),
     };
   }
 
@@ -136,7 +136,7 @@ export class OrderToCustomerItemGenerator {
       returned: false,
       totalAmount: orderItem.amount,
       orders: [order.id],
-      customerInfo: this.createCustomerInfo(customerDetail)
+      customerInfo: this.createCustomerInfo(customerDetail),
     };
   }
 
@@ -145,7 +145,7 @@ export class OrderToCustomerItemGenerator {
       handoutBy: "branch" as any,
       handoutById: order.branch as string,
       handoutEmployee: order.employee as string,
-      time: order.creationTime
+      time: order.creationTime,
     };
   }
 
@@ -157,7 +157,7 @@ export class OrderToCustomerItemGenerator {
       postCode: customerDetail.postCode,
       postCity: customerDetail.postCity,
       dob: customerDetail.dob,
-      guardian: customerDetail.guardian
+      guardian: customerDetail.guardian,
     };
   }
 }

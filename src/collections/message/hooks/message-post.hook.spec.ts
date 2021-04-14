@@ -1,29 +1,30 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import {expect} from 'chai';
-import * as sinon from 'sinon';
+// @ts-nocheck
+import "mocha";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { expect } from "chai";
+import sinon from "sinon";
 import {
   AccessToken,
   BlError,
   CustomerItem,
   Message,
   UserDetail,
-} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import * as sinonChai from 'sinon-chai';
-import {MessagePostHook} from './message-post.hook';
-import {MessengerReminder} from '../../../messenger/reminder/messenger-reminder';
-import {MessageHelper} from '../helper/message-helper';
-import {Messenger} from '../../../messenger/messenger';
+} from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import sinonChai from "sinon-chai";
+import { MessagePostHook } from "./message-post.hook";
+import { MessengerReminder } from "../../../messenger/reminder/messenger-reminder";
+import { MessageHelper } from "../helper/message-helper";
+import { Messenger } from "../../../messenger/messenger";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-describe('MessagePostHook', () => {
+describe("MessagePostHook", () => {
   const messengerReminder = new MessengerReminder();
-  const messageStorage = new BlDocumentStorage<Message>('messages');
-  const userDetailStorage = new BlDocumentStorage<UserDetail>('userdetails');
+  const messageStorage = new BlDocumentStorage<Message>("messages");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
   const messageHelper = new MessageHelper(messageStorage);
   const messenger = new Messenger();
   const messagePostHook = new MessagePostHook(
@@ -31,33 +32,33 @@ describe('MessagePostHook', () => {
     messageStorage,
     messageHelper,
     messenger,
-    userDetailStorage,
+    userDetailStorage
   );
-  const messengerSendStub = sinon.stub(messenger, 'send');
+  const messengerSendStub = sinon.stub(messenger, "send");
 
   const messengerReminderRemindCustomerStub = sinon.stub(
     messengerReminder,
-    'remindCustomer',
+    "remindCustomer"
   );
 
-  const userDetailGetStub = sinon.stub(userDetailStorage, 'get');
+  const userDetailGetStub = sinon.stub(userDetailStorage, "get");
 
-  const messageHelperIsAddedStub = sinon.stub(messageHelper, 'isAdded');
+  const messageHelperIsAddedStub = sinon.stub(messageHelper, "isAdded");
 
   messageHelperIsAddedStub.resolves(false);
 
-  describe('#before', () => {
-    it('should reject with permission error if permission is not admin or above', () => {
+  describe("#before", () => {
+    it("should reject with permission error if permission is not admin or above", () => {
       const accessToken = {
-        permission: 'customer',
+        permission: "customer",
       } as AccessToken;
 
       const body: Message = {
-        id: '',
-        customerId: 'customer1',
-        messageType: 'reminder',
-        messageSubtype: 'none',
-        messageMethod: 'all',
+        id: "",
+        customerId: "customer1",
+        messageType: "reminder",
+        messageSubtype: "none",
+        messageMethod: "all",
         info: {
           deadline: new Date(),
         },
@@ -66,7 +67,7 @@ describe('MessagePostHook', () => {
       messengerReminderRemindCustomerStub.resolves(true);
 
       return expect(
-        messagePostHook.before(body, accessToken),
+        messagePostHook.before(body, accessToken)
       ).to.eventually.be.rejectedWith(BlError, /no permission/);
     });
 
@@ -98,12 +99,12 @@ describe('MessagePostHook', () => {
   */
   });
 
-  describe('#after', () => {
+  describe("#after", () => {
     beforeEach(() => {
       messengerReminderRemindCustomerStub.reset();
     });
 
-    it('should reject if no messages was provided', () => {
+    it("should reject if no messages was provided", () => {
       return expect(messagePostHook.after([], {} as AccessToken))
         .to.eventually.be.rejectedWith(/no messages provided/)
         .and.be.an.instanceOf(BlError);
@@ -114,28 +115,28 @@ describe('MessagePostHook', () => {
 
       beforeEach(() => {
         message = {
-          id: 'message1',
-          customerId: 'customer1',
-          messageType: 'reminder',
-          messageSubtype: 'none',
-          messageMethod: 'email',
+          id: "message1",
+          customerId: "customer1",
+          messageType: "reminder",
+          messageSubtype: "none",
+          messageMethod: "email",
           info: {
             deadline: new Date(),
           },
         };
       });
 
-      it('should reject if messengerReminder rejects', () => {
+      it("should reject if messengerReminder rejects", () => {
         messengerReminderRemindCustomerStub.rejects(
-          new BlError('something failed'),
+          new BlError("something failed")
         );
 
         expect(
-          messagePostHook.after([message], {} as AccessToken),
+          messagePostHook.after([message], {} as AccessToken)
         ).to.eventually.be.rejectedWith(BlError);
       });
 
-      it('should call messengerReminder', done => {
+      it("should call messengerReminder", (done) => {
         messengerReminderRemindCustomerStub.resolves(true);
 
         messagePostHook
@@ -149,7 +150,7 @@ describe('MessagePostHook', () => {
 
             done();
           })
-          .catch(err => {
+          .catch((err) => {
             done(err);
           });
       });
@@ -161,21 +162,21 @@ describe('MessagePostHook', () => {
 
       beforeEach(() => {
         message = {
-          id: 'message1',
-          customerId: 'customer1',
-          messageType: 'generic',
-          messageSubtype: 'none',
-          messageMethod: 'email',
+          id: "message1",
+          customerId: "customer1",
+          messageType: "generic",
+          messageSubtype: "none",
+          messageMethod: "email",
         };
 
         userDetail = {
-          id: 'user1',
-          name: 'albert',
-          email: 'test@boklisten.co',
+          id: "user1",
+          name: "albert",
+          email: "test@boklisten.co",
         } as UserDetail;
       });
 
-      it('should call messenger.send', done => {
+      it("should call messenger.send", (done) => {
         messengerSendStub.resolves(true);
         userDetailGetStub.resolves(userDetail);
 
@@ -190,7 +191,7 @@ describe('MessagePostHook', () => {
 
             done();
           })
-          .catch(err => {
+          .catch((err) => {
             done(err);
           });
       });

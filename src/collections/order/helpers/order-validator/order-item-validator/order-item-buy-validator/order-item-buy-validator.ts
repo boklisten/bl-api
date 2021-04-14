@@ -1,8 +1,8 @@
-import {BlError, Item, OrderItem, Branch, Order} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../../../../storage/blDocumentStorage';
-import {error, isNullOrUndefined} from 'util';
-import {PriceService} from '../../../../../../price/price.service';
-import {orderSchema} from '../../../../order.schema';
+import { BlError, Item, OrderItem, Branch, Order } from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
+import { isNullOrUndefined } from "util";
+import { PriceService } from "../../../../../../price/price.service";
+import { orderSchema } from "../../../../order.schema";
 
 export class OrderItemBuyValidator {
   private priceService: PriceService;
@@ -10,20 +10,20 @@ export class OrderItemBuyValidator {
 
   constructor(
     priceService?: PriceService,
-    orderStorage?: BlDocumentStorage<Order>,
+    orderStorage?: BlDocumentStorage<Order>
   ) {
     this.priceService = priceService
       ? priceService
-      : new PriceService({roundDown: true});
+      : new PriceService({ roundDown: true });
     this.orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage<Order>('orders', orderSchema);
+      : new BlDocumentStorage<Order>("orders", orderSchema);
   }
 
   public async validate(
     branch: Branch,
     orderItem: OrderItem,
-    item: Item,
+    item: Item
   ): Promise<boolean> {
     try {
       this.validateOrderItemFields(orderItem, item);
@@ -35,9 +35,9 @@ export class OrderItemBuyValidator {
       }
       return Promise.reject(
         new BlError(
-          'unknown error, could not validate price of orderItems, error: ' +
-            e.message,
-        ).store('error', e),
+          "unknown error, could not validate price of orderItems, error: " +
+            e.message
+        ).store("error", e)
       );
     }
 
@@ -47,9 +47,7 @@ export class OrderItemBuyValidator {
   private validateOrderItemFields(orderItem: OrderItem, item: Item): boolean {
     if (orderItem.taxRate != item.taxRate) {
       throw new BlError(
-        `orderItem.taxRate "${
-          orderItem.taxRate
-        }" is not equal to item.taxRate "${item.taxRate}"`,
+        `orderItem.taxRate "${orderItem.taxRate}" is not equal to item.taxRate "${item.taxRate}"`
       );
     }
 
@@ -57,11 +55,7 @@ export class OrderItemBuyValidator {
 
     if (orderItem.taxAmount != expectedTaxAmount) {
       throw new BlError(
-        `orderItem.taxAmount "${
-          orderItem.taxAmount
-        }" is not equal to (orderItem.amount "${
-          orderItem.amount
-        }" * item.taxRate "${item.taxRate}") "${expectedTaxAmount}"`,
+        `orderItem.taxAmount "${orderItem.taxAmount}" is not equal to (orderItem.amount "${orderItem.amount}" * item.taxRate "${item.taxRate}") "${expectedTaxAmount}"`
       );
     }
 
@@ -70,7 +64,7 @@ export class OrderItemBuyValidator {
 
   private async validateIfMovedFromOrder(
     orderItem: OrderItem,
-    itemPrice: number,
+    itemPrice: number
   ): Promise<boolean> {
     if (!orderItem.movedFromOrder) {
       return true;
@@ -84,13 +78,13 @@ export class OrderItemBuyValidator {
           orderItem.amount === 0
         ) {
           throw new BlError(
-            'the original order has not been payed, but orderItem.amount is "0"',
+            'the original order has not been payed, but orderItem.amount is "0"'
           );
         }
 
         let movedFromOrderItem = this.getOrderItemFromOrder(
           orderItem.item as string,
-          order,
+          order
         );
 
         let expectedOrderItemAmount =
@@ -99,9 +93,7 @@ export class OrderItemBuyValidator {
 
         if (orderItem.amount !== expectedOrderItemAmount) {
           throw new BlError(
-            `orderItem amount is "${
-              orderItem.amount
-            }" but should be "${expectedOrderItemAmount}"`,
+            `orderItem amount is "${orderItem.amount}" but should be "${expectedOrderItemAmount}"`
           );
         }
 
@@ -119,12 +111,12 @@ export class OrderItemBuyValidator {
       }
     }
 
-    throw new BlError('not found in original orderItem');
+    throw new BlError("not found in original orderItem");
   }
 
   private async validateOrderItemPriceTypeBuy(
     orderItem: OrderItem,
-    item: Item,
+    item: Item
   ): Promise<boolean> {
     let price;
     let discount = 0;
@@ -136,14 +128,14 @@ export class OrderItemBuyValidator {
     if (orderItem.discount) {
       if (isNullOrUndefined(orderItem.discount.amount)) {
         throw new BlError(
-          'orderItem.discount was set, but no discount.amount provided',
+          "orderItem.discount was set, but no discount.amount provided"
         );
       }
 
       discount = orderItem.discount.amount;
 
       price = this.priceService.sanitize(
-        item.price - orderItem.discount.amount,
+        item.price - orderItem.discount.amount
       );
     } else {
       price = this.priceService.sanitize(item.price);
@@ -153,9 +145,7 @@ export class OrderItemBuyValidator {
 
     if (orderItem.amount != expectedPrice) {
       throw new BlError(
-        `orderItem.amount "${orderItem.amount}" is not equal to item.price "${
-          item.price
-        }" - orderItem.discount "${discount}" = "${expectedPrice}" when type is "buy"`,
+        `orderItem.amount "${orderItem.amount}" is not equal to item.price "${item.price}" - orderItem.discount "${discount}" = "${expectedPrice}" when type is "buy"`
       );
     }
 

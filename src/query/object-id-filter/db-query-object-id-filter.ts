@@ -1,4 +1,4 @@
-import {Types} from 'mongoose';
+import { Types } from "mongoose";
 
 export type ObjectIdFilter = {
   fieldName: string;
@@ -10,13 +10,13 @@ export class DbQueryObjectIdFilter {
 
   getObjectIdFilters(
     query: any,
-    validStringParams: string[],
+    validStringParams: string[]
   ): ObjectIdFilter[] {
     if (
       !query ||
       (Object.keys(query).length === 0 && query.constructor === Object)
     ) {
-      throw new TypeError('query can not be undefined or empty');
+      throw new TypeError("query can not be undefined or empty");
     }
     if (validStringParams.length <= 0) return [];
 
@@ -27,7 +27,7 @@ export class DbQueryObjectIdFilter {
         if (validStringParams.indexOf(param) > -1) {
           if (Array.isArray(query[param])) {
             let valueArr = [];
-            query[param].forEach(paramValue => {
+            query[param].forEach((paramValue) => {
               valueArr.push(this.getStringParamValue(paramValue));
               valueArr.push(this.getObjectIdParamValue(paramValue));
             });
@@ -52,14 +52,14 @@ export class DbQueryObjectIdFilter {
     } catch (error) {
       if (error instanceof TypeError) {
         throw new TypeError(
-          'query includes bad object-id parameter data, reason: ' +
-            error.message,
+          "query includes bad object-id parameter data, reason: " +
+            error.message
         );
       }
 
       throw new Error(
-        'could not parse the object-id parameters in query, reason: ' +
-          error.message,
+        "could not parse the object-id parameters in query, reason: " +
+          error.message
       );
     }
   }
@@ -69,7 +69,7 @@ export class DbQueryObjectIdFilter {
       return new Types.ObjectId(param);
     }
     throw new TypeError(
-      'the paramterer of value "' + param + '" is not a valid string',
+      'the paramterer of value "' + param + '" is not a valid string'
     );
   }
 
@@ -78,14 +78,14 @@ export class DbQueryObjectIdFilter {
       return param;
     }
     throw new TypeError(
-      'the paramterer of value "' + param + '" is not a valid string',
+      'the paramterer of value "' + param + '" is not a valid string'
     );
   }
 
   private validateStringParam(param: string): boolean {
     if (!param) return false;
     if (new Types.ObjectId(param).toString() !== param) return false;
-    if (!(typeof param === 'string')) return false;
+    if (!(typeof param === "string")) return false;
     if (param.length <= 0) return false;
     return true;
   }

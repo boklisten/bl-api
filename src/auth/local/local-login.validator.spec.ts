@@ -1,6 +1,7 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import { LocalLoginHandler } from "./local-login.handler";
 import { LocalLogin } from "../../collections/local-login/local-login";
@@ -11,10 +12,10 @@ import { HashedPasswordGenerator } from "./password/hashed-password-generator";
 import { SaltGenerator } from "./salt/salt-generator";
 import { LocalLoginCreator } from "./local-login-creator/local-login-creator";
 import { ProviderIdGenerator } from "./provider-id/provider-id-generator";
-import { BlError } from "@wizardcoder/bl-model";
+import { BlError } from "@boklisten/bl-model";
 import { UserHandler } from "../user/user.handler";
 import { User } from "../../collections/user/user";
-import * as sinon from "sinon";
+import sinon from "sinon";
 
 chai.use(chaiAsPromised);
 
@@ -23,7 +24,8 @@ const testLocalLogin = {
   provider: "local",
   providerId: "123",
   hashedPassword: "a",
-  salt: "dog"
+  salt: "dog",
+  id: "12354"
 };
 
 describe("LocalLoginValidator", () => {
@@ -71,6 +73,7 @@ describe("LocalLoginValidator", () => {
 
   sinon
     .stub(userHandler, "create")
+    // @ts-ignore
     .callsFake((username: string, provider: string, providerId: string) => {
       return Promise.resolve({
         id: "",
@@ -78,14 +81,14 @@ describe("LocalLoginValidator", () => {
         permission: "customer",
         login: {
           provider: provider,
-          providerId: providerId
+          providerId: providerId,
         },
         blid: "",
         username: username,
         valid: true,
         active: true,
         lastActive: "",
-        lastRequest: ""
+        lastRequest: "",
       });
     });
 
@@ -136,7 +139,7 @@ describe("LocalLoginValidator", () => {
     it("should resolve with correct provider and providerId when username and password is correct", () => {
       let expectedProvider = {
         provider: testLocalLogin.provider,
-        providerId: testLocalLogin.providerId
+        providerId: testLocalLogin.providerId,
       };
       return new Promise((resolve, reject) => {
         localLoginValidator.validate(testUserName, testPassword).then(

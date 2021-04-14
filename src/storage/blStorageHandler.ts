@@ -1,4 +1,4 @@
-import { BlDocument, UserPermission } from "@wizardcoder/bl-model";
+import { BlDocument, UserPermission } from "@boklisten/bl-model";
 import { SEDbQuery } from "../query/se.db-query";
 import { NestedDocument } from "./nested-document";
 

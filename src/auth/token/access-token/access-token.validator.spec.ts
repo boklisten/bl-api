@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import { AccessTokenValidator } from "./access-token.validator";
-import { BlError } from "@wizardcoder/bl-model";
+import { BlError } from "@boklisten/bl-model";
 import { UserPermission } from "../../user/user-permission";
 import { RefreshTokenCreator } from "../refresh/refresh-token.creator";
 import { AccessTokenCreator } from "./access-token.creator";
@@ -20,7 +21,7 @@ describe("", () => {
     expiresIn: "12h",
     iat: 0,
     sub: "",
-    username: ""
+    username: "",
   };
 
   let accessTokenConfig: AccessToken = {
@@ -31,7 +32,7 @@ describe("", () => {
     sub: "",
     username: "",
     permission: "customer",
-    details: ""
+    details: "",
   };
 
   let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
@@ -49,7 +50,7 @@ describe("", () => {
     });
 
     context("when accessToken is not valid", () => {
-      it("should reject with BlError code 905", done => {
+      it("should reject with BlError code 905", (done) => {
         accessTokenValidator
           .validate("this is not valid")
           .catch((error: BlError) => {
@@ -60,14 +61,14 @@ describe("", () => {
     });
 
     context("when accessToken is expired", () => {
-      it("should reject with BlError code 910", done => {
+      it("should reject with BlError code 910", (done) => {
         let username = "bill@butt.com";
         let jwt = require("jsonwebtoken");
 
         jwt.sign(
           {
             username: username,
-            iat: Math.floor(Date.now() / 1000) - 10000
+            iat: Math.floor(Date.now() / 1000) - 10000,
           },
           "test",
           { expiresIn: "1s" },
@@ -84,7 +85,7 @@ describe("", () => {
     });
 
     context("when accessToken is valid", () => {
-      it("should resolve with a payload", done => {
+      it("should resolve with a payload", (done) => {
         let username = "bill@anderson.com";
         let userid = "123";
         let permission: UserPermission = "admin";

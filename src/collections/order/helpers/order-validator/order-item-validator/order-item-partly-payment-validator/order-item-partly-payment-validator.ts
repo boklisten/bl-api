@@ -1,15 +1,18 @@
-import { OrderItem, Item, Branch, BlError } from "@wizardcoder/bl-model";
-import {isNullOrUndefined} from 'util';
+import { OrderItem, Item, Branch, BlError } from "@boklisten/bl-model";
+import { isNullOrUndefined } from "util";
 
 export class OrderItemPartlyPaymentValidator {
+  constructor() {}
 
-  constructor() {
-  }
-
-  public validate(orderItem: OrderItem, Item: Item, branch: Branch): Promise<boolean> {
-
+  public validate(
+    orderItem: OrderItem,
+    Item: Item,
+    branch: Branch
+  ): Promise<boolean> {
     if (orderItem.type !== "partly-payment") {
-      return Promise.reject(new BlError("orderItem not of type 'partly-payment'"));
+      return Promise.reject(
+        new BlError("orderItem not of type 'partly-payment'")
+      );
     }
 
     try {
@@ -19,7 +22,11 @@ export class OrderItemPartlyPaymentValidator {
     }
 
     if (!this.isPeriodSupported(orderItem.info.periodType, branch)) {
-      return Promise.reject(new BlError(`partly-payment period "${orderItem.info.periodType}" not supported on branch`));
+      return Promise.reject(
+        new BlError(
+          `partly-payment period "${orderItem.info.periodType}" not supported on branch`
+        )
+      );
     }
 
     return new Promise((resolve, reject) => {
@@ -48,9 +55,11 @@ export class OrderItemPartlyPaymentValidator {
       throw new BlError("orderItem.info.to not specified");
     }
 
-    if (orderItem.info && isNullOrUndefined(orderItem.info['amountLeftToPay'])) {
+    if (
+      orderItem.info &&
+      isNullOrUndefined(orderItem.info["amountLeftToPay"])
+    ) {
       throw new BlError("orderItem.info.amountLeftToPay not specified");
     }
   }
-
 }

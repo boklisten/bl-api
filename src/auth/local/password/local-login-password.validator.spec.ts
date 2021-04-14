@@ -1,11 +1,12 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
-import * as sinon from "sinon";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
 import { expect } from "chai";
 import { LocalLoginPasswordValidator } from "./local-login-password.validator";
 import { SeCrypto } from "../../../crypto/se.crypto";
-import { BlError } from "@wizardcoder/bl-model";
+import { BlError } from "@boklisten/bl-model";
 
 chai.use(chaiAsPromised);
 

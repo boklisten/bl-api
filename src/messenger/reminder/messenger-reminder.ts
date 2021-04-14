@@ -3,13 +3,13 @@ import {
   BlError,
   Message,
   UserDetail,
-} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../storage/blDocumentStorage';
-import {SEDbQuery} from '../../query/se.db-query';
-import moment = require('moment');
-import {CustomerItemHandler} from '../../collections/customer-item/helpers/customer-item-handler';
-import {EmailService} from '../email/email-service';
-import {userDetailSchema} from '../../collections/user-detail/user-detail.schema';
+} from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
+import { SEDbQuery } from "../../query/se.db-query";
+import moment = require("moment");
+import { CustomerItemHandler } from "../../collections/customer-item/helpers/customer-item-handler";
+import { EmailService } from "../email/email-service";
+import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
 
 export class MessengerReminder {
   private customerItemHandler: CustomerItemHandler;
@@ -19,14 +19,14 @@ export class MessengerReminder {
   constructor(
     customerItemHandler?: CustomerItemHandler,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
-    emailService?: EmailService,
+    emailService?: EmailService
   ) {
     this.customerItemHandler = customerItemHandler
       ? customerItemHandler
       : new CustomerItemHandler();
     this.userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage<UserDetail>('userdetails', userDetailSchema);
+      : new BlDocumentStorage<UserDetail>("userdetails", userDetailSchema);
     this.emailService = emailService ? emailService : new EmailService();
   }
 
@@ -44,18 +44,18 @@ export class MessengerReminder {
    */
   public async remindCustomer(message: Message): Promise<any> {
     if (message.customerId == null || message.customerId.length <= 0) {
-      throw new BlError('customerId is null or undefined');
+      throw new BlError("customerId is null or undefined");
     }
 
-    if (!message.info || message.info['deadline'] == null) {
-      throw new BlError('deadline is null or undefined');
+    if (!message.info || message.info["deadline"] == null) {
+      throw new BlError("deadline is null or undefined");
     }
 
     try {
       const notReturnedCustomerItems = await this.customerItemHandler.getNotReturned(
         message.customerId,
-        message.info['deadline'],
-        message.messageSubtype as any,
+        message.info["deadline"],
+        message.messageSubtype as any
       );
 
       const userDetail = await this.userDetailStorage.get(message.customerId);
@@ -63,7 +63,7 @@ export class MessengerReminder {
       await this.emailService.remind(
         message,
         userDetail,
-        notReturnedCustomerItems,
+        notReturnedCustomerItems
       );
     } catch (e) {
       throw e;

@@ -1,11 +1,12 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
-import * as sinon from "sinon";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
 import { expect } from "chai";
 import { UserSchema } from "../../collections/user/user.schema";
 import { UserHandler } from "./user.handler";
-import { BlError, UserDetail } from "@wizardcoder/bl-model";
+import { BlError, UserDetail } from "@boklisten/bl-model";
 import { User } from "../../collections/user/user";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import { SEDbQuery } from "../../query/se.db-query";
@@ -20,12 +21,12 @@ let testUser = {
   permission: "customer",
   login: {
     provider: "local",
-    providerId: "123"
+    providerId: "123",
   },
   blid: "",
   username: "bill@gmail.com",
   valid: false,
-  active: true
+  active: true,
 };
 
 describe("UserHandler", () => {
@@ -34,9 +35,10 @@ describe("UserHandler", () => {
     UserSchema
   );
   const emailValidationHelper: EmailValidationHelper = new EmailValidationHelper();
-  const userDetailStorage: BlDocumentStorage<
+  const userDetailStorage: BlDocumentStorage<UserDetail> = new BlDocumentStorage(
+    "userdetails",
     UserDetail
-  > = new BlDocumentStorage("userdetails", UserDetail);
+  );
   const localLoginHandler: LocalLoginHandler = new LocalLoginHandler();
   let userHandler = new UserHandler(
     userDetailStorage,
@@ -70,7 +72,7 @@ describe("UserHandler", () => {
 
   sinon.stub(userDetailStorage, "add").callsFake(() => {
     return new Promise((resolve, reject) => {
-      resolve({ id: testUser.userDetail, user: { id: testUser.blid } });
+      resolve({ id: testUser.userDetail, user: { id: testUser.blid } } as any);
     });
   });
 
@@ -141,7 +143,7 @@ describe("UserHandler", () => {
     });
 
     context("when username is not found", () => {
-      it("should reject with BlError code 702 not found", done => {
+      it("should reject with BlError code 702 not found", (done) => {
         let username = "thisis@notfound.com";
 
         userHandler.getByUsername(username).catch((error: BlError) => {
@@ -152,7 +154,7 @@ describe("UserHandler", () => {
     });
 
     context("when username is found", () => {
-      it("should resolve with a User object", done => {
+      it("should resolve with a User object", (done) => {
         userHandler.getByUsername(testUser.username).then((user: User) => {
           user.username.should.be.eq(testUser.username);
           done();
@@ -165,7 +167,7 @@ describe("UserHandler", () => {
         let username = "jimmy@dore.com";
         const testUsers = [
           { username: username, movedToPrimary: "someObjectId" },
-          { username: username, primary: true }
+          { username: username, primary: true },
         ];
 
         let dbQuery = new SEDbQuery();
@@ -173,9 +175,9 @@ describe("UserHandler", () => {
 
         userStorageGetByQueryStub.withArgs(dbQuery).resolves(testUsers);
 
-        return expect(userHandler.getByUsername(username)).to.eventually.be.eql(
-          { username: username, primary: true }
-        );
+        return expect(
+          userHandler.getByUsername(username)
+        ).to.eventually.be.eql({ username: username, primary: true });
       });
     });
   });
@@ -213,7 +215,7 @@ describe("UserHandler", () => {
         });
     });
 
-    it('should reject if username already exists and provider is "local"', done => {
+    it('should reject if username already exists and provider is "local"', (done) => {
       testUsername = "James@bond.com";
       let dbQuery = new SEDbQuery();
       dbQuery.stringFilters = [{ fieldName: "username", value: testUsername }];
@@ -255,7 +257,7 @@ describe("UserHandler", () => {
       ).to.be.fulfilled;
     });
 
-    it("should reject if emailValidationHelper rejects on sending of email validation link", done => {
+    it("should reject if emailValidationHelper rejects on sending of email validation link", (done) => {
       emailValidationLinkSuccess = false;
 
       userHandler
@@ -273,7 +275,7 @@ describe("UserHandler", () => {
         });
     });
 
-    it("should send out email validation link on user creation", done => {
+    it("should send out email validation link on user creation", (done) => {
       emailValidationLinkSuccess = true;
       testUsername = "johnny@ronny.com";
 

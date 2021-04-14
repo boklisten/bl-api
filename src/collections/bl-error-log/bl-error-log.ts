@@ -1,4 +1,4 @@
-import {BlDocument, BlError} from '@wizardcoder/bl-model';
+import { BlDocument, BlError } from "@boklisten/bl-model";
 
 export class BlErrorLog extends BlDocument {
   code: number;
@@ -6,7 +6,7 @@ export class BlErrorLog extends BlDocument {
   methodName: string;
   msg: string;
   errorStack: BlError[];
-  store: {key: string; value: any}[];
+  store: { key: string; value: any }[];
   data: any;
 
   constructor(blError?: BlError) {

@@ -1,9 +1,9 @@
-import {JsonMember, JsonObject} from "typedjson-npm";
+import { JsonMember, JsonObject } from "typedjson-npm";
 
 @JsonObject
 export class DibsEasyPaymentConsumerPhone {
-	@JsonMember({type: String})
-	prefix: string;
-	@JsonMember({type: String})
-	number: string;
+  @JsonMember({ type: String })
+  prefix: string;
+  @JsonMember({ type: String })
+  number: string;
 }

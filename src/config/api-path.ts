@@ -1,13 +1,13 @@
-import {APP_CONFIG} from '../application-config';
-const URL = require('url');
+import { APP_CONFIG } from "../application-config";
+const URL = require("url");
 
 export class ApiPath {
   private baseHost: string;
 
   constructor() {
-    if (process.env.NODE_ENV == 'production') {
+    if (process.env.NODE_ENV == "production") {
       this.baseHost = APP_CONFIG.path.host;
-    } else if (process.env.NODE_ENV == 'dev') {
+    } else if (process.env.NODE_ENV == "dev") {
       this.baseHost = APP_CONFIG.path.dev.host;
     } else {
       this.baseHost = APP_CONFIG.path.local.host;
@@ -25,8 +25,8 @@ export class ApiPath {
   public retrieveRefererPath(reqHeaders) {
     let refererUrl = null;
 
-    const refererPath = reqHeaders['referer'];
-    const reffererPath = reqHeaders['refferer'];
+    const refererPath = reqHeaders["referer"];
+    const reffererPath = reqHeaders["refferer"];
 
     if (refererPath) {
       refererUrl = this.retrieveBasePath(refererPath);
@@ -48,6 +48,6 @@ export class ApiPath {
     const host = url.host;
     const protocol = url.protocol;
 
-    return protocol + '//' + host + '/';
+    return protocol + "//" + host + "/";
   }
 }

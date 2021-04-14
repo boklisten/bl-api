@@ -1,57 +1,57 @@
-import {BlCollection, BlEndpoint} from '../bl-collection';
-import {itemSchema} from './item.schema';
-import {Schema} from 'mongoose';
-import {ItemPostHook} from './hook/item-post.hook';
-import {ItemPatchHook} from './hook/item-patch.hook';
+import { BlCollection, BlEndpoint } from "../bl-collection";
+import { itemSchema } from "./item.schema";
+import { Schema } from "mongoose";
+import { ItemPostHook } from "./hook/item-post.hook";
+import { ItemPatchHook } from "./hook/item-patch.hook";
 
 export class ItemCollection implements BlCollection {
-  collectionName = 'items';
+  collectionName = "items";
   mongooseSchema = itemSchema;
   endpoints: BlEndpoint[] = [
     {
-      method: 'getId',
+      method: "getId",
     },
     {
-      method: 'getAll',
+      method: "getAll",
       validQueryParams: [
         {
-          fieldName: 'title',
-          type: 'string',
+          fieldName: "title",
+          type: "string",
         },
         {
-          fieldName: 'type',
-          type: 'string',
+          fieldName: "type",
+          type: "string",
         },
         {
-          fieldName: 'info.isbn',
-          type: 'number',
+          fieldName: "info.isbn",
+          type: "number",
         },
         {
-          fieldName: 'buyback',
-          type: 'boolean',
+          fieldName: "buyback",
+          type: "boolean",
         },
         {
-          fieldName: 'creationTime',
-          type: 'date',
+          fieldName: "creationTime",
+          type: "date",
         },
         {
-          fieldName: 'price',
-          type: 'number',
+          fieldName: "price",
+          type: "number",
         },
       ],
     },
     {
-      method: 'post',
+      method: "post",
       hook: new ItemPostHook(),
       restriction: {
-        permissions: ['admin', 'super'],
+        permissions: ["admin", "super"],
       },
     },
     {
-      method: 'patch',
+      method: "patch",
       hook: new ItemPatchHook(),
       restriction: {
-        permissions: ['admin', 'super'],
+        permissions: ["admin", "super"],
       },
     },
   ];

@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import { BlError, CustomerItem } from "@wizardcoder/bl-model";
+import sinon from "sinon";
+import { BlError, CustomerItem } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 chai.use(chaiAsPromised);
 import { CustomerHaveActiveCustomerItems } from "./customer-have-active-customer-items";
@@ -41,7 +42,7 @@ describe("CustomerHaveActiveCustomerItems", () => {
         deadline: new Date(),
         customer: testUserId,
         handout: true,
-        returned: true
+        returned: true,
       };
 
       customerItemByQueryStub.resolves([nonActiveCustomerItem]);
@@ -58,7 +59,7 @@ describe("CustomerHaveActiveCustomerItems", () => {
         deadline: new Date(),
         customer: testUserId,
         handout: true,
-        returned: true
+        returned: true,
       };
 
       const activeCustomerItem: CustomerItem = {
@@ -67,12 +68,12 @@ describe("CustomerHaveActiveCustomerItems", () => {
         deadline: new Date(),
         customer: testUserId,
         handout: true,
-        returned: false
+        returned: false,
       };
 
       customerItemByQueryStub.resolves([
         nonActiveCustomerItem,
-        activeCustomerItem
+        activeCustomerItem,
       ]);
 
       return expect(

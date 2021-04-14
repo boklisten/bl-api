@@ -1,45 +1,45 @@
-import {BlCollection, BlEndpoint} from '../bl-collection';
+import { BlCollection, BlEndpoint } from "../bl-collection";
 
-import {companySchema} from './company.schema';
+import { companySchema } from "./company.schema";
 
 export class CompanyCollection implements BlCollection {
-  collectionName = 'companies';
+  collectionName = "companies";
   mongooseSchema = companySchema;
   endpoints: BlEndpoint[] = [
     {
-      method: 'getAll',
+      method: "getAll",
       restriction: {
-        permissions: ['admin', 'super'],
+        permissions: ["admin", "super"],
       },
       validQueryParams: [
         {
-          fieldName: 'name',
-          type: 'string',
+          fieldName: "name",
+          type: "string",
         },
       ],
     },
     {
-      method: 'getId',
+      method: "getId",
       restriction: {
-        permissions: ['admin', 'super'],
+        permissions: ["admin", "super"],
       },
     },
     {
-      method: 'post',
+      method: "post",
       restriction: {
-        permissions: ['admin', 'super'],
+        permissions: ["admin", "super"],
       },
     },
     {
-      method: 'patch',
+      method: "patch",
       restriction: {
-        permissions: ['admin', 'super'],
+        permissions: ["admin", "super"],
       },
     },
     {
-      method: 'delete',
+      method: "delete",
       restriction: {
-        permissions: ['admin', 'super'],
+        permissions: ["admin", "super"],
       },
     },
   ];

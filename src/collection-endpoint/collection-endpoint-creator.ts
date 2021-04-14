@@ -16,8 +16,8 @@ import {
   Company,
   Match,
   Booking,
-  UniqueItem
-} from "@wizardcoder/bl-model";
+  UniqueItem,
+} from "@boklisten/bl-model";
 
 import { ItemCollection } from "../collections/item/item.collection";
 import { CustomerItemCollection } from "../collections/customer-item/customer-item.collection";
@@ -92,7 +92,7 @@ export class CollectionEndpointCreator {
       new CollectionEndpoint<UniqueItem>(
         this._router,
         new UniqueItemCollection()
-      )
+      ),
     ];
 
     for (const collectionEndpoint of collectionEndpoints) {

@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import { BlError, AccessToken, UserDetail } from "@wizardcoder/bl-model";
+import sinon from "sinon";
+import { BlError, AccessToken, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { OrderActive } from "../../order/helpers/order-active/order-active";
 import { UserDetailDeleteHook } from "./user-detail-delete.hook";
@@ -59,7 +60,7 @@ describe("UserDetailDeleteHook", () => {
       const accessToken = {
         iss: "",
         permission: "admin",
-        details: ""
+        details: "",
       } as AccessToken;
 
       return expect(
@@ -75,7 +76,7 @@ describe("UserDetailDeleteHook", () => {
       const accessToken = {
         iss: "",
         permission: "admin",
-        details: ""
+        details: "",
       } as AccessToken;
 
       return expect(
@@ -92,7 +93,7 @@ describe("UserDetailDeleteHook", () => {
       const accessToken = {
         iss: "",
         permission: "admin",
-        details: ""
+        details: "",
       } as AccessToken;
 
       return expect(
@@ -109,7 +110,7 @@ describe("UserDetailDeleteHook", () => {
       const accessToken = {
         iss: "",
         permission: "admin",
-        details: "user1"
+        details: "user1",
       } as AccessToken;
 
       return expect(
@@ -127,7 +128,7 @@ describe("UserDetailDeleteHook", () => {
       const accessToken = {
         iss: "",
         permission: "admin",
-        details: "user1"
+        details: "user1",
       } as AccessToken;
 
       return expect(
@@ -148,7 +149,7 @@ describe("UserDetailDeleteHook", () => {
       const accessToken = {
         iss: "",
         permission: "admin",
-        details: "user1"
+        details: "user1",
       } as AccessToken;
 
       return expect(userDetailDeleteHook.before({}, accessToken, testUserId)).to
@@ -159,7 +160,7 @@ describe("UserDetailDeleteHook", () => {
     it("should resolve", () => {
       const accessToken = {
         permission: "admin",
-        details: "user1"
+        details: "user1",
       } as AccessToken;
 
       return expect(

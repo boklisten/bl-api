@@ -1,17 +1,18 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
+import sinon from "sinon";
 import {
   AccessToken,
   BlError,
   CustomerItem,
   UserDetail,
-  Booking
-} from "@wizardcoder/bl-model";
+  Booking,
+} from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import * as sinonChai from "sinon-chai";
+import sinonChai from "sinon-chai";
 import { BookingPatchHook } from "./booking-patch.hook";
 
 const bookingStorage = new BlDocumentStorage<Booking>("bookings");
@@ -24,7 +25,7 @@ const testBooking = {
   customer: "someCustomer",
   from: new Date(),
   to: new Date(),
-  branch: "branch1"
+  branch: "branch1",
 };
 
 const testBooking2 = {
@@ -32,13 +33,13 @@ const testBooking2 = {
   customer: null,
   from: new Date(),
   to: new Date(),
-  branch: "branch1"
+  branch: "branch1",
 };
 
 const testBooking3 = {
   customer: testId,
   from: new Date(),
-  to: new Date()
+  to: new Date(),
 };
 
 const testBooking4 = {
@@ -46,10 +47,10 @@ const testBooking4 = {
   customer: "testBooking4Customer",
   booked: true,
   from: new Date(),
-  to: new Date()
+  to: new Date(),
 };
 
-sinon.stub(bookingStorage, "get").callsFake(id => {
+sinon.stub(bookingStorage, "get").callsFake((id) => {
   if (id == testBooking.id) {
     return Promise.resolve(testBooking);
   } else if (id == testBooking2.id) {
@@ -61,7 +62,7 @@ sinon.stub(bookingStorage, "get").callsFake(id => {
   }
 });
 
-sinon.stub(bookingStorage, "getByQuery").callsFake(query => {
+sinon.stub(bookingStorage, "getByQuery").callsFake((query) => {
   if (query.objectIdFilters) {
     if (
       query.objectIdFilters.length &&
@@ -80,7 +81,7 @@ describe("BookingPatchHook", () => {
   describe("#before", () => {
     it("should reject if customer is already attached to booking", () => {
       const updateBody = {
-        customer: "testCustomer"
+        customer: "testCustomer",
       };
 
       return expect(
@@ -95,7 +96,7 @@ describe("BookingPatchHook", () => {
       const updateBody = {
         from: new Date(),
         to: new Date(),
-        customer: "customer1"
+        customer: "customer1",
       };
 
       return expect(
@@ -112,7 +113,7 @@ describe("BookingPatchHook", () => {
 
     it("should reject if accessToken.id is not equal to booking.customer and accessToken.permission is not admin", () => {
       const updateBody = {
-        customer: "customer2"
+        customer: "customer2",
       };
       return expect(
         bookingPatchHook.before(
@@ -128,7 +129,7 @@ describe("BookingPatchHook", () => {
 
     it("should reject if customer already has an active booking", () => {
       const updateBody = {
-        customer: testId
+        customer: testId,
       };
 
       return expect(
@@ -146,11 +147,11 @@ describe("BookingPatchHook", () => {
     it("should reject if customer is trying to cancel another customers booking", () => {
       const updateBody = {
         customer: null,
-        booked: false
+        booked: false,
       };
       const accessToken = {
         details: testId,
-        permission: "customer"
+        permission: "customer",
       };
       return expect(
         bookingPatchHook.before(updateBody, accessToken as any, "testBooking4")
@@ -163,11 +164,11 @@ describe("BookingPatchHook", () => {
     it("should resolve if user is admin and trying to cancel another users booking", () => {
       const updateBody = {
         customer: null,
-        booked: false
+        booked: false,
       };
       const accessToken = {
         details: testId,
-        permission: "admin"
+        permission: "admin",
       };
       return expect(
         bookingPatchHook.before(updateBody, accessToken as any, "testBooking4")
@@ -176,7 +177,7 @@ describe("BookingPatchHook", () => {
 
     it("should resolve", () => {
       const updateBody = {
-        customer: testId2
+        customer: testId2,
       };
 
       return expect(
@@ -207,13 +208,13 @@ describe("BookingPatchHook", () => {
         customer: testId3,
         from: new Date(),
         to: new Date(),
-        booked: false
+        booked: false,
       };
 
       return expect(
         bookingPatchHook.after([booking as Booking], {
           permission: "customer",
-          details: testId3
+          details: testId3,
         } as any)
       ).to.eventually.be.rejectedWith(
         BlError,
@@ -237,13 +238,13 @@ describe("BookingPatchHook", () => {
         customer: null,
         from: new Date(),
         to: new Date(),
-        booked: true
+        booked: true,
       };
 
       return expect(
         bookingPatchHook.after([booking as Booking], {
           permission: "customer",
-          details: testId3
+          details: testId3,
         } as any)
       ).to.eventually.be.rejectedWith(
         BlError,

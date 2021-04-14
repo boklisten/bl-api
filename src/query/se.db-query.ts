@@ -1,14 +1,14 @@
-import {NumberFilter} from './number-filter/db-query-number-filter';
-import {StringFilter} from './string-filter/db-query-string-filter';
-import {OnlyGetFilter} from './only-get-filter/db-query-only-get-filter';
-import {SkipFilter} from './skip-filter/db-query-skip-filter';
-import {SortFilter} from './sort-filter/db-query-sort-filter';
-import {LimitFilter} from './limit-filter/db-query-limit-filter';
-import {RegexFilter} from './regex-filter/db-query-regex-filter';
-import {BooleanFilter} from './boolean-filter/db-query-boolean-filter';
-import {DateFilter} from './date-filter/db-query-date-filter';
-import {ExpandFilter} from './expand-filter/db-query-expand-filter';
-import {ObjectIdFilter} from './object-id-filter/db-query-object-id-filter';
+import { NumberFilter } from "./number-filter/db-query-number-filter";
+import { StringFilter } from "./string-filter/db-query-string-filter";
+import { OnlyGetFilter } from "./only-get-filter/db-query-only-get-filter";
+import { SkipFilter } from "./skip-filter/db-query-skip-filter";
+import { SortFilter } from "./sort-filter/db-query-sort-filter";
+import { LimitFilter } from "./limit-filter/db-query-limit-filter";
+import { RegexFilter } from "./regex-filter/db-query-regex-filter";
+import { BooleanFilter } from "./boolean-filter/db-query-boolean-filter";
+import { DateFilter } from "./date-filter/db-query-date-filter";
+import { ExpandFilter } from "./expand-filter/db-query-expand-filter";
+import { ObjectIdFilter } from "./object-id-filter/db-query-object-id-filter";
 
 export class SEDbQuery {
   booleanFilters: BooleanFilter[];
@@ -30,9 +30,9 @@ export class SEDbQuery {
     this.stringFilters = [];
     this.objectIdFilters = [];
     this.onlyGetFilters = [];
-    this.skipFilter = {skip: 0};
+    this.skipFilter = { skip: 0 };
     this.sortFilters = [];
-    this.limitFilter = {limit: 0};
+    this.limitFilter = { limit: 0 };
     this.regexFilters = [];
     this.expandFilters = [];
   }
@@ -86,7 +86,7 @@ export class SEDbQuery {
     }
 
     if (orArr.length > 0) {
-      filterObj['$or'] = orArr;
+      filterObj["$or"] = orArr;
     }
 
     return filterObj;

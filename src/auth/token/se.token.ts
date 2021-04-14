@@ -1,163 +1,214 @@
-
-
-import {UserPermission} from "../user/user-permission";
-import {BlError} from "@wizardcoder/bl-model";
+import { UserPermission } from "../user/user-permission";
+import { BlError } from "@boklisten/bl-model";
 
 export type JwtPayload = {
-	iss: string,
-	aud: string,
-	iat: number,
-	exp: number,
-	permission: UserPermission,
-	blid: string,
-	username: string
-}
+  iss: string;
+  aud: string;
+  iat: number;
+  exp: number;
+  permission: UserPermission;
+  blid: string;
+  username: string;
+};
 
 export type ValidCustomJwtPayload = {
-	permissions?: string[],
-	blid?: string,
-	username?: string
-}
+  permissions?: string[];
+  blid?: string;
+  username?: string;
+};
 
 export type JwtOptions = {
-	exp: number,
-	aud: string,
-	iss: string
-}
+  exp: number;
+  aud: string;
+  iss: string;
+};
 
+export class SEToken {
+  private jwt = require("jsonwebtoken");
+  private options: JwtOptions;
 
-export class SEToken  {
+  constructor(options?: JwtPayload) {
+    if (options) {
+      this.options = options;
+    } else {
+      this.options = {
+        exp: 57600, //16 hours
+        aud: "boklisten.co",
+        iss: "boklisten.co",
+      };
+    }
+  }
 
-	private jwt = require('jsonwebtoken');
-	private options: JwtOptions;
+  public createToken(
+    username: string,
+    permission: UserPermission,
+    blid: string
+  ): Promise<string> {
+    let blError = new BlError("")
+      .className("SeToken")
+      .methodName("createToken");
+    if (username.length <= 0)
+      return Promise.reject(
+        blError.msg('username "' + username + '" is to short')
+      );
+    if (permission.length <= 0)
+      return Promise.reject(blError.msg("permission is undefined"));
+    if (blid.length <= 0)
+      return Promise.reject(blError.msg('blid "' + blid + '" is to short'));
 
-	constructor(options?: JwtPayload) {
-		if (options) {
-			this.options = options;
-		} else {
-			this.options = {
-				exp: 57600, //16 hours
-				aud: 'boklisten.co',
-				iss: 'boklisten.co'
-			}
-		}
-	}
+    return new Promise((resolve, reject) => {
+      this.jwt.sign(
+        this.createJwtPayload(username, permission, blid),
+        this.getSecret(),
+        (error: any, token: string) => {
+          if (error) {
+            return reject(
+              blError
+                .msg("error creating jw token")
+                .store("signError", error)
+                .code(906)
+            );
+          }
+          resolve(token);
+        }
+      );
+    });
+  }
 
-	public createToken(username: string, permission: UserPermission, blid: string): Promise<string> {
-		let blError = new BlError('').className('SeToken').methodName('createToken');
-		if (username.length <= 0) return Promise.reject(blError.msg('username "' + username + '" is to short'));
-		if (permission.length <= 0) return Promise.reject(blError.msg('permission is undefined'));
-		if (blid.length <= 0) return Promise.reject(blError.msg('blid "' + blid + '" is to short'));
+  public validateToken(
+    token: string,
+    validLoginOptions?: any
+  ): Promise<JwtPayload> {
+    let blError = new BlError("")
+      .className("SeToken")
+      .methodName("validateToken");
+    if (token.length <= 0) return Promise.reject(blError.msg("token is empty"));
 
+    return new Promise((resolve, reject) => {
+      this.jwt.verify(token, this.getSecret(), (error: any, decoded: any) => {
+        if (error) {
+          return reject(
+            blError
+              .msg("error verifying token")
+              .store("jwtError", error)
+              .code(905)
+          );
+        }
 
-		return new Promise((resolve, reject) => {
-			this.jwt.sign(this.createJwtPayload(username, permission, blid), this.getSecret(),
-				(error:any, token: string) => {
-					if (error) {
-						return reject(blError.msg('error creating jw token').store('signError', error).code(906));
-					}
-					resolve(token);
-				});
-		});
-	}
+        this.validatePayload(decoded, validLoginOptions).then(
+          (jwtPayload: any) => {
+            resolve(jwtPayload);
+          },
+          (validatePayloadError: BlError) => {
+            reject(
+              blError
+                .msg("could not validate payload")
+                .store("decodedPayload", decoded)
+                .add(validatePayloadError)
+                .code(905)
+            );
+          }
+        );
+      });
+    });
+  }
 
-	public validateToken(token: string, validLoginOptions?: any): Promise<JwtPayload> {
-		let blError = new BlError('').className('SeToken').methodName('validateToken');
-		if (token.length <= 0) return Promise.reject(blError.msg('token is empty'));
+  public validatePayload(
+    jwtPayload: JwtPayload,
+    validLoginOptions?: any
+  ): Promise<JwtPayload> {
+    return new Promise((resolve, reject) => {
+      if (validLoginOptions) {
+        if (!validLoginOptions.restrictedToUserOrAbove) {
+          if (
+            validLoginOptions.permissions &&
+            !this.validatePermissions(
+              jwtPayload.permission,
+              validLoginOptions.permissions
+            )
+          ) {
+            return reject(
+              new BlError(
+                'lacking the given permissions, "' +
+                  jwtPayload.permission.toString() +
+                  '" does not include all the permissions of "' +
+                  validLoginOptions.permissions.toString() +
+                  '"'
+              )
+                .className("SeToken")
+                .methodName("validateToken")
+                .code(905)
+            );
+          }
+        }
+      }
 
-		return new Promise((resolve, reject) => {
+      resolve(jwtPayload);
+    });
+  }
 
-			this.jwt.verify(token, this.getSecret(), (error: any, decoded: any) => {
-				if (error) {
-					return reject(blError
-						.msg('error verifying token')
-						.store('jwtError', error)
-						.code(905));
-				}
+  public getSecret(): string {
+    return "this is the key";
+  }
 
-				this.validatePayload(decoded, validLoginOptions).then(
-					(jwtPayload: any) => {
-						resolve(jwtPayload);
-					},
-					(validatePayloadError: BlError) => {
-						reject(blError
-							.msg('could not validate payload')
-							.store('decodedPayload', decoded)
-							.add(validatePayloadError)
-							.code(905));
-					});
-			})
-		});
-	}
+  public getOptions(): JwtOptions {
+    return this.options;
+  }
 
-	public validatePayload(jwtPayload: JwtPayload, validLoginOptions?: any): Promise<JwtPayload> {
-		return new Promise((resolve, reject) => {
+  private validateUsername(
+    decodedUsername: string,
+    validUsername: string
+  ): boolean {
+    if (decodedUsername !== validUsername) return false;
+    return true;
+  }
 
-			if (validLoginOptions) {
-				if (!validLoginOptions.restrictedToUserOrAbove) {
-					if (validLoginOptions.permissions && !this.validatePermissions(jwtPayload.permission, validLoginOptions.permissions)) {
-						return reject(new BlError('lacking the given permissions, "' + jwtPayload.permission.toString() + '" does not include all the permissions of "' + validLoginOptions.permissions.toString() + '"')
-							.className('SeToken')
-							.methodName('validateToken')
-							.code(905));
-					}
-				}
-			}
+  private validatePermissions(
+    decodedPermission: UserPermission,
+    validPermissions: string[]
+  ): boolean {
+    if (validPermissions.indexOf(decodedPermission) <= -1) return false;
+    return true;
+  }
 
-			resolve(jwtPayload);
-		});
-	}
+  private validateBlid(decodedBlid: string, validBlid: string): boolean {
+    if (decodedBlid !== validBlid) return false;
+    return true;
+  }
 
+  private createJwtPayload(
+    username: string,
+    permission: UserPermission,
+    blid: string
+  ): JwtPayload {
+    return {
+      iss: this.options.iss,
+      aud: this.options.aud,
+      iat: Date.now(),
+      exp: Date.now() + this.options.exp,
+      permission: permission,
+      blid: blid,
+      username: username,
+    };
+  }
 
-	public getSecret(): string {
-		return 'this is the key';
-	}
+  public permissionAbove(
+    tokenPermission: UserPermission,
+    permissions: UserPermission[]
+  ) {
+    let lowestPermission = permissions[0];
 
-	public getOptions(): JwtOptions {
-		return this.options;
-	}
+    if (tokenPermission === lowestPermission) return true;
 
-	private validateUsername(decodedUsername: string, validUsername: string): boolean {
-		if (decodedUsername !== validUsername) return false;
-		return true;
-	}
+    if (lowestPermission === "customer") {
+      if (tokenPermission === "employee") return true;
+      if (tokenPermission === "admin") return true;
+    }
 
-	private validatePermissions(decodedPermission: UserPermission, validPermissions: string[]): boolean {
-		if (validPermissions.indexOf(decodedPermission) <= -1) return false;
-		return true;
-	}
+    if (lowestPermission === "employee") {
+      if (tokenPermission === "admin") return true;
+    }
 
-	private validateBlid(decodedBlid: string, validBlid: string): boolean {
-		if (decodedBlid !== validBlid) return false;
-		return true;
-	}
-
-	private createJwtPayload(username: string, permission: UserPermission, blid: string): JwtPayload {
-		return {
-			iss: this.options.iss,
-			aud: this.options.aud,
-			iat: Date.now(),
-			exp: Date.now() + this.options.exp,
-			permission: permission,
-			blid: blid,
-			username: username
-		}
-	}
-
-	public permissionAbove(tokenPermission: UserPermission, permissions: UserPermission[]) {
-		let lowestPermission = permissions[0];
-
-		if (tokenPermission === lowestPermission) return true;
-
-		if (lowestPermission === "customer") {
-			if (tokenPermission === "employee") return true;
-			if (tokenPermission === "admin") return true;
-		}
-
-		if (lowestPermission === "employee") {
-			if (tokenPermission === "admin") return true;
-		}
-
-		return false;
-	}
+    return false;
+  }
 }

@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import { BlError, Order } from "@wizardcoder/bl-model";
+import sinon from "sinon";
+import { BlError, Order } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { OrderActive } from "./order-active";
 
@@ -35,7 +36,7 @@ describe("OrderActive", () => {
         branch: "branch1",
         customer: testUserId,
         byCustomer: true,
-        placed: false
+        placed: false,
       };
 
       getOrderByQueryStub.resolves([nonActiveOrder]);
@@ -52,7 +53,7 @@ describe("OrderActive", () => {
         branch: "branch1",
         customer: testUserId,
         byCustomer: true,
-        placed: false
+        placed: false,
       };
 
       const activeOrder: Order = {
@@ -68,13 +69,13 @@ describe("OrderActive", () => {
             taxRate: 0,
             taxAmount: 0,
             handout: false,
-            delivered: false
-          }
+            delivered: false,
+          },
         ],
         branch: "branch1",
         customer: testUserId,
         byCustomer: true,
-        placed: true
+        placed: true,
       };
 
       getOrderByQueryStub.resolves([nonActiveOrder, activeOrder]);
@@ -97,13 +98,13 @@ describe("OrderActive", () => {
             taxRate: 0,
             taxAmount: 0,
             handout: true,
-            delivered: false
-          }
+            delivered: false,
+          },
         ],
         branch: "branch1",
         customer: testUserId,
         byCustomer: true,
-        placed: true
+        placed: true,
       };
 
       const nonActiveOrder2: Order = {
@@ -119,13 +120,13 @@ describe("OrderActive", () => {
             taxRate: 0,
             taxAmount: 0,
             handout: true,
-            delivered: false
-          }
+            delivered: false,
+          },
         ],
         branch: "branch1",
         customer: testUserId,
         byCustomer: true,
-        placed: true
+        placed: true,
       };
 
       getOrderByQueryStub.resolves([nonActiveOrder, nonActiveOrder2]);

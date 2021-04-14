@@ -1,11 +1,11 @@
 // IMPORTANT TO HAVE ON TOP
 require("dotenv").config(); //adds the .env file to environment variables
-import * as express from "express";
+import express from "express";
 import { Application, Request, Response, Router } from "express";
-import * as passport from "passport";
+import passport from "passport";
 import { BlAuth } from "../auth/bl.auth";
 import { CollectionEndpointCreator } from "../collection-endpoint/collection-endpoint-creator";
-import * as path from "path";
+import path from "path";
 
 import { logger } from "../logger/logger";
 import { APP_CONFIG } from "../application-config";
@@ -34,7 +34,7 @@ export class Server {
       .then(() => {
         this.serverStart();
       })
-      .catch(err => {
+      .catch((err) => {
         logger.error(`could not connect to mongodb: ${err}`);
 
         if (
@@ -70,31 +70,28 @@ export class Server {
         logger.warn("mongoose connection was reconnected");
       });
 
-      mongoose.connection.on("error", err => {
+      mongoose.connection.on("error", (err) => {
         logger.error("mongoose connection has error");
       });
 
       mongoose
-        .connect(
-          process.env.MONGODB_URI,
-          {
-            //useMongoClient: true,
-            //reconnectTries: Number.MAX_VALUE,
-            //reconnectInterval: 500,
-            //autoReconnect: true,
-            poolSize: 10,
-            connectTimeoutMS: 10000,
-            socketTimeoutMS: 45000,
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true
-          }
-        )
+        .connect(process.env.MONGODB_URI, {
+          //useMongoClient: true,
+          //reconnectTries: Number.MAX_VALUE,
+          //reconnectInterval: 500,
+          //autoReconnect: true,
+          poolSize: 10,
+          connectTimeoutMS: 10000,
+          socketTimeoutMS: 45000,
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+          useCreateIndex: true,
+        })
         .then(() => {
           logger.verbose(`connected to mongodb: ${process.env.MONGODB_URI}`);
           resolve(true);
         })
-        .catch(err => {
+        .catch((err) => {
           reject(err);
         });
     });
@@ -118,7 +115,7 @@ export class Server {
       methods: allowedMethods,
       allowedHeaders: allowedHeaders,
       preflightContinue: true,
-      optionsSuccessStatus: 204
+      optionsSuccessStatus: 204,
     };
 
     this.app.use(cors(corsConfig));
@@ -192,7 +189,7 @@ export class Server {
       logger.info("blapi is ready to take requests!");
     });
 
-    this.app.on("uncaughtException", err => {
+    this.app.on("uncaughtException", (err) => {
       logger.warn("uncaught exception:" + err);
     });
 
@@ -200,8 +197,8 @@ export class Server {
       logger.warn("user quit the program");
     });
 
-    this.app.on("SIGINT", function() {
-      mongoose.connection.close(function() {
+    this.app.on("SIGINT", function () {
+      mongoose.connection.close(function () {
         logger.warn("mongoose connection disconnected through app termination");
         process.exit(0);
       });

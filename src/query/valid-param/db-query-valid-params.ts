@@ -1,6 +1,6 @@
 export type ValidParam = {
   fieldName: string;
-  type: 'string' | 'number' | 'boolean' | 'date' | 'expand' | 'object-id';
+  type: "string" | "number" | "boolean" | "date" | "expand" | "object-id";
 };
 
 export class DbQueryValidParams {
@@ -11,27 +11,27 @@ export class DbQueryValidParams {
   }
 
   public getValidNumberParams(): string[] {
-    return this.getValidParamsBasedOnType('number');
+    return this.getValidParamsBasedOnType("number");
   }
 
   public getValidStringParams(): string[] {
-    return this.getValidParamsBasedOnType('string');
+    return this.getValidParamsBasedOnType("string");
   }
 
   public getValidObjectIdParams(): string[] {
-    return this.getValidParamsBasedOnType('object-id');
+    return this.getValidParamsBasedOnType("object-id");
   }
 
   public getValidBooleanParams(): string[] {
-    return this.getValidParamsBasedOnType('boolean');
+    return this.getValidParamsBasedOnType("boolean");
   }
 
   public getValidDateParams(): string[] {
-    return this.getValidParamsBasedOnType('date');
+    return this.getValidParamsBasedOnType("date");
   }
 
   public getValidExpandParams(): string[] {
-    return this.getValidParamsBasedOnType('expand');
+    return this.getValidParamsBasedOnType("expand");
   }
 
   public getAllValidParams(): string[] {

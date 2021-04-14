@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response, Router } from "express";
 import {
   BlEndpointMethod,
-  BlEndpointOperation
+  BlEndpointOperation,
 } from "../collections/bl-collection";
 import { CollectionEndpointAuth } from "./collection-endpoint-auth/collection-endpoint-auth";
 
 import { SEResponseHandler } from "../response/se.response.handler";
-import { AccessToken, BlError } from "@wizardcoder/bl-model";
+import { AccessToken, BlError } from "@boklisten/bl-model";
 import { BlApiRequest } from "../request/bl-api-request";
-import { BlapiResponse } from "@wizardcoder/bl-model";
+import { BlapiResponse } from "@boklisten/bl-model";
 
 export class CollectionEndpointOperation {
   private _uri: string;
@@ -48,9 +48,7 @@ export class CollectionEndpointOperation {
         break;
       default:
         throw new Error(
-          `endpoint operation method "${
-            this._method
-          }" is currently not supported`
+          `endpoint operation method "${this._method}" is currently not supported`
         );
     }
   }
@@ -84,8 +82,8 @@ export class CollectionEndpointOperation {
           data: req.body,
           user: {
             id: accessToken.sub,
-            permission: accessToken.permission
-          }
+            permission: accessToken.permission,
+          },
         };
 
         this._operation.operation
@@ -97,7 +95,7 @@ export class CollectionEndpointOperation {
 
             this._responseHandler.sendResponse(res, blapiResponse);
           })
-          .catch(err => {
+          .catch((err) => {
             this._responseHandler.sendErrorResponse(res, err);
           });
       })

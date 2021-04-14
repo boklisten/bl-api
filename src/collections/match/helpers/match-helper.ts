@@ -5,11 +5,11 @@ import {
   UserDetail,
   MatchProfile,
   BlError,
-} from '@wizardcoder/bl-model';
+} from "@boklisten/bl-model";
 
 export class MatchHelper {
   public convertOrderItemsToMatchItems(orderItems: OrderItem[]): MatchItem[] {
-    return orderItems.map(orderItem => {
+    return orderItems.map((orderItem) => {
       return {
         item: orderItem.item as string,
         customerItem: orderItem.customerItem as string,
@@ -29,7 +29,7 @@ export class MatchHelper {
 
   public findMatchingItemIds(matchItems: MatchItem[], match: Match): string[] {
     let matchedItems = [];
-    let matchItemIds = matchItems.map(matchItem => matchItem.item).sort();
+    let matchItemIds = matchItems.map((matchItem) => matchItem.item).sort();
 
     for (let matchItemId of matchItemIds) {
       for (let mi of match.items) {
@@ -40,7 +40,7 @@ export class MatchHelper {
     }
 
     if (!matchedItems || matchedItems.length <= 0) {
-      throw new BlError('no items found to be matching in match');
+      throw new BlError("no items found to be matching in match");
     }
 
     return matchedItems;
@@ -48,10 +48,10 @@ export class MatchHelper {
 
   public findMatchingItemIdsFromPartlyMatched(
     matchItems: MatchItem[],
-    match: Match,
+    match: Match
   ): string[] {
     let matchedItems = [];
-    let matchItemIds = matchItems.map(matchItem => matchItem.item).sort();
+    let matchItemIds = matchItems.map((matchItem) => matchItem.item).sort();
     let recievers = [];
 
     for (let matchItemId of matchItemIds) {
@@ -68,11 +68,11 @@ export class MatchHelper {
     }
 
     if (recievers.length > 1) {
-      throw new BlError('match already contains more than one reciever');
+      throw new BlError("match already contains more than one reciever");
     }
 
     if (!matchedItems || matchedItems.length <= 0) {
-      throw new BlError('no items found to be matching in match');
+      throw new BlError("no items found to be matching in match");
     }
 
     return matchedItems;

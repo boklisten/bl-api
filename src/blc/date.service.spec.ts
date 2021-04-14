@@ -1,5 +1,5 @@
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import { dateService } from "./date.service";
 import moment = require("moment-timezone");
@@ -131,20 +131,11 @@ describe("DateService", () => {
   describe("isOver18()", () => {
     it("should return false if birthday is under 18", () => {
       const birthdays = [
-        moment()
-          .subtract(1, "day")
-          .toDate(),
-        moment()
-          .subtract(1, "year")
-          .toDate(),
-        moment()
-          .subtract(17, "years")
-          .toDate(),
-        moment()
-          .subtract(18, "years")
-          .add(1, "day")
-          .toDate(),
-        moment().toDate()
+        moment().subtract(1, "day").toDate(),
+        moment().subtract(1, "year").toDate(),
+        moment().subtract(17, "years").toDate(),
+        moment().subtract(18, "years").add(1, "day").toDate(),
+        moment().toDate(),
       ];
 
       for (let birthday of birthdays) {
@@ -154,18 +145,10 @@ describe("DateService", () => {
 
     it("should return true if birthday is over 18", () => {
       const birthdays = [
-        moment()
-          .subtract(98, "years")
-          .toDate(),
-        moment()
-          .subtract(19, "year")
-          .toDate(),
-        moment()
-          .subtract(21, "years")
-          .toDate(),
-        moment()
-          .subtract(18, "years")
-          .toDate()
+        moment().subtract(98, "years").toDate(),
+        moment().subtract(19, "year").toDate(),
+        moment().subtract(21, "years").toDate(),
+        moment().subtract(18, "years").toDate(),
       ];
 
       for (let birthday of birthdays) {
@@ -176,22 +159,14 @@ describe("DateService", () => {
 
   describe("betweenHours()", () => {
     it("should return true if date is between from hour and to hour", () => {
-      const date = moment()
-        .hour(12)
-        .minute(15)
-        .seconds(22)
-        .toDate();
+      const date = moment().hour(12).minute(15).seconds(22).toDate();
 
       return expect(dateService.betweenHours(date, 8, 18, "Europe/Oslo")).to.be
         .true;
     });
 
     it("should return false if date is not between from hour and to hour", () => {
-      const date = moment()
-        .hour(7)
-        .minute(15)
-        .seconds(22)
-        .toDate();
+      const date = moment().hour(7).minute(15).seconds(22).toDate();
 
       return expect(dateService.betweenHours(date, 8, 18, "Europe/Oslo")).to.be
         .false;

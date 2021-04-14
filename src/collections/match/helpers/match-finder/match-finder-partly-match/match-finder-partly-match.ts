@@ -1,5 +1,5 @@
-import {Match, MatchItem, BlError} from '@wizardcoder/bl-model';
-import {MatchHelper} from '../../match-helper';
+import { Match, MatchItem, BlError } from "@boklisten/bl-model";
+import { MatchHelper } from "../../match-helper";
 
 export class MatchFinderPartlyMatch {
   private matchHelper: MatchHelper;
@@ -18,7 +18,7 @@ export class MatchFinderPartlyMatch {
     try {
       let matchInTypeCreated = await this.findPartlyMatchInStateCreated(
         matchItems,
-        matches,
+        matches
       );
 
       if (matchInTypeCreated) {
@@ -29,7 +29,7 @@ export class MatchFinderPartlyMatch {
     try {
       let matchInTypePartlyMatched = await this.findPartlyMatchInStatePartlyMatched(
         matchItems,
-        matches,
+        matches
       );
 
       if (matchInTypePartlyMatched) {
@@ -37,15 +37,15 @@ export class MatchFinderPartlyMatch {
       }
     } catch (e) {}
 
-    throw new BlError('no match was found');
+    throw new BlError("no match was found");
   }
 
   private async findPartlyMatchInStatePartlyMatched(
     matchItems: MatchItem[],
-    matches: Match[],
+    matches: Match[]
   ): Promise<Match> {
     let matchesWithPartlyMatchedState = matches.filter(
-      match => match.state === 'partly-matched',
+      (match) => match.state === "partly-matched"
     );
 
     let matchWithMostMatchedItems = null;
@@ -56,7 +56,7 @@ export class MatchFinderPartlyMatch {
       try {
         matchedItemIds = this.matchHelper.findMatchingItemIdsFromPartlyMatched(
           matchItems,
-          match,
+          match
         );
       } catch (e) {
         continue;
@@ -75,10 +75,10 @@ export class MatchFinderPartlyMatch {
 
   private async findPartlyMatchInStateCreated(
     matchItems: MatchItem[],
-    matches: Match[],
+    matches: Match[]
   ): Promise<Match> {
     let matchesWithCreatedState = matches.filter(
-      match => match.state === 'created',
+      (match) => match.state === "created"
     );
 
     let matchWithMostMatchedItems = null;
@@ -89,7 +89,7 @@ export class MatchFinderPartlyMatch {
       try {
         matchedItemIds = this.matchHelper.findMatchingItemIds(
           matchItems,
-          match,
+          match
         );
       } catch (e) {
         continue;

@@ -1,5 +1,5 @@
 import { Hook } from "../../../hook/hook";
-import { UserDetail, AccessToken, BlError } from "@wizardcoder/bl-model";
+import { UserDetail, AccessToken, BlError } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { OrderActive } from "../../order/helpers/order-active/order-active";
 import { CustomerHaveActiveCustomerItems } from "../../customer-item/helpers/customer-have-active-customer-items";
@@ -60,9 +60,7 @@ export class UserDetailDeleteHook extends Hook {
       );
       if (!canDelete) {
         throw new BlError(
-          `user "${
-            accessToken.details
-          }" has no permission to delete user "${id}"`
+          `user "${accessToken.details}" has no permission to delete user "${id}"`
         );
       }
     } catch (e) {

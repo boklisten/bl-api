@@ -1,8 +1,9 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import {expect} from 'chai';
-import * as sinon from 'sinon';
+// @ts-nocheck
+import "mocha";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { expect } from "chai";
+import sinon from "sinon";
 import {
   AccessToken,
   BlError,
@@ -10,106 +11,106 @@ import {
   CustomerItem,
   Message,
   UserDetail,
-} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import * as sinonChai from 'sinon-chai';
-import {MatchPostHook} from './match.post.hook';
+} from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import sinonChai from "sinon-chai";
+import { MatchPostHook } from "./match.post.hook";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-  'customeritems',
+  "customeritems"
 );
 
-const matchStorage = new BlDocumentStorage<Match>('matches');
+const matchStorage = new BlDocumentStorage<Match>("matches");
 
-const customerItemGetStub = sinon.stub(customerItemStorage, 'get');
-const customerItemUpdateStub = sinon.stub(customerItemStorage, 'update');
+const customerItemGetStub = sinon.stub(customerItemStorage, "get");
+const customerItemUpdateStub = sinon.stub(customerItemStorage, "update");
 
 const matchPostHook = new MatchPostHook(customerItemStorage, matchStorage);
 
-describe('#before()', () => {
-  it('should reject if Match.sender.userId is not equal to accessToken.details', () => {
+describe("#before()", () => {
+  it("should reject if Match.sender.userId is not equal to accessToken.details", () => {
     const accessToken = {
-      details: 'userDetails1',
+      details: "userDetails1",
     } as AccessToken;
 
     const match = {
       sender: {
-        userId: 'someOtherUserId',
+        userId: "someOtherUserId",
       },
     } as Match;
 
     return expect(
-      matchPostHook.before(match, accessToken),
+      matchPostHook.before(match, accessToken)
     ).to.eventually.be.rejectedWith(
       BlError,
-      /Match.sender.userId does not match accessToken.details/,
+      /Match.sender.userId does not match accessToken.details/
     );
   });
 
-  it('should reject if one of the customerItems already has a match attached', () => {
+  it("should reject if one of the customerItems already has a match attached", () => {
     const accessToken = {
-      details: 'userDetails1',
+      details: "userDetails1",
     } as AccessToken;
 
     const match = {
       sender: {
-        userId: 'userDetails1',
+        userId: "userDetails1",
       },
       items: [
         {
-          customerItem: 'customerItem1',
+          customerItem: "customerItem1",
         },
         {
-          customerItem: 'customerItem2',
+          customerItem: "customerItem2",
         },
       ],
     } as Match;
 
     customerItemGetStub
-      .withArgs('customerItem1')
-      .resolves({deadline: new Date()});
+      .withArgs("customerItem1")
+      .resolves({ deadline: new Date() });
 
-    customerItemGetStub.withArgs('customerItem2').resolves({
+    customerItemGetStub.withArgs("customerItem2").resolves({
       deadline: new Date(),
       match: true,
-      matchInfo: {time: new Date()},
+      matchInfo: { time: new Date() },
     });
 
     return expect(
-      matchPostHook.before(match, accessToken),
+      matchPostHook.before(match, accessToken)
     ).to.eventually.be.rejectedWith(
       BlError,
-      /customerItem "customerItem2" already has a match attached/,
+      /customerItem "customerItem2" already has a match attached/
     );
   });
 
-  it('should resolve if match is valid', () => {
+  it("should resolve if match is valid", () => {
     const accessToken = {
-      details: 'userDetails1',
+      details: "userDetails1",
     } as AccessToken;
 
     const match = {
       sender: {
-        userId: 'userDetails1',
+        userId: "userDetails1",
       },
       items: [
         {
-          customerItem: 'customerItem1',
+          customerItem: "customerItem1",
         },
         {
-          customerItem: 'customerItem2',
+          customerItem: "customerItem2",
         },
       ],
     } as Match;
 
     customerItemGetStub
-      .withArgs('customerItem1')
-      .resolves({deadline: new Date()});
+      .withArgs("customerItem1")
+      .resolves({ deadline: new Date() });
 
-    customerItemGetStub.withArgs('customerItem2').resolves({
+    customerItemGetStub.withArgs("customerItem2").resolves({
       deadline: new Date(),
     });
 
@@ -118,21 +119,21 @@ describe('#before()', () => {
   });
 });
 
-describe('#after()', () => {
-  it('should update all customerItems from Match.items with match details', done => {
+describe("#after()", () => {
+  it("should update all customerItems from Match.items with match details", (done) => {
     const accessToken = {
-      details: 'userDetails1',
-      permission: 'customer',
+      details: "userDetails1",
+      permission: "customer",
     } as AccessToken;
 
     const match = {
-      id: 'match11',
+      id: "match11",
       sender: {
-        userId: 'userDetails1',
+        userId: "userDetails1",
       },
       items: [
         {
-          customerItem: 'customerItem1',
+          customerItem: "customerItem1",
         },
       ],
     } as Match;
@@ -142,42 +143,42 @@ describe('#after()', () => {
       .then(() => {
         const args = customerItemUpdateStub.lastCall.args;
 
-        expect(args[0]).equal('customerItem1');
-        expect(args[1].matchInfo.id).equal('match11');
+        expect(args[0]).equal("customerItem1");
+        expect(args[1].matchInfo.id).equal("match11");
         expect(args[1].match).true;
-        expect(typeof args[1].matchInfo.time).equal('object');
+        expect(typeof args[1].matchInfo.time).equal("object");
         done();
       })
-      .catch(err => {
+      .catch((err) => {
         done(err);
       });
   });
 
-  it('should reject if customerItem could not be updated', () => {
+  it("should reject if customerItem could not be updated", () => {
     const accessToken = {
-      details: 'userDetails1',
-      permission: 'customer',
+      details: "userDetails1",
+      permission: "customer",
     } as AccessToken;
 
     const match = {
-      id: 'match11',
+      id: "match11",
       sender: {
-        userId: 'userDetails1',
+        userId: "userDetails1",
       },
       items: [
         {
-          customerItem: 'customerItem16',
+          customerItem: "customerItem16",
         },
       ],
     } as Match;
 
-    customerItemUpdateStub.rejects(new BlError('could not be updated'));
+    customerItemUpdateStub.rejects(new BlError("could not be updated"));
 
     return expect(
-      matchPostHook.after([match], accessToken),
+      matchPostHook.after([match], accessToken)
     ).to.eventually.be.rejectedWith(
       BlError,
-      /could not update customerItem "customerItem16" with match data/,
+      /could not update customerItem "customerItem16" with match data/
     );
   });
 });

@@ -1,54 +1,55 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import {expect} from 'chai';
-import * as sinon from 'sinon';
-import {BlError, Match, MatchItem} from '@wizardcoder/bl-model';
-import * as sinonChai from 'sinon-chai';
-import {dateService} from '../../../../../blc/date.service';
-import {MatchFinderPartlyMatch} from './match-finder-partly-match';
+// @ts-nocheck
+import "mocha";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { expect } from "chai";
+import sinon from "sinon";
+import { BlError, Match, MatchItem } from "@boklisten/bl-model";
+import sinonChai from "sinon-chai";
+import { dateService } from "../../../../../blc/date.service";
+import { MatchFinderPartlyMatch } from "./match-finder-partly-match";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 const matchFinderPartlyMatch = new MatchFinderPartlyMatch();
 
-describe('find()', () => {
-  it('should reject if no partly match is found', () => {
+describe("find()", () => {
+  it("should reject if no partly match is found", () => {
     let matches = [
       {
-        state: 'done',
+        state: "done",
         items: [
           {
-            item: 'abc1',
+            item: "abc1",
           },
         ],
       },
     ] as Match[];
 
-    let matchItems = [{item: 'someItem'}] as MatchItem[];
+    let matchItems = [{ item: "someItem" }] as MatchItem[];
 
     return expect(
-      matchFinderPartlyMatch.find(matchItems, matches),
+      matchFinderPartlyMatch.find(matchItems, matches)
     ).to.eventually.be.rejectedWith(BlError, /no match was found/);
   });
 
-  it('should resolve with correct match', () => {
+  it("should resolve with correct match", () => {
     let matches = [
       {
-        state: 'created',
+        state: "created",
         items: [
           {
-            item: 'item1',
+            item: "item1",
           },
           {
-            item: 'item2',
+            item: "item2",
           },
         ],
       },
     ] as Match[];
 
-    let matchItems = [{item: 'item1'}] as MatchItem[];
+    let matchItems = [{ item: "item1" }] as MatchItem[];
 
     return matchFinderPartlyMatch
       .find(matchItems, matches)

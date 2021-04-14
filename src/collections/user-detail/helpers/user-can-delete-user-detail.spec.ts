@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import { BlError, AccessToken, UserDetail } from "@wizardcoder/bl-model";
+import sinon from "sinon";
+import { BlError, AccessToken, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { UserCanDeleteUserDetail } from "./user-can-delete-user-detail";
 import { User } from "../../user/user";
@@ -37,7 +38,7 @@ describe("UserCanDeleteUserDetail", () => {
         sub: "",
         username: "",
         permission: "customer",
-        details: "userDetail1"
+        details: "userDetail1",
       };
       userDetailGetIdStub.resolves({ id: "userDetail1" });
 
@@ -55,12 +56,12 @@ describe("UserCanDeleteUserDetail", () => {
         sub: "",
         username: "",
         permission: "customer",
-        details: "userDetail1"
+        details: "userDetail1",
       };
 
       userDetailGetIdStub.resolves({
         id: "userDetail2",
-        email: "user@test.com"
+        email: "user@test.com",
       });
 
       userGetByQueryStub.resolves([{ permission: "admin" }]);
@@ -79,12 +80,12 @@ describe("UserCanDeleteUserDetail", () => {
         sub: "",
         username: "",
         permission: "admin",
-        details: "userDetail1"
+        details: "userDetail1",
       };
 
       userDetailGetIdStub.resolves({
         id: "userDetail2",
-        email: "user@test.com"
+        email: "user@test.com",
       });
 
       userGetByQueryStub.resolves([{ permission: "admin" }]);
@@ -103,12 +104,12 @@ describe("UserCanDeleteUserDetail", () => {
         sub: "",
         username: "",
         permission: "manager",
-        details: "userDetail1"
+        details: "userDetail1",
       };
 
       userDetailGetIdStub.resolves({
         id: "userDetail2",
-        email: "user@test.com"
+        email: "user@test.com",
       });
 
       userGetByQueryStub.resolves([{ permission: "customer" }]);
@@ -127,12 +128,12 @@ describe("UserCanDeleteUserDetail", () => {
         sub: "",
         username: "",
         permission: "super",
-        details: "userDetail1"
+        details: "userDetail1",
       };
 
       userDetailGetIdStub.resolves({
         id: "userDetail2",
-        email: "user@test.com"
+        email: "user@test.com",
       });
 
       userGetByQueryStub.resolves([{ permission: "admin" }]);
@@ -151,12 +152,12 @@ describe("UserCanDeleteUserDetail", () => {
         sub: "",
         username: "",
         permission: "admin",
-        details: "userDetail1"
+        details: "userDetail1",
       };
 
       userDetailGetIdStub.resolves({
         id: "userDetail2",
-        email: "user@test.com"
+        email: "user@test.com",
       });
 
       userGetByQueryStub.resolves([{ permission: "manager" }]);
@@ -175,12 +176,12 @@ describe("UserCanDeleteUserDetail", () => {
         sub: "",
         username: "",
         permission: "admin",
-        details: "userDetail1"
+        details: "userDetail1",
       };
 
       userDetailGetIdStub.resolves({
         id: "userDetail2",
-        email: "user@test.com"
+        email: "user@test.com",
       });
 
       userGetByQueryStub.resolves([{ permission: "employee" }]);
@@ -199,12 +200,12 @@ describe("UserCanDeleteUserDetail", () => {
         sub: "",
         username: "",
         permission: "admin",
-        details: "userDetail1"
+        details: "userDetail1",
       };
 
       userDetailGetIdStub.resolves({
         id: "userDetail2",
-        email: "user@test.com"
+        email: "user@test.com",
       });
 
       userGetByQueryStub.resolves([{ permission: "customer" }]);

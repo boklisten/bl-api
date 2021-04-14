@@ -1,33 +1,33 @@
-import {BlCollection, BlEndpoint} from '../bl-collection';
-import {invoiceSchema} from './invoice.schema';
-import {Schema} from 'mongoose';
+import { BlCollection, BlEndpoint } from "../bl-collection";
+import { invoiceSchema } from "./invoice.schema";
+import { Schema } from "mongoose";
 
 export class InvoiceCollection implements BlCollection {
-  collectionName = 'invoices';
+  collectionName = "invoices";
   mongooseSchema = invoiceSchema;
   endpoints: BlEndpoint[] = [
     {
-      method: 'getId',
+      method: "getId",
       restriction: {
-        permissions: ['admin', 'super'],
+        permissions: ["admin", "super"],
       },
     },
     {
-      method: 'getAll',
+      method: "getAll",
       restriction: {
-        permissions: ['admin', 'super'],
+        permissions: ["admin", "super"],
       },
     },
     {
-      method: 'post',
+      method: "post",
       restriction: {
-        permissions: ['admin', 'super'],
+        permissions: ["admin", "super"],
       },
     },
     {
-      method: 'patch',
+      method: "patch",
       restriction: {
-        permissions: ['admin', 'super'],
+        permissions: ["admin", "super"],
       },
     },
   ];

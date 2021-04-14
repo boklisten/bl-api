@@ -1,6 +1,6 @@
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlapiResponse, Order, UserDetail } from "@wizardcoder/bl-model";
+import { BlapiResponse, Order, UserDetail } from "@boklisten/bl-model";
 import { Messenger } from "../../../messenger/messenger";
 import { SEResponseHandler } from "../../../response/se.response.handler";
 import { BlApiRequest } from "../../../request/bl-api-request";

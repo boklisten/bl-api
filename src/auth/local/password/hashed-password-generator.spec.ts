@@ -1,10 +1,11 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import { HashedPasswordGenerator } from "./hashed-password-generator";
 import { SaltGenerator } from "../salt/salt-generator";
-import { BlError } from "@wizardcoder/bl-model";
+import { BlError } from "@boklisten/bl-model";
 import { isNullOrUndefined } from "util";
 import { SeCrypto } from "../../../crypto/se.crypto";
 

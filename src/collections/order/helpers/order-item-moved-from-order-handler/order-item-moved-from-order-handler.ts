@@ -1,7 +1,7 @@
-import {BlError, Order} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
-import {SystemUser} from '../../../../auth/permission/permission.service';
-import {orderSchema} from '../../order.schema';
+import { BlError, Order } from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { SystemUser } from "../../../../auth/permission/permission.service";
+import { orderSchema } from "../../order.schema";
 
 type OrderItemToUpdate = {
   itemId: string;
@@ -15,7 +15,7 @@ export class OrderItemMovedFromOrderHandler {
   constructor(orderStorage?: BlDocumentStorage<Order>) {
     this._orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage('orders', orderSchema);
+      : new BlDocumentStorage("orders", orderSchema);
   }
 
   public async updateOrderItems(order: Order): Promise<boolean> {
@@ -40,7 +40,7 @@ export class OrderItemMovedFromOrderHandler {
   }
 
   private async addMovedToOrderOnOrderItems(
-    orderItemsToUpdate: OrderItemToUpdate[],
+    orderItemsToUpdate: OrderItemToUpdate[]
   ): Promise<boolean> {
     try {
       for (let orderItemToUpdate of orderItemsToUpdate) {
@@ -54,12 +54,12 @@ export class OrderItemMovedFromOrderHandler {
   }
 
   private async updateOrderItem(
-    orderItemToUpdate: OrderItemToUpdate,
+    orderItemToUpdate: OrderItemToUpdate
   ): Promise<boolean> {
     let originalOrder: Order;
 
     originalOrder = await this._orderStorage.get(
-      orderItemToUpdate.originalOrderId,
+      orderItemToUpdate.originalOrderId
     );
 
     for (let orderItem of originalOrder.orderItems) {
@@ -73,8 +73,8 @@ export class OrderItemMovedFromOrderHandler {
 
     await this._orderStorage.update(
       orderItemToUpdate.originalOrderId,
-      {orderItems: originalOrder.orderItems},
-      new SystemUser(),
+      { orderItems: originalOrder.orderItems },
+      new SystemUser()
     );
     return true;
   }

@@ -1,15 +1,16 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
-import * as sinon from "sinon";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
 import { expect } from "chai";
 import { LocalLoginHandler } from "./local-login.handler";
 import { localLoginSchema } from "../../collections/local-login/local-login.schema";
 import { LocalLogin } from "../../collections/local-login/local-login";
 import { SEDbQuery } from "../../query/se.db-query";
-import { BlError } from "@wizardcoder/bl-model";
+import { BlError } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import * as local from "commander";
+import local from "commander";
 
 chai.use(chaiAsPromised);
 
@@ -18,7 +19,8 @@ const dummyLocalLogin = {
   provider: "local",
   providerId: "123",
   hashedPassword: "abc",
-  salt: "car"
+  salt: "car",
+  id: "random",
 };
 
 describe("LocalLoginHandler", () => {
@@ -32,7 +34,7 @@ describe("LocalLoginHandler", () => {
     providerId: "1",
     hashedPassword: "b",
     provider: "c",
-    salt: "h"
+    salt: "h",
   };
   let testLocalLogin: LocalLogin = baseLocalLogin;
   let testUsername = "";
@@ -48,7 +50,7 @@ describe("LocalLoginHandler", () => {
       provider: "local",
       providerId: "i",
       hashedPassword: "abc",
-      salt: "l"
+      salt: "l",
     };
     updateSuccess = true;
   });
@@ -172,7 +174,7 @@ describe("LocalLoginHandler", () => {
       });
     });
 
-    it("should reject with blError.code 702 when username is not found in db", done => {
+    it("should reject with blError.code 702 when username is not found in db", (done) => {
       localLoginHandler.get("notFound@mail.com").catch((blError: BlError) => {
         expect(blError.getCode()).to.eql(702);
         done();

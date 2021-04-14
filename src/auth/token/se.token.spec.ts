@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import { JwtPayload, SEToken } from "./se.token";
-import { BlError } from "@wizardcoder/bl-model";
+import { BlError } from "@boklisten/bl-model";
 
 chai.use(chaiAsPromised);
 
@@ -39,12 +40,12 @@ describe("SeToken", () => {
               (decodedToken: JwtPayload) => {
                 resolve(decodedToken.username);
               },
-              error => {
+              (error) => {
                 //no need
               }
             );
           },
-          error => {
+          (error) => {
             //no need for error handling in a test for resolve
           }
         );
@@ -57,7 +58,7 @@ describe("SeToken", () => {
           (token: string) => {
             seToken
               .validateToken(token, {
-                permissions: ["admin"]
+                permissions: ["admin"],
               })
               .then(
                 (decodedToken: JwtPayload) => {},

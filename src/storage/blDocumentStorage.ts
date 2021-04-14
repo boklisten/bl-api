@@ -3,8 +3,8 @@ import {
   BlDocument,
   BlError,
   UserDetail,
-  UserPermission
-} from "@wizardcoder/bl-model";
+  UserPermission,
+} from "@boklisten/bl-model";
 import { BlStorageHandler } from "./blStorageHandler";
 import { MongoDbBlStorageHandler } from "./mongoDb/mongoDb.blStorageHandler";
 import { SEDbQuery } from "../query/se.db-query";

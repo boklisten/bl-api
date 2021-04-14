@@ -3,7 +3,7 @@ import { BlApiRequest } from "../../../../request/bl-api-request";
 import { NextFunction, Request, Response } from "express";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { User } from "../../../user/user";
-import { BlapiResponse, BlError, UserDetail } from "@wizardcoder/bl-model";
+import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { userDetailSchema } from "../../user-detail.schema";
 import { PermissionService } from "../../../../auth/permission/permission.service";
 import { isNullOrUndefined } from "util";
@@ -118,7 +118,7 @@ export class UserDetailChangeEmailOperation implements Operation {
     let user;
     try {
       const users = await this._userStorage.aggregate([
-        { $match: { username: email, blid: blid } }
+        { $match: { username: email, blid: blid } },
       ]);
       user = users[0];
     } catch (e) {
@@ -131,7 +131,7 @@ export class UserDetailChangeEmailOperation implements Operation {
     let localLogin;
     try {
       const localLogins = await this._localLoginStorage.aggregate([
-        { $match: { username: username } }
+        { $match: { username: username } },
       ]);
       localLogin = localLogins[0];
     } catch (e) {

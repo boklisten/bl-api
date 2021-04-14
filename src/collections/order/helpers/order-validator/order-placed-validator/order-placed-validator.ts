@@ -1,4 +1,4 @@
-import { Order, Delivery, Payment, BlError } from "@wizardcoder/bl-model";
+import { Order, Delivery, Payment, BlError } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
 import { deliverySchema } from "../../../../delivery/delivery.schema";
 import { paymentSchema } from "../../../../payment/payment.schema";

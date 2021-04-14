@@ -1,101 +1,102 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import {expect} from 'chai';
-import * as sinon from 'sinon';
-import {BlError, Branch, CustomerItem, OrderItem} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {CustomerItemHandler} from './customer-item-handler';
-import {SystemUser} from '../../../auth/permission/permission.service';
-import {SEDbQuery} from '../../../query/se.db-query';
-import * as mongoose from 'mongoose';
+// @ts-nocheck
+import "mocha";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { expect } from "chai";
+import sinon from "sinon";
+import { BlError, Branch, CustomerItem, OrderItem } from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { CustomerItemHandler } from "./customer-item-handler";
+import { SystemUser } from "../../../auth/permission/permission.service";
+import { SEDbQuery } from "../../../query/se.db-query";
+import mongoose from "mongoose";
 
 chai.use(chaiAsPromised);
 
-describe('CustomerItemHandler', () => {
+describe("CustomerItemHandler", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    'customeritems',
+    "customeritems"
   );
-  const branchStorage = new BlDocumentStorage<Branch>('branches');
+  const branchStorage = new BlDocumentStorage<Branch>("branches");
   const customerItemHandler = new CustomerItemHandler(
     customerItemStorage,
-    branchStorage,
+    branchStorage
   );
 
-  const getCustomerItemStub = sinon.stub(customerItemStorage, 'get');
+  const getCustomerItemStub = sinon.stub(customerItemStorage, "get");
   const getByQueryCustomerItemStub = sinon.stub(
     customerItemStorage,
-    'getByQuery',
+    "getByQuery"
   );
-  const updateCustomerItemStub = sinon.stub(customerItemStorage, 'update');
-  const getBranchStub = sinon.stub(branchStorage, 'get');
+  const updateCustomerItemStub = sinon.stub(customerItemStorage, "update");
+  const getBranchStub = sinon.stub(branchStorage, "get");
 
   beforeEach(() => {
     getByQueryCustomerItemStub.reset();
   });
 
-  describe('#extend()', () => {
-    it('should reject if returned is true', () => {
+  describe("#extend()", () => {
+    it("should reject if returned is true", () => {
       const customerItem = {
         deadline: new Date(),
         handout: true,
         returned: true,
       };
 
-      getCustomerItemStub.withArgs('customerItem1').resolves(customerItem);
+      getCustomerItemStub.withArgs("customerItem1").resolves(customerItem);
 
       const orderItem = {} as OrderItem;
 
       return expect(
         customerItemHandler.extend(
-          'customerItem1',
+          "customerItem1",
           orderItem,
-          'branch1',
-          'order1',
-        ),
+          "branch1",
+          "order1"
+        )
       ).to.be.rejectedWith(BlError, /can not extend when returned is true/);
     });
 
-    it('should reject if orderItem.type is not extend', () => {
+    it("should reject if orderItem.type is not extend", () => {
       const customerItem = {
         deadline: new Date(),
         handout: true,
         returned: false,
       };
 
-      getCustomerItemStub.withArgs('customerItem1').resolves(customerItem);
+      getCustomerItemStub.withArgs("customerItem1").resolves(customerItem);
 
       const orderItem = {
-        type: 'rent',
+        type: "rent",
       } as OrderItem;
 
       return expect(
         customerItemHandler.extend(
-          'customerItem1',
+          "customerItem1",
           orderItem,
-          'branch1',
-          'order1',
-        ),
+          "branch1",
+          "order1"
+        )
       ).to.be.rejectedWith(BlError, /orderItem.type is not "extend"/);
     });
 
-    it('should reject if branch does not have the extend period', () => {
+    it("should reject if branch does not have the extend period", () => {
       const customerItem = {
         deadline: new Date(),
         handout: true,
         returned: false,
       };
 
-      getCustomerItemStub.withArgs('customerItem1').resolves(customerItem);
+      getCustomerItemStub.withArgs("customerItem1").resolves(customerItem);
 
       const orderItem = {
-        type: 'extend',
+        type: "extend",
         info: {
           from: new Date(),
           to: new Date(),
           numberOfPeriods: 1,
-          periodType: 'year',
-          customerItem: 'customerItem1',
+          periodType: "year",
+          customerItem: "customerItem1",
         },
       } as OrderItem;
 
@@ -103,7 +104,7 @@ describe('CustomerItemHandler', () => {
         paymentInfo: {
           extendPeriods: [
             {
-              type: 'semester',
+              type: "semester",
               date: new Date(),
               maxNumberOfPeriods: 1,
               price: 100,
@@ -112,86 +113,86 @@ describe('CustomerItemHandler', () => {
         },
       } as Branch;
 
-      getBranchStub.withArgs('branch1').resolves(branch);
+      getBranchStub.withArgs("branch1").resolves(branch);
 
       return expect(
         customerItemHandler.extend(
-          'customerItem1',
+          "customerItem1",
           orderItem,
-          'branch1',
-          'order1',
-        ),
+          "branch1",
+          "order1"
+        )
       ).to.be.rejectedWith(
         BlError,
-        /extend period "year" is not present on branch/,
+        /extend period "year" is not present on branch/
       );
     });
   });
 
-  describe('#buyout()', () => {
+  describe("#buyout()", () => {
     it('should reject if orderItem.type is not "buyout"', () => {
       const orderItem = {
-        type: 'rent',
+        type: "rent",
       } as OrderItem;
 
       const customerItem = {} as CustomerItem;
 
       return expect(
-        customerItemHandler.buyout('customerItem1', 'order1', orderItem),
+        customerItemHandler.buyout("customerItem1", "order1", orderItem)
       ).to.be.rejectedWith('orderItem.type is not "buyout"');
     });
   });
 
-  describe('#return()', () => {
+  describe("#return()", () => {
     it('should reject if orderItem.type is not "return"', () => {
       const orderItem = {
-        type: 'rent',
+        type: "rent",
       } as OrderItem;
 
       const customerItem = {} as CustomerItem;
 
       return expect(
         customerItemHandler.return(
-          'customerItem1',
-          'order1',
+          "customerItem1",
+          "order1",
           orderItem,
-          'branch1',
-          'employee1',
-        ),
+          "branch1",
+          "employee1"
+        )
       ).to.be.rejectedWith('orderItem.type is not "return"');
     });
   });
 
-  describe('#buyback()', () => {
+  describe("#buyback()", () => {
     it('should reject if orderItem.type is not "buyout"', () => {
       const orderItem = {
-        type: 'rent',
+        type: "rent",
       } as OrderItem;
 
       const customerItem = {} as CustomerItem;
 
       return expect(
-        customerItemHandler.buyback('customerItem1', 'order1', orderItem),
+        customerItemHandler.buyback("customerItem1", "order1", orderItem)
       ).to.be.rejectedWith('orderItem.type is not "buyback"');
     });
   });
 
-  describe('#getNotReturned', () => {
-    it('should return emtpy array if there are no customerItems', done => {
+  describe("#getNotReturned", () => {
+    it("should return emtpy array if there are no customerItems", (done) => {
       getByQueryCustomerItemStub.onFirstCall().resolves([]);
 
       customerItemHandler
-        .getNotReturned('5c33b6137eab87644f7e75e2', new Date(2012, 1, 1))
-        .then(notReturnedCustomerItems => {
+        .getNotReturned("5c33b6137eab87644f7e75e2", new Date(2012, 1, 1))
+        .then((notReturnedCustomerItems) => {
           expect(notReturnedCustomerItems).to.eql([]);
           done();
         })
-        .catch(err => {
+        .catch((err) => {
           done(err);
         });
     });
 
-    it('should ask db with correct query', done => {
+    it("should ask db with correct query", (done) => {
       const expectedQuery = new SEDbQuery();
 
       const before = new Date(2018, 11, 18);
@@ -200,7 +201,7 @@ describe('CustomerItemHandler', () => {
 
       expectedQuery.dateFilters = [
         {
-          fieldName: 'deadline',
+          fieldName: "deadline",
           op: {
             $gt: before,
             $lt: after,
@@ -210,52 +211,52 @@ describe('CustomerItemHandler', () => {
 
       expectedQuery.objectIdFilters = [
         {
-          fieldName: 'customer',
+          fieldName: "customer",
           value: [
-            '5c33b6137eab87644f7e75e2',
-            mongoose.Types.ObjectId('5c33b6137eab87644f7e75e2'),
+            "5c33b6137eab87644f7e75e2",
+            mongoose.Types.ObjectId("5c33b6137eab87644f7e75e2"),
           ],
         },
       ];
 
       expectedQuery.booleanFilters = [
-        {fieldName: 'returned', value: false},
-        {fieldName: 'match', value: false},
-        {fieldName: 'buyout', value: false},
+        { fieldName: "returned", value: false },
+        { fieldName: "match", value: false },
+        { fieldName: "buyout", value: false },
       ];
 
       getByQueryCustomerItemStub.withArgs(expectedQuery).resolves([]);
 
       customerItemHandler
-        .getNotReturned('5c33b6137eab87644f7e75e2', deadline)
-        .then(result => {
+        .getNotReturned("5c33b6137eab87644f7e75e2", deadline)
+        .then((result) => {
           const queryArg = getByQueryCustomerItemStub.getCall(0).args[0];
 
           expect(queryArg.booleanFilters).to.be.eql(
-            expectedQuery.booleanFilters,
+            expectedQuery.booleanFilters
           );
 
           expect(queryArg.objectIdFilters).to.be.eql(
-            expectedQuery.objectIdFilters,
+            expectedQuery.objectIdFilters
           );
           done();
         })
-        .catch(err => {
+        .catch((err) => {
           done(err);
         });
     });
 
-    it('should return customerItems not returned with the specified deadline', done => {
+    it("should return customerItems not returned with the specified deadline", (done) => {
       const customerItems = [
         {
-          id: '1',
-          item: 'item1',
+          id: "1",
+          item: "item1",
           deadline: new Date(2018, 11, 20),
           returned: false,
         },
         {
-          id: '2',
-          item: 'item2',
+          id: "2",
+          item: "item2",
           deadline: new Date(2018, 11, 20),
           returned: false,
         },
@@ -264,25 +265,25 @@ describe('CustomerItemHandler', () => {
       getByQueryCustomerItemStub.returns(customerItems);
 
       customerItemHandler
-        .getNotReturned('5c33b6137eab87644f7e75e2', new Date(2018, 11, 20))
-        .then(result => {
+        .getNotReturned("5c33b6137eab87644f7e75e2", new Date(2018, 11, 20))
+        .then((result) => {
           expect(result).to.eql(customerItems);
 
           done();
         })
-        .catch(err => {
+        .catch((err) => {
           done(err);
         });
     });
 
-    it('should reject if customerItemStorage rejects', () => {
-      getByQueryCustomerItemStub.rejects(new BlError('someting wrong'));
+    it("should reject if customerItemStorage rejects", () => {
+      getByQueryCustomerItemStub.rejects(new BlError("someting wrong"));
 
       expect(
         customerItemHandler.getNotReturned(
-          '5c33b6137eab87644f7e75e2',
-          new Date(),
-        ),
+          "5c33b6137eab87644f7e75e2",
+          new Date()
+        )
       ).to.be.rejectedWith(BlError);
     });
   });

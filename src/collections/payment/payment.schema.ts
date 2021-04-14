@@ -3,44 +3,44 @@ import { Schema } from "mongoose";
 export const paymentSchema = {
   method: {
     type: Schema.Types.String,
-    required: true
+    required: true,
   },
   order: {
     type: Schema.Types.ObjectId,
-    required: true
+    required: true,
   },
   amount: {
     type: Schema.Types.Number,
-    required: true
+    required: true,
   },
   customer: {
     type: Schema.Types.ObjectId,
-    required: false
+    required: false,
   },
   branch: {
     type: Schema.Types.ObjectId,
-    required: true
+    required: true,
   },
   taxAmount: {
     type: Schema.Types.Number,
-    required: true
+    required: true,
   },
   info: {
     type: Schema.Types.Mixed,
-    required: false
+    required: false,
   },
   confirmed: {
     type: Schema.Types.Boolean,
-    default: false
+    default: false,
   },
   discount: {
     type: {
       amount: {
         type: Schema.Types.Number,
-        required: true
+        required: true,
       },
-      coupon: Schema.Types.String
+      coupon: Schema.Types.String,
     },
-    required: false
-  }
+    required: false,
+  },
 };

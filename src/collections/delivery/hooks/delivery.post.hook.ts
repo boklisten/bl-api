@@ -1,4 +1,4 @@
-import {Hook} from '../../../hook/hook';
+import { Hook } from "../../../hook/hook";
 import {
   BlError,
   Delivery,
@@ -6,14 +6,14 @@ import {
   Item,
   Order,
   AccessToken,
-} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {orderSchema} from '../../order/order.schema';
-import {itemSchema} from '../../item/item.schema';
-import {BringDeliveryService} from '../helpers/deliveryBring/bringDelivery.service';
-import {deliverySchema} from '../delivery.schema';
-import {DeliveryValidator} from '../helpers/deliveryValidator/delivery-validator';
-import {DeliveryHandler} from '../helpers/deliveryHandler/delivery-handler';
+} from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { orderSchema } from "../../order/order.schema";
+import { itemSchema } from "../../item/item.schema";
+import { BringDeliveryService } from "../helpers/deliveryBring/bringDelivery.service";
+import { deliverySchema } from "../delivery.schema";
+import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
+import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
 
 export class DeliveryPostHook extends Hook {
   private orderStorage: BlDocumentStorage<Order>;
@@ -30,7 +30,7 @@ export class DeliveryPostHook extends Hook {
     deliveryStorage?: BlDocumentStorage<Delivery>,
     orderStorage?: BlDocumentStorage<Order>,
     itemStorage?: BlDocumentStorage<Item>,
-    bringDeliveryService?: BringDeliveryService,
+    bringDeliveryService?: BringDeliveryService
   ) {
     super();
     this.deliveryValidator = deliveryValidator
@@ -42,13 +42,13 @@ export class DeliveryPostHook extends Hook {
 
     this.deliveryStorage = deliveryStorage
       ? deliveryStorage
-      : new BlDocumentStorage('deliveries', deliverySchema);
+      : new BlDocumentStorage("deliveries", deliverySchema);
     this.orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage('orders', orderSchema);
+      : new BlDocumentStorage("orders", orderSchema);
     this.itemStorage = itemStorage
       ? itemStorage
-      : new BlDocumentStorage('items', itemSchema);
+      : new BlDocumentStorage("items", itemSchema);
     this.bringDeliveryService = bringDeliveryService
       ? bringDeliveryService
       : new BringDeliveryService();
@@ -56,14 +56,14 @@ export class DeliveryPostHook extends Hook {
 
   public after(
     deliveries: Delivery[],
-    accessToken?: AccessToken,
+    accessToken?: AccessToken
   ): Promise<Delivery[]> {
     if (!deliveries || deliveries.length <= 0) {
-      return Promise.reject(new BlError('deliveries is empty or undefined'));
+      return Promise.reject(new BlError("deliveries is empty or undefined"));
     }
 
     if (deliveries.length > 1) {
-      return Promise.reject(new BlError('can not add more than one delivery'));
+      return Promise.reject(new BlError("can not add more than one delivery"));
     }
 
     let delivery = deliveries[0];

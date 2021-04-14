@@ -1,15 +1,15 @@
-import {Operation} from '../../../operation/operation';
-import {BlApiRequest} from '../../../request/bl-api-request';
+import { Operation } from "../../../operation/operation";
+import { BlApiRequest } from "../../../request/bl-api-request";
 import {
   Message,
   BlError,
   BlapiResponse,
   SendgridEvent,
-} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {messageSchema} from '../message.schema';
-import {Request, Response, NextFunction} from 'express';
-import {logger} from '../../../logger/logger';
+} from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { messageSchema } from "../message.schema";
+import { Request, Response, NextFunction } from "express";
+import { logger } from "../../../logger/logger";
 
 export class SendgridEventOperation implements Operation {
   private _messageStorage: BlDocumentStorage<Message>;
@@ -17,40 +17,40 @@ export class SendgridEventOperation implements Operation {
   constructor(messageStorage?: BlDocumentStorage<Message>) {
     this._messageStorage = messageStorage
       ? messageStorage
-      : new BlDocumentStorage<Message>('messages', messageSchema);
+      : new BlDocumentStorage<Message>("messages", messageSchema);
   }
 
   public async run(
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
-    next?: NextFunction,
+    next?: NextFunction
   ): Promise<BlapiResponse> {
     if (!blApiRequest.data || Object.keys(blApiRequest.data).length === 0) {
-      throw new BlError('blApiRequest.data is empty').code(701);
+      throw new BlError("blApiRequest.data is empty").code(701);
     }
 
     if (!Array.isArray(blApiRequest.data)) {
-      throw new BlError('blApiRequest.data is not an array').code(701);
+      throw new BlError("blApiRequest.data is not an array").code(701);
     }
 
     for (let sendgridEvent of blApiRequest.data) {
       await this.parseSendgridEvent(sendgridEvent as SendgridEvent);
     }
 
-    return {documentName: 'success', data: []};
+    return { documentName: "success", data: [] };
   }
 
   private async parseSendgridEvent(sendgridEvent: SendgridEvent) {
-    let blMessageId = sendgridEvent['bl_message_id']
-    let messageType = sendgridEvent['bl_message_type']
+    let blMessageId = sendgridEvent["bl_message_id"];
+    let messageType = sendgridEvent["bl_message_type"];
 
     if (!blMessageId) {
       logger.debug(`sendgrid event did not have a bl_message_id`);
       return true; // default is that the message dont have a blMessageId
     }
 
-    if (messageType !== 'reminder') {
+    if (messageType !== "reminder") {
       logger.debug(`sendgrid event did not have supported bl_message_type`);
       // as of now, we only whant to collect the reminder emails
       return true;
@@ -69,7 +69,7 @@ export class SendgridEventOperation implements Operation {
 
   private async updateMessageWithSendgridEvent(
     message: Message,
-    sendgridEvent: SendgridEvent,
+    sendgridEvent: SendgridEvent
   ): Promise<boolean> {
     let newSendgridEvents =
       message.events && message.events.length > 0 ? message.events : [];
@@ -78,11 +78,13 @@ export class SendgridEventOperation implements Operation {
 
     await this._messageStorage.update(
       message.id,
-      {events: newSendgridEvents},
-      {id: 'SYSTEM', permission: 'admin'},
+      { events: newSendgridEvents },
+      { id: "SYSTEM", permission: "admin" }
     );
 
-    logger.silly(`updated message "${message.id}" with sendgrid event: "${sendgridEvent['event']}"`);
+    logger.silly(
+      `updated message "${message.id}" with sendgrid event: "${sendgridEvent["event"]}"`
+    );
 
     return true;
   }

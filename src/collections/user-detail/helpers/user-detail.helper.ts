@@ -1,5 +1,5 @@
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { AccessToken, BlError, UserDetail } from "@wizardcoder/bl-model";
+import { AccessToken, BlError, UserDetail } from "@boklisten/bl-model";
 import { userDetailSchema } from "../user-detail.schema";
 import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { isNullOrUndefined } from "util";
@@ -30,7 +30,7 @@ export class UserDetailHelper {
           this._userDetailStorage
             .update(userDetailId, updateObject, {
               id: accessToken.sub,
-              permission: accessToken.permission
+              permission: accessToken.permission,
             })
             .then((updatedUserDetail: UserDetail) => {
               resolve(updatedUserDetail);
@@ -119,10 +119,7 @@ export class UserDetailHelper {
     if (splitName.length <= 1) {
       return name.trim();
     } else {
-      return splitName
-        .slice(0, -1)
-        .join(" ")
-        .trim();
+      return splitName.slice(0, -1).join(" ").trim();
     }
   }
 

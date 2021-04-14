@@ -1,15 +1,16 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 chai.use(chaiAsPromised);
-import * as sinon from "sinon";
+import sinon from "sinon";
 //const resHandler = new SEResponseHandler();
 import { CustomerItemActiveBlid } from "../../customer-item/helpers/customer-item-active-blid";
 import { UniqueItemActiveOperation } from "./unique-item-active.operation";
 import { SEResponseHandler } from "../../../response/se.response.handler";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { UniqueItem } from "@wizardcoder/bl-model";
+import { UniqueItem } from "@boklisten/bl-model";
 
 describe("UniqueItemActiveOperation", () => {
   describe("run()", () => {

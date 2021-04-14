@@ -1,102 +1,99 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import {expect} from 'chai';
+// @ts-nocheck
+import "mocha";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { expect } from "chai";
 
 chai.use(chaiAsPromised);
 
-import {DbQueryNumberFilter} from "./db-query-number-filter";
+import { DbQueryNumberFilter } from "./db-query-number-filter";
 
+describe("DbQueryNumberFilter", () => {
+  let dbQueryNumberFilter: DbQueryNumberFilter = new DbQueryNumberFilter();
 
-describe('DbQueryNumberFilter', () => {
+  describe("getNumberFilters()", () => {
+    it("should throw error when no input is given", () => {
+      expect(() => {
+        dbQueryNumberFilter.getNumberFilters({}, []);
+      }).to.throw(TypeError);
+    });
 
-	let dbQueryNumberFilter: DbQueryNumberFilter = new DbQueryNumberFilter();
+    it("should return empty array when the ValidParams are empty", () => {
+      expect(
+        dbQueryNumberFilter.getNumberFilters(
+          { title: "test title", name: "hello" },
+          []
+        )
+      ).to.eql([]);
+    });
 
-	describe('getNumberFilters()', () => {
+    it("should throw error when query is null", () => {
+      expect(() => {
+        dbQueryNumberFilter.getNumberFilters(null, ["age"]);
+      }).to.throw(TypeError);
+    });
 
-		it('should throw error when no input is given', () => {
-			expect(() => {
+    it("should throw error when query is empty", () => {
+      expect(() => {
+        dbQueryNumberFilter.getNumberFilters({}, ["age"]);
+      }).to.throw(TypeError);
+    });
 
-				dbQueryNumberFilter.getNumberFilters({}, [])
+    it('should return array containing "{fieldName: "age", op: {$lt: 60}}"', () => {
+      let result = [{ fieldName: "age", op: { $lt: 60 } }];
 
-			}).to.throw(TypeError);
-		});
+      expect(
+        dbQueryNumberFilter.getNumberFilters({ age: "<60" }, ["age"])
+      ).to.eql(result);
+    });
 
-		it('should return empty array when the ValidParams are empty', () => {
-			expect(
-				dbQueryNumberFilter.getNumberFilters({title: 'test title', name: 'hello'}, []))
-				.to.eql([]);
-		});
+    it('should return array equal to [{filedName: "age", op: {$lt: 86, $gt: 12}}]', () => {
+      let result = [{ fieldName: "age", op: { $lt: 86, $gt: 12 } }];
 
-		it('should throw error when query is null', () => {
-			expect(() => {
+      expect(
+        dbQueryNumberFilter.getNumberFilters({ age: ["<86", ">12"] }, ["age"])
+      ).to.eql(result);
+    });
 
-				dbQueryNumberFilter.getNumberFilters(null, ['age']);
+    it('should return array with {fieldName: "age", op: {$eq: 10}}', () => {
+      let result = [{ fieldName: "age", op: { $eq: 10 } }];
 
-			}).to.throw(TypeError);
-		});
+      expect(
+        dbQueryNumberFilter.getNumberFilters({ age: "10" }, ["age"])
+      ).to.eql(result);
+    });
 
-		it('should throw error when query is empty', () => {
-			expect(() => {
+    it("should throw error when number is not valid", () => {
+      expect(() => {
+        dbQueryNumberFilter.getNumberFilters({ age: ">10>1" }, ["age"]);
+      }).to.throw(TypeError);
+    });
 
-				dbQueryNumberFilter.getNumberFilters({}, ['age']);
+    it("should throw error when wrong input is given", () => {
+      expect(() => {
+        dbQueryNumberFilter.getNumberFilters({ price: "*10" }, ["price"]);
+      }).to.throw(TypeError);
+    });
 
-			}).to.throw(TypeError);
-		});
+    it("should throw error when combinding eq operator with lessThan operator", () => {
+      expect(() => {
+        dbQueryNumberFilter.getNumberFilters({ age: ["<40", "30"] }, ["age"]);
+      }).to.throw(SyntaxError);
+    });
 
-		it('should return array containing "{fieldName: "age", op: {$lt: 60}}"', () => {
-			let result = [{fieldName: 'age', op: {$lt: 60}}];
+    it("should throw error when combinding eq operator with greaterThan operator", () => {
+      expect(() => {
+        dbQueryNumberFilter.getNumberFilters({ age: [">40", "30"] }, ["age"]);
+      }).to.throw(SyntaxError);
+    });
 
-			expect(dbQueryNumberFilter.getNumberFilters({age: '<60'}, ['age'])).to.eql(result);
-		});
-
-		it('should return array equal to [{filedName: "age", op: {$lt: 86, $gt: 12}}]', () => {
-			let result = [{fieldName: 'age', op: {$lt: 86, $gt: 12}}];
-
-			expect(dbQueryNumberFilter.getNumberFilters({age: ['<86', '>12']}, ['age'])).to.eql(result);
-		});
-
-		it('should return array with {fieldName: "age", op: {$eq: 10}}', () => {
-			let result = [{fieldName: 'age', op: {$eq: 10}}];
-
-			expect(dbQueryNumberFilter.getNumberFilters({age: '10'}, ['age'])).to.eql(result);
-		});
-
-		it('should throw error when number is not valid', () => {
-			expect(() => {
-
-				dbQueryNumberFilter.getNumberFilters({age: '>10>1'}, ['age']);
-
-			}).to.throw(TypeError);
-
-		});
-
-		it('should throw error when wrong input is given', () => {
-			expect(() => {
-
-				dbQueryNumberFilter.getNumberFilters({price: '*10'}, ['price']);
-
-			}).to.throw(TypeError);
-		});
-
-		it('should throw error when combinding eq operator with lessThan operator', () => {
-			expect(() => {
-
-				dbQueryNumberFilter.getNumberFilters({age: ['<40', '30']}, ['age']);
-
-			}).to.throw(SyntaxError);
-		});
-
-		it('should throw error when combinding eq operator with greaterThan operator', () => {
-			expect(() => {
-
-				dbQueryNumberFilter.getNumberFilters({age: ['>40', '30']}, ['age']);
-
-			}).to.throw(SyntaxError);
-		});
-
-		it('should return an empty array if none of the validNumberNumberParams are included in the query', () => {
-			expect(dbQueryNumberFilter.getNumberFilters({'title': 'test', 'name': 'bill'}, ['age', 'price'])).to.eql([]);
-		});
-	});
+    it("should return an empty array if none of the validNumberNumberParams are included in the query", () => {
+      expect(
+        dbQueryNumberFilter.getNumberFilters({ title: "test", name: "bill" }, [
+          "age",
+          "price",
+        ])
+      ).to.eql([]);
+    });
+  });
 });

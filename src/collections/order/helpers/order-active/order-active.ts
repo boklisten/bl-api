@@ -1,5 +1,5 @@
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { Order, OrderItem, BlError } from "@wizardcoder/bl-model";
+import { Order, OrderItem, BlError } from "@boklisten/bl-model";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
 import { orderSchema } from "../../order.schema";
 
@@ -15,7 +15,7 @@ export class OrderActive {
 
   public async haveActiveOrders(userId: string): Promise<boolean> {
     const dbQuery = this._queryBuilder.getDbQuery({ customer: userId }, [
-      { fieldName: "customer", type: "object-id" }
+      { fieldName: "customer", type: "object-id" },
     ]);
 
     let orders: Order[];

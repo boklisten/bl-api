@@ -1,36 +1,36 @@
-
-import {SeCrypto} from "../../crypto/se.crypto";
-import {BlError} from "@wizardcoder/bl-model";
+import { SeCrypto } from "../../crypto/se.crypto";
+import { BlError } from "@boklisten/bl-model";
 
 export class Blid {
-	private seCrypto: SeCrypto;
+  private seCrypto: SeCrypto;
 
-	constructor() {
+  constructor() {
+    this.seCrypto = new SeCrypto();
+  }
 
-		this.seCrypto = new SeCrypto();
+  public createUserBlid(provider: string, providerId: string): Promise<string> {
+    if (provider.length <= 0 || providerId.length <= 0) {
+      return Promise.reject(
+        new BlError("provider or providerId can not be empty")
+          .className("Blid")
+          .methodName("createUserBlid")
+      );
+    }
 
-	}
-
-	public createUserBlid(provider: string, providerId: string): Promise<string> {
-		if (provider.length <= 0 || providerId.length <= 0) {
-			return Promise.reject(
-				new BlError('provider or providerId can not be empty')
-					.className('Blid')
-					.methodName('createUserBlid'));
-		}
-
-		return new Promise((resolve, reject) => {
-			this.seCrypto.cipher(provider + providerId).then(
-				(cipher: string) => {
-					resolve('u#' + cipher);
-				},
-				(error: any) => {
-					reject(
-						new BlError('error creating cipher for user_blid')
-							.data(error)
-							.className('Blid')
-							.methodName('createUserBlid'));
-				});
-		});
-	}
+    return new Promise((resolve, reject) => {
+      this.seCrypto.cipher(provider + providerId).then(
+        (cipher: string) => {
+          resolve("u#" + cipher);
+        },
+        (error: any) => {
+          reject(
+            new BlError("error creating cipher for user_blid")
+              .data(error)
+              .className("Blid")
+              .methodName("createUserBlid")
+          );
+        }
+      );
+    });
+  }
 }

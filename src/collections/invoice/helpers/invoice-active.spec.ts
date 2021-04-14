@@ -1,6 +1,7 @@
+// @ts-nocheck
 import "mocha";
 import { expect } from "chai";
-import { Invoice } from "@wizardcoder/bl-model";
+import { Invoice } from "@boklisten/bl-model";
 import { InvoiceActive } from "./invoice-active";
 
 describe("InvoiceActive", () => {
@@ -17,7 +18,7 @@ describe("InvoiceActive", () => {
           toCreditNote: false,
           customerItemPayments: [],
           customerInfo: null,
-          payment: null
+          payment: null,
         },
         {
           id: "invoice1",
@@ -27,8 +28,8 @@ describe("InvoiceActive", () => {
           toCreditNote: true,
           customerItemPayments: [],
           customerInfo: null,
-          payment: null
-        }
+          payment: null,
+        },
       ];
 
       for (let invoice of nonActiveInvoices) {
@@ -46,7 +47,7 @@ describe("InvoiceActive", () => {
           toCreditNote: false,
           customerItemPayments: [],
           customerInfo: null,
-          payment: null
+          payment: null,
         },
         {
           id: "invoice1",
@@ -56,8 +57,8 @@ describe("InvoiceActive", () => {
           toCreditNote: false,
           customerItemPayments: [],
           customerInfo: null,
-          payment: null
-        }
+          payment: null,
+        },
       ];
 
       for (let invoice of activeInvoices) {

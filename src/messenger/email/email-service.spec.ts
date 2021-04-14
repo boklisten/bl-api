@@ -1,23 +1,24 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
+import sinon from "sinon";
 import {
   BlError,
   UserDetail,
   CustomerItem,
   Item,
-  Message
-} from "@wizardcoder/bl-model";
+  Message,
+} from "@boklisten/bl-model";
 import { EmailService } from "./email-service";
-import { EmailHandler } from "@wizardcoder/bl-email";
+import { EmailHandler } from "@boklisten/bl-email";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import {
   PostOffice,
   Recipient,
-  MessageOptions
-} from "@wizardcoder/bl-post-office";
+  MessageOptions,
+} from "@boklisten/bl-post-office";
 
 class MockPostOffice extends PostOffice {
   constructor() {
@@ -25,7 +26,7 @@ class MockPostOffice extends PostOffice {
     this.setConfig({
       reminder: { mediums: { email: false } },
       generic: { mediums: { email: false } },
-      receipt: { mediums: { email: false } }
+      receipt: { mediums: { email: false } },
     });
   }
 
@@ -51,7 +52,7 @@ describe("EmailService", () => {
   const postOfficeSendStub = sinon.stub(mockPostOffice, "send");
 
   describe("#send", () => {
-    it("should call postOffice.send when message.type is generic", done => {
+    it("should call postOffice.send when message.type is generic", (done) => {
       postOfficeSendStub.resolves(true);
 
       const message: Message = {
@@ -61,13 +62,13 @@ describe("EmailService", () => {
         messageType: "generic",
         messageSubtype: "all",
         subject: "This is the subject",
-        htmlContent: "<p>Hi hello</p>"
+        htmlContent: "<p>Hi hello</p>",
       };
 
       emailService
         .send(message, {
           id: "abc",
-          email: "some@email.org"
+          email: "some@email.org",
         } as UserDetail)
         .then(() => {
           expect(postOfficeSendStub).to.have.been.called;
@@ -78,7 +79,7 @@ describe("EmailService", () => {
   });
 
   describe("#sendGeneric", () => {
-    it("should call postOffice.send", done => {
+    it("should call postOffice.send", (done) => {
       postOfficeSendStub.resolves(true);
 
       const message: Message = {
@@ -88,13 +89,13 @@ describe("EmailService", () => {
         messageType: "generic",
         messageSubtype: "all",
         subject: "This is the subject",
-        htmlContent: "<p>Hi hello</p>"
+        htmlContent: "<p>Hi hello</p>",
       };
 
       emailService
         .sendGeneric(message, {
           id: "abc",
-          email: "some@email.org"
+          email: "some@email.org",
         } as UserDetail)
         .then(() => {
           expect(postOfficeSendStub).to.have.been.called;
@@ -105,7 +106,7 @@ describe("EmailService", () => {
   });
 
   describe("#remind", () => {
-    it("should call emailHandler.sendReminder", done => {
+    it("should call emailHandler.sendReminder", (done) => {
       postOfficeSendStub.reset();
       postOfficeSendStub.resolves(true);
       itemStorageGetStub.resolves({ id: "item1", title: "title" });
@@ -114,8 +115,8 @@ describe("EmailService", () => {
         id: "message1",
         messageType: "reminder",
         info: {
-          deadline: new Date()
-        }
+          deadline: new Date(),
+        },
       } as Message;
 
       emailService
@@ -130,7 +131,7 @@ describe("EmailService", () => {
         });
     });
 
-    it("should call emailHandler.sendReminder twice if userDetail.dob is under 18 and has a valid guardian", done => {
+    it("should call emailHandler.sendReminder twice if userDetail.dob is under 18 and has a valid guardian", (done) => {
       postOfficeSendStub.reset();
       postOfficeSendStub.resolves(true);
       itemStorageGetStub.resolves({ id: "item1", title: "title" });
@@ -139,8 +140,8 @@ describe("EmailService", () => {
         id: "message1",
         messageType: "reminder",
         info: {
-          deadline: new Date()
-        }
+          deadline: new Date(),
+        },
       } as Message;
 
       emailService
@@ -150,7 +151,7 @@ describe("EmailService", () => {
             id: "abc",
             email: "some@email.org",
             guardian: { email: "someOther@email.com", phone: "91804211" },
-            dob: new Date()
+            dob: new Date(),
           } as UserDetail,
           [{ id: "customerItem1" }] as CustomerItem[]
         )
@@ -158,15 +159,15 @@ describe("EmailService", () => {
           expect(postOfficeSendStub).to.have.been.calledTwice;
           done();
         })
-        .catch(err => done(err));
+        .catch((err) => done(err));
     });
 
-    it("should reject if customerItem.item does not exist", done => {
+    it("should reject if customerItem.item does not exist", (done) => {
       itemStorageGetStub.rejects(new BlError("not found"));
 
       const customerDetail = {
         id: "customer1",
-        name: "Some Name"
+        name: "Some Name",
       } as UserDetail;
       const customerItems = [
         {
@@ -175,62 +176,64 @@ describe("EmailService", () => {
           customer: "customer1",
           deadline: new Date(),
           handout: false,
-          returned: false
-        }
+          returned: false,
+        },
       ];
 
       const message: Message = {
         id: "message1",
         messageType: "reminder",
         info: {
-          deadline: new Date()
-        }
+          deadline: new Date(),
+        },
       } as Message;
 
-      emailService.remind(message, customerDetail, customerItems).catch(err => {
-        expect(err.getMsg()).to.eq("not found");
-        done();
-      });
+      emailService
+        .remind(message, customerDetail, customerItems)
+        .catch((err) => {
+          expect(err.getMsg()).to.eq("not found");
+          done();
+        });
     });
 
-    it("should convert all customerItems as emailOrderItems", done => {
+    it("should convert all customerItems as emailOrderItems", (done) => {
       const customerItems = [
         {
           id: "1",
           customer: "customer1",
           item: "item1",
           amountLeftToPay: 200,
-          deadline: new Date(2018, 0, 1)
+          deadline: new Date(2018, 0, 1),
         },
         {
           id: "2",
           customer: "customer1",
           item: "item2",
           amountLeftToPay: 100,
-          deadline: new Date(2018, 0, 1)
-        }
+          deadline: new Date(2018, 0, 1),
+        },
       ] as CustomerItem[];
 
       const customerDetail = {
         id: "customer1",
         name: "Some Name",
-        email: "some@email.com"
+        email: "some@email.com",
       } as UserDetail;
 
       const item1 = {
         id: "item1",
         info: {
-          isbn: "123"
+          isbn: "123",
         },
-        title: "Signatur 1"
+        title: "Signatur 1",
       };
 
       const item2 = {
         id: "item2",
         info: {
-          isbn: "456"
+          isbn: "456",
         },
-        title: "Terra Mater"
+        title: "Terra Mater",
       };
 
       const message: Message = {
@@ -238,8 +241,8 @@ describe("EmailService", () => {
         messageType: "reminder",
         messageSubtype: "partly-payment",
         info: {
-          deadline: new Date(2018, 6, 1)
-        }
+          deadline: new Date(2018, 6, 1),
+        },
       } as Message;
 
       emailHandlerRemindStub.resolves(true);
@@ -257,19 +260,19 @@ describe("EmailService", () => {
               id: "123",
               title: "Signatur 1",
               leftToPay: "200 NOK",
-              deadline: "01.07.18"
+              deadline: "01.07.18",
             },
             {
               id: "456",
               title: "Terra Mater",
               leftToPay: "100 NOK",
-              deadline: "01.07.18"
-            }
+              deadline: "01.07.18",
+            },
           ]);
 
           done();
         })
-        .catch(err => {
+        .catch((err) => {
           done(err);
         });
     });

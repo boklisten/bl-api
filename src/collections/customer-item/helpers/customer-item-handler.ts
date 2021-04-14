@@ -1,13 +1,13 @@
-import {BlError, Branch, CustomerItem, OrderItem} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {SystemUser} from '../../../auth/permission/permission.service';
-import {branchSchema} from '../../branch/branch.schema';
-import {customerItemSchema} from '../customer-item.schema';
-import {Period} from '@wizardcoder/bl-model/dist/period/period';
-import {SEDbQuery} from '../../../query/se.db-query';
-import {SEDbQueryBuilder} from '../../../query/se.db-query-builder';
-import moment = require('moment-timezone');
-import {logger} from '../../../logger/logger';
+import { BlError, Branch, CustomerItem, OrderItem } from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { SystemUser } from "../../../auth/permission/permission.service";
+import { branchSchema } from "../../branch/branch.schema";
+import { customerItemSchema } from "../customer-item.schema";
+import { Period } from "@boklisten/bl-model/dist/period/period";
+import { SEDbQuery } from "../../../query/se.db-query";
+import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import moment = require("moment-timezone");
+import { logger } from "../../../logger/logger";
 
 export class CustomerItemHandler {
   private _customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -15,14 +15,14 @@ export class CustomerItemHandler {
 
   constructor(
     customerItemStorage?: BlDocumentStorage<CustomerItem>,
-    branchStorage?: BlDocumentStorage<Branch>,
+    branchStorage?: BlDocumentStorage<Branch>
   ) {
     this._customerItemStorage = customerItemStorage
       ? customerItemStorage
-      : new BlDocumentStorage('customeritems', customerItemSchema);
+      : new BlDocumentStorage("customeritems", customerItemSchema);
     this._branchStorage = branchStorage
       ? branchStorage
-      : new BlDocumentStorage('branches', branchSchema);
+      : new BlDocumentStorage("branches", branchSchema);
   }
 
   /**
@@ -34,24 +34,24 @@ export class CustomerItemHandler {
     customerItemId: string,
     orderItem: OrderItem,
     branchId: string,
-    orderId: string,
+    orderId: string
   ): Promise<CustomerItem> {
     try {
       const customerItem = await this._customerItemStorage.get(customerItemId);
 
       if (customerItem.returned) {
         return Promise.reject(
-          new BlError('can not extend when returned is true'),
+          new BlError("can not extend when returned is true")
         );
       }
 
-      if (orderItem.type !== 'extend') {
+      if (orderItem.type !== "extend") {
         return Promise.reject(new BlError('orderItem.type is not "extend"'));
       }
 
-      if (!orderItem.info || !orderItem.info['periodType']) {
+      if (!orderItem.info || !orderItem.info["periodType"]) {
         return Promise.reject(
-          new BlError('orderItem info is not present when type is "extend"'),
+          new BlError('orderItem info is not present when type is "extend"')
         );
       }
 
@@ -59,7 +59,7 @@ export class CustomerItemHandler {
 
       const extendPeriod = this.getExtendPeriod(
         branch,
-        orderItem.info['periodType'],
+        orderItem.info["periodType"]
       );
 
       let periodExtends = customerItem.periodExtends
@@ -71,9 +71,9 @@ export class CustomerItemHandler {
         : [];
 
       periodExtends.push({
-        from: orderItem.info['from'],
-        to: orderItem.info['to'],
-        periodType: orderItem.info['periodType'],
+        from: orderItem.info["from"],
+        to: orderItem.info["to"],
+        periodType: orderItem.info["periodType"],
         time: new Date(),
       });
 
@@ -82,11 +82,11 @@ export class CustomerItemHandler {
       return await this._customerItemStorage.update(
         customerItemId,
         {
-          deadline: orderItem.info['to'],
+          deadline: orderItem.info["to"],
           periodExtends: periodExtends,
           orders: customerItemOrders,
         },
-        new SystemUser(),
+        new SystemUser()
       );
     } catch (e) {
       throw e;
@@ -102,10 +102,10 @@ export class CustomerItemHandler {
   public async buyout(
     customerItemId: string,
     orderId: string,
-    orderItem: OrderItem,
+    orderItem: OrderItem
   ) {
     try {
-      if (orderItem.type !== 'buyout') {
+      if (orderItem.type !== "buyout") {
         return Promise.reject(`orderItem.type is not "buyout"`);
       }
 
@@ -126,7 +126,7 @@ export class CustomerItemHandler {
             time: new Date(),
           },
         },
-        new SystemUser(),
+        new SystemUser()
       );
     } catch (e) {
       throw e;
@@ -144,10 +144,10 @@ export class CustomerItemHandler {
     orderId: string,
     orderItem: OrderItem,
     branchId: string,
-    employeeId: string,
+    employeeId: string
   ) {
     try {
-      if (orderItem.type !== 'return') {
+      if (orderItem.type !== "return") {
         return Promise.reject(`orderItem.type is not "return"`);
       }
 
@@ -165,13 +165,13 @@ export class CustomerItemHandler {
           returned: true,
           orders: customerItemOrders,
           returnInfo: {
-            returnedTo: 'branch',
+            returnedTo: "branch",
             returnedToId: branchId,
             returnEmployee: employeeId,
             time: new Date(),
           },
         },
-        new SystemUser(),
+        new SystemUser()
       );
     } catch (e) {
       throw e;
@@ -187,10 +187,10 @@ export class CustomerItemHandler {
   public async cancel(
     customerItemId: string,
     orderId: string,
-    orderItem: OrderItem,
+    orderItem: OrderItem
   ) {
     try {
-      if (orderItem.type !== 'cancel') {
+      if (orderItem.type !== "cancel") {
         return Promise.reject(`orderItem.type is not "cancel"`);
       }
 
@@ -213,7 +213,7 @@ export class CustomerItemHandler {
             order: orderId,
           },
         },
-        new SystemUser(),
+        new SystemUser()
       );
     } catch (e) {
       throw e;
@@ -229,10 +229,10 @@ export class CustomerItemHandler {
   public async buyback(
     customerItemId: string,
     orderId: string,
-    orderItem: OrderItem,
+    orderItem: OrderItem
   ) {
     try {
-      if (orderItem.type !== 'buyback') {
+      if (orderItem.type !== "buyback") {
         return Promise.reject(`orderItem.type is not "buyback"`);
       }
 
@@ -254,7 +254,7 @@ export class CustomerItemHandler {
             time: new Date(),
           },
         },
-        new SystemUser(),
+        new SystemUser()
       );
     } catch (e) {
       throw e;
@@ -269,25 +269,25 @@ export class CustomerItemHandler {
   public async getNotReturned(
     customerId: string,
     deadline: Date,
-    type?: 'partly-payment' | 'rent' | 'loan' | 'all',
+    type?: "partly-payment" | "rent" | "loan" | "all"
   ): Promise<CustomerItem[]> {
     if (customerId == null || customerId.length <= 0) {
-      throw new BlError('customerId is null or undefined');
+      throw new BlError("customerId is null or undefined");
     }
 
     if (deadline == null) {
-      throw new BlError('deadline is null or undefined');
+      throw new BlError("deadline is null or undefined");
     }
 
     const before = moment
-      .tz(deadline, 'Europe/London')
-      .subtract(2, 'day')
-      .format('DDMMYYYYHHmm');
+      .tz(deadline, "Europe/London")
+      .subtract(2, "day")
+      .format("DDMMYYYYHHmm");
 
     const after = moment
-      .tz(deadline, 'Europe/London')
-      .add(2, 'day')
-      .format('DDMMYYYYHHmm');
+      .tz(deadline, "Europe/London")
+      .add(2, "day")
+      .format("DDMMYYYYHHmm");
 
     let query;
 
@@ -295,41 +295,41 @@ export class CustomerItemHandler {
     let dbQuery;
 
     if (type) {
-      if (type === 'loan') {
-        type = 'rent';
+      if (type === "loan") {
+        type = "rent";
       }
       query = {
         customer: customerId.toString(),
-        deadline: ['>' + before, '<' + after],
-        returned: 'false',
-        buyout: 'false',
-        match: 'false',
+        deadline: [">" + before, "<" + after],
+        returned: "false",
+        buyout: "false",
+        match: "false",
         type: type,
       };
 
       dbQuery = dbQueryBuilder.getDbQuery(query, [
-        {fieldName: 'customer', type: 'object-id'},
-        {fieldName: 'deadline', type: 'date'},
-        {fieldName: 'returned', type: 'boolean'},
-        {fieldName: 'match', type: 'boolean'},
-        {fieldName: 'buyout', type: 'boolean'},
-        {fieldName: 'type', type: 'string'},
+        { fieldName: "customer", type: "object-id" },
+        { fieldName: "deadline", type: "date" },
+        { fieldName: "returned", type: "boolean" },
+        { fieldName: "match", type: "boolean" },
+        { fieldName: "buyout", type: "boolean" },
+        { fieldName: "type", type: "string" },
       ]);
     } else {
       query = {
         customer: customerId.toString(),
-        deadline: ['>' + before, '<' + after],
-        returned: 'false',
-        match: 'false',
-        buyout: 'false',
+        deadline: [">" + before, "<" + after],
+        returned: "false",
+        match: "false",
+        buyout: "false",
       };
 
       dbQuery = dbQueryBuilder.getDbQuery(query, [
-        {fieldName: 'customer', type: 'object-id'},
-        {fieldName: 'deadline', type: 'date'},
-        {fieldName: 'returned', type: 'boolean'},
-        {fieldName: 'match', type: 'boolean'},
-        {fieldName: 'buyout', type: 'boolean'},
+        { fieldName: "customer", type: "object-id" },
+        { fieldName: "deadline", type: "date" },
+        { fieldName: "returned", type: "boolean" },
+        { fieldName: "match", type: "boolean" },
+        { fieldName: "buyout", type: "boolean" },
       ]);
     }
 
@@ -338,10 +338,10 @@ export class CustomerItemHandler {
 
   private getExtendPeriod(
     branch: Branch,
-    period: Period,
-  ): {type: Period; date: Date; maxNumberOfPeriods: number; price: number} {
+    period: Period
+  ): { type: Period; date: Date; maxNumberOfPeriods: number; price: number } {
     if (!branch.paymentInfo.extendPeriods) {
-      throw new BlError('no extend periods present on branch');
+      throw new BlError("no extend periods present on branch");
     }
 
     for (let extendPeriod of branch.paymentInfo.extendPeriods) {

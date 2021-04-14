@@ -1,18 +1,19 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
+import sinon from "sinon";
 import {
   AccessToken,
   BlError,
   CustomerItem,
   Order,
   OrderItem,
-  UserDetail
-} from "@wizardcoder/bl-model";
+  UserDetail,
+} from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import * as sinonChai from "sinon-chai";
+import sinonChai from "sinon-chai";
 import { BranchGetHook } from "./branch-get.hook";
 
 chai.use(chaiAsPromised);
@@ -29,8 +30,8 @@ describe("BranchGetHook", () => {
         branchItems: ["branchItem1", "branchItem2"],
         isBranchItemsLive: {
           online: false,
-          atBranch: false
-        }
+          atBranch: false,
+        },
       };
 
       const expectedResult = {
@@ -39,8 +40,8 @@ describe("BranchGetHook", () => {
         branchItems: [],
         isBranchItemsLive: {
           online: false,
-          atBranch: false
-        }
+          atBranch: false,
+        },
       };
 
       return expect(
@@ -55,8 +56,8 @@ describe("BranchGetHook", () => {
         branchItems: ["branchItem1", "branchItem2"],
         isBranchItemsLive: {
           online: true,
-          atBranch: true
-        }
+          atBranch: true,
+        },
       };
 
       const expectedResult = {
@@ -65,8 +66,8 @@ describe("BranchGetHook", () => {
         branchItems: ["branchItem1", "branchItem2"],
         isBranchItemsLive: {
           online: true,
-          atBranch: true
-        }
+          atBranch: true,
+        },
       };
 
       return expect(
@@ -81,12 +82,12 @@ describe("BranchGetHook", () => {
         branchItems: ["branchItem1", "branchItem2"],
         isBranchItemsLive: {
           online: false,
-          atBranch: true
-        }
+          atBranch: true,
+        },
       };
 
       const accessToken = {
-        permission: "customer"
+        permission: "customer",
       };
 
       const expectedResult = {
@@ -95,8 +96,8 @@ describe("BranchGetHook", () => {
         branchItems: [],
         isBranchItemsLive: {
           online: false,
-          atBranch: true
-        }
+          atBranch: true,
+        },
       };
 
       return expect(
@@ -111,12 +112,12 @@ describe("BranchGetHook", () => {
         branchItems: ["branchItem1", "branchItem2"],
         isBranchItemsLive: {
           online: false,
-          atBranch: false
-        }
+          atBranch: false,
+        },
       };
 
       const accessToken = {
-        permission: "admin"
+        permission: "admin",
       };
 
       const expectedResult = {
@@ -125,8 +126,8 @@ describe("BranchGetHook", () => {
         branchItems: ["branchItem1", "branchItem2"],
         isBranchItemsLive: {
           online: false,
-          atBranch: false
-        }
+          atBranch: false,
+        },
       };
 
       return expect(

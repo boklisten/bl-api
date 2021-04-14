@@ -2,11 +2,11 @@ import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { NextFunction, Request, Response } from "express";
 import { bookingSchema } from "../../booking/booking.schema";
-import { BlapiResponse, Booking } from "@wizardcoder/bl-model";
+import { BlapiResponse, Booking } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { SEResponseHandler } from "../../../response/se.response.handler";
 import { DateService } from "../../../blc/date.service";
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
 
 export class BranchBookingTimesOperation implements Operation {
   private dateService: DateService;
@@ -37,8 +37,8 @@ export class BranchBookingTimesOperation implements Operation {
         $match: {
           branch: mongoose.Types.ObjectId(blApiRequest.documentId),
           from: { $gt: this.dateService.startOfDay(new Date()) },
-          booked: false
-        }
+          booked: false,
+        },
       },
       {
         $project: {
@@ -46,16 +46,16 @@ export class BranchBookingTimesOperation implements Operation {
           date: {
             $dateToString: {
               format: "%d%m%Y",
-              date: "$from"
-            }
-          }
-        }
+              date: "$from",
+            },
+          },
+        },
       },
       {
         $group: {
-          _id: "$date"
-        }
-      }
+          _id: "$date",
+        },
+      },
     ];
 
     try {
@@ -66,13 +66,13 @@ export class BranchBookingTimesOperation implements Operation {
     }
 
     if (bookingTimes) {
-      let cleanedBookingTimes = bookingTimes.map(bookingTime => {
+      let cleanedBookingTimes = bookingTimes.map((bookingTime) => {
         return {
           from: this.dateService.toDate(
             bookingTime["_id"],
             "DDMMYYYY",
             "Europe/Oslo"
-          )
+          ),
         };
       });
 

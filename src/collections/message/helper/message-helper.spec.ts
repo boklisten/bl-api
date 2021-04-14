@@ -1,40 +1,41 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import {expect} from 'chai';
-import * as sinon from 'sinon';
+// @ts-nocheck
+import "mocha";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { expect } from "chai";
+import sinon from "sinon";
 import {
   AccessToken,
   BlError,
   CustomerItem,
   Message,
   UserDetail,
-} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import * as sinonChai from 'sinon-chai';
-import {MessageHelper} from './message-helper';
+} from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import sinonChai from "sinon-chai";
+import { MessageHelper } from "./message-helper";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-describe('MessageHelper', () => {
-  const messageStorage = new BlDocumentStorage<Message>('messages');
+describe("MessageHelper", () => {
+  const messageStorage = new BlDocumentStorage<Message>("messages");
   const messageHelper = new MessageHelper(messageStorage);
 
-  let messageStorageGetByQueryStub = sinon.stub(messageStorage, 'getByQuery');
+  let messageStorageGetByQueryStub = sinon.stub(messageStorage, "getByQuery");
 
-  describe('#isAdded', () => {
-    it('should throw error if messageStorage.get fails', async () => {
+  describe("#isAdded", () => {
+    it("should throw error if messageStorage.get fails", async () => {
       const message: Message = {
-        id: 'abc',
-        messageType: 'reminder',
-        messageSubtype: 'partly-payment',
-        messageMethod: 'all',
+        id: "abc",
+        messageType: "reminder",
+        messageSubtype: "partly-payment",
+        messageMethod: "all",
         sequenceNumber: 0,
-        customerId: 'abc',
+        customerId: "abc",
       };
 
-      const errorMessage = 'failed to get message';
+      const errorMessage = "failed to get message";
 
       messageStorageGetByQueryStub.callsFake(() => {
         return Promise.reject(errorMessage);
@@ -42,20 +43,20 @@ describe('MessageHelper', () => {
 
       try {
         await messageHelper.isAdded(message);
-        throw new Error('should not be valid');
+        throw new Error("should not be valid");
       } catch (e) {
         return expect(e).to.eq(errorMessage);
       }
     });
 
-    it('should return true if type, subtype, sequence, method and customerId is already in storage', async () => {
+    it("should return true if type, subtype, sequence, method and customerId is already in storage", async () => {
       const message: Message = {
-        id: 'abc',
-        messageType: 'reminder',
-        messageSubtype: 'partly-payment',
-        messageMethod: 'all',
+        id: "abc",
+        messageType: "reminder",
+        messageSubtype: "partly-payment",
+        messageMethod: "all",
         sequenceNumber: 0,
-        customerId: 'abc',
+        customerId: "abc",
       };
 
       messageStorageGetByQueryStub.callsFake(() => {
@@ -70,25 +71,25 @@ describe('MessageHelper', () => {
       }
     });
 
-    it('should return false if type, subtype, sequence, method and customerId is already in storage, but htmlContent is not the same as in storage', async () => {
+    it("should return false if type, subtype, sequence, method and customerId is already in storage, but htmlContent is not the same as in storage", async () => {
       const message: Message = {
-        id: 'abc',
-        messageType: 'reminder',
-        messageSubtype: 'partly-payment',
-        messageMethod: 'all',
+        id: "abc",
+        messageType: "reminder",
+        messageSubtype: "partly-payment",
+        messageMethod: "all",
         sequenceNumber: 0,
-        htmlContent: '<h1>This is some new html content</h1>',
-        customerId: 'abc',
+        htmlContent: "<h1>This is some new html content</h1>",
+        customerId: "abc",
       };
 
       const storedMessage: Message = {
-        id: 'abc',
-        messageType: 'reminder',
-        messageSubtype: 'partly-payment',
-        messageMethod: 'all',
+        id: "abc",
+        messageType: "reminder",
+        messageSubtype: "partly-payment",
+        messageMethod: "all",
         sequenceNumber: 0,
-        htmlContent: '<h1>This is the html content already stored</h1>',
-        customerId: 'abc',
+        htmlContent: "<h1>This is the html content already stored</h1>",
+        customerId: "abc",
       };
 
       messageStorageGetByQueryStub.callsFake(() => {
@@ -103,18 +104,18 @@ describe('MessageHelper', () => {
       }
     });
 
-    it('should return false if type, subtype, sequence, method and customerId is not in storage', async () => {
+    it("should return false if type, subtype, sequence, method and customerId is not in storage", async () => {
       const message: Message = {
-        id: 'abc',
-        messageType: 'reminder',
-        messageSubtype: 'partly-payment',
-        messageMethod: 'all',
+        id: "abc",
+        messageType: "reminder",
+        messageSubtype: "partly-payment",
+        messageMethod: "all",
         sequenceNumber: 0,
-        customerId: 'abc',
+        customerId: "abc",
       };
 
       messageStorageGetByQueryStub.callsFake(() => {
-        return Promise.reject(new BlError('not found').code(702));
+        return Promise.reject(new BlError("not found").code(702));
       });
 
       try {

@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import { BlError } from "@wizardcoder/bl-model";
+import sinon from "sinon";
+import { BlError } from "@boklisten/bl-model";
 import { DbQueryDateFilter } from "./db-query-date-filter";
 import moment = require("moment");
 
@@ -56,7 +57,7 @@ describe("DbQueryDateFilter", () => {
         "kkk",
         "albert",
         "330120010000",
-        "2101200300001"
+        "2101200300001",
       ];
 
       for (let invalidDate of invalidDates) {
@@ -74,7 +75,7 @@ describe("DbQueryDateFilter", () => {
       const validDateParams = ["creationTime"];
       const validQueries = [
         { creationTime: "201220180000" },
-        { creationTime: "010720180000" }
+        { creationTime: "010720180000" },
       ];
 
       for (let validQuery of validQueries) {
@@ -93,7 +94,7 @@ describe("DbQueryDateFilter", () => {
       const validDateParams = ["creationTime"];
       const validQueries = [
         { creationTime: "<201220180000", op: "$lt" },
-        { creationTime: ">010720180000", op: "$gt" }
+        { creationTime: ">010720180000", op: "$gt" },
       ];
 
       for (let validQuery of validQueries) {
@@ -121,7 +122,7 @@ describe("DbQueryDateFilter", () => {
       const validQueries = [
         { creationTime: [">101020100000", "<171020100000"] },
         { creationTime: [">111220120000", "<121220130000"] },
-        { creationTime: [">111220120000", "<101220150000"] }
+        { creationTime: [">111220120000", "<101220150000"] },
       ];
 
       for (let validQuery of validQueries) {
@@ -143,8 +144,8 @@ describe("DbQueryDateFilter", () => {
           ).to.eql([
             {
               fieldName: "creationTime",
-              op: { $gt: gtIsoDate, $lt: ltIsoDate }
-            }
+              op: { $gt: gtIsoDate, $lt: ltIsoDate },
+            },
           ]);
         });
       }

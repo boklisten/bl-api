@@ -3,8 +3,8 @@ import {
   Delivery,
   Order,
   OrderItem,
-  UserDetail
-} from "@wizardcoder/bl-model";
+  UserDetail,
+} from "@boklisten/bl-model";
 import { DibsEasyItem } from "./dibs-easy-item/dibs-easy-item";
 import { DibsEasyOrder } from "./dibs-easy-order/dibs-easy-order";
 import { HttpHandler } from "../../http/http.handler";
@@ -61,7 +61,7 @@ export class DibsPaymentService {
         process.env.DIBS_URI + APP_CONFIG.path.dibs.payment + "/" + paymentId,
         process.env.DIBS_SECRET_KEY
       )
-      .then(response => {
+      .then((response) => {
         if (!response["payment"]) {
           throw new BlError(
             "dibs response did not include payment information"
@@ -110,7 +110,7 @@ export class DibsPaymentService {
       merchantHandlesConsumerData: userDetailValid, // if userDetail is not valid, the customer must reenter data
       consumer: userDetailValid
         ? this.userDetailToDibsEasyConsumer(userDetail)
-        : null
+        : null,
     };
 
     return dibsEasyOrder;
@@ -124,16 +124,16 @@ export class DibsPaymentService {
         addressLine2: "",
         postalCode: userDetail.postCode,
         city: userDetail.postCity,
-        country: "NOR"
+        country: "NOR",
       },
       phoneNumber: {
         prefix: "+47",
-        number: userDetail.phone
+        number: userDetail.phone,
       },
       privatePerson: {
         firstName: this._userDetailHelper.getFirstName(userDetail.name),
-        lastName: this._userDetailHelper.getLastName(userDetail.name)
-      }
+        lastName: this._userDetailHelper.getLastName(userDetail.name),
+      },
     };
   }
 
@@ -147,7 +147,7 @@ export class DibsPaymentService {
       taxRate: 0,
       taxAmount: delivery.taxAmount ? this.toEars(delivery.taxAmount) : 0,
       grossTotalAmount: this.toEars(delivery.amount),
-      netTotalAmount: this.toEars(delivery.amount)
+      netTotalAmount: this.toEars(delivery.amount),
     };
   }
 

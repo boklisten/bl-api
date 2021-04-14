@@ -3,73 +3,73 @@ import { Schema } from "mongoose";
 export const branchSchema = {
   name: {
     type: Schema.Types.String,
-    required: true
+    required: true,
   },
   type: {
     type: Schema.Types.String,
-    required: false
+    required: false,
   },
   desc: {
     type: Schema.Types.String,
-    required: false
+    required: false,
   },
   root: {
     type: Schema.Types.Boolean,
-    required: false
+    required: false,
   },
   childBranches: {
     type: [Schema.Types.ObjectId],
-    default: []
+    default: [],
   },
   viewableFor: [Schema.Types.String],
   contactInfo: {
     phone: {
-      type: Schema.Types.String
+      type: Schema.Types.String,
     },
     email: {
-      type: Schema.Types.String
+      type: Schema.Types.String,
     },
     address: {
-      type: Schema.Types.String
+      type: Schema.Types.String,
     },
     postCode: {
-      type: Schema.Types.String
+      type: Schema.Types.String,
     },
     postCity: {
-      type: Schema.Types.String
+      type: Schema.Types.String,
     },
     country: {
-      type: Schema.Types.String
+      type: Schema.Types.String,
     },
     locationDesc: {
-      type: Schema.Types.String
+      type: Schema.Types.String,
     },
     location: {
       type: {
         latitude: {
           type: Schema.Types.String,
-          required: true
+          required: true,
         },
         longitude: {
           type: Schema.Types.String,
-          required: true
-        }
+          required: true,
+        },
       },
-      required: false
+      required: false,
     },
-    required: false
+    required: false,
   },
   paymentInfo: {
     type: {
       responsible: {
         type: Schema.Types.Boolean,
         default: false,
-        required: true
+        required: true,
       },
       responsibleForDelivery: {
         type: Schema.Types.Boolean,
         default: false,
-        required: false
+        required: false,
       },
       partlyPaymentPeriods: {
         type: [
@@ -79,10 +79,10 @@ export const branchSchema = {
             percentageBuyout: Schema.Types.Number,
             percentageBuyoutUsed: Schema.Types.Number,
             percentageUpFront: Schema.Types.Number,
-            percentageUpFrontUsed: Schema.Types.Number
-          }
+            percentageUpFrontUsed: Schema.Types.Number,
+          },
         ],
-        default: []
+        default: [],
       },
       rentPeriods: {
         type: [
@@ -90,10 +90,10 @@ export const branchSchema = {
             type: Schema.Types.String,
             maxNumberOfPeriods: Schema.Types.Number,
             date: Schema.Types.Date,
-            percentage: Schema.Types.Number
-          }
+            percentage: Schema.Types.Number,
+          },
         ],
-        default: []
+        default: [],
       },
       extendPeriods: {
         type: [
@@ -104,32 +104,32 @@ export const branchSchema = {
             date: Schema.Types.Date,
             percentage: {
               type: Schema.Types.Number,
-              required: false
-            }
-          }
+              required: false,
+            },
+          },
         ],
-        default: []
+        default: [],
       },
       buyout: {
         type: {
-          percentage: Schema.Types.Number
+          percentage: Schema.Types.Number,
         },
-        default: 1
+        default: 1,
       },
       sell: {
         type: {
-          percentage: Schema.Types.Number
+          percentage: Schema.Types.Number,
         },
-        default: 1
+        default: 1,
       },
       acceptedMethods: {
         type: [Schema.Types.String],
-        default: []
+        default: [],
       },
       payLater: {
         type: Schema.Types.Boolean,
-        default: false
-      }
+        default: false,
+      },
     },
     required: true,
     default: {
@@ -137,45 +137,45 @@ export const branchSchema = {
       rentPeriods: [],
       extendPeriods: [],
       buyout: {
-        percentage: 1
+        percentage: 1,
       },
       sell: {
-        percentage: 1
+        percentage: 1,
       },
-      acceptedMethods: []
-    }
+      acceptedMethods: [],
+    },
   },
   deliveryMethods: {
     branch: {
       type: Schema.Types.Boolean,
-      default: true
+      default: true,
     },
     byMail: {
       type: Schema.Types.Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   isBranchItemsLive: {
     type: {
       online: Schema.Types.Boolean,
-      atBranch: Schema.Types.Boolean
+      atBranch: Schema.Types.Boolean,
     },
     default: {
       online: false,
-      atBranch: false
+      atBranch: false,
     },
-    required: false
+    required: false,
   },
   branchItems: {
     type: [Schema.Types.ObjectId],
-    default: []
+    default: [],
   },
   openingHours: {
     type: [Schema.Types.ObjectId],
-    default: []
+    default: [],
   },
   location: {
     type: Schema.Types.Mixed,
-    required: false
-  }
+    required: false,
+  },
 };

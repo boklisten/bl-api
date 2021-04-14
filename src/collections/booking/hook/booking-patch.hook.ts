@@ -1,10 +1,5 @@
 import { Hook } from "../../../hook/hook";
-import {
-  AccessToken,
-  Booking,
-  BlError,
-  UserDetail
-} from "@wizardcoder/bl-model";
+import { AccessToken, Booking, BlError, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { bookingSchema } from "../booking.schema";
 import { PermissionService } from "../../../auth/permission/permission.service";
@@ -89,11 +84,15 @@ export class BookingPatchHook extends Hook {
             customer: body.customer,
             from:
               ">" +
-              this.dateService.format(new Date(), "Europe/Oslo", "DDMMYYYYHHMM")
+              this.dateService.format(
+                new Date(),
+                "Europe/Oslo",
+                "DDMMYYYYHHMM"
+              ),
           },
           [
             { fieldName: "from", type: "date" },
-            { fieldName: "customer", type: "object-id" }
+            { fieldName: "customer", type: "object-id" },
           ]
         );
 
@@ -123,9 +122,7 @@ export class BookingPatchHook extends Hook {
           booking.customer.toString() !== accessToken.details.toString()
         ) {
           throw new BlError(
-            `user "${
-              accessToken.details
-            }" has no permission to cancel booking "${id}"`
+            `user "${accessToken.details}" has no permission to cancel booking "${id}"`
           );
         }
       }

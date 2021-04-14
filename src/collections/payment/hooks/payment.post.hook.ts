@@ -1,20 +1,20 @@
-import {Hook} from '../../../hook/hook';
+import { Hook } from "../../../hook/hook";
 import {
   BlDocument,
   BlError,
   Order,
   Payment,
   AccessToken,
-} from '@wizardcoder/bl-model';
-import {BlDocumentStorage} from '../../../storage/blDocumentStorage';
-import {paymentSchema} from '../payment.schema';
-import {DibsPaymentService} from '../../../payment/dibs/dibs-payment.service';
-import {DibsEasyOrder} from '../../../payment/dibs/dibs-easy-order/dibs-easy-order';
-import {SystemUser} from '../../../auth/permission/permission.service';
-import {orderSchema} from '../../order/order.schema';
-import {PaymentValidator} from '../helpers/payment.validator';
-import {isNullOrUndefined} from 'util';
-import {PaymentDibsHandler} from '../helpers/dibs/payment-dibs-handler';
+} from "@boklisten/bl-model";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { paymentSchema } from "../payment.schema";
+import { DibsPaymentService } from "../../../payment/dibs/dibs-payment.service";
+import { DibsEasyOrder } from "../../../payment/dibs/dibs-easy-order/dibs-easy-order";
+import { SystemUser } from "../../../auth/permission/permission.service";
+import { orderSchema } from "../../order/order.schema";
+import { PaymentValidator } from "../helpers/payment.validator";
+import { isNullOrUndefined } from "util";
+import { PaymentDibsHandler } from "../helpers/dibs/payment-dibs-handler";
 
 export class PaymentPostHook extends Hook {
   private paymentStorage: BlDocumentStorage<Payment>;
@@ -26,7 +26,7 @@ export class PaymentPostHook extends Hook {
     paymentStorage?: BlDocumentStorage<Payment>,
     orderStorage?: BlDocumentStorage<Order>,
     paymentValidator?: PaymentValidator,
-    paymentDibsHandler?: PaymentDibsHandler,
+    paymentDibsHandler?: PaymentDibsHandler
   ) {
     super();
     this.paymentValidator = paymentValidator
@@ -34,10 +34,10 @@ export class PaymentPostHook extends Hook {
       : new PaymentValidator();
     this.paymentStorage = paymentStorage
       ? paymentStorage
-      : new BlDocumentStorage('payments', paymentSchema);
+      : new BlDocumentStorage("payments", paymentSchema);
     this.orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage('orders', orderSchema);
+      : new BlDocumentStorage("orders", orderSchema);
     this.paymentDibsHandler = paymentDibsHandler
       ? paymentDibsHandler
       : new PaymentDibsHandler();
@@ -51,15 +51,15 @@ export class PaymentPostHook extends Hook {
 
   public after(
     payments: Payment[],
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<Payment[]> {
     return new Promise((resolve, reject) => {
       if (!payments || payments.length != 1) {
-        return reject(new BlError('payments is empty or undefined'));
+        return reject(new BlError("payments is empty or undefined"));
       }
 
       if (isNullOrUndefined(accessToken)) {
-        return reject(new BlError('accessToken is undefined'));
+        return reject(new BlError("accessToken is undefined"));
       }
 
       let payment = payments[0];
@@ -76,8 +76,8 @@ export class PaymentPostHook extends Hook {
                 .catch((updateOrderError: BlError) => {
                   reject(
                     new BlError(
-                      'order could not be updated with paymentId',
-                    ).add(updateOrderError),
+                      "order could not be updated with paymentId"
+                    ).add(updateOrderError)
                   );
                 });
             })
@@ -86,18 +86,18 @@ export class PaymentPostHook extends Hook {
             });
         })
         .catch((blError: BlError) => {
-          reject(new BlError('payment could not be validated').add(blError));
+          reject(new BlError("payment could not be validated").add(blError));
         });
     });
   }
 
   private handlePaymentBasedOnMethod(
     payment: Payment,
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<Payment> {
     return new Promise((resolve, reject) => {
       switch (payment.method) {
-        case 'dibs':
+        case "dibs":
           return this.paymentDibsHandler
             .handleDibsPayment(payment, accessToken)
             .then((updatedPayment: Payment) => {
@@ -114,7 +114,7 @@ export class PaymentPostHook extends Hook {
 
   private updateOrderWithPayment(
     payment: Payment,
-    accessToken: AccessToken,
+    accessToken: AccessToken
   ): Promise<Payment> {
     return new Promise((resolve, reject) => {
       this.orderStorage
@@ -127,8 +127,8 @@ export class PaymentPostHook extends Hook {
           if (paymentIds.indexOf(payment.id) > -1) {
             reject(
               new BlError(
-                `order.payments already includes payment "${payment.id}"`,
-              ),
+                `order.payments already includes payment "${payment.id}"`
+              )
             );
           } else {
             paymentIds.push(payment.id);
@@ -141,18 +141,18 @@ export class PaymentPostHook extends Hook {
           return this.orderStorage
             .update(
               order.id,
-              {payments: paymentIds},
-              {id: accessToken.sub, permission: accessToken.permission},
+              { payments: paymentIds },
+              { id: accessToken.sub, permission: accessToken.permission }
             )
             .then((updatedOrder: Order) => {
               resolve(payment);
             })
             .catch((blError: BlError) => {
-              reject(new BlError('could not update orders').add(blError));
+              reject(new BlError("could not update orders").add(blError));
             });
         })
-        .catch(getOrder => {
-          reject(new BlError('could not get order when adding payment id'));
+        .catch((getOrder) => {
+          reject(new BlError("could not get order when adding payment id"));
         });
     });
   }

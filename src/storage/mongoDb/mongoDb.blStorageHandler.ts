@@ -1,11 +1,11 @@
-import { BlDocument, BlError, UserPermission } from "@wizardcoder/bl-model";
+import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
 import { BlStorageHandler } from "../blStorageHandler";
 import { MongooseModelCreator } from "./mongoose-schema-creator";
 import { PermissionService } from "../../auth/permission/permission.service";
 import { SEDbQuery } from "../../query/se.db-query";
 import { NestedDocument } from "../nested-document";
 import { ExpandFilter } from "../../query/expand-filter/db-query-expand-filter";
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
 import { logger } from "../../logger/logger";
 
 export class MongoDbBlStorageHandler<T extends BlDocument>
@@ -89,7 +89,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
               .then((docsWithNestedDocuments: T[]) => {
                 resolve(docsWithNestedDocuments);
               })
-              .catch(e => {
+              .catch((e) => {
                 reject(e);
               });
           } else {

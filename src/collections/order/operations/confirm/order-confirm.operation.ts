@@ -1,24 +1,24 @@
-import {NextFunction, Request, Response} from 'express';
-import {Operation} from '../../../../operation/operation';
-import {BlApiRequest} from '../../../../request/bl-api-request';
-import {BlDocumentStorage} from '../../../../storage/blDocumentStorage';
-import {orderSchema} from '../../order.schema';
-import {SEResponseHandler} from '../../../../response/se.response.handler';
+import { NextFunction, Request, Response } from "express";
+import { Operation } from "../../../../operation/operation";
+import { BlApiRequest } from "../../../../request/bl-api-request";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { orderSchema } from "../../order.schema";
+import { SEResponseHandler } from "../../../../response/se.response.handler";
 import {
   AccessToken,
   BlError,
   BlapiResponse,
   Order,
   UserDetail,
-} from '@wizardcoder/bl-model';
-import {PaymentHandler} from '../../../payment/helpers/payment-handler';
-import {OrderPlacedHandler} from '../../helpers/order-placed-handler/order-placed-handler';
+} from "@boklisten/bl-model";
+import { PaymentHandler } from "../../../payment/helpers/payment-handler";
+import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
 
 export class OrderConfirmOperation implements Operation {
   constructor(
     private _resHandler?: SEResponseHandler,
     private _orderStorage?: BlDocumentStorage<Order>,
-    private _orderPlacedHandler?: OrderPlacedHandler,
+    private _orderPlacedHandler?: OrderPlacedHandler
   ) {
     this._resHandler = this._resHandler
       ? this._resHandler
@@ -26,7 +26,7 @@ export class OrderConfirmOperation implements Operation {
 
     this._orderStorage = this._orderStorage
       ? this._orderStorage
-      : new BlDocumentStorage('orders', orderSchema);
+      : new BlDocumentStorage("orders", orderSchema);
 
     this._orderPlacedHandler = this._orderPlacedHandler
       ? this._orderPlacedHandler
@@ -37,7 +37,7 @@ export class OrderConfirmOperation implements Operation {
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
-    next?: NextFunction,
+    next?: NextFunction
   ): Promise<boolean> {
     const accessToken = {
       details: blApiRequest.user.id,
@@ -57,10 +57,10 @@ export class OrderConfirmOperation implements Operation {
     try {
       placedOrder = await this._orderPlacedHandler.placeOrder(
         order,
-        accessToken,
+        accessToken
       );
     } catch (e) {
-      throw new BlError('order could not be placed:' + e);
+      throw new BlError("order could not be placed:" + e);
     }
 
     this._resHandler.sendResponse(res, new BlapiResponse([placedOrder]));

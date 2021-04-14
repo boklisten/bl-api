@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import * as moment from "moment-timezone";
+import sinon from "sinon";
+import moment from "moment-timezone";
 import {
   AccessToken,
   BlError,
@@ -15,10 +16,10 @@ import {
   MatchItem,
   Order,
   Delivery,
-  MatchProfile
-} from "@wizardcoder/bl-model";
+  MatchProfile,
+} from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import * as sinonChai from "sinon-chai";
+import sinonChai from "sinon-chai";
 import { Matcher } from "./matcher";
 import { dateService } from "../../../../blc/date.service";
 import { MatchHelper } from "../match-helper";
@@ -48,7 +49,7 @@ describe("Matcher", () => {
   describe("#match()", () => {
     it("should reject if order is not for correct branch", () => {
       const order = {
-        branch: "someOtherBranch"
+        branch: "someOtherBranch",
       } as Order;
 
       const userDetail = {} as UserDetail;
@@ -59,7 +60,7 @@ describe("Matcher", () => {
     it("should reject if payment is not present", () => {
       const order = {
         branch: "5db00e6bcbfeed32123184c3",
-        payments: []
+        payments: [],
       } as Order;
 
       const userDetail = {} as UserDetail;
@@ -71,13 +72,13 @@ describe("Matcher", () => {
 
     it("should reject if delivery is not of type branch", () => {
       deliveryGetStub.withArgs("delivery1").resolves({
-        method: "bring"
+        method: "bring",
       });
 
       const order = {
         delivery: "delivery1",
         branch: "5db00e6bcbfeed32123184c3",
-        payments: ["payment1"]
+        payments: ["payment1"],
       } as Order;
 
       const userDetail = {} as UserDetail;
@@ -92,18 +93,14 @@ describe("Matcher", () => {
 
     it("should reject if order time is after 20:00", () => {
       deliveryGetStub.withArgs("delivery2").resolves({
-        method: "branch"
+        method: "branch",
       });
 
       const order = {
         delivery: "delivery2",
         branch: "5db00e6bcbfeed32123184c3",
         payments: ["payment1"],
-        creationTime: moment()
-          .hour(22)
-          .minutes(11)
-          .seconds(10)
-          .toDate()
+        creationTime: moment().hour(22).minutes(11).seconds(10).toDate(),
       } as Order;
 
       const userDetail = {} as UserDetail;
@@ -120,16 +117,16 @@ describe("Matcher", () => {
       //matchFinderFindStub.withArgs([{item: 'item2'}]).rejects(new BlError('no match found'));
       let match = {
         state: "created",
-        items: [{ item: "item3" }]
+        items: [{ item: "item3" }],
       };
       matchFinderFindStub
         .withArgs([
-          { item: "item3", customerItem: "customerItem3", title: "Signatur 4" }
+          { item: "item3", customerItem: "customerItem3", title: "Signatur 4" },
         ])
         .resolves(match);
 
       deliveryGetStub.withArgs("delivery3").resolves({
-        method: "branch"
+        method: "branch",
       });
 
       const order = {
@@ -140,14 +137,10 @@ describe("Matcher", () => {
           {
             item: "item3",
             customerItem: "customerItem3",
-            title: "Signatur 4"
-          }
+            title: "Signatur 4",
+          },
         ],
-        creationTime: moment()
-          .hour(11)
-          .minutes(0)
-          .seconds(0)
-          .toDate()
+        creationTime: moment().hour(11).minutes(0).seconds(0).toDate(),
       } as any;
 
       const userDetail = {} as UserDetail;

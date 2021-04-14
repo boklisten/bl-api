@@ -1,11 +1,11 @@
-import {Router} from 'express';
-import * as passport from 'passport';
-import {Strategy} from 'passport-facebook';
-import {ApiPath} from '../../config/api-path';
-import {SEResponseHandler} from '../../response/se.response.handler';
-import {BlError} from '@wizardcoder/bl-model';
-import {APP_CONFIG} from '../../application-config';
-import {UserProvider} from '../user/user-provider/user-provider';
+import { Router } from "express";
+import passport from "passport";
+import { Strategy } from "passport-facebook";
+import { ApiPath } from "../../config/api-path";
+import { SEResponseHandler } from "../../response/se.response.handler";
+import { BlError } from "@boklisten/bl-model";
+import { APP_CONFIG } from "../../application-config";
+import { UserProvider } from "../user/user-provider/user-provider";
 
 export class FacebookAuth {
   private apiPath: ApiPath;
@@ -20,8 +20,8 @@ export class FacebookAuth {
       clientSecret: process.env.FACEBOOK_SECRET,
       callbackURL:
         process.env.BL_API_URI +
-        this.apiPath.createPath('auth/facebook/callback'),
-      profileFields: ['id', 'email', 'name'],
+        this.apiPath.createPath("auth/facebook/callback"),
+      profileFields: ["id", "email", "name"],
       enableProof: true,
     };
 
@@ -39,7 +39,7 @@ export class FacebookAuth {
           accessToken: any,
           refreshToken: any,
           profile: any,
-          done: any,
+          done: any
         ) => {
           const provider = APP_CONFIG.login.facebook.name;
           const providerId = profile.id;
@@ -51,18 +51,18 @@ export class FacebookAuth {
             userAndTokens = await this._userProvider.loginOrCreate(
               username,
               provider,
-              providerId,
+              providerId
             );
           } catch (e) {
             return done(
               null,
               null,
-              new BlError('could not create user').code(902),
+              new BlError("could not create user").code(902)
             );
           }
           done(null, userAndTokens.tokens);
-        },
-      ),
+        }
+      )
     );
   }
 
@@ -74,7 +74,7 @@ export class FacebookAuth {
     }
 
     if (!username) {
-      throw new BlError('username not found from facebook').code(902);
+      throw new BlError("username not found from facebook").code(902);
     }
 
     return username;
@@ -82,16 +82,16 @@ export class FacebookAuth {
 
   private createAuthGet(router: Router) {
     router.get(
-      this.apiPath.createPath('auth/facebook'),
+      this.apiPath.createPath("auth/facebook"),
       passport.authenticate(APP_CONFIG.login.facebook.name, {
-        scope: ['public_profile', 'email'],
-      }),
+        scope: ["public_profile", "email"],
+      })
     );
   }
 
   private createCallbackGet(router: Router) {
     router.get(
-      this.apiPath.createPath('auth/facebook/callback'),
+      this.apiPath.createPath("auth/facebook/callback"),
       (req, res) => {
         passport.authenticate(
           APP_CONFIG.login.facebook.name,
@@ -99,7 +99,7 @@ export class FacebookAuth {
             if (!tokens && (err || blError)) {
               return res.redirect(
                 process.env.CLIENT_URI +
-                  APP_CONFIG.path.client.auth.socialLoginFailure,
+                  APP_CONFIG.path.client.auth.socialLoginFailure
               );
             }
 
@@ -108,12 +108,12 @@ export class FacebookAuth {
                 res,
                 tokens.accessToken,
                 tokens.refreshToken,
-                this.apiPath.retrieveRefererPath(req.headers),
+                this.apiPath.retrieveRefererPath(req.headers)
               );
             }
-          },
+          }
         )(req, res);
-      },
+      }
     );
   }
 }

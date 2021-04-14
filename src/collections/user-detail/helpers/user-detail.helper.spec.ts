@@ -1,9 +1,10 @@
+// @ts-nocheck
 import "mocha";
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import { AccessToken, BlError, UserDetail } from "@wizardcoder/bl-model";
+import sinon from "sinon";
+import { AccessToken, BlError, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { UserDetailHelper } from "./user-detail.helper";
 import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
@@ -29,12 +30,12 @@ describe("UserDetailHelper", () => {
       postCity: "",
       country: "",
       dob: new Date(),
-      branch: "branch1"
+      branch: "branch1",
     };
 
     testAccessToken = {
       sub: "user1",
-      details: "userDetail1"
+      details: "userDetail1",
     } as AccessToken;
 
     userDetailStorageUpdateSuccess = true;
@@ -72,21 +73,21 @@ describe("UserDetailHelper", () => {
             merchantReference: "ref123",
             phoneNumber: {
               number: "12345678",
-              prefix: "+47"
-            }
+              prefix: "+47",
+            },
           },
           shippingAddress: {
             addressLine1: "Trondheimsveien 10",
             addressLine2: "HO403",
             city: "OSLO",
             country: "NOR",
-            postalCode: "0560"
-          }
-        }
+            postalCode: "0560",
+          },
+        },
       };
     });
 
-    it("should update userDetail with values from dibsEasyPayment", done => {
+    it("should update userDetail with values from dibsEasyPayment", (done) => {
       userDetailHelper
         .updateUserDetailBasedOnDibsEasyPayment(
           "userDetail1",
@@ -120,7 +121,7 @@ describe("UserDetailHelper", () => {
         });
     });
 
-    it("should only update the fields in userDetail that are not already populated", done => {
+    it("should only update the fields in userDetail that are not already populated", (done) => {
       testUserDetail.name = "Jenny Jensen";
 
       testDibsEasyPayment.consumer.privatePerson["firstName"] = "Johnny";
@@ -141,7 +142,7 @@ describe("UserDetailHelper", () => {
     });
   });
   describe("getFirstName()", () => {
-    it("should resolve with first name", done => {
+    it("should resolve with first name", (done) => {
       const names: { n: string; f: string }[] = [
         { n: "Albert Einstein", f: "Albert" },
         { n: "Willy-Wonk Wonka", f: "Willy-Wonk" },
@@ -152,7 +153,7 @@ describe("UserDetailHelper", () => {
         { n: "Negil Veganer ", f: "Negil" },
         { n: " Bobby Bobson", f: "Bobby" },
         { n: "       Bobby Bobson", f: "Bobby" },
-        { n: "       Bobby            Bobson", f: "Bobby" }
+        { n: "       Bobby            Bobson", f: "Bobby" },
       ];
 
       for (let name of names) {
@@ -163,7 +164,7 @@ describe("UserDetailHelper", () => {
   });
 
   describe("getLastName()", () => {
-    it("should resolve with last name", done => {
+    it("should resolve with last name", (done) => {
       const names: { n: string; f: string }[] = [
         { n: "Albert Einstein", f: "Einstein" },
         { n: "Willy-Wonk Wonka", f: "Wonka" },
@@ -173,7 +174,7 @@ describe("UserDetailHelper", () => {
         { n: "Wiliam Jens-book Jensen", f: "Jensen" },
         { n: "Birger  Ruud", f: "Ruud" },
         { n: "Jens Hansen ", f: "Hansen" },
-        { n: "     Bjorn   Belto ", f: "Belto" }
+        { n: "     Bjorn   Belto ", f: "Belto" },
       ];
 
       for (let name of names) {

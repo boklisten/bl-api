@@ -1,4 +1,4 @@
-import { AccessToken, UserDetail } from "@wizardcoder/bl-model";
+import { AccessToken, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { PermissionService } from "../../../auth/permission/permission.service";
 import { userDetailSchema } from "../user-detail.schema";

@@ -1,22 +1,23 @@
-import 'mocha';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import * as sinon from 'sinon';
-import {expect} from 'chai';
-import {BlError, Delivery, Order} from '@wizardcoder/bl-model';
-import {DibsPaymentService} from './dibs-payment.service';
-import {DibsEasyOrder} from './dibs-easy-order/dibs-easy-order';
-import {HttpHandler} from '../../http/http.handler';
-import {BlDocumentStorage} from '../../storage/blDocumentStorage';
+// @ts-nocheck
+import "mocha";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
+import { expect } from "chai";
+import { BlError, Delivery, Order } from "@boklisten/bl-model";
+import { DibsPaymentService } from "./dibs-payment.service";
+import { DibsEasyOrder } from "./dibs-easy-order/dibs-easy-order";
+import { HttpHandler } from "../../http/http.handler";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 
-describe('DibsPaymentService', () => {
+describe("DibsPaymentService", () => {
   const httpHandler = new HttpHandler();
-  const deliveryStorage = new BlDocumentStorage<Delivery>('deliveries');
+  const deliveryStorage = new BlDocumentStorage<Delivery>("deliveries");
   const dibsPaymentService: DibsPaymentService = new DibsPaymentService(
     deliveryStorage,
-    httpHandler,
+    httpHandler
   );
   let testOrder: Order;
   let testDibsEasyOrder: DibsEasyOrder;
@@ -24,28 +25,28 @@ describe('DibsPaymentService', () => {
 
   beforeEach(() => {
     testOrder = {
-      id: 'o1',
+      id: "o1",
       amount: 100,
-      customer: '',
+      customer: "",
       byCustomer: true,
-      branch: 'b1',
+      branch: "b1",
       orderItems: [
         {
-          type: 'rent',
-          title: 'Signatur 3',
+          type: "rent",
+          title: "Signatur 3",
           amount: 100,
           unitPrice: 100,
           taxRate: 0,
           taxAmount: 0,
-          item: 'i1',
+          item: "i1",
         },
       ],
       payments: [],
       comments: [],
-      delivery: '',
+      delivery: "",
       active: false,
       user: {
-        id: 'u1',
+        id: "u1",
       },
       lastUpdated: new Date(),
       creationTime: new Date(),
@@ -55,10 +56,10 @@ describe('DibsPaymentService', () => {
       order: {
         items: [
           {
-            reference: 'i1',
-            name: 'Signatur 3',
+            reference: "i1",
+            name: "Signatur 3",
             quantity: 1,
-            unit: 'book',
+            unit: "book",
             unitPrice: 1000,
             taxRate: 0,
             taxAmount: 0,
@@ -67,19 +68,19 @@ describe('DibsPaymentService', () => {
           },
         ],
         amount: 1000,
-        currency: 'NOK',
-        reference: 'o1',
+        currency: "NOK",
+        reference: "o1",
       },
       checkout: {
-        url: '',
-        termsUrl: '',
-        ShippingCountries: [{countryCode: 'NOR'}],
+        url: "",
+        termsUrl: "",
+        ShippingCountries: [{ countryCode: "NOR" }],
       },
     };
   });
 
-  describe('#orderToDibsEasyOrder', () => {
-    it('should throw error if order.id is not defined', () => {
+  describe("#orderToDibsEasyOrder", () => {
+    it("should throw error if order.id is not defined", () => {
       testOrder.id = null;
 
       expect(() => {
@@ -91,43 +92,43 @@ describe('DibsPaymentService', () => {
 
     it('should throw error if none of the order.payments is of type "dibs"', () => {});
 
-    it('should throw error if order.amount is 0', () => {
+    it("should throw error if order.amount is 0", () => {
       testOrder.amount = 0;
       expect(() => {
         dibsPaymentService.orderToDibsEasyOrder(testUser, testOrder);
       }).to.throw(BlError, /order.amount is zero/);
     });
 
-    it('should throw error if order.byCustomer = false', () => {
+    it("should throw error if order.byCustomer = false", () => {
       testOrder.byCustomer = false;
       expect(() => {
         dibsPaymentService.orderToDibsEasyOrder(testUser, testOrder);
       }).to.throw(BlError, /order.byCustomer is false/);
     });
 
-    it('should return a total amount of 10000 when item costs 100kr', () => {
+    it("should return a total amount of 10000 when item costs 100kr", () => {
       testOrder.orderItems[0].amount = 100;
       testOrder.orderItems[0].unitPrice = 100;
       let deo: DibsEasyOrder = dibsPaymentService.orderToDibsEasyOrder(
         testUser,
-        testOrder,
+        testOrder
       );
 
       expect(deo.order.amount).to.eql(10000);
     });
 
     it('should return a dibsEasyOrder.reference equal to "103"', () => {
-      testOrder.id = '103';
+      testOrder.id = "103";
       let deo: DibsEasyOrder = dibsPaymentService.orderToDibsEasyOrder(
         testUser,
-        testOrder,
+        testOrder
       );
-      expect(deo.order.reference).to.eql('103');
+      expect(deo.order.reference).to.eql("103");
     });
 
-    context('dibsEasyOrder.items should be valid', () => {
+    context("dibsEasyOrder.items should be valid", () => {
       it('should have name of "signatur 3"', () => {
-        const title = 'signatur 3';
+        const title = "signatur 3";
         testOrder.orderItems[0].title = title;
 
         let deo = dibsPaymentService.orderToDibsEasyOrder(testUser, testOrder);
@@ -135,7 +136,7 @@ describe('DibsPaymentService', () => {
         expect(deo.order.items[0].name).to.eql(title);
       });
 
-      it('should have grossTotalAmount of 15000', () => {
+      it("should have grossTotalAmount of 15000", () => {
         testOrder.orderItems[0].amount = 150;
         testOrder.orderItems[0].unitPrice = 150;
         testOrder.amount = 150;
@@ -144,7 +145,7 @@ describe('DibsPaymentService', () => {
         expect(deo.order.items[0].grossTotalAmount).to.eql(15000);
       });
 
-      it('should have taxAmount equal to 5000', () => {
+      it("should have taxAmount equal to 5000", () => {
         testOrder.orderItems[0].unitPrice = 100;
         testOrder.orderItems[0].taxRate = 0.5;
         testOrder.orderItems[0].taxAmount = 50;
@@ -154,7 +155,7 @@ describe('DibsPaymentService', () => {
         expect(deo.order.items[0].taxAmount).to.eql(5000);
       });
 
-      it('should have taxRate equal to 2500', () => {
+      it("should have taxRate equal to 2500", () => {
         testOrder.orderItems[0].unitPrice = 100;
         testOrder.orderItems[0].taxRate = 0.25;
 
@@ -164,16 +165,16 @@ describe('DibsPaymentService', () => {
       });
     });
 
-    context('dibsEasyOrder should be valid', () => {
-      it('should have reference equal to the order.id', () => {
-        testOrder.id = 'orderId1';
+    context("dibsEasyOrder should be valid", () => {
+      it("should have reference equal to the order.id", () => {
+        testOrder.id = "orderId1";
 
         let deo = dibsPaymentService.orderToDibsEasyOrder(testUser, testOrder);
 
         expect(deo.order.reference).to.eql(testOrder.id);
       });
 
-      it('should have items.length equal to the number of items in order', () => {
+      it("should have items.length equal to the number of items in order", () => {
         let deo = dibsPaymentService.orderToDibsEasyOrder(testUser, testOrder);
 
         expect(deo.order.items.length).to.eql(testOrder.orderItems.length);
@@ -187,7 +188,7 @@ describe('DibsPaymentService', () => {
   beforeEach(() => {
     testDibsEasyPaymentResponse = {
       payment: {
-        paymentId: 'dibsPaymentId1',
+        paymentId: "dibsPaymentId1",
       },
     };
 
@@ -195,51 +196,51 @@ describe('DibsPaymentService', () => {
   });
 
   sinon
-    .stub(httpHandler, 'get')
+    .stub(httpHandler, "get")
     .callsFake((url: string, authorization?: string) => {
       if (!httpHandlerGetSuccess) {
-        return Promise.reject(new BlError('could not get resource'));
+        return Promise.reject(new BlError("could not get resource"));
       }
 
       return Promise.resolve(testDibsEasyPaymentResponse);
     });
 
-  describe('#fetchDibsPaymentData', () => {
-    it('should reject if httpHandler rejects', () => {
+  describe("#fetchDibsPaymentData", () => {
+    it("should reject if httpHandler rejects", () => {
       httpHandlerGetSuccess = false;
       return expect(
-        dibsPaymentService.fetchDibsPaymentData('dibsPaymentId1'),
+        dibsPaymentService.fetchDibsPaymentData("dibsPaymentId1")
       ).to.be.rejectedWith(
         BlError,
-        /could not get payment details for paymentId "dibsPaymentId1"/,
+        /could not get payment details for paymentId "dibsPaymentId1"/
       );
     });
 
-    it('should reject if dibsResponse does not include a payment', done => {
+    it("should reject if dibsResponse does not include a payment", (done) => {
       testDibsEasyPaymentResponse = {
         somethingElse: true,
       };
 
       dibsPaymentService
-        .fetchDibsPaymentData('dibsPaymentId1')
+        .fetchDibsPaymentData("dibsPaymentId1")
         .catch((err: BlError) => {
           expect(err.errorStack[0].getMsg()).to.be.eq(
-            'dibs response did not include payment information',
+            "dibs response did not include payment information"
           );
           done();
         });
     });
 
-    it('should resolve with a dibsEasyPayment object with correct paymentId', () => {
+    it("should resolve with a dibsEasyPayment object with correct paymentId", () => {
       testDibsEasyPaymentResponse = {
         payment: {
-          paymentId: 'aPaymentId',
+          paymentId: "aPaymentId",
         },
       };
 
       return expect(
-        dibsPaymentService.fetchDibsPaymentData('aPaymentId'),
-      ).to.eventually.be.eql({paymentId: 'aPaymentId'});
+        dibsPaymentService.fetchDibsPaymentData("aPaymentId")
+      ).to.eventually.be.eql({ paymentId: "aPaymentId" });
     });
   });
 });

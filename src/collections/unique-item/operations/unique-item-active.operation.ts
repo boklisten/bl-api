@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { CustomerItemActiveBlid } from "../../customer-item/helpers/customer-item-active-blid";
 import { SEResponseHandler } from "../../../response/se.response.handler";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { UniqueItem, BlapiResponse, BlError } from "@wizardcoder/bl-model";
+import { UniqueItem, BlapiResponse, BlError } from "@boklisten/bl-model";
 import { uniqueItemSchema } from "../unique-item.schema";
 
 export class UniqueItemActiveOperation implements Operation {

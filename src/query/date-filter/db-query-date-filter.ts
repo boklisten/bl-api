@@ -1,4 +1,4 @@
-import moment = require('moment');
+import moment = require("moment");
 
 export type DateFilter = {
   fieldName: string;
@@ -19,10 +19,10 @@ export class DbQueryDateFilter {
   private dateFormat: string;
 
   public constructor() {
-    this.dateFormat = 'DDMMYYYYHHmm';
+    this.dateFormat = "DDMMYYYYHHmm";
     this.operationIdentifiers = [
-      {op: '$gt', opIdentifier: '>', atIndex: 0},
-      {op: '$lt', opIdentifier: '<', atIndex: 0},
+      { op: "$gt", opIdentifier: ">", atIndex: 0 },
+      { op: "$lt", opIdentifier: "<", atIndex: 0 },
     ];
   }
 
@@ -31,7 +31,7 @@ export class DbQueryDateFilter {
       !query ||
       (Object.keys(query).length === 0 && query.constructor === Object)
     )
-      throw new TypeError('the given query can not be null or undefined');
+      throw new TypeError("the given query can not be null or undefined");
 
     try {
       for (let param in query) {
@@ -58,11 +58,11 @@ export class DbQueryDateFilter {
 
   private generateSingleDayFilter(
     fieldName: string,
-    value: string,
+    value: string
   ): DateFilter {
     if (!value)
       throw new Error(
-        'QueryBuilderDateFilter.generateDateFilter(): value is not defined',
+        "QueryBuilderDateFilter.generateDateFilter(): value is not defined"
       );
 
     const operation = this.getOperation(value);
@@ -76,11 +76,11 @@ export class DbQueryDateFilter {
     try {
       momentDate = moment(value, this.dateFormat, true);
     } catch (e) {
-      throw new SyntaxError('generateDateFilter(): invalid date');
+      throw new SyntaxError("generateDateFilter(): invalid date");
     }
 
     if (!momentDate.isValid()) {
-      throw new SyntaxError('generateDateFilter(): invalid date');
+      throw new SyntaxError("generateDateFilter(): invalid date");
     }
 
     let isoDate = momentDate.toDate();
@@ -96,12 +96,12 @@ export class DbQueryDateFilter {
       };
     }
 
-    return {fieldName: fieldName, op: {$eq: isoDate}};
+    return { fieldName: fieldName, op: { $eq: isoDate } };
   }
 
   private generateMultipleDateFilter(
     fieldName: string,
-    values: string[],
+    values: string[]
   ): DateFilter[] {
     let operations = {};
 
@@ -111,7 +111,7 @@ export class DbQueryDateFilter {
       operations[op] = moment(theDateString, this.dateFormat, true).toDate();
     }
 
-    return [{fieldName: fieldName, op: operations}];
+    return [{ fieldName: fieldName, op: operations }];
   }
 
   private getOperation(value: string): string {

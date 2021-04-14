@@ -1,4 +1,4 @@
-import { UserDetail, Message, Booking, Branch } from "@wizardcoder/bl-model";
+import { UserDetail, Message, Booking, Branch } from "@boklisten/bl-model";
 import { EmailService } from "./email-service";
 import { messageSchema } from "../../collections/message/message.schema";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
@@ -8,8 +8,8 @@ import {
   Recipient,
   MessageOptions,
   PostOffice,
-  postOffice
-} from "@wizardcoder/bl-post-office";
+  postOffice,
+} from "@boklisten/bl-post-office";
 import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
 
 export class BookingEmailService {
@@ -41,7 +41,7 @@ export class BookingEmailService {
       messageSubtype: subtype,
       messageMethod: "email",
       sequenceNumber: 0,
-      customerId: booking.customer
+      customerId: booking.customer,
     } as Message;
 
     try {
@@ -61,7 +61,7 @@ export class BookingEmailService {
       hour:
         "kl. " + this.dateService.format(booking.from, "Europe/Oslo", "HH:mm"),
       branch: branch.name,
-      address: address
+      address: address,
     };
 
     return this.emailService.sendBookingEmail(

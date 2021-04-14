@@ -1,14 +1,14 @@
 import {
   EmailHandler,
   EmailLog,
-  EmailTemplateInput
-} from "@wizardcoder/bl-email";
+  EmailTemplateInput,
+} from "@boklisten/bl-email";
 import {
   Recipient,
   MessageOptions,
   PostOffice,
-  postOffice
-} from "@wizardcoder/bl-post-office";
+  postOffice,
+} from "@boklisten/bl-post-office";
 import {
   BlError,
   Delivery,
@@ -19,23 +19,23 @@ import {
   UserDetail,
   CustomerItem,
   Item,
-  Message
-} from "@wizardcoder/bl-model";
+  Message,
+} from "@boklisten/bl-model";
 import { dateService } from "../../blc/date.service";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { OrderItemType } from "@wizardcoder/bl-model/dist/order/order-item/order-item-type";
-import * as fs from "fs";
-import { EmailAttachment } from "@wizardcoder/bl-email/dist/ts/template/email-attachment";
+import { OrderItemType } from "@boklisten/bl-model/dist/order/order-item/order-item-type";
+import fs from "fs";
+import { EmailAttachment } from "@boklisten/bl-email/dist/ts/template/email-attachment";
 import { type } from "os";
 import { OrderEmailHandler } from "./order-email/order-email-handler";
 import {
   MessengerService,
-  CustomerDetailWithCustomerItem
+  CustomerDetailWithCustomerItem,
 } from "../messenger-service";
-import { EmailSetting } from "@wizardcoder/bl-email/dist/ts/template/email-setting";
+import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
 import { EMAIL_SETTINGS } from "./email-settings";
-import { EmailOrder } from "@wizardcoder/bl-email/dist/ts/template/email-order";
-import { EmailUser } from "@wizardcoder/bl-email/dist/ts/template/email-user";
+import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
+import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
 import { isNullOrUndefined } from "util";
 import { logger } from "../../logger/logger";
 import { itemSchema } from "../../collections/item/item.schema";
@@ -56,9 +56,9 @@ export class EmailService implements MessengerService {
       ? emailHandler
       : new EmailHandler({
           sendgrid: {
-            apiKey: process.env.SENDGRID_API_KEY
+            apiKey: process.env.SENDGRID_API_KEY,
           },
-          locale: "nb"
+          locale: "nb",
         });
 
     this._itemStorage = itemStorage
@@ -73,7 +73,7 @@ export class EmailService implements MessengerService {
       generic: { mediums: { email: true } },
       receipt: { mediums: { email: false, sms: false } },
       match: { mediums: { sms: true } },
-      booking: { mediums: { email: true } }
+      booking: { mediums: { email: true } },
     });
   }
 
@@ -106,7 +106,7 @@ export class EmailService implements MessengerService {
       sequence_number: message.sequenceNumber,
       htmlContent: message.htmlContent,
       textBlocks: message.textBlocks,
-      mediums: this.getMessageOptionMediums(message)
+      mediums: this.getMessageOptionMediums(message),
     };
 
     try {
@@ -138,7 +138,7 @@ export class EmailService implements MessengerService {
     const messageOptions: MessageOptions = {
       type: "booking",
       subtype: message.messageSubtype as any,
-      mediums: { email: true }
+      mediums: { email: true },
     };
 
     try {
@@ -166,7 +166,7 @@ export class EmailService implements MessengerService {
       sequence_number: message.sequenceNumber,
       htmlContent: message.htmlContent,
       textBlocks: message.textBlocks,
-      mediums: this.getMessageOptionMediums(message)
+      mediums: this.getMessageOptionMediums(message),
     };
 
     try {
@@ -200,7 +200,7 @@ export class EmailService implements MessengerService {
       subtype: message.messageSubtype as any,
       sequence_number: message.sequenceNumber,
       textBlocks: message.textBlocks,
-      mediums: this.getMessageOptionMediums(message)
+      mediums: this.getMessageOptionMediums(message),
     };
 
     try {
@@ -253,7 +253,7 @@ export class EmailService implements MessengerService {
         return {
           email: false,
           sms: false,
-          voice: false
+          voice: false,
         };
     }
   }
@@ -265,8 +265,8 @@ export class EmailService implements MessengerService {
   public orderPlaced(customerDetail: UserDetail, order: Order) {
     this._orderEmailHandler
       .sendOrderReceipt(customerDetail, order)
-      .then(emailLog => {})
-      .catch(emailError => {});
+      .then((emailLog) => {})
+      .catch((emailError) => {});
   }
 
   private async customerDetailToRecipient(
@@ -284,10 +284,10 @@ export class EmailService implements MessengerService {
         text: {
           deadline: message.info
             ? this.formatDeadline(message.info["deadline"])
-            : ""
-        }
+            : "",
+        },
       },
-      itemList: await this.customerItemsToItemList(message, customerItems)
+      itemList: await this.customerItemsToItemList(message, customerItems),
     };
   }
 
@@ -302,18 +302,18 @@ export class EmailService implements MessengerService {
             this.getCustomerItemLeftToPayTotal(customerItems).toString() +
             " NOK",
           totalTax: "0 NOK",
-          taxPercentage: "0"
+          taxPercentage: "0",
         },
-        items: await this.customerItemsToEmailItems(message, customerItems)
+        items: await this.customerItemsToEmailItems(message, customerItems),
       };
     } else {
       return {
         summary: {
           total: null,
           totalTax: null,
-          taxPercentage: null
+          taxPercentage: null,
         },
-        items: await this.customerItemsToEmailItems(message, customerItems)
+        items: await this.customerItemsToEmailItems(message, customerItems),
       };
     }
   }
@@ -342,13 +342,13 @@ export class EmailService implements MessengerService {
         id: this.getItemIsbn(item),
         title: item.title,
         deadline: this.formatDeadline(message.info["deadline"]),
-        leftToPay: customerItem.amountLeftToPay + " NOK"
+        leftToPay: customerItem.amountLeftToPay + " NOK",
       };
     } else {
       return {
         id: this.getItemIsbn(item),
         title: item.title,
-        deadline: this.formatDeadline(message.info["deadline"])
+        deadline: this.formatDeadline(message.info["deadline"]),
       };
     }
   }
@@ -365,7 +365,7 @@ export class EmailService implements MessengerService {
 
   private getCustomerItemLeftToPayTotal(customerItems: CustomerItem[]): number {
     let total = 0;
-    customerItems.forEach(cu => {
+    customerItems.forEach((cu) => {
       total += cu.amountLeftToPay;
     });
     return total;
@@ -379,7 +379,7 @@ export class EmailService implements MessengerService {
         ? dateService.format(customerDetail.dob, "Europe/Oslo", "DD.MM.YYYY")
         : "",
       email: customerDetail.email,
-      address: customerDetail.address
+      address: customerDetail.address,
     };
   }
 
@@ -397,7 +397,7 @@ export class EmailService implements MessengerService {
           customerItem.deadline,
           "Europe/Oslo",
           this._dateFormat
-        )
+        ),
       });
     }
 
@@ -417,13 +417,13 @@ export class EmailService implements MessengerService {
       textBlocks: [
         {
           text:
-            "Dine bøker er nå på vei! De vil bli levert til deg ved hjelp av Bring."
+            "Dine bøker er nå på vei! De vil bli levert til deg ved hjelp av Bring.",
         },
         {
           text:
-            "Vi anser nå disse bøkene som utlevert. Du er ansvarlig for bøkene fra du henter dem på postkontoret til innlevering er gjennomført. Om noe skulle skje med leveringen er det bare å ta kontakt. Fraktkostnader refunderes ikke for pakker som ikke blir hentet innen fristen."
-        }
-      ]
+            "Vi anser nå disse bøkene som utlevert. Du er ansvarlig for bøkene fra du henter dem på postkontoret til innlevering er gjennomført. Om noe skulle skje med leveringen er det bare å ta kontakt. Fraktkostnader refunderes ikke for pakker som ikke blir hentet innen fristen.",
+        },
+      ],
     };
 
     let emailUser: EmailUser = {
@@ -433,7 +433,7 @@ export class EmailService implements MessengerService {
         ? dateService.format(customerDetail.dob, "Europe/Oslo", "DD.MM.YYYY")
         : "",
       email: customerDetail.email,
-      address: customerDetail.address
+      address: customerDetail.address,
     };
 
     let deliveryAddress = "";
@@ -463,14 +463,14 @@ export class EmailService implements MessengerService {
         estimatedDeliveryDate: null,
         address: deliveryAddress,
         amount: null,
-        currency: null
-      }
+        currency: null,
+      },
     };
 
     this._emailHandler
       .sendDelivery(emailSetting, emailOrder, emailUser)
       .then(() => {})
-      .catch(err => {
+      .catch((err) => {
         logger.log("warn", "could not send delivery info by mail: " + err);
       });
   }
@@ -480,7 +480,7 @@ export class EmailService implements MessengerService {
     for (let orderItem of orderItems) {
       emailInformaitionItems.push({
         title: orderItem.title,
-        status: "utlevering via Bring"
+        status: "utlevering via Bring",
       });
     }
     return emailInformaitionItems;
@@ -494,7 +494,7 @@ export class EmailService implements MessengerService {
       toEmail: customerDetail.email,
       fromEmail: EMAIL_SETTINGS.types.emailConfirmation.fromEmail,
       subject: EMAIL_SETTINGS.types.emailConfirmation.subject,
-      userId: customerDetail.id
+      userId: customerDetail.id,
     };
 
     let emailVerificationUri = process.env.CLIENT_URI
@@ -505,8 +505,8 @@ export class EmailService implements MessengerService {
 
     this._emailHandler
       .sendEmailVerification(emailSetting, emailVerificationUri)
-      .then(emailLog => {})
-      .catch(emailError => {});
+      .then((emailLog) => {})
+      .catch((emailError) => {});
   }
 
   public passwordReset(customerDetail: UserDetail, passwordResetCode: string) {
@@ -514,7 +514,7 @@ export class EmailService implements MessengerService {
       toEmail: customerDetail.email,
       fromEmail: EMAIL_SETTINGS.types.passwordReset.fromEmail,
       subject: EMAIL_SETTINGS.types.passwordReset.subject,
-      userId: customerDetail.id
+      userId: customerDetail.id,
     };
 
     let passwordResetUri = process.env.CLIENT_URI
@@ -525,7 +525,7 @@ export class EmailService implements MessengerService {
 
     this._emailHandler
       .sendPasswordReset(emailSetting, passwordResetUri)
-      .then(emailLog => {})
-      .catch(emailError => {});
+      .then((emailLog) => {})
+      .catch((emailError) => {});
   }
 }

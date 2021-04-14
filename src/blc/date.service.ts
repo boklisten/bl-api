@@ -24,10 +24,7 @@ export class DateService {
   }
 
   public toEndOfDay(date: Date | string, location: MomentLocation): Date {
-    return moment
-      .tz(date, location)
-      .endOf("day")
-      .toDate();
+    return moment.tz(date, location).endOf("day").toDate();
   }
 
   public startOfDay(date: Date | string, location?: MomentLocation): Date {
@@ -60,16 +57,8 @@ export class DateService {
     toHour: number,
     location: MomentLocation
   ): boolean {
-    const from = moment
-      .tz()
-      .hour(fromHour)
-      .minute(0)
-      .second(0);
-    const to = moment
-      .tz()
-      .hour(toHour)
-      .minute(0)
-      .second(0);
+    const from = moment.tz().hour(fromHour).minute(0).second(0);
+    const to = moment.tz().hour(toHour).minute(0).second(0);
 
     return this.between(date, from.toDate(), to.toDate(), location);
   }
