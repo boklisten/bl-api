@@ -3,7 +3,7 @@ jobs:
   test:
     working_directory: ~/bl-api
     docker:
-      - image: circleci/node:8.4
+      - image: circleci/node:latest
     steps:
       - checkout
       - run:
@@ -19,7 +19,7 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
           name: Install node modules
-          command: npm install
+          command: npm ci
       - run:
           name: Test
           command: npm run test
