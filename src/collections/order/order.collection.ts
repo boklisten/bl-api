@@ -139,6 +139,10 @@ export class OrderCollection implements BlCollection {
           type: "string",
         },
         {
+          fieldName: "orderItems.type",
+          type: "string"
+        },
+        {
           fieldName: "customer",
           type: "object-id",
         },
