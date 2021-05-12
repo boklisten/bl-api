@@ -34,11 +34,10 @@ describe("UserHandler", () => {
     "users",
     UserSchema
   );
-  const emailValidationHelper: EmailValidationHelper = new EmailValidationHelper();
-  const userDetailStorage: BlDocumentStorage<UserDetail> = new BlDocumentStorage(
-    "userdetails",
-    UserDetail
-  );
+  const emailValidationHelper: EmailValidationHelper =
+    new EmailValidationHelper();
+  const userDetailStorage: BlDocumentStorage<UserDetail> =
+    new BlDocumentStorage("userdetails", UserDetail);
   const localLoginHandler: LocalLoginHandler = new LocalLoginHandler();
   let userHandler = new UserHandler(
     userDetailStorage,
@@ -175,9 +174,9 @@ describe("UserHandler", () => {
 
         userStorageGetByQueryStub.withArgs(dbQuery).resolves(testUsers);
 
-        return expect(
-          userHandler.getByUsername(username)
-        ).to.eventually.be.eql({ username: username, primary: true });
+        return expect(userHandler.getByUsername(username)).to.eventually.be.eql(
+          { username: username, primary: true }
+        );
       });
     });
   });

@@ -9,7 +9,8 @@ import { BlApiRequest } from "../../request/bl-api-request";
 
 export class CollectionEndpointGetId<T extends BlDocument>
   extends CollectionEndpointMethod<T>
-  implements CollectionEndpointOnRequest<T> {
+  implements CollectionEndpointOnRequest<T>
+{
   public onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this._documentStorage

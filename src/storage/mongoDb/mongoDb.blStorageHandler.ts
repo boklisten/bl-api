@@ -9,7 +9,8 @@ import mongoose from "mongoose";
 import { logger } from "../../logger/logger";
 
 export class MongoDbBlStorageHandler<T extends BlDocument>
-  implements BlStorageHandler<T> {
+  implements BlStorageHandler<T>
+{
   private mongooseModel: any;
   private permissionService: PermissionService;
 

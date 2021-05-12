@@ -11,7 +11,8 @@ import { SEDbQuery } from "../query/se.db-query";
 import { NestedDocument } from "./nested-document";
 
 export class BlDocumentStorage<T extends BlDocument>
-  implements BlStorageHandler<T> {
+  implements BlStorageHandler<T>
+{
   private mongoDbHandler: MongoDbBlStorageHandler<T>;
 
   constructor(private collectionName: string, private mongooseSchema?: any) {

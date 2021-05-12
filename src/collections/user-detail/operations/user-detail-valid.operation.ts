@@ -36,9 +36,8 @@ export class UserDetailValidOperation implements Operation {
         blApiRequest.documentId
       );
 
-      let invalidUserDetailFields = this._userDetailHelper.getInvalidUserDetailFields(
-        userDetail
-      );
+      let invalidUserDetailFields =
+        this._userDetailHelper.getInvalidUserDetailFields(userDetail);
 
       if (invalidUserDetailFields.length <= 0) {
         this._resHandler.sendResponse(

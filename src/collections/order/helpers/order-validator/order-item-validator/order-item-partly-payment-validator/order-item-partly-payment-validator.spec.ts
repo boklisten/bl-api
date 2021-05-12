@@ -19,7 +19,8 @@ chai.use(chaiAsPromised);
 
 describe("OrderItemPartlyPaymentValidator", () => {
   describe("#validate", () => {
-    const orderItemPartlyPaymentValidator = new OrderItemPartlyPaymentValidator();
+    const orderItemPartlyPaymentValidator =
+      new OrderItemPartlyPaymentValidator();
 
     it('should reject if orderItem.type is not "partly-payment"', () => {
       const orderItem: OrderItem = {

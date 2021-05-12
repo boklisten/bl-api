@@ -35,7 +35,8 @@ export class CollectionEndpointMethod<T extends BlDocument> {
     this._collectionUri = apiPath.createPath(this._collectionName);
     this._collectionEndpointAuth = new CollectionEndpointAuth();
     this._responseHandler = new SEResponseHandler();
-    this._collectionEndpointDocumentAuth = new CollectionEndpointDocumentAuth<T>();
+    this._collectionEndpointDocumentAuth =
+      new CollectionEndpointDocumentAuth<T>();
 
     if (!_endpoint.hook) {
       this._endpoint.hook = new Hook();

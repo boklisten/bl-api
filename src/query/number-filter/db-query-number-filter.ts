@@ -131,9 +131,10 @@ export class DbQueryNumberFilter {
     return false;
   }
 
-  private getOperationWithValue(
-    value: string
-  ): { operation: string; value: number } {
+  private getOperationWithValue(value: string): {
+    operation: string;
+    value: number;
+  } {
     let operation = this.getOperation(value);
     let number;
 

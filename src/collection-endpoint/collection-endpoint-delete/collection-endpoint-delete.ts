@@ -5,7 +5,8 @@ import { BlApiRequest } from "../../request/bl-api-request";
 
 export class CollectionEndpointDelete<T extends BlDocument>
   extends CollectionEndpointMethod<T>
-  implements CollectionEndpointOnRequest<T> {
+  implements CollectionEndpointOnRequest<T>
+{
   onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
     return this._documentStorage
       .remove(blApiRequest.documentId, {

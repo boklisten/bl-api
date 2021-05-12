@@ -26,10 +26,8 @@ describe("OrderPostHook", () => {
     "orders",
     orderSchema
   );
-  const userDetailStorage: BlDocumentStorage<UserDetail> = new BlDocumentStorage(
-    "userdetails",
-    userDetailSchema
-  );
+  const userDetailStorage: BlDocumentStorage<UserDetail> =
+    new BlDocumentStorage("userdetails", userDetailSchema);
   const orderHookBefore: OrderHookBefore = new OrderHookBefore();
   const orderPostHook: OrderPostHook = new OrderPostHook(
     orderValidator,

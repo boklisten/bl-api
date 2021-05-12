@@ -27,10 +27,8 @@ export class MatchFinderPartlyMatch {
     } catch (e) {}
 
     try {
-      let matchInTypePartlyMatched = await this.findPartlyMatchInStatePartlyMatched(
-        matchItems,
-        matches
-      );
+      let matchInTypePartlyMatched =
+        await this.findPartlyMatchInStatePartlyMatched(matchItems, matches);
 
       if (matchInTypePartlyMatched) {
         return matchInTypePartlyMatched;

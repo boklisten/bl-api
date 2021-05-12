@@ -41,9 +41,8 @@ describe("#convertOrderItemsToMatchItems()", () => {
       },
     ];
 
-    const matchItems: MatchItem[] = matchHelper.convertOrderItemsToMatchItems(
-      orderItems
-    );
+    const matchItems: MatchItem[] =
+      matchHelper.convertOrderItemsToMatchItems(orderItems);
 
     const matchItem = matchItems[0];
 
@@ -63,9 +62,8 @@ describe("#convertUserDetailToMatchProfile()", () => {
       phone: "12345678",
     } as UserDetail;
 
-    const matchProfile = matchHelper.convertUserDetailToMatchProfile(
-      userDetail
-    );
+    const matchProfile =
+      matchHelper.convertUserDetailToMatchProfile(userDetail);
 
     expect(matchProfile.name, "Albert Birgerson");
     expect(matchProfile.email, "abirger@boklisten.co");

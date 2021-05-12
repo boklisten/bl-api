@@ -161,9 +161,8 @@ export class OrderPlaceOperation implements Operation {
       ? (userDetail.customerItems as string[])
       : [];
 
-    userDetailCustomerItemsIds = userDetailCustomerItemsIds.concat(
-      customerItemIds
-    );
+    userDetailCustomerItemsIds =
+      userDetailCustomerItemsIds.concat(customerItemIds);
 
     try {
       await this._userDetailStorage.update(

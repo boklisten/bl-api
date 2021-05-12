@@ -239,9 +239,11 @@ export class EmailService implements MessengerService {
     return this._postOffice.send([recipient], messageOptions);
   }
 
-  private getMessageOptionMediums(
-    message: Message
-  ): { email: boolean; sms: boolean; voice: boolean } {
+  private getMessageOptionMediums(message: Message): {
+    email: boolean;
+    sms: boolean;
+    voice: boolean;
+  } {
     switch (message.messageMethod) {
       case "all":
         return { email: true, sms: true, voice: false };
@@ -416,12 +418,10 @@ export class EmailService implements MessengerService {
       userId: customerDetail.id,
       textBlocks: [
         {
-          text:
-            "Dine bøker er nå på vei! De vil bli levert til deg ved hjelp av Bring.",
+          text: "Dine bøker er nå på vei! De vil bli levert til deg ved hjelp av Bring.",
         },
         {
-          text:
-            "Vi anser nå disse bøkene som utlevert. Du er ansvarlig for bøkene fra du henter dem på postkontoret til innlevering er gjennomført. Om noe skulle skje med leveringen er det bare å ta kontakt. Fraktkostnader refunderes ikke for pakker som ikke blir hentet innen fristen.",
+          text: "Vi anser nå disse bøkene som utlevert. Du er ansvarlig for bøkene fra du henter dem på postkontoret til innlevering er gjennomført. Om noe skulle skje med leveringen er det bare å ta kontakt. Fraktkostnader refunderes ikke for pakker som ikke blir hentet innen fristen.",
         },
       ],
     };

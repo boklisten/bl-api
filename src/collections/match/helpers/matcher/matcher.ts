@@ -56,12 +56,10 @@ export class Matcher {
     await this.validateDelivery(order);
     this.validateCreationTime(order);
 
-    const matchProfile: MatchProfile = this.matchHelper.convertUserDetailToMatchProfile(
-      userDetail
-    );
-    const matchItems: MatchItem[] = this.matchHelper.convertOrderItemsToMatchItems(
-      order.orderItems
-    );
+    const matchProfile: MatchProfile =
+      this.matchHelper.convertUserDetailToMatchProfile(userDetail);
+    const matchItems: MatchItem[] =
+      this.matchHelper.convertOrderItemsToMatchItems(order.orderItems);
 
     try {
       let match = await this.matchFinder.find(matchItems);

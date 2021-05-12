@@ -140,7 +140,7 @@ export class OrderCollection implements BlCollection {
         },
         {
           fieldName: "orderItems.type",
-          type: "string"
+          type: "string",
         },
         {
           fieldName: "customer",

@@ -27,9 +27,10 @@ export class PaymentDibsConfirmer {
 
     let dibsEasyPaymentDetails;
     try {
-      dibsEasyPaymentDetails = await this._dibsPaymentService.fetchDibsPaymentData(
-        payment.info["paymentId"]
-      );
+      dibsEasyPaymentDetails =
+        await this._dibsPaymentService.fetchDibsPaymentData(
+          payment.info["paymentId"]
+        );
     } catch (getDibsPaymentError) {
       throw new BlError("could not get dibs payment from dibs api").add(
         getDibsPaymentError

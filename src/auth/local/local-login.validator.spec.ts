@@ -25,7 +25,7 @@ const testLocalLogin = {
   providerId: "123",
   hashedPassword: "a",
   salt: "dog",
-  id: "12354"
+  id: "12354",
 };
 
 describe("LocalLoginValidator", () => {

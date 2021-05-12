@@ -10,7 +10,8 @@ import { BlApiRequest } from "../../request/bl-api-request";
 
 export class CollectionEndpointGetAll<T extends BlDocument>
   extends CollectionEndpointMethod<T>
-  implements CollectionEndpointOnRequest<T> {
+  implements CollectionEndpointOnRequest<T>
+{
   public onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
     if (
       blApiRequest.query &&

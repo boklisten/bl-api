@@ -72,9 +72,8 @@ export class UserDetailDeleteHook extends Hook {
 
   private async checkActiveInvoices(userId: string): Promise<boolean> {
     try {
-      const haveActiveInvoices = await this.customerInvoiceActive.haveActiveInvoices(
-        userId
-      );
+      const haveActiveInvoices =
+        await this.customerInvoiceActive.haveActiveInvoices(userId);
       if (haveActiveInvoices) {
         throw new BlError("customer have active invoices");
       }
@@ -86,9 +85,10 @@ export class UserDetailDeleteHook extends Hook {
 
   private async checkActiveCustomerItems(userId: string): Promise<boolean> {
     try {
-      const haveActiveCustomerItems = await this.customerHaveActiveCustomerItems.haveActiveCustomerItems(
-        userId
-      );
+      const haveActiveCustomerItems =
+        await this.customerHaveActiveCustomerItems.haveActiveCustomerItems(
+          userId
+        );
 
       if (haveActiveCustomerItems) {
         throw new BlError("customer have active customer-items");

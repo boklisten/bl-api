@@ -9,7 +9,8 @@ import mongoose from "mongoose";
 chai.use(chaiAsPromised);
 
 describe("DbQueryObjectIdFilter", () => {
-  let dbQueryObjectIdFilter: DbQueryObjectIdFilter = new DbQueryObjectIdFilter();
+  let dbQueryObjectIdFilter: DbQueryObjectIdFilter =
+    new DbQueryObjectIdFilter();
 
   describe("getObjectIdFilters()", () => {
     it("should return empty array if query is valid and validObjectIdParams is empty", () => {

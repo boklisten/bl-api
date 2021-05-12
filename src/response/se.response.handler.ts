@@ -42,9 +42,8 @@ export class SEResponseHandler {
   }
 
   public sendErrorResponse(res: Response, blError: BlError) {
-    let blapiErrorRes: BlapiErrorResponse = this.errorHandler.createBlapiErrorResponse(
-      blError
-    );
+    let blapiErrorRes: BlapiErrorResponse =
+      this.errorHandler.createBlapiErrorResponse(blError);
 
     res.status(blapiErrorRes.httpStatus);
 
