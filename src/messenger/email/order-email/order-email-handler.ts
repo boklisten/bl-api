@@ -446,7 +446,7 @@ export class OrderEmailHandler {
         trans += "utkjøp";
       }
 
-      if (handout) {
+      if (handout && orderItemType !== "return") {
         trans += " - utlevert";
       }
       return trans;
