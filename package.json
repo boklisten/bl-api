@@ -1,6 +1,6 @@
 {
   "name": "@boklisten/bl-api",
-  "version": "1.13.2",
+  "version": "1.13.3",
   "description": "",
   "main": "server.js",
   "scripts": {
