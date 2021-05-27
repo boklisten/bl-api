@@ -48,12 +48,13 @@ export class HttpHandler {
   public getWithQuery(
     url: string,
     queryString: string,
-    authorization?: string
+    headers?: object
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       let options = {
         uri: url + "?" + queryString,
         json: true,
+        headers: headers,
       };
 
       logger.debug(`R-> GET ${options.uri}`);

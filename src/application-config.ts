@@ -26,7 +26,7 @@ export const APP_CONFIG = {
   },
   url: {
     bring: {
-      shipmentInfo: "https://api.bring.com/shippingguide/products/all.json",
+      shipmentInfo: "https://api.bring.com/shippingguide/v2/products",
     },
     blWeb: {
       base: "https://localhost:4200",

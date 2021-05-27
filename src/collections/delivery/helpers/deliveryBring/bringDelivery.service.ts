@@ -59,18 +59,21 @@ export class BringDeliveryService {
     }
 
     return new Promise((resolve, reject) => {
-      let bringDelivery = this.createBringDelivery(
+      const bringDelivery = this.createBringDelivery(
         facilityAddress,
         shipmentAddress,
         items
       );
-      let queryString = this.httpHandler.createQueryString(bringDelivery);
+      const queryString = this.httpHandler.createQueryString(bringDelivery);
+      const bringAuthHeaders = {
+        "X-MyBring-API-Key": process.env.BRING_API_KEY,
+        "X-MyBring-API-Uid": process.env.BRING_API_ID,
+      };
 
       this.httpHandler
-        .getWithQuery(this.bringShipmentUrl, queryString)
+        .getWithQuery(this.bringShipmentUrl, queryString, bringAuthHeaders)
         .then((responseData: any) => {
           let deliveryInfoBring: DeliveryInfoBring;
-
           try {
             deliveryInfoBring = this.getDeliveryInfoBringFromBringResponse(
               facilityAddress,
@@ -120,9 +123,12 @@ export class BringDeliveryService {
 
     bringDelivery = {
       clientUrl: this.clientUrl,
-      weightInGrams: totalWeight,
-      from: facilityAddress.postalCode,
-      to: shipmentAddress.postalCode,
+      weight: totalWeight,
+      frompostalcode: facilityAddress.postalCode,
+      topostalcode: shipmentAddress.postalCode,
+      fromcountry: "NO",
+      tocountry: "NO",
+      product: "SERVICEPAKKE",
     };
 
     return bringDelivery;
@@ -143,20 +149,32 @@ export class BringDeliveryService {
       to: shipmentAddress.postalCode,
     };
 
-    if (!responseData["Product"]) {
+    if (
+      !responseData["consignments"] ||
+      !Array.isArray(
+        responseData["consignments"] ||
+          responseData["consignments"].length === 0
+      )
+    ) {
+      throw new BlError("no consignments provided in response from bringApi");
+    }
+
+    if (
+      !responseData["consignments"][0]["products"] ||
+      !Array.isArray(
+        responseData["consignments"][0]["products"] ||
+          responseData["consignments"][0]["products"].length === 0
+      )
+    ) {
       throw new BlError("no products provided in response from bringApi");
     }
 
-    if (Array.isArray(responseData["Product"])) {
-      for (let product of responseData["Product"]) {
-        deliveryInfoBring = this.getBringProduct(deliveryInfoBring, product);
-      }
-    } else {
-      deliveryInfoBring = this.getBringProduct(
-        deliveryInfoBring,
-        responseData["Product"]
-      );
-    }
+    deliveryInfoBring = this.getBringProduct(
+      deliveryInfoBring,
+      responseData["consignments"][0]["products"][
+        responseData["consignments"][0]["products"].length - 1
+      ]
+    );
 
     if (deliveryInfoBring.amount === -1) {
       throw new BlError("could not parse the data from the bring api").store(
@@ -172,30 +190,25 @@ export class BringDeliveryService {
     deliveryInfoBring: DeliveryInfoBring,
     product
   ): DeliveryInfoBring {
-    if (product["ProductId"] === "SERVICEPAKKE") {
-      let priceInfo = product["Price"];
-      let priceWithoutAdditionalService =
-        priceInfo["PackagePriceWithoutAdditionalServices"];
-      if (priceWithoutAdditionalService) {
-        deliveryInfoBring.amount = parseInt(
-          priceWithoutAdditionalService["AmountWithVAT"]
-        );
-        deliveryInfoBring.taxAmount = parseInt(
-          priceWithoutAdditionalService["VAT"]
-        );
-      }
+    const priceInfo = product["price"]["listPrice"];
+    const priceWithoutAdditionalService =
+      priceInfo["priceWithoutAdditionalServices"];
+    if (priceWithoutAdditionalService) {
+      deliveryInfoBring.amount = parseInt(
+        priceWithoutAdditionalService["amountWithVAT"]
+      );
+      deliveryInfoBring.taxAmount = parseInt(
+        priceWithoutAdditionalService["vat"]
+      );
+    }
 
-      let expectedDelivery = product["ExpectedDelivery"];
-      if (expectedDelivery) {
-        let workingDays = expectedDelivery["WorkingDays"];
-        if (workingDays) {
-          deliveryInfoBring.estimatedDelivery = moment()
-            .add(
-              parseInt(workingDays) + APP_CONFIG.delivery.deliveryDays,
-              "days"
-            )
-            .toDate();
-        }
+    const expectedDelivery = product["expectedDelivery"];
+    if (expectedDelivery) {
+      const workingDays = expectedDelivery["workingDays"];
+      if (workingDays) {
+        deliveryInfoBring.estimatedDelivery = moment()
+          .add(parseInt(workingDays) + APP_CONFIG.delivery.deliveryDays, "days")
+          .toDate();
       }
     }
 

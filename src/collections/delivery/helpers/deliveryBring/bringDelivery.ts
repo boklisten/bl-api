@@ -1,7 +1,9 @@
 export class BringDelivery {
-  from: string; //from postal code
-  to: string; //to postal code
-  weightInGrams?: number; //the weight of the packet
+  frompostalcode: string; //from postal code
+  topostalcode: string; //to postal code
+  fromcountry: string;
+  tocountry: string;
+  weight?: number; //the weight of the packet
   width?: number; //the width of the packet
   length?: number; //the length of the packet
   height?: number; //the height of the packet
@@ -16,7 +18,7 @@ export class BringDelivery {
   additional?: string[]; //additional services
   priceAdjustments?: string; //see bring developer site for price adjustments
   pid?: string; //public id
-  products?: string[]; //a list of products to get information about, ex: servicepakke
+  product?: string; //the product to get information about, ex: servicepakke
   customerNumber?: string; //requires user authentication, special info for the user
   language?: string; //what language to use ex: no, en, se
   volumeSpecial?: boolean; //special volume if the shape is of a special shape
