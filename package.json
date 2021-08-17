@@ -24,7 +24,7 @@
     "@types/validator": "^13.1.3",
     "@wizardcoder/bl-email": "npm:@boklisten/bl-email@^1.4.27",
     "@wizardcoder/bl-model": "npm:@boklisten/bl-model@^0.25.2",
-    "@wizardcoder/bl-post-office": "^0.5.14",
+    "@wizardcoder/bl-post-office": "npm:@boklisten/bl-post-office@^0.5.20",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
     "chalk": "^4.1.1",
