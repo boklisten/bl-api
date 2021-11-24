@@ -28,21 +28,16 @@ export class DeliveryHandler {
     deliveryStorage?: BlDocumentStorage<Delivery>,
     bringDeliveryService?: BringDeliveryService
   ) {
-    this.orderStorage = orderStorage
-      ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
-    this.itemStorage = itemStorage
-      ? itemStorage
-      : new BlDocumentStorage("items", itemSchema);
-    this.bringDeliveryService = bringDeliveryService
-      ? bringDeliveryService
-      : new BringDeliveryService();
-    this.deliveryStorage = deliveryStorage
-      ? deliveryStorage
-      : new BlDocumentStorage("deliveries", deliverySchema);
-    this.branchStorage = branchStorage
-      ? branchStorage
-      : new BlDocumentStorage("branches", branchSchema);
+    this.orderStorage =
+      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
+    this.itemStorage =
+      itemStorage ?? new BlDocumentStorage("items", itemSchema);
+    this.bringDeliveryService =
+      bringDeliveryService ?? new BringDeliveryService();
+    this.deliveryStorage =
+      deliveryStorage ?? new BlDocumentStorage("deliveries", deliverySchema);
+    this.branchStorage =
+      branchStorage ?? new BlDocumentStorage("branches", branchSchema);
   }
 
   public updateOrderBasedOnMethod(
@@ -137,11 +132,9 @@ export class DeliveryHandler {
 
   private fetchItems(order: Order): Promise<Item[]> {
     return new Promise((resolve, reject) => {
-      let itemIds: string[] = [];
-
-      for (let orderItem of order.orderItems) {
-        itemIds.push(orderItem.item as string);
-      }
+      const itemIds: string[] = order.orderItems.map(
+        (orderItem) => orderItem.item as string
+      );
 
       this.itemStorage
         .getMany(itemIds)
@@ -161,26 +154,21 @@ export class DeliveryHandler {
     accessToken: AccessToken
   ): Promise<Delivery> {
     return new Promise((resolve, reject) => {
-      this.bringDeliveryService
-        .getDeliveryInfoBring(
-          delivery.info["facilityAddress"],
-          delivery.info["shipmentAddress"],
-          items
-        )
-        .then((deliveryInfoBring: DeliveryInfoBring) => {
-          this.branchStorage
-            .get(order.branch as string)
-            .then((branch: Branch) => {
-              let amount = deliveryInfoBring.amount;
+      this.branchStorage
+        .get(order.branch as string)
+        .then((branch: Branch) => {
+          const freeDelivery =
+            (branch.paymentInfo && branch.paymentInfo.responsibleForDelivery) ||
+            order.handoutByDelivery;
 
-              if (
-                (branch.paymentInfo &&
-                  branch.paymentInfo.responsibleForDelivery) ||
-                order.handoutByDelivery
-              ) {
-                amount = 0;
-              }
-
+          this.bringDeliveryService
+            .getDeliveryInfoBring(
+              delivery.info["facilityAddress"],
+              delivery.info["shipmentAddress"],
+              items,
+              freeDelivery
+            )
+            .then((deliveryInfoBring: DeliveryInfoBring) => {
               if (delivery.info["trackingNumber"]) {
                 deliveryInfoBring["trackingNumber"] =
                   delivery.info["trackingNumber"];
@@ -189,7 +177,7 @@ export class DeliveryHandler {
               this.deliveryStorage
                 .update(
                   delivery.id,
-                  { amount: amount, info: deliveryInfoBring },
+                  { amount: deliveryInfoBring.amount, info: deliveryInfoBring },
                   { id: accessToken.sub, permission: accessToken.permission }
                 )
                 .then((updatedDelivery: Delivery) => {
@@ -199,12 +187,12 @@ export class DeliveryHandler {
                   reject(updateDeliveryError);
                 });
             })
-            .catch((getBranchError: BlError) => {
-              reject(getBranchError);
+            .catch((blError) => {
+              reject(blError);
             });
         })
-        .catch((blError) => {
-          reject(blError);
+        .catch((getBranchError: BlError) => {
+          reject(getBranchError);
         });
     });
   }

@@ -113,5 +113,6 @@ export const APP_CONFIG = {
   },
   delivery: {
     deliveryDays: 7,
+    maxWeightLetter: 4800,
   },
 };

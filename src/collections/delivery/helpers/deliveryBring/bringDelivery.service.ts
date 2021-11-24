@@ -29,10 +29,11 @@ export class BringDeliveryService {
     this.clientUrl = APP_CONFIG.url.blWeb.base;
   }
 
-  public getDeliveryInfoBring(
+  public async getDeliveryInfoBring(
     facilityAddress: FacilityAddress,
     shipmentAddress: ShipmentAddress,
-    items: Item[]
+    items: Item[],
+    freeDelivery: boolean
   ): Promise<DeliveryInfoBring> {
     if (
       isNullOrUndefined(facilityAddress) ||
@@ -58,17 +59,44 @@ export class BringDeliveryService {
       return Promise.reject(new BlError("toPostalCode is empty or undefined"));
     }
 
+    const bringAuthHeaders = {
+      "X-MyBring-API-Key": process.env.BRING_API_KEY,
+      "X-MyBring-API-Uid": process.env.BRING_API_ID,
+    };
+
+    const postalInfoUrl = `https://api.bring.com/pickuppoint/api/postalCode/NO/getCityAndType/${shipmentAddress.postalCode}.json`;
+    let postalInfo;
+    try {
+      const postalInfo = await this.httpHandler.getWithQuery(
+        postalInfoUrl,
+        "",
+        bringAuthHeaders
+      );
+      shipmentAddress.postalCity = postalInfo.postalCode.city;
+    } catch (e) {
+      return Promise.reject(new BlError("fromPostalCode is not valid"));
+    }
+    const product = this.decideProduct(this.calculateTotalWeight(items));
+    if (freeDelivery) {
+      return Promise.resolve({
+        amount: 0,
+        taxAmount: 0,
+        estimatedDelivery: moment().add(10, "days").toDate(),
+        facilityAddress,
+        shipmentAddress,
+        from: facilityAddress.postalCode,
+        to: shipmentAddress.postalCode,
+        product,
+      });
+    }
     return new Promise((resolve, reject) => {
       const bringDelivery = this.createBringDelivery(
         facilityAddress,
         shipmentAddress,
-        items
+        items,
+        product
       );
       const queryString = this.httpHandler.createQueryString(bringDelivery);
-      const bringAuthHeaders = {
-        "X-MyBring-API-Key": process.env.BRING_API_KEY,
-        "X-MyBring-API-Uid": process.env.BRING_API_ID,
-      };
 
       this.httpHandler
         .getWithQuery(this.bringShipmentUrl, queryString, bringAuthHeaders)
@@ -78,7 +106,8 @@ export class BringDeliveryService {
             deliveryInfoBring = this.getDeliveryInfoBringFromBringResponse(
               facilityAddress,
               shipmentAddress,
-              responseData
+              responseData,
+              product
             );
           } catch (e) {
             if (e instanceof BlError) {
@@ -100,44 +129,47 @@ export class BringDeliveryService {
     });
   }
 
+  private calculateTotalWeight(items: Item[]) {
+    let totalWeightInGrams = items.reduce((total, nextItem) => {
+      return total + parseFloat(nextItem?.info["weight"] ?? 1) * 1000;
+    }, 0);
+
+    if (totalWeightInGrams === 0) {
+      totalWeightInGrams = APP_CONFIG.delivery.maxWeightLetter + 1;
+    }
+    return totalWeightInGrams;
+  }
+
+  private decideProduct(totalWeightInGrams: number) {
+    return totalWeightInGrams > APP_CONFIG.delivery.maxWeightLetter
+      ? "SERVICEPAKKE"
+      : "3584";
+  }
+
   private createBringDelivery(
     facilityAddress: FacilityAddress,
     shipmentAddress: ShipmentAddress,
-    items: Item[]
+    items: Item[],
+    product
   ): BringDelivery {
-    let bringDelivery: BringDelivery;
+    const totalWeightInGrams = this.calculateTotalWeight(items);
 
-    let totalWeight = 0;
-
-    for (const item of items) {
-      if (item.info && item.info["weight"]) {
-        totalWeight += parseInt(item.info["weight"]);
-      } else {
-        totalWeight += 500;
-      }
-    }
-
-    if (totalWeight === 0) {
-      totalWeight = 500;
-    }
-
-    bringDelivery = {
+    return {
       clientUrl: this.clientUrl,
-      weight: totalWeight,
+      weight: totalWeightInGrams,
       frompostalcode: facilityAddress.postalCode,
       topostalcode: shipmentAddress.postalCode,
       fromcountry: "NO",
       tocountry: "NO",
-      product: "SERVICEPAKKE",
+      product,
     };
-
-    return bringDelivery;
   }
 
   private getDeliveryInfoBringFromBringResponse(
     facilityAddress: FacilityAddress,
     shipmentAddress: ShipmentAddress,
-    responseData: any
+    responseData: any,
+    product: string
   ): DeliveryInfoBring {
     let deliveryInfoBring: DeliveryInfoBring = {
       amount: -1,
@@ -147,6 +179,7 @@ export class BringDeliveryService {
       shipmentAddress: shipmentAddress,
       from: facilityAddress.postalCode,
       to: shipmentAddress.postalCode,
+      product,
     };
 
     if (
