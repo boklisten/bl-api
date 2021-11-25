@@ -3,7 +3,7 @@ export const APP_CONFIG = {
     client: {
       checkout: "cart/confirm",
       agreement: {
-        rent: "info/agreement/rent",
+        rent: "info/policies/conditions",
       },
       auth: {
         failure: "auth/authentication/failure",
