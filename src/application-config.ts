@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const APP_CONFIG = {
   path: {
     client: {
@@ -112,7 +114,18 @@ export const APP_CONFIG = {
     },
   },
   delivery: {
-    deliveryDays: 7,
+    // If in season, lower the delivery estimate
+    deliveryDays:
+      moment().isBetween(
+        moment().set({ month: 7, day: 9 }),
+        moment().set({ month: 8, day: 10 })
+      ) ||
+      moment().isBetween(
+        moment().set({ month: 0, day: 7 }),
+        moment().set({ month: 1, day: 8 })
+      )
+        ? 4
+        : 7,
     maxWeightLetter: 4800,
   },
 };

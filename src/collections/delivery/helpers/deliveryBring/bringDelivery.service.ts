@@ -65,7 +65,6 @@ export class BringDeliveryService {
     };
 
     const postalInfoUrl = `https://api.bring.com/pickuppoint/api/postalCode/NO/getCityAndType/${shipmentAddress.postalCode}.json`;
-    let postalInfo;
     try {
       const postalInfo = await this.httpHandler.getWithQuery(
         postalInfoUrl,
@@ -81,7 +80,9 @@ export class BringDeliveryService {
       return Promise.resolve({
         amount: 0,
         taxAmount: 0,
-        estimatedDelivery: moment().add(10, "days").toDate(),
+        estimatedDelivery: moment()
+          .add(3 + APP_CONFIG.delivery.deliveryDays, "days")
+          .toDate(),
         facilityAddress,
         shipmentAddress,
         from: facilityAddress.postalCode,
