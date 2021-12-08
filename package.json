@@ -5,6 +5,8 @@
   "main": "server.js",
   "scripts": {
     "watch": "grunt watch",
+    "build": "tsc -p tsconfig.build.json",
+    "start-vercel": "node ./dist/index.js",
     "start": "tsc -p tsconfig.build.json && node ./dist/index.js",
     "grunt": "grunt",
     "pkg": "grunt pkg",
