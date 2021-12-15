@@ -75,7 +75,7 @@ export class BringDeliveryService {
     } catch (e) {
       return Promise.reject(new BlError("fromPostalCode is not valid"));
     }
-    const product = this.decideProduct(this.calculateTotalWeight(items));
+    const product = this.decideProduct(items);
     if (freeDelivery) {
       return Promise.resolve({
         amount: 0,
@@ -141,8 +141,9 @@ export class BringDeliveryService {
     return totalWeightInGrams;
   }
 
-  private decideProduct(totalWeightInGrams: number) {
-    return totalWeightInGrams > APP_CONFIG.delivery.maxWeightLetter
+  private decideProduct(items: Item[]) {
+    return items.length > 3 ||
+      this.calculateTotalWeight(items) > APP_CONFIG.delivery.maxWeightLetter
       ? "SERVICEPAKKE"
       : "3584";
   }
