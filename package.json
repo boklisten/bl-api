@@ -28,7 +28,7 @@
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
     "chalk": "^4.1.1",
-    "commander": "^7.2.0",
+    "commander": "^8.3.0",
     "cookie-parser": "^1.4.5",
     "copyfiles": "^2.4.1",
     "cors": "^2.8.5",
@@ -97,7 +97,6 @@
     "ts-mocha": "^8.0.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
-    "typescript-library-bundler": "^0.2.4",
     "webpack": "^5.37.0"
   },
   "repository": {
