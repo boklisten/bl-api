@@ -32,11 +32,11 @@ describe("UserDetailValidOperation", () => {
       return Promise.resolve(testUserDetail);
     });
 
-    let resHandlerSendResponseStub = sinon
+    const resHandlerSendResponseStub = sinon
       .stub(responseHandler, "sendResponse")
       .callsFake((res: any, blApiResponse: BlapiResponse) => {});
 
-    let resHandlerSendErrorResponseStub = sinon
+    const resHandlerSendErrorResponseStub = sinon
       .stub(responseHandler, "sendErrorResponse")
       .callsFake((res: any, blError: BlError) => {});
 
@@ -45,7 +45,7 @@ describe("UserDetailValidOperation", () => {
         id: "userDetail1",
       } as UserDetail;
 
-      let blApiRequest = {
+      const blApiRequest = {
         documentId: "notFoundUserDetail",
       };
 
@@ -83,7 +83,7 @@ describe("UserDetailValidOperation", () => {
       });
 
       it("should send response with {valid: true}", (done) => {
-        let blApiRequest = {
+        const blApiRequest = {
           documentId: "userDetail1",
         };
 
@@ -117,7 +117,7 @@ describe("UserDetailValidOperation", () => {
 
       it("should resolve with valid false if name is not defined", (done) => {
         testUserDetail.name = "";
-        let blApiRequest: BlApiRequest = {
+        const blApiRequest: BlApiRequest = {
           documentId: "userDetail1",
         };
 
@@ -133,7 +133,7 @@ describe("UserDetailValidOperation", () => {
       it("should resolve with valid false if address and postCode is not defined", (done) => {
         testUserDetail.address = "";
         testUserDetail.postCode = null;
-        let blApiRequest: BlApiRequest = {
+        const blApiRequest: BlApiRequest = {
           documentId: "userDetail1",
         };
 
@@ -151,7 +151,7 @@ describe("UserDetailValidOperation", () => {
       it("should resolve with valid false if postCity and phone is not defined", (done) => {
         testUserDetail.postCity = "";
         testUserDetail.phone = undefined;
-        let blApiRequest: BlApiRequest = {
+        const blApiRequest: BlApiRequest = {
           documentId: "userDetail1",
         };
 
@@ -183,7 +183,7 @@ describe("UserDetailValidOperation", () => {
 
       it("should resolve with valid false if dob is not defined", (done) => {
         testUserDetail.dob = undefined;
-        let blApiRequest: BlApiRequest = {
+        const blApiRequest: BlApiRequest = {
           documentId: "userDetail1",
         };
 

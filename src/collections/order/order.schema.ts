@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export let orderSchema = {
+export const orderSchema = {
   amount: {
     type: Schema.Types.Number,
     required: true,

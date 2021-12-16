@@ -33,7 +33,7 @@ export class CustomerHaveActiveCustomerItems {
       throw e;
     }
 
-    for (let customerItem of customerItems) {
+    for (const customerItem of customerItems) {
       if (this.customerItemActive.isActive(customerItem)) {
         return true;
       }

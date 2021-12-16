@@ -184,7 +184,7 @@ describe("#findMatchingItemIds()", () => {
       },
     ] as Match[];
 
-    for (let match of matches) {
+    for (const match of matches) {
       expect(
         matchHelper.findMatchingItemIds(matchItems, match)
       ).to.have.members([match.items[1].item]);

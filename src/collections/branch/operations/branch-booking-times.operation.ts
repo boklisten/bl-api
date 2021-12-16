@@ -32,7 +32,7 @@ export class BranchBookingTimesOperation implements Operation {
   ): Promise<boolean> {
     let bookingTimes: any[];
 
-    let aggregation = [
+    const aggregation = [
       {
         $match: {
           branch: mongoose.Types.ObjectId(blApiRequest.documentId),
@@ -66,7 +66,7 @@ export class BranchBookingTimesOperation implements Operation {
     }
 
     if (bookingTimes) {
-      let cleanedBookingTimes = bookingTimes.map((bookingTime) => {
+      const cleanedBookingTimes = bookingTimes.map((bookingTime) => {
         return {
           from: this.dateService.toDate(
             bookingTime["_id"],

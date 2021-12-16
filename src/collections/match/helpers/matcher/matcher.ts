@@ -62,7 +62,7 @@ export class Matcher {
       this.matchHelper.convertOrderItemsToMatchItems(order.orderItems);
 
     try {
-      let match = await this.matchFinder.find(matchItems);
+      const match = await this.matchFinder.find(matchItems);
       await this.matchUpdater.update(match, matchProfile, matchItems);
     } catch (e) {
       throw e;

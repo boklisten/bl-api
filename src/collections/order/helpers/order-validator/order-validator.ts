@@ -60,7 +60,7 @@ export class OrderValidator {
       }
 
       await this.orderFieldValidator.validate(order);
-      let branch = await this.branchStorage.get(order.branch as string);
+      const branch = await this.branchStorage.get(order.branch as string);
 
       await this.orderItemValidator.validate(branch, order);
       await this.branchValidator.validate(order);
@@ -77,7 +77,7 @@ export class OrderValidator {
   }
 
   private mustHaveCustomer(order: Order): boolean {
-    for (let orderItem of order.orderItems) {
+    for (const orderItem of order.orderItems) {
       if (orderItem.type !== "buy") {
         return true;
       }

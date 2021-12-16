@@ -51,7 +51,7 @@ export class UserCanDeleteUserDetail {
     let userToDelete;
 
     try {
-      let users = await this.userStorage.getByQuery(dbQuery);
+      const users = await this.userStorage.getByQuery(dbQuery);
       userToDelete = users[0];
     } catch (e) {
       throw e;

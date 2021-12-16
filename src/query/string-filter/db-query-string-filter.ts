@@ -15,10 +15,10 @@ export class DbQueryStringFilter {
     }
     if (validStringParams.length <= 0) return [];
 
-    let stringFilters: StringFilter[] = [];
+    const stringFilters: StringFilter[] = [];
 
     try {
-      for (let param in query) {
+      for (const param in query) {
         if (validStringParams.indexOf(param) > -1) {
           if (Array.isArray(query[param])) {
             stringFilters.push({ fieldName: param, value: query[param] });

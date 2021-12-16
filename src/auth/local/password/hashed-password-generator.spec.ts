@@ -12,9 +12,9 @@ import { SeCrypto } from "../../../crypto/se.crypto";
 chai.use(chaiAsPromised);
 
 describe("HashedPasswordGenerator", () => {
-  let saltGenerator = new SaltGenerator();
-  let seCrypto = new SeCrypto();
-  let hashedPasswordGenerator = new HashedPasswordGenerator(
+  const saltGenerator = new SaltGenerator();
+  const seCrypto = new SeCrypto();
+  const hashedPasswordGenerator = new HashedPasswordGenerator(
     saltGenerator,
     seCrypto
   );
@@ -22,14 +22,14 @@ describe("HashedPasswordGenerator", () => {
   describe("generate()", () => {
     describe("should reject with BlError when", () => {
       it("password is empty", () => {
-        let password = "";
+        const password = "";
         return hashedPasswordGenerator
           .generate(password)
           .should.be.rejectedWith(BlError);
       });
 
       it("password is undefined", () => {
-        let password = undefined;
+        const password = undefined;
         return hashedPasswordGenerator
           .generate(password)
           .should.be.rejectedWith(BlError);
@@ -37,7 +37,7 @@ describe("HashedPasswordGenerator", () => {
     });
 
     describe("should return a object with", () => {
-      let password = "thisPasswordIsValid";
+      const password = "thisPasswordIsValid";
 
       it("a property hashedPassword of type string", () => {
         return hashedPasswordGenerator.generate(password).then(

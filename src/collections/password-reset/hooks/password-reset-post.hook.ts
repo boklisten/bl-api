@@ -77,7 +77,7 @@ export class PasswordResetPostHook extends Hook {
     accessToken?: AccessToken
   ): Promise<PasswordReset[]> {
     return new Promise((resolve, reject) => {
-      let passwordReset = passwordResets[0];
+      const passwordReset = passwordResets[0];
 
       this._userDetailStorage
         .get(passwordReset.userDetail)

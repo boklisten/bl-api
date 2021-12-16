@@ -76,15 +76,16 @@ export class CollectionEndpoint<T extends BlDocument> {
         uri += "/:id";
       }
 
-      let methodOutput = method.toUpperCase() + (method.length < 5 ? "  " : "");
-      let output = methodOutput + "\t" + uri;
+      const methodOutput =
+        method.toUpperCase() + (method.length < 5 ? "  " : "");
+      const output = methodOutput + "\t" + uri;
 
       logger.silly(output);
 
       if (endpoint.operations) {
-        for (let operation of endpoint.operations) {
-          let operationUri = uri + "/" + operation.name;
-          let operationOutput = methodOutput + "\t" + operationUri;
+        for (const operation of endpoint.operations) {
+          const operationUri = uri + "/" + operation.name;
+          const operationOutput = methodOutput + "\t" + operationUri;
           logger.silly(operationOutput);
         }
       }
@@ -92,7 +93,7 @@ export class CollectionEndpoint<T extends BlDocument> {
   }
 
   private getRestrictionPrintout(restriction: BlEndpointRestriction): string {
-    let permissionService: PermissionService = new PermissionService();
+    const permissionService: PermissionService = new PermissionService();
     let output = "";
 
     if (restriction && restriction.permissions) {

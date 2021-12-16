@@ -23,11 +23,11 @@ export class DbQueryBooleanFilter {
     query: any,
     validBooleanParams: string[]
   ): BooleanFilter[] {
-    let booleanFilters: BooleanFilter[] = [];
+    const booleanFilters: BooleanFilter[] = [];
 
-    for (let param in query) {
+    for (const param in query) {
       if (validBooleanParams.indexOf(param) > -1) {
-        let value: boolean = false;
+        let value = false;
         if (query[param] === "true") {
           value = true;
         } else if (query[param] === "false") {

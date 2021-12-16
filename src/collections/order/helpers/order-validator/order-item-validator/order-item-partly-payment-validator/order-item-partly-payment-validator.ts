@@ -36,7 +36,8 @@ export class OrderItemPartlyPaymentValidator {
 
   private isPeriodSupported(period: any, branch: Branch) {
     if (branch.paymentInfo && branch.paymentInfo.partlyPaymentPeriods) {
-      for (let partlyPaymentPeriod of branch.paymentInfo.partlyPaymentPeriods) {
+      for (const partlyPaymentPeriod of branch.paymentInfo
+        .partlyPaymentPeriods) {
         if (partlyPaymentPeriod.type === period) {
           return true;
         }

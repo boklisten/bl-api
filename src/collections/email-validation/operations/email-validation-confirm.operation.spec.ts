@@ -25,7 +25,7 @@ describe("EmailValidationConfirmOperation", () => {
     userDetailStorage
   );
 
-  let testUserDetail: UserDetail = {
+  const testUserDetail: UserDetail = {
     id: "userDetail1",
     emailConfirmed: false,
   } as UserDetail;
@@ -45,11 +45,11 @@ describe("EmailValidationConfirmOperation", () => {
     testUserDetailUpdateSucess = true;
   });
 
-  let resHandlerSendErrorStub = sinon
+  const resHandlerSendErrorStub = sinon
     .stub(resHandler, "sendErrorResponse")
     .callsFake(() => {});
 
-  let resHandlerSendResponseStub = sinon
+  const resHandlerSendResponseStub = sinon
     .stub(resHandler, "sendResponse")
     .callsFake(() => {});
 
@@ -69,7 +69,7 @@ describe("EmailValidationConfirmOperation", () => {
     return Promise.resolve(testUserDetail);
   });
 
-  let userDetailStorageUpdateStub = sinon
+  const userDetailStorageUpdateStub = sinon
     .stub(userDetailStorage, "update")
     .callsFake((id: string, data: any) => {
       if (id !== testUserDetail.id) {
@@ -85,7 +85,7 @@ describe("EmailValidationConfirmOperation", () => {
 
   describe("#run", () => {
     it("should reject if no documentId is provided", (done) => {
-      let blApiRequest = {};
+      const blApiRequest = {};
 
       emailValidationConfirmOperation
         .run(blApiRequest)
@@ -97,7 +97,7 @@ describe("EmailValidationConfirmOperation", () => {
     });
 
     it("should reject if emailValidation is not found by id", (done) => {
-      let blApiRequest = {
+      const blApiRequest = {
         documentId: "notFoundEmailValidation",
       };
 
@@ -111,7 +111,7 @@ describe("EmailValidationConfirmOperation", () => {
     });
 
     it("should reject if userDetail is not found", () => {
-      let blApiRequest = {
+      const blApiRequest = {
         documentId: testEmailValidation.id,
       };
 
@@ -123,7 +123,7 @@ describe("EmailValidationConfirmOperation", () => {
     });
 
     it("should update userDetail with emailConfirmed if all valid inputs are provided", (done) => {
-      let blApiRequest = {
+      const blApiRequest = {
         documentId: testEmailValidation.id,
       };
 

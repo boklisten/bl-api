@@ -28,11 +28,11 @@ export class MatchHelper {
   }
 
   public findMatchingItemIds(matchItems: MatchItem[], match: Match): string[] {
-    let matchedItems = [];
-    let matchItemIds = matchItems.map((matchItem) => matchItem.item).sort();
+    const matchedItems = [];
+    const matchItemIds = matchItems.map((matchItem) => matchItem.item).sort();
 
-    for (let matchItemId of matchItemIds) {
-      for (let mi of match.items) {
+    for (const matchItemId of matchItemIds) {
+      for (const mi of match.items) {
         if (mi.item.toString() === matchItemId.toString() && !mi.reciever) {
           matchedItems.push(mi.item.toString());
         }
@@ -50,12 +50,12 @@ export class MatchHelper {
     matchItems: MatchItem[],
     match: Match
   ): string[] {
-    let matchedItems = [];
-    let matchItemIds = matchItems.map((matchItem) => matchItem.item).sort();
-    let recievers = [];
+    const matchedItems = [];
+    const matchItemIds = matchItems.map((matchItem) => matchItem.item).sort();
+    const recievers = [];
 
-    for (let matchItemId of matchItemIds) {
-      for (let mi of match.items) {
+    for (const matchItemId of matchItemIds) {
+      for (const mi of match.items) {
         if (mi.reciever) {
           if (recievers.indexOf(mi.reciever.toString()) < 0) {
             recievers.push(mi.reciever.toString());

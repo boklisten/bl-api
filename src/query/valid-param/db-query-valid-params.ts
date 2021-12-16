@@ -35,9 +35,9 @@ export class DbQueryValidParams {
   }
 
   public getAllValidParams(): string[] {
-    let allValidParams: string[] = [];
+    const allValidParams: string[] = [];
 
-    for (let validParam of this.validParams) {
+    for (const validParam of this.validParams) {
       allValidParams.push(validParam.fieldName);
     }
 
@@ -45,9 +45,9 @@ export class DbQueryValidParams {
   }
 
   private getValidParamsBasedOnType(type: string) {
-    let validParamsBasedOnType: string[] = [];
+    const validParamsBasedOnType: string[] = [];
 
-    for (let validParam of this.validParams) {
+    for (const validParam of this.validParams) {
       if (validParam.type === type) {
         validParamsBasedOnType.push(validParam.fieldName);
       }

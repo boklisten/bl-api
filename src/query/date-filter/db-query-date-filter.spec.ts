@@ -34,9 +34,9 @@ describe("DbQueryDateFilter", () => {
     });
 
     it("should return filter with correct filedName", () => {
-      let fieldName = "creationDate";
-      let query = { creationDate: "010120010000" };
-      let momentDate = moment(
+      const fieldName = "creationDate";
+      const query = { creationDate: "010120010000" };
+      const momentDate = moment(
         query.creationDate,
         validDateFormat,
         true
@@ -48,10 +48,10 @@ describe("DbQueryDateFilter", () => {
     });
 
     context("when date is on invalid format", () => {
-      let validDateParams = ["creationTime"];
-      let query = { creationTime: "" };
+      const validDateParams = ["creationTime"];
+      const query = { creationTime: "" };
 
-      let invalidDates = [
+      const invalidDates = [
         "212121",
         "10notvalid",
         "kkk",
@@ -60,7 +60,7 @@ describe("DbQueryDateFilter", () => {
         "2101200300001",
       ];
 
-      for (let invalidDate of invalidDates) {
+      for (const invalidDate of invalidDates) {
         it(`should throw SyntaxError when date is "${invalidDate}"`, () => {
           query.creationTime = invalidDate;
 
@@ -78,7 +78,7 @@ describe("DbQueryDateFilter", () => {
         { creationTime: "010720180000" },
       ];
 
-      for (let validQuery of validQueries) {
+      for (const validQuery of validQueries) {
         it("should resolve with correct date filter", () => {
           const dateString = validQuery.creationTime;
           const isoDate = moment(dateString, validDateFormat, true).toDate();
@@ -97,7 +97,7 @@ describe("DbQueryDateFilter", () => {
         { creationTime: ">010720180000", op: "$gt" },
       ];
 
-      for (let validQuery of validQueries) {
+      for (const validQuery of validQueries) {
         it("should resolve with correct date filter", () => {
           const creationTime = validQuery.creationTime.slice(
             1,
@@ -125,19 +125,27 @@ describe("DbQueryDateFilter", () => {
         { creationTime: [">111220120000", "<101220150000"] },
       ];
 
-      for (let validQuery of validQueries) {
+      for (const validQuery of validQueries) {
         it("should resolve with correct date filter", () => {
-          let gtDateString = validQuery.creationTime[0].substr(
+          const gtDateString = validQuery.creationTime[0].substr(
             1,
             validQuery.creationTime[0].length
           );
-          let ltDateString = validQuery.creationTime[1].substr(
+          const ltDateString = validQuery.creationTime[1].substr(
             1,
             validQuery.creationTime[1].length
           );
 
-          let gtIsoDate = moment(gtDateString, validDateFormat, true).toDate();
-          let ltIsoDate = moment(ltDateString, validDateFormat, true).toDate();
+          const gtIsoDate = moment(
+            gtDateString,
+            validDateFormat,
+            true
+          ).toDate();
+          const ltIsoDate = moment(
+            ltDateString,
+            validDateFormat,
+            true
+          ).toDate();
 
           return expect(
             dbQueryDateFilter.getDateFilters(validQuery, validDateParams)

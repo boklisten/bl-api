@@ -15,7 +15,7 @@ export class OrderToCustomerItemGenerator {
   }
 
   public async generate(order: Order): Promise<CustomerItem[]> {
-    let customerItems = [];
+    const customerItems = [];
     let customerDetail: UserDetail;
 
     if (!order.customer) {
@@ -30,9 +30,9 @@ export class OrderToCustomerItemGenerator {
       throw e;
     }
 
-    for (let orderItem of order.orderItems) {
+    for (const orderItem of order.orderItems) {
       if (this.shouldCreateCustomerItem(orderItem)) {
-        let customerItem = this.convertOrderItemToCustomerItem(
+        const customerItem = this.convertOrderItemToCustomerItem(
           customerDetail,
           order,
           orderItem

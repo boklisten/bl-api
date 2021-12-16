@@ -99,7 +99,7 @@ describe("OrderPlacedHandler", () => {
     return Promise.resolve(testOrder);
   });
 
-  let getOrderStub = sinon.stub(orderStorage, "get");
+  const getOrderStub = sinon.stub(orderStorage, "get");
 
   sinon.stub(messenger, "orderPlaced").callsFake(() => {
     return true;

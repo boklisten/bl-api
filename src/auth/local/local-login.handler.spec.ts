@@ -24,11 +24,11 @@ const dummyLocalLogin = {
 };
 
 describe("LocalLoginHandler", () => {
-  let localLoginStorage = new BlDocumentStorage<LocalLogin>(
+  const localLoginStorage = new BlDocumentStorage<LocalLogin>(
     "locallogins",
     localLoginSchema
   );
-  let baseLocalLogin = {
+  const baseLocalLogin = {
     id: "1",
     username: "a",
     providerId: "1",
@@ -40,7 +40,7 @@ describe("LocalLoginHandler", () => {
   let testUsername = "";
   let updateSuccess: boolean;
 
-  let localLoginHandler = new LocalLoginHandler(localLoginStorage);
+  const localLoginHandler = new LocalLoginHandler(localLoginStorage);
 
   beforeEach(() => {
     testUsername = "albert@protonmail.com";
@@ -190,7 +190,7 @@ describe("LocalLoginHandler", () => {
 
   describe("#setPassword", () => {
     it("should reject if localLogin is not found", () => {
-      let testUsername = "notFound@mail.com";
+      const testUsername = "notFound@mail.com";
 
       return expect(
         localLoginHandler.setPassword(testUsername, "password")
@@ -201,7 +201,7 @@ describe("LocalLoginHandler", () => {
     });
 
     it("should reject if password is less than 6 characters", () => {
-      let testPassword = "short";
+      const testPassword = "short";
 
       return expect(
         localLoginHandler.setPassword(testUsername, testPassword)
@@ -209,7 +209,7 @@ describe("LocalLoginHandler", () => {
     });
 
     it("should reject if localLogin is not found by username", () => {
-      let notFoundUsername = "notFound@mail.com";
+      const notFoundUsername = "notFound@mail.com";
 
       return expect(
         localLoginHandler.setPassword(notFoundUsername, "password")

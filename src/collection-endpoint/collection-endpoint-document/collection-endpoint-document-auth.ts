@@ -29,7 +29,7 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
         return Promise.reject(new BlError("blApiRequest is null or undefined"));
       }
 
-      for (let doc of docs) {
+      for (const doc of docs) {
         if (isNullOrUndefined(doc.viewableFor) || doc.viewableFor.length <= 0) {
           if (restriction.restricted) {
             if (
@@ -64,7 +64,7 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
               documentPermission
             )
           ) {
-            for (let id of doc.viewableFor) {
+            for (const id of doc.viewableFor) {
               if (id.toString() === blApiRequest.user.id.toString()) {
                 permissionValid = true;
                 break;

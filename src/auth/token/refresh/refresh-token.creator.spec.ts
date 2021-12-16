@@ -12,7 +12,7 @@ import { AccessToken } from "../access-token/access-token";
 chai.use(chaiAsPromised);
 
 describe("RefreshTokenCreator", () => {
-  let refreshTokenConfig: RefreshToken = {
+  const refreshTokenConfig: RefreshToken = {
     iss: "",
     aud: "",
     expiresIn: "12h",
@@ -21,7 +21,7 @@ describe("RefreshTokenCreator", () => {
     username: "",
   };
 
-  let accessTokenConfig: AccessToken = {
+  const accessTokenConfig: AccessToken = {
     iss: "",
     aud: "",
     expiresIn: "30s",
@@ -32,9 +32,9 @@ describe("RefreshTokenCreator", () => {
     details: "",
   };
 
-  let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
+  const tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
 
-  let refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
+  const refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
 
   describe("createRefreshToken()", () => {
     let testUsername = "";
@@ -47,7 +47,7 @@ describe("RefreshTokenCreator", () => {
 
     describe("should reject with BlError when", () => {
       it("username is undefined", (done) => {
-        let username = undefined;
+        const username = undefined;
         refreshTokenCreator
           .create(username, testUserid)
           .catch((blError: BlError) => {
@@ -57,7 +57,7 @@ describe("RefreshTokenCreator", () => {
       });
 
       it("userid is null", (done) => {
-        let userid = null;
+        const userid = null;
         refreshTokenCreator
           .create(testUserid, userid)
           .catch((blError: BlError) => {
@@ -69,7 +69,7 @@ describe("RefreshTokenCreator", () => {
 
     describe("should resolve with a RefreshToken when", () => {
       it("username is bill@meathome.se and userid is valid", (done) => {
-        let username = "bill@meathome.se";
+        const username = "bill@meathome.se";
         refreshTokenCreator
           .create(username, testUserid)
           .then((refreshToken) => {

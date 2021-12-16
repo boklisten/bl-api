@@ -64,7 +64,7 @@ describe("UserDetailPermissionOperation", () => {
 
   const permissions: any[] = ["customer", "employee", "manager", "admin"];
 
-  for (let permission of permissions) {
+  for (const permission of permissions) {
     it(`should reject if blApiRequest.user.permission "${permission}" is lower than user.permission "admin"`, () => {
       userDetailGetStub.resolves({
         id: "userDetail1",

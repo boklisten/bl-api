@@ -11,8 +11,8 @@ import { BlError } from "@boklisten/bl-model";
 chai.use(chaiAsPromised);
 
 describe("LocalLoginPasswordValidator", () => {
-  let seCrypto = new SeCrypto();
-  let localLoginPasswordValidator = new LocalLoginPasswordValidator(seCrypto);
+  const seCrypto = new SeCrypto();
+  const localLoginPasswordValidator = new LocalLoginPasswordValidator(seCrypto);
 
   sinon.stub(seCrypto, "hash").callsFake((password: string, salt: string) => {
     return Promise.resolve(password + salt);

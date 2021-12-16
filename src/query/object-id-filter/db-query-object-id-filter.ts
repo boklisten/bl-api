@@ -20,13 +20,13 @@ export class DbQueryObjectIdFilter {
     }
     if (validStringParams.length <= 0) return [];
 
-    let objectIdFilters: ObjectIdFilter[] = [];
+    const objectIdFilters: ObjectIdFilter[] = [];
 
     try {
-      for (let param in query) {
+      for (const param in query) {
         if (validStringParams.indexOf(param) > -1) {
           if (Array.isArray(query[param])) {
-            let valueArr = [];
+            const valueArr = [];
             query[param].forEach((paramValue) => {
               valueArr.push(this.getStringParamValue(paramValue));
               valueArr.push(this.getObjectIdParamValue(paramValue));
@@ -36,7 +36,7 @@ export class DbQueryObjectIdFilter {
               value: valueArr,
             });
           } else {
-            let valueArr = [
+            const valueArr = [
               this.getStringParamValue(query[param]),
               this.getObjectIdParamValue(query[param]),
             ];

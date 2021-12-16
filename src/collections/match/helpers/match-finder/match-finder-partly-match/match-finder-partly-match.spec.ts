@@ -16,7 +16,7 @@ const matchFinderPartlyMatch = new MatchFinderPartlyMatch();
 
 describe("find()", () => {
   it("should reject if no partly match is found", () => {
-    let matches = [
+    const matches = [
       {
         state: "done",
         items: [
@@ -27,7 +27,7 @@ describe("find()", () => {
       },
     ] as Match[];
 
-    let matchItems = [{ item: "someItem" }] as MatchItem[];
+    const matchItems = [{ item: "someItem" }] as MatchItem[];
 
     return expect(
       matchFinderPartlyMatch.find(matchItems, matches)
@@ -35,7 +35,7 @@ describe("find()", () => {
   });
 
   it("should resolve with correct match", () => {
-    let matches = [
+    const matches = [
       {
         state: "created",
         items: [
@@ -49,7 +49,7 @@ describe("find()", () => {
       },
     ] as Match[];
 
-    let matchItems = [{ item: "item1" }] as MatchItem[];
+    const matchItems = [{ item: "item1" }] as MatchItem[];
 
     return matchFinderPartlyMatch
       .find(matchItems, matches)

@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 chai.use(chaiAsPromised);
 
 describe("DbQueryObjectIdFilter", () => {
-  let dbQueryObjectIdFilter: DbQueryObjectIdFilter =
+  const dbQueryObjectIdFilter: DbQueryObjectIdFilter =
     new DbQueryObjectIdFilter();
 
   describe("getObjectIdFilters()", () => {
@@ -41,7 +41,7 @@ describe("DbQueryObjectIdFilter", () => {
     });
 
     it("should not change values in query that are not in ValidObjectIdParams", () => {
-      let result = [
+      const result = [
         {
           fieldName: "id",
           value: [
@@ -59,12 +59,12 @@ describe("DbQueryObjectIdFilter", () => {
     });
 
     it("should return correct array given valid input", () => {
-      let query = {
+      const query = {
         id: "5c2e0e5bb311ba0701f15967",
         customer: "5c2e0e5bb311ba0701f15967",
         branch: ["5c2e0e5bb311ba0701f15968", "5c2e0e5bb311ba0701f15967"],
       };
-      let result = [
+      const result = [
         {
           fieldName: "id",
           value: [

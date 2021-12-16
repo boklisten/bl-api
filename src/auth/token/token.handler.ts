@@ -28,7 +28,7 @@ export class TokenHandler {
     return new Promise((resolve, reject) => {
       this.userHandler.getByUsername(username).then(
         (theUser: User) => {
-          let user = theUser;
+          const user = theUser;
 
           this.userHandler
             .valid(username)

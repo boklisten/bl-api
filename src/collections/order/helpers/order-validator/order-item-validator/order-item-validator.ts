@@ -59,8 +59,8 @@ export class OrderItemValidator {
       await this.orderItemFieldValidator.validate(order);
       this.validateAmount(order);
 
-      for (let orderItem of order.orderItems) {
-        let item = await this.itemStorage.get(orderItem.item as string);
+      for (const orderItem of order.orderItems) {
+        const item = await this.itemStorage.get(orderItem.item as string);
         await this.validateOrderItemBasedOnType(branch, item, orderItem);
         this.validateOrderItemAmounts(orderItem);
       }
@@ -107,7 +107,7 @@ export class OrderItemValidator {
   }
 
   private validateOrderItemAmounts(orderItem: OrderItem) {
-    let expectedTotalAmount = this.priceService.sanitize(
+    const expectedTotalAmount = this.priceService.sanitize(
       orderItem.unitPrice + orderItem.taxAmount
     );
 
@@ -117,7 +117,7 @@ export class OrderItemValidator {
       );
     }
 
-    let expectedTaxAmount = this.priceService.sanitize(
+    const expectedTaxAmount = this.priceService.sanitize(
       orderItem.unitPrice * orderItem.taxRate
     );
 
@@ -131,7 +131,7 @@ export class OrderItemValidator {
   private validateAmount(order: Order): boolean {
     let expectedTotalAmount = 0;
 
-    for (let orderItem of order.orderItems) {
+    for (const orderItem of order.orderItems) {
       expectedTotalAmount += orderItem.amount;
     }
 

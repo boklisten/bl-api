@@ -32,7 +32,7 @@ describe("InvoiceActive", () => {
         },
       ];
 
-      for (let invoice of nonActiveInvoices) {
+      for (const invoice of nonActiveInvoices) {
         expect(invoiceActive.isActive(invoice)).to.be.false;
       }
     });
@@ -61,7 +61,7 @@ describe("InvoiceActive", () => {
         },
       ];
 
-      for (let invoice of activeInvoices) {
+      for (const invoice of activeInvoices) {
         expect(invoiceActive.isActive(invoice)).to.be.true;
       }
     });

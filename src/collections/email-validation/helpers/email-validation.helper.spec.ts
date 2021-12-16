@@ -24,7 +24,7 @@ describe("EmailValidationHelper", () => {
     emailValidationStorage
   );
 
-  let testUserDetail = { id: "", email: "" };
+  const testUserDetail = { id: "", email: "" };
   let emailValidationStorageAddSuccess: boolean;
   let testEmailValidation: EmailValidation;
 
@@ -54,7 +54,7 @@ describe("EmailValidationHelper", () => {
     return Promise.resolve(testEmailValidation);
   });
 
-  let messengerEmailConfirmationStub = sinon
+  const messengerEmailConfirmationStub = sinon
     .stub(messenger, "emailConfirmation")
     .callsFake(() => {});
 

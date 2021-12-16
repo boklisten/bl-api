@@ -7,10 +7,10 @@ import { SeCrypto } from "./se.crypto";
 import { BlError } from "@boklisten/bl-model";
 
 chai.use(chaiAsPromised);
-let shuld = chai.should();
+const shuld = chai.should();
 
 describe("SeCrypto", () => {
-  let seCrypto: SeCrypto = new SeCrypto();
+  const seCrypto: SeCrypto = new SeCrypto();
 
   describe("cipher()", () => {
     it("should reject with BlError when message is empty", () => {

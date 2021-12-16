@@ -14,7 +14,7 @@ chai.use(chaiAsPromised);
 let testOrder: Order;
 let testDelivery: Delivery;
 let testAccessToken: AccessToken;
-let orderStorage = new BlDocumentStorage<Order>("orders");
+const orderStorage = new BlDocumentStorage<Order>("orders");
 let canUpdateOrder = true;
 
 const deliveryHandler = new DeliveryHandler(orderStorage);

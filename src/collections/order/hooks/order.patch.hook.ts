@@ -65,7 +65,7 @@ export class OrderPatchHook extends Hook {
       return Promise.reject(new BlError("accessToken not defined"));
     }
 
-    let order = orders[0];
+    const order = orders[0];
 
     return new Promise((resolve, reject) => {
       if (order.placed) {

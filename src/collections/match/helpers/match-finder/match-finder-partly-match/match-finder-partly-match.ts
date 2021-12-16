@@ -16,7 +16,7 @@ export class MatchFinderPartlyMatch {
   //  - for each match, check if there is only ONE reciever, if more then dismiss
   public async find(matchItems: MatchItem[], matches: Match[]): Promise<Match> {
     try {
-      let matchInTypeCreated = await this.findPartlyMatchInStateCreated(
+      const matchInTypeCreated = await this.findPartlyMatchInStateCreated(
         matchItems,
         matches
       );
@@ -27,7 +27,7 @@ export class MatchFinderPartlyMatch {
     } catch (e) {}
 
     try {
-      let matchInTypePartlyMatched =
+      const matchInTypePartlyMatched =
         await this.findPartlyMatchInStatePartlyMatched(matchItems, matches);
 
       if (matchInTypePartlyMatched) {
@@ -42,14 +42,14 @@ export class MatchFinderPartlyMatch {
     matchItems: MatchItem[],
     matches: Match[]
   ): Promise<Match> {
-    let matchesWithPartlyMatchedState = matches.filter(
+    const matchesWithPartlyMatchedState = matches.filter(
       (match) => match.state === "partly-matched"
     );
 
     let matchWithMostMatchedItems = null;
     let matchedItemsCount = 0;
 
-    for (let match of matchesWithPartlyMatchedState) {
+    for (const match of matchesWithPartlyMatchedState) {
       let matchedItemIds = [];
       try {
         matchedItemIds = this.matchHelper.findMatchingItemIdsFromPartlyMatched(
@@ -75,14 +75,14 @@ export class MatchFinderPartlyMatch {
     matchItems: MatchItem[],
     matches: Match[]
   ): Promise<Match> {
-    let matchesWithCreatedState = matches.filter(
+    const matchesWithCreatedState = matches.filter(
       (match) => match.state === "created"
     );
 
     let matchWithMostMatchedItems = null;
     let matchedItemsCount = 0;
 
-    for (let match of matchesWithCreatedState) {
+    for (const match of matchesWithCreatedState) {
       let matchedItemIds = [];
       try {
         matchedItemIds = this.matchHelper.findMatchingItemIds(

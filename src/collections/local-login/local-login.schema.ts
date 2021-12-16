@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export let localLoginSchema = {
+export const localLoginSchema = {
   username: {
     type: Schema.Types.String,
     required: true,

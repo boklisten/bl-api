@@ -13,7 +13,7 @@ import { AccessToken } from "../access-token/access-token";
 chai.use(chaiAsPromised);
 
 describe("RefreshTokenValidator", () => {
-  let refreshTokenConfig: RefreshToken = {
+  const refreshTokenConfig: RefreshToken = {
     iss: "",
     aud: "",
     expiresIn: "12h",
@@ -22,7 +22,7 @@ describe("RefreshTokenValidator", () => {
     username: "",
   };
 
-  let accessTokenConfig: AccessToken = {
+  const accessTokenConfig: AccessToken = {
     iss: "",
     aud: "",
     expiresIn: "30s",
@@ -33,21 +33,21 @@ describe("RefreshTokenValidator", () => {
     details: "",
   };
 
-  let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
-  let refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
+  const tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
+  const refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
 
-  let refreshTokenValidator = new RefreshTokenValidator();
+  const refreshTokenValidator = new RefreshTokenValidator();
 
   describe("validateRefreshToken()", () => {
     it("should reject with BlError when refreshToken is empty", () => {
-      let refreshToken = "";
+      const refreshToken = "";
       return refreshTokenValidator
         .validate(refreshToken)
         .should.be.rejectedWith(BlError);
     });
 
     it("should reject with BlError when refreshToken is not valid", (done) => {
-      let refreshToken = "this is not a valid token";
+      const refreshToken = "this is not a valid token";
       refreshTokenValidator.validate(refreshToken).then(
         (valid: boolean) => {
           valid.should.not.be.fulfilled;
@@ -62,7 +62,7 @@ describe("RefreshTokenValidator", () => {
 
     context("when refreshToken is expired", () => {
       it("should reject with BlCode 909", (done) => {
-        let jwt = require("jsonwebtoken");
+        const jwt = require("jsonwebtoken");
 
         jwt.sign(
           { username: "test", iat: Math.floor(Date.now() / 1000) - 10000 },
@@ -82,8 +82,8 @@ describe("RefreshTokenValidator", () => {
 
     context("when refreshToken is valid", () => {
       it("should resolve with payload", (done) => {
-        let username = "bill@hicks.com";
-        let userid = "abc";
+        const username = "bill@hicks.com";
+        const userid = "abc";
 
         refreshTokenCreator.create(username, userid).then(
           (refreshToken: string) => {

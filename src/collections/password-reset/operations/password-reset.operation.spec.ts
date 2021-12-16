@@ -55,7 +55,7 @@ describe("PasswordResetOperation", () => {
     return Promise.resolve(testPasswordReset);
   });
 
-  let testResponseRedirectSpy = sinon.spy(testResponse, "redirect");
+  const testResponseRedirectSpy = sinon.spy(testResponse, "redirect");
 
   describe("#run", () => {
     it("should reject if documentId is not found", () => {

@@ -28,33 +28,33 @@ export class BlAuth {
   private feideAuth: FeideAuth;
 
   constructor(router: Router) {
-    let userHandler = new UserHandler();
+    const userHandler = new UserHandler();
 
-    let localLoginPasswordValidator = new LocalLoginPasswordValidator(
+    const localLoginPasswordValidator = new LocalLoginPasswordValidator(
       new SeCrypto()
     );
 
-    let localLoginHandler = new LocalLoginHandler();
-    let seCrypto = new SeCrypto();
-    let saltGenerator = new SaltGenerator();
-    let hashedPasswordGenerator = new HashedPasswordGenerator(
+    const localLoginHandler = new LocalLoginHandler();
+    const seCrypto = new SeCrypto();
+    const saltGenerator = new SaltGenerator();
+    const hashedPasswordGenerator = new HashedPasswordGenerator(
       saltGenerator,
       seCrypto
     );
-    let providerIdGenerator = new ProviderIdGenerator(seCrypto);
-    let localLoginCreator = new LocalLoginCreator(
+    const providerIdGenerator = new ProviderIdGenerator(seCrypto);
+    const localLoginCreator = new LocalLoginCreator(
       hashedPasswordGenerator,
       providerIdGenerator
     );
-    let localLoginValidator = new LocalLoginValidator(
+    const localLoginValidator = new LocalLoginValidator(
       localLoginHandler,
       localLoginPasswordValidator,
       localLoginCreator,
       userHandler
     );
-    let resHandler = new SEResponseHandler();
+    const resHandler = new SEResponseHandler();
 
-    let tokenHandler = new TokenHandler(userHandler);
+    const tokenHandler = new TokenHandler(userHandler);
 
     this.jwtAuth = new AccessTokenAuth(userHandler);
 

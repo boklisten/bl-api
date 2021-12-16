@@ -138,7 +138,7 @@ describe("DateService", () => {
         moment().toDate(),
       ];
 
-      for (let birthday of birthdays) {
+      for (const birthday of birthdays) {
         expect(dateService.isOver18(birthday)).to.be.false;
       }
     });
@@ -151,7 +151,7 @@ describe("DateService", () => {
         moment().subtract(18, "years").toDate(),
       ];
 
-      for (let birthday of birthdays) {
+      for (const birthday of birthdays) {
         expect(dateService.isOver18(birthday)).to.be.true;
       }
     });

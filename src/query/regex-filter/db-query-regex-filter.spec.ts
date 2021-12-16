@@ -8,7 +8,7 @@ import { DbQueryRegexFilter } from "./db-query-regex-filter";
 chai.use(chaiAsPromised);
 
 describe("DbQueryRegexFilter", () => {
-  let dbQueryRegexFilter: DbQueryRegexFilter = new DbQueryRegexFilter();
+  const dbQueryRegexFilter: DbQueryRegexFilter = new DbQueryRegexFilter();
 
   describe("getRegexFilters()", () => {
     it("should return empty array when searchString is empty", () => {
@@ -28,7 +28,7 @@ describe("DbQueryRegexFilter", () => {
     });
 
     it('should return array like [{name: {$regex: "sig", $options: "imx"}}]', () => {
-      let result = [
+      const result = [
         { fieldName: "name", op: { $regex: "sig", $options: "imx" } },
       ];
       expect(dbQueryRegexFilter.getRegexFilters({ s: "sig" }, ["name"])).to.eql(
@@ -37,15 +37,15 @@ describe("DbQueryRegexFilter", () => {
     });
 
     it("should return array containing regexfilter objects for all params in validRegexParams", () => {
-      let result = [
+      const result = [
         { fieldName: "name", op: { $regex: "hello", $options: "imx" } },
         { fieldName: "message", op: { $regex: "hello", $options: "imx" } },
         { fieldName: "info", op: { $regex: "hello", $options: "imx" } },
         { fieldName: "desc", op: { $regex: "hello", $options: "imx" } },
       ];
 
-      let validRegexParams = ["name", "message", "info", "desc"];
-      let query = { s: "hello" };
+      const validRegexParams = ["name", "message", "info", "desc"];
+      const query = { s: "hello" };
 
       expect(
         dbQueryRegexFilter.getRegexFilters(query, validRegexParams)

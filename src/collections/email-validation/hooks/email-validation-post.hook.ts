@@ -18,7 +18,7 @@ export class EmailValidationPostHook extends Hook {
     accessToken?: AccessToken
   ): Promise<EmailValidation[]> {
     return new Promise((resolve, reject) => {
-      let emailValidation = emailValidations[0];
+      const emailValidation = emailValidations[0];
 
       this._emailValidationHelper
         .sendEmailValidationLink(emailValidation)

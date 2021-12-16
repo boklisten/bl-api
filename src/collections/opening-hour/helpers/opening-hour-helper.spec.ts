@@ -64,7 +64,7 @@ describe("getNextAvailableOpeningHour()", () => {
       openingHours: ["openingHour3", "openingHour4"],
     } as Branch;
 
-    let openingHours = [
+    const openingHours = [
       {
         from: moment("2012-01-01").toDate(),
         to: moment("2012-01-02").toDate(),
@@ -91,7 +91,7 @@ describe("getNextAvailableOpeningHour()", () => {
       openingHours: ["openingHour3", "openingHour4"],
     } as Branch;
 
-    let openingHours = [
+    const openingHours = [
       {
         from: moment().add(4, "day").toDate(),
         to: moment().add(4, "day").toDate(),
@@ -124,7 +124,7 @@ describe("getNextAvailableOpeningHour()", () => {
         openingHours: ["openingHour3", "openingHour4"],
       } as Branch;
 
-      let openingHours = [
+      const openingHours = [
         {
           from: moment().add(4, "day").toDate(),
           to: moment().add(4, "day").toDate(),
@@ -159,7 +159,7 @@ describe("getNextAvailableOpeningHour()", () => {
         openingHours: ["openingHour3", "openingHour4"],
       } as Branch;
 
-      let openingHours = [
+      const openingHours = [
         {
           from: moment().add(4, "day").toDate(),
           to: moment().add(4, "day").toDate(),
@@ -191,7 +191,7 @@ describe("getNextAvailableOpeningHour()", () => {
         openingHours: ["openingHour3", "openingHour4"],
       } as Branch;
 
-      let openingHours = [
+      const openingHours = [
         {
           from: moment().add(4, "day").toDate(),
           to: moment().add(4, "day").toDate(),

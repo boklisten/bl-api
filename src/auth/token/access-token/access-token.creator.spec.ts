@@ -14,7 +14,7 @@ import { TokenConfig } from "../token.config";
 chai.use(chaiAsPromised);
 
 describe("AccessTokenCreator", () => {
-  let refreshTokenConfig: RefreshToken = {
+  const refreshTokenConfig: RefreshToken = {
     iss: "",
     aud: "",
     expiresIn: "12h",
@@ -23,7 +23,7 @@ describe("AccessTokenCreator", () => {
     username: "",
   };
 
-  let accessTokenConfig: AccessToken = {
+  const accessTokenConfig: AccessToken = {
     iss: "",
     aud: "",
     expiresIn: "30s",
@@ -34,9 +34,9 @@ describe("AccessTokenCreator", () => {
     details: "",
   };
 
-  let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
-  let accessTokenCreator = new AccessTokenCreator(tokenConfig);
-  let refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
+  const tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
+  const accessTokenCreator = new AccessTokenCreator(tokenConfig);
+  const refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
 
   describe("createAccessToken()", () => {
     let testUsername = "";
@@ -64,7 +64,7 @@ describe("AccessTokenCreator", () => {
 
     context("when parameter is malformed", () => {
       it("should reject with BlError when username is undefined", () => {
-        let username = undefined;
+        const username = undefined;
         return accessTokenCreator
           .create(
             username,
@@ -77,7 +77,7 @@ describe("AccessTokenCreator", () => {
       });
 
       it("should reject with BlError when username is empty", () => {
-        let username = "";
+        const username = "";
         return accessTokenCreator
           .create(
             username,
@@ -90,7 +90,7 @@ describe("AccessTokenCreator", () => {
       });
 
       it("should reject with BlError when userId is undefined", () => {
-        let userid = undefined;
+        const userid = undefined;
         return accessTokenCreator
           .create(
             testUsername,
@@ -103,7 +103,7 @@ describe("AccessTokenCreator", () => {
       });
 
       it("should should reject with BlError when requestToken is undefined", () => {
-        let refreshToken = "";
+        const refreshToken = "";
         return accessTokenCreator
           .create(
             testUsername,
@@ -118,7 +118,7 @@ describe("AccessTokenCreator", () => {
 
     context("when refreshToken is not valid", () => {
       it("should reject with BlError code 905", (done) => {
-        let refreshToken = "this is not valid";
+        const refreshToken = "this is not valid";
         accessTokenCreator
           .create(
             testUsername,

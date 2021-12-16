@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export let itemSchema = {
+export const itemSchema = {
   title: {
     type: Schema.Types.String,
     required: true,

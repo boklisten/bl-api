@@ -11,7 +11,7 @@ chai.use(chaiAsPromised);
 
 describe("DbQueryBuilder", () => {
   describe("getDbQuery()", () => {
-    let dbQueryBuilder: SEDbQueryBuilder = new SEDbQueryBuilder();
+    const dbQueryBuilder: SEDbQueryBuilder = new SEDbQueryBuilder();
 
     it("should throw return empty SeDbQuery object if no query is given", () => {
       expect(
@@ -20,20 +20,20 @@ describe("DbQueryBuilder", () => {
     });
 
     it("should return SedbQuery with skip equal to 5", () => {
-      let result = new SEDbQuery();
+      const result = new SEDbQuery();
       result.skipFilter = { skip: 5 };
 
       expect(dbQueryBuilder.getDbQuery({ skip: "5" }, [])).to.eql(result);
     });
 
     it("should return SeDbQuery with limit to 4", () => {
-      let result = new SEDbQuery();
+      const result = new SEDbQuery();
       result.limitFilter = { limit: 4 };
       expect(dbQueryBuilder.getDbQuery({ limit: "4" }, [])).to.eql(result);
     });
 
     it("should return SeDbQuery with correct filters", () => {
-      let result = new SEDbQuery();
+      const result = new SEDbQuery();
       result.numberFilters = [
         { fieldName: "age", op: { $gt: 12, $lt: 60 } },
         { fieldName: "price", op: { $eq: 120 } },
@@ -42,7 +42,7 @@ describe("DbQueryBuilder", () => {
       result.limitFilter = { limit: 3 };
       result.onlyGetFilters = [{ fieldName: "name", value: 1 }];
 
-      let validParams: ValidParam[] = [
+      const validParams: ValidParam[] = [
         { fieldName: "name", type: "string" },
         { fieldName: "age", type: "number" },
         { fieldName: "price", type: "number" },

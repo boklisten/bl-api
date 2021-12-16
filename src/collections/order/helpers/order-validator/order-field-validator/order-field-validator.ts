@@ -8,7 +8,7 @@ export class OrderFieldValidator {
     try {
       this.validateOrderFields(order);
 
-      for (let orderItem of order.orderItems) {
+      for (const orderItem of order.orderItems) {
         this.validateOrderItemFields(orderItem);
       }
     } catch (e) {

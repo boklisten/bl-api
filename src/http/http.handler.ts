@@ -51,7 +51,7 @@ export class HttpHandler {
     headers?: object
   ): Promise<any> {
     return new Promise((resolve, reject) => {
-      let options = {
+      const options = {
         uri: url + "?" + queryString,
         json: true,
         headers: headers,
@@ -77,7 +77,7 @@ export class HttpHandler {
 
   public get(url: string, authorization?: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      let options = {
+      const options = {
         uri: url,
         json: true,
         headers: {},

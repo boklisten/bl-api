@@ -38,26 +38,26 @@ export class SEDbQuery {
   }
 
   getFilter(): any {
-    let filterObj: any = {};
-    let orArr: any = [];
+    const filterObj: any = {};
+    const orArr: any = [];
 
-    for (let booleanFilter of this.booleanFilters) {
+    for (const booleanFilter of this.booleanFilters) {
       filterObj[booleanFilter.fieldName] = booleanFilter.value;
     }
 
-    for (let dateFilter of this.dateFilters) {
+    for (const dateFilter of this.dateFilters) {
       filterObj[dateFilter.fieldName] = dateFilter.op;
     }
 
-    for (let numberFilter of this.numberFilters) {
+    for (const numberFilter of this.numberFilters) {
       filterObj[numberFilter.fieldName] = numberFilter.op;
     }
 
-    for (let stringFilter of this.stringFilters) {
+    for (const stringFilter of this.stringFilters) {
       if (Array.isArray(stringFilter.value)) {
-        let arr = stringFilter.value;
-        for (let stringValue of arr) {
-          let multipleValuesFilterObj: any = {};
+        const arr = stringFilter.value;
+        for (const stringValue of arr) {
+          const multipleValuesFilterObj: any = {};
           multipleValuesFilterObj[stringFilter.fieldName] = stringValue;
           orArr.push(multipleValuesFilterObj);
         }
@@ -66,11 +66,11 @@ export class SEDbQuery {
       }
     }
 
-    for (let objectIdFilter of this.objectIdFilters) {
+    for (const objectIdFilter of this.objectIdFilters) {
       if (Array.isArray(objectIdFilter.value)) {
-        let arr = objectIdFilter.value;
-        for (let stringValue of arr) {
-          let multipleValuesFilterObj: any = {};
+        const arr = objectIdFilter.value;
+        for (const stringValue of arr) {
+          const multipleValuesFilterObj: any = {};
           multipleValuesFilterObj[objectIdFilter.fieldName] = stringValue;
           orArr.push(multipleValuesFilterObj);
         }
@@ -79,8 +79,8 @@ export class SEDbQuery {
       }
     }
 
-    for (let regexFilter of this.regexFilters) {
-      let regexFilterObj: any = {};
+    for (const regexFilter of this.regexFilters) {
+      const regexFilterObj: any = {};
       regexFilterObj[regexFilter.fieldName] = regexFilter.op;
       orArr.push(regexFilterObj);
     }
@@ -93,9 +93,9 @@ export class SEDbQuery {
   }
 
   getOgFilter(): any {
-    let ogFilterObj: any = {};
+    const ogFilterObj: any = {};
 
-    for (let ogFilter of this.onlyGetFilters) {
+    for (const ogFilter of this.onlyGetFilters) {
       ogFilterObj[ogFilter.fieldName] = ogFilter.value;
     }
     return ogFilterObj;
@@ -114,9 +114,9 @@ export class SEDbQuery {
   }
 
   getSortFilter(): any {
-    let sortFilterObj: any = {};
+    const sortFilterObj: any = {};
 
-    for (let sortFilter of this.sortFilters) {
+    for (const sortFilter of this.sortFilters) {
       sortFilterObj[sortFilter.fieldName] = sortFilter.direction;
     }
 

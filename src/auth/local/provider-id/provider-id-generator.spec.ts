@@ -11,19 +11,19 @@ chai.use(chaiAsPromised);
 
 describe("ProviderIdGenerator", () => {
   describe("generate()", () => {
-    let seCrypto = new SeCrypto();
-    let providerIdGenerator = new ProviderIdGenerator(seCrypto);
+    const seCrypto = new SeCrypto();
+    const providerIdGenerator = new ProviderIdGenerator(seCrypto);
 
     describe("should reject with BlError when", () => {
       it("username is empty", () => {
-        let username = "";
+        const username = "";
         return providerIdGenerator
           .generate(username)
           .should.be.rejectedWith(BlError);
       });
 
       it("username is undefined", () => {
-        let username = undefined;
+        const username = undefined;
         return providerIdGenerator
           .generate(username)
           .should.be.rejectedWith(BlError);
@@ -32,7 +32,7 @@ describe("ProviderIdGenerator", () => {
 
     describe("should return a providerId when", () => {
       it("usename is valid", () => {
-        let username = "bill@mail.com";
+        const username = "bill@mail.com";
         return providerIdGenerator
           .generate(username)
           .should.eventually.be.fulfilled.and.be.a("string")

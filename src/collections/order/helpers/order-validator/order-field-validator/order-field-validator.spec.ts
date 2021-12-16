@@ -11,7 +11,7 @@ chai.use(chaiAsPromised);
 
 describe("OrderFieldValidator", () => {
   let testOrder: Order;
-  let orderItemFieldValidator = new OrderFieldValidator();
+  const orderItemFieldValidator = new OrderFieldValidator();
 
   beforeEach(() => {
     testOrder = {

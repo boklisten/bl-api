@@ -15,7 +15,7 @@ describe("OrderHookBefore", () => {
   describe("#validate()", () => {
     context("request is not valid", () => {
       it("should reject if body is an array", (done) => {
-        let testRequest = [];
+        const testRequest = [];
         orderHookBefore.validate(testRequest).catch((blError: BlError) => {
           expect(blError.getMsg()).to.contain(
             "request is an array but should be a object"
@@ -25,7 +25,7 @@ describe("OrderHookBefore", () => {
       });
 
       it("should reject if body does not include the minimum required fields of order like amount and orderItems", (done) => {
-        let testRequest = {
+        const testRequest = {
           somethingRandom: ["hi", "hello there"],
         };
 
@@ -39,7 +39,7 @@ describe("OrderHookBefore", () => {
 
     context("request is valid", () => {
       it("should resolve if the request have the minimum required fields of Order", (done) => {
-        let testRequest = {
+        const testRequest = {
           id: "order1",
           amount: 450,
           orderItems: [

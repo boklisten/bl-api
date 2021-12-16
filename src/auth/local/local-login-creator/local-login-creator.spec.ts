@@ -14,14 +14,14 @@ import { LocalLogin } from "../../../collections/local-login/local-login";
 chai.use(chaiAsPromised);
 
 describe("LocalLoginCreator", () => {
-  let saltGenerator = new SaltGenerator();
-  let seCrypto = new SeCrypto();
-  let hashedPasswordGenerator = new HashedPasswordGenerator(
+  const saltGenerator = new SaltGenerator();
+  const seCrypto = new SeCrypto();
+  const hashedPasswordGenerator = new HashedPasswordGenerator(
     saltGenerator,
     seCrypto
   );
-  let providerIdGenerator = new ProviderIdGenerator(seCrypto);
-  let localLoginCreator = new LocalLoginCreator(
+  const providerIdGenerator = new ProviderIdGenerator(seCrypto);
+  const localLoginCreator = new LocalLoginCreator(
     hashedPasswordGenerator,
     providerIdGenerator
   );
@@ -29,32 +29,32 @@ describe("LocalLoginCreator", () => {
   describe("create()", () => {
     describe("should reject with BlError when", () => {
       it("username is empty", () => {
-        let username = "";
-        let password = "thisIsAValidPassword";
+        const username = "";
+        const password = "thisIsAValidPassword";
         return localLoginCreator
           .create(username, password)
           .should.be.rejectedWith(BlError);
       });
 
       it("username is undefined", () => {
-        let username = undefined;
-        let password = "thisisavalidpassword";
+        const username = undefined;
+        const password = "thisisavalidpassword";
         return localLoginCreator
           .create(username, password)
           .should.be.rejectedWith(BlError);
       });
 
       it("password is null", () => {
-        let username = "bill@mail.com";
-        let password = null;
+        const username = "bill@mail.com";
+        const password = null;
         return localLoginCreator
           .create(username, password)
           .should.be.rejectedWith(BlError);
       });
 
       it("password is under 6 char", () => {
-        let username = "bill@gmail.com";
-        let password = "abc";
+        const username = "bill@gmail.com";
+        const password = "abc";
 
         return localLoginCreator
           .create(username, password)
@@ -64,8 +64,8 @@ describe("LocalLoginCreator", () => {
 
     describe("should resolve with a LocalLogin object when", () => {
       it("username and password is valid", () => {
-        let username = "bill@mail.com";
-        let password = "thisIsAValidPassword";
+        const username = "bill@mail.com";
+        const password = "thisIsAValidPassword";
 
         return localLoginCreator.create(username, password).then(
           (localLogin: LocalLogin) => {

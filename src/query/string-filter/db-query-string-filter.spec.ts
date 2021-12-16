@@ -8,7 +8,7 @@ import { DbQueryStringFilter } from "./db-query-string-filter";
 chai.use(chaiAsPromised);
 
 describe("DbQueryStringFilter", () => {
-  let dbQueryStringFilter: DbQueryStringFilter = new DbQueryStringFilter();
+  const dbQueryStringFilter: DbQueryStringFilter = new DbQueryStringFilter();
 
   describe("getStringFilters()", () => {
     it("should return empty array if query is valid and validStringParams is empty", () => {
@@ -36,7 +36,7 @@ describe("DbQueryStringFilter", () => {
     });
 
     it("should not change values in query that are not in ValidStringParams", () => {
-      let result = [{ fieldName: "name", value: "albert" }];
+      const result = [{ fieldName: "name", value: "albert" }];
       expect(
         dbQueryStringFilter.getStringFilters({ name: "albert", phone: "123" }, [
           "name",
@@ -45,13 +45,13 @@ describe("DbQueryStringFilter", () => {
     });
 
     it("should return correct array given valid input", () => {
-      let query = {
+      const query = {
         name: "billy bob",
         desc: "hello there this is bob",
         age: "10",
         branch: ["123", "83ax"],
       };
-      let result = [
+      const result = [
         { fieldName: "name", value: "billy bob" },
         { fieldName: "desc", value: "hello there this is bob" },
         { fieldName: "branch", value: ["123", "83ax"] },

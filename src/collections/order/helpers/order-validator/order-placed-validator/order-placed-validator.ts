@@ -66,7 +66,7 @@ export class OrderPlacedValidator {
   private validateOrderItems(order: Order): boolean {
     let orderItemTotalAmount = 0;
 
-    for (let orderItem of order.orderItems) {
+    for (const orderItem of order.orderItems) {
       orderItemTotalAmount += orderItem.amount;
     }
 
@@ -78,14 +78,14 @@ export class OrderPlacedValidator {
     delivery?: Delivery
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      let totalOrderAmount = order.amount + (delivery ? delivery.amount : 0);
+      const totalOrderAmount = order.amount + (delivery ? delivery.amount : 0);
 
       this.paymentStorage
         .getMany(order.payments as string[])
         .then((payments: Payment[]) => {
           let paymentTotal = 0;
 
-          for (let payment of payments) {
+          for (const payment of payments) {
             if (!payment.confirmed) {
               return reject(
                 new BlError("payment is not confirmed").store(

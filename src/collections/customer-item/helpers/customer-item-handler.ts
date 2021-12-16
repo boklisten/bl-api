@@ -62,11 +62,11 @@ export class CustomerItemHandler {
         orderItem.info["periodType"]
       );
 
-      let periodExtends = customerItem.periodExtends
+      const periodExtends = customerItem.periodExtends
         ? customerItem.periodExtends
         : [];
 
-      let customerItemOrders: any[] = customerItem.orders
+      const customerItemOrders: any[] = customerItem.orders
         ? customerItem.orders
         : [];
 
@@ -110,7 +110,7 @@ export class CustomerItemHandler {
       }
 
       const customerItem = await this._customerItemStorage.get(customerItemId);
-      let customerItemOrders: any[] = customerItem.orders
+      const customerItemOrders: any[] = customerItem.orders
         ? customerItem.orders
         : [];
 
@@ -153,7 +153,7 @@ export class CustomerItemHandler {
 
       const customerItem = await this._customerItemStorage.get(customerItemId);
 
-      let customerItemOrders: any[] = customerItem.orders
+      const customerItemOrders: any[] = customerItem.orders
         ? customerItem.orders
         : [];
 
@@ -196,7 +196,7 @@ export class CustomerItemHandler {
 
       const customerItem = await this._customerItemStorage.get(customerItemId);
 
-      let customerItemOrders: any[] = customerItem.orders
+      const customerItemOrders: any[] = customerItem.orders
         ? customerItem.orders
         : [];
 
@@ -237,7 +237,7 @@ export class CustomerItemHandler {
       }
 
       const customerItem = await this._customerItemStorage.get(customerItemId);
-      let customerItemOrders: any[] = customerItem.orders
+      const customerItemOrders: any[] = customerItem.orders
         ? customerItem.orders
         : [];
 
@@ -344,7 +344,7 @@ export class CustomerItemHandler {
       throw new BlError("no extend periods present on branch");
     }
 
-    for (let extendPeriod of branch.paymentInfo.extendPeriods) {
+    for (const extendPeriod of branch.paymentInfo.extendPeriods) {
       if (extendPeriod.type === period) {
         return extendPeriod;
       }

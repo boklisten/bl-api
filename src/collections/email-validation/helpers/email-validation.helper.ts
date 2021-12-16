@@ -32,7 +32,7 @@ export class EmailValidationHelper {
       this._userDetailStorage
         .get(userDetailId)
         .then((userDetail: UserDetail) => {
-          let emailValidation = {
+          const emailValidation = {
             email: userDetail.email,
             userDetail: userDetail.id,
           } as EmailValidation;

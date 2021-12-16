@@ -70,7 +70,7 @@ export class OrderPostHook extends Hook {
       return Promise.reject(new BlError("orderIds included more than one id"));
     }
 
-    let order = orders[0];
+    const order = orders[0];
 
     return this.validateOrder(order).then((validatedOrder: Order) => {
       return [order];

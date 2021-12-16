@@ -8,6 +8,6 @@ import { User } from "../../../collections/user/user";
 import { AccessTokenAuth } from "./access-token.auth";
 chai.use(chaiAsPromised);
 
-let testUsername = "bill@thesite.com";
+const testUsername = "bill@thesite.com";
 
 describe("AccessTokenAuth", () => {});

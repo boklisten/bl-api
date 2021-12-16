@@ -94,7 +94,7 @@ export class CustomerItemPostHook extends Hook {
       );
     }
 
-    let customerItem: CustomerItem = customerItems[0];
+    const customerItem: CustomerItem = customerItems[0];
 
     if (isNullOrUndefined(customerItem.orders)) {
       return Promise.reject(new BlError("customerItem.orders is not defined"));
@@ -112,7 +112,7 @@ export class CustomerItemPostHook extends Hook {
       .get(customerItem.orders[0] as any)
       .then((order: Order) => {
         //update the corresponding orderItem with customerItem
-        for (let orderItem of order.orderItems) {
+        for (const orderItem of order.orderItems) {
           if (orderItem.item.toString() === customerItem.item.toString()) {
             orderItem.info = Object.assign(
               { customerItem: customerItem.id },

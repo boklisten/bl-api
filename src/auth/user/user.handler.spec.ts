@@ -15,7 +15,7 @@ import { LocalLoginHandler } from "../local/local-login.handler";
 
 chai.use(chaiAsPromised);
 
-let testUser = {
+const testUser = {
   id: "user1",
   userDetail: "userDetail1",
   permission: "customer",
@@ -39,7 +39,7 @@ describe("UserHandler", () => {
   const userDetailStorage: BlDocumentStorage<UserDetail> =
     new BlDocumentStorage("userdetails", UserDetail);
   const localLoginHandler: LocalLoginHandler = new LocalLoginHandler();
-  let userHandler = new UserHandler(
+  const userHandler = new UserHandler(
     userDetailStorage,
     userStorage,
     emailValidationHelper,
@@ -57,7 +57,7 @@ describe("UserHandler", () => {
     emailValidationLinkSuccess = true;
   });
 
-  let emailValidationHelperSendLinkStub = sinon
+  const emailValidationHelperSendLinkStub = sinon
     .stub(emailValidationHelper, "createAndSendEmailValidationLink")
     .callsFake((userDetailId: string) => {
       if (!emailValidationLinkSuccess) {
@@ -81,13 +81,13 @@ describe("UserHandler", () => {
     });
   });
 
-  let localLoginHandlerGetStub = sinon
+  const localLoginHandlerGetStub = sinon
     .stub(localLoginHandler, "get")
     .callsFake(() => {
       return Promise.resolve({});
     });
 
-  let userStorageGetByQueryStub = sinon
+  const userStorageGetByQueryStub = sinon
     .stub(userStorage, "getByQuery")
     .callsFake((query: SEDbQuery) => {
       return new Promise((resolve, reject) => {
@@ -102,28 +102,28 @@ describe("UserHandler", () => {
   describe("get()", () => {
     describe("should reject with BlError when", () => {
       it("provider is empty", () => {
-        let provider = "";
+        const provider = "";
         return userHandler
           .get(provider, testProviderId)
           .should.rejectedWith(BlError);
       });
 
       it("provider is null", () => {
-        let provider = null;
+        const provider = null;
         return userHandler
           .get(provider, testProviderId)
           .should.rejectedWith(BlError);
       });
 
       it("providerId is null", () => {
-        let providerId = null;
+        const providerId = null;
         return userHandler
           .get(testProvider, providerId)
           .should.rejectedWith(BlError);
       });
 
       it("providerId is empty", () => {
-        let providerId = "";
+        const providerId = "";
         return userHandler
           .get(testProvider, providerId)
           .should.rejectedWith(BlError);
@@ -134,7 +134,7 @@ describe("UserHandler", () => {
   describe("getByUsername()", () => {
     context("when username is undefined", () => {
       it("should reject with BlError", () => {
-        let username = undefined;
+        const username = undefined;
         return userHandler
           .getByUsername(username)
           .should.be.rejectedWith(BlError);
@@ -143,7 +143,7 @@ describe("UserHandler", () => {
 
     context("when username is not found", () => {
       it("should reject with BlError code 702 not found", (done) => {
-        let username = "thisis@notfound.com";
+        const username = "thisis@notfound.com";
 
         userHandler.getByUsername(username).catch((error: BlError) => {
           error.getCode().should.be.eq(702);
@@ -163,13 +163,13 @@ describe("UserHandler", () => {
 
     context("when multiple users is found with same username", () => {
       it("should select the first one with primary if primary is set", () => {
-        let username = "jimmy@dore.com";
+        const username = "jimmy@dore.com";
         const testUsers = [
           { username: username, movedToPrimary: "someObjectId" },
           { username: username, primary: true },
         ];
 
-        let dbQuery = new SEDbQuery();
+        const dbQuery = new SEDbQuery();
         dbQuery.stringFilters = [{ fieldName: "username", value: username }];
 
         userStorageGetByQueryStub.withArgs(dbQuery).resolves(testUsers);
@@ -184,21 +184,21 @@ describe("UserHandler", () => {
   describe("create()", () => {
     describe("should reject whith BlError when", () => {
       it("username is undefined", () => {
-        let username = undefined;
+        const username = undefined;
         return userHandler
           .create(username, testProvider, testProviderId)
           .should.be.rejectedWith(BlError);
       });
 
       it("provider is empty", () => {
-        let provider = "";
+        const provider = "";
         return userHandler
           .create(testUsername, provider, testProviderId)
           .should.be.rejectedWith(BlError);
       });
 
       it("providerId is null", () => {
-        let providerId = "";
+        const providerId = "";
         return userHandler
           .create(testUsername, testProvider, providerId)
           .should.be.rejectedWith(BlError);
@@ -216,7 +216,7 @@ describe("UserHandler", () => {
 
     it('should reject if username already exists and provider is "local"', (done) => {
       testUsername = "James@bond.com";
-      let dbQuery = new SEDbQuery();
+      const dbQuery = new SEDbQuery();
       dbQuery.stringFilters = [{ fieldName: "username", value: testUsername }];
 
       userStorageGetByQueryStub.withArgs(dbQuery).resolves([testUser]);
@@ -235,7 +235,7 @@ describe("UserHandler", () => {
 
     it('should resolve if username already exists and provider is "google"', () => {
       testUsername = "gert@bert.com";
-      let dbQuery = new SEDbQuery();
+      const dbQuery = new SEDbQuery();
       dbQuery.stringFilters = [{ fieldName: "username", value: testUsername }];
 
       userStorageGetByQueryStub.withArgs(dbQuery).resolves([testUser]);
@@ -246,7 +246,7 @@ describe("UserHandler", () => {
 
     it('should resolve if username already exists and provider is "facebook"', () => {
       testUsername = "jets@bets.com";
-      let dbQuery = new SEDbQuery();
+      const dbQuery = new SEDbQuery();
       dbQuery.stringFilters = [{ fieldName: "username", value: testUsername }];
 
       userStorageGetByQueryStub.withArgs(dbQuery).resolves([testUser]);
@@ -293,14 +293,14 @@ describe("UserHandler", () => {
   describe("exists()", () => {
     describe("should reject with BlError when", () => {
       it("provider is undefined", () => {
-        let provider = undefined;
+        const provider = undefined;
         return userHandler
           .exists(provider, testProviderId)
           .should.be.rejectedWith(BlError);
       });
 
       it("providerId is empty", () => {
-        let providerId = "";
+        const providerId = "";
         return userHandler
           .exists(testProvider, providerId)
           .should.be.rejectedWith(BlError);

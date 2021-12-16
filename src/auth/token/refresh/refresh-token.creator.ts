@@ -13,7 +13,7 @@ export class RefreshTokenCreator {
 
   public create(username: string, userid: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      let blError = new BlError("")
+      const blError = new BlError("")
         .className("TokenHandler")
         .methodName("createRefreshToken")
         .store("username", username)

@@ -9,7 +9,8 @@ chai.use(chaiAsPromised);
 
 describe("DbQueryBooleanFilter", () => {
   describe("getBooleanFilters", () => {
-    let dbQueryBooleanFilter: DbQueryBooleanFilter = new DbQueryBooleanFilter();
+    const dbQueryBooleanFilter: DbQueryBooleanFilter =
+      new DbQueryBooleanFilter();
 
     it("should throw TypeError if query is empty or null", () => {
       expect(() => {
@@ -24,7 +25,7 @@ describe("DbQueryBooleanFilter", () => {
     });
 
     it('should return array of [{fieldName: "haveEaten", value: true"}]', () => {
-      let result = [{ fieldName: "haveEaten", value: true }];
+      const result = [{ fieldName: "haveEaten", value: true }];
       expect(
         dbQueryBooleanFilter.getBooleanFilters({ haveEaten: "true" }, [
           "haveEaten",
@@ -41,7 +42,7 @@ describe("DbQueryBooleanFilter", () => {
     });
 
     it("should return array that includes all params that are of boolean type in query", () => {
-      let result = [
+      const result = [
         { fieldName: "confirmed", value: true },
         { fieldName: "hasCar", value: false },
         { fieldName: "isOld", value: true },

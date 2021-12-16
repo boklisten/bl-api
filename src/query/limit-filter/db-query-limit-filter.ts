@@ -19,15 +19,15 @@ export class DbQueryLimitFilter {
           '" is not a valid number, number must be valid and over 0'
       );
 
-    let limitNum = parseInt(query.limit);
+    const limitNum = parseInt(query.limit);
 
     return { limit: limitNum };
   }
 
   validNumber(limit: any) {
-    let limitStr = limit.toString();
+    const limitStr = limit.toString();
 
-    for (let n of limitStr) {
+    for (const n of limitStr) {
       if (!parseInt(n) && n !== "0") return false;
     }
 

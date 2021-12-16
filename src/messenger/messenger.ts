@@ -98,7 +98,7 @@ export class Messenger implements MessengerService {
   }
 
   public sendDeliveryInformation(customerDetail: UserDetail, order: Order) {
-    let deliveryId = typeof order.delivery === "string" ? order.delivery : "";
+    const deliveryId = typeof order.delivery === "string" ? order.delivery : "";
     this._deliveryStorage
       .get(deliveryId)
       .then((delivery: Delivery) => {

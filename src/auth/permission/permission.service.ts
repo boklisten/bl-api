@@ -5,7 +5,7 @@ import {
 } from "../../collections/bl-collection";
 
 export class SystemUser {
-  id: string = "SYSTEM";
+  id = "SYSTEM";
   permission: UserPermission = "admin";
 }
 
@@ -30,19 +30,19 @@ export class PermissionService {
   public getLowestPermission(
     userPermissions: UserPermission[]
   ): UserPermission {
-    for (let permission of userPermissions) {
+    for (const permission of userPermissions) {
       if (permission === "customer") return "customer";
     }
 
-    for (let permission of userPermissions) {
+    for (const permission of userPermissions) {
       if (permission === "employee") return "employee";
     }
 
-    for (let permission of userPermissions) {
+    for (const permission of userPermissions) {
       if (permission === "manager") return "manager";
     }
 
-    for (let permission of userPermissions) {
+    for (const permission of userPermissions) {
       if (permission === "admin") return "admin";
     }
 

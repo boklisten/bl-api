@@ -35,9 +35,9 @@ export class DbQueryOnlyGetFilter {
       onlyGetParamArray = og;
     }
 
-    let onlyGetFilters: OnlyGetFilter[] = [];
+    const onlyGetFilters: OnlyGetFilter[] = [];
 
-    for (let onlyGetParam of onlyGetParamArray) {
+    for (const onlyGetParam of onlyGetParamArray) {
       if (validOnlyGetParams.indexOf(onlyGetParam) <= -1)
         throw ReferenceError(
           'the parameter "' + onlyGetParam + '" is not in validOnlyGetParams'

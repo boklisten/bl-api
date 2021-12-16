@@ -21,7 +21,7 @@ export class DbQueryNumberFilter {
     query: any,
     validNumberParams: string[]
   ): NumberFilter[] {
-    let numberFilters: NumberFilter[] = [];
+    const numberFilters: NumberFilter[] = [];
 
     if (
       !query ||
@@ -31,7 +31,7 @@ export class DbQueryNumberFilter {
     if (validNumberParams.length <= 0) return [];
 
     try {
-      for (let param in query) {
+      for (const param in query) {
         if (validNumberParams.indexOf(param) > -1) {
           let numberFilter: NumberFilter;
 
@@ -77,8 +77,8 @@ export class DbQueryNumberFilter {
       );
 
     if (this.valueHasOperationIdentifier(value)) {
-      let opWithValue = this.getOperationWithValue(value);
-      let op: any = {};
+      const opWithValue = this.getOperationWithValue(value);
+      const op: any = {};
 
       op[opWithValue.operation] = opWithValue.value;
 
@@ -97,10 +97,10 @@ export class DbQueryNumberFilter {
   ): NumberFilter {
     if (values.length <= 0) throw new RangeError("the supplied array is empty");
 
-    let op: any = {};
+    const op: any = {};
 
-    for (let value of values) {
-      let opWithValue = this.getOperationWithValue(value);
+    for (const value of values) {
+      const opWithValue = this.getOperationWithValue(value);
       op[opWithValue.operation] = opWithValue.value;
     }
 
@@ -119,7 +119,7 @@ export class DbQueryNumberFilter {
   }
 
   private valueHasOperationIdentifier(value: string): boolean {
-    for (let operationIdentifiers of this.operationIdentifiers) {
+    for (const operationIdentifiers of this.operationIdentifiers) {
       if (value.length >= operationIdentifiers.atIndex) {
         if (
           operationIdentifiers.opIdentifier ===
@@ -135,7 +135,7 @@ export class DbQueryNumberFilter {
     operation: string;
     value: number;
   } {
-    let operation = this.getOperation(value);
+    const operation = this.getOperation(value);
     let number;
 
     if (operation === this.equalOperation) {
@@ -151,7 +151,7 @@ export class DbQueryNumberFilter {
   }
 
   private getOperation(value: string): string {
-    for (let operationIdentifier of this.operationIdentifiers) {
+    for (const operationIdentifier of this.operationIdentifiers) {
       if (value.length >= operationIdentifier.atIndex) {
         if (
           operationIdentifier.opIdentifier ===
@@ -166,7 +166,7 @@ export class DbQueryNumberFilter {
   }
 
   private extractNumberFromQueryString(num: string): number {
-    for (let n of num) {
+    for (const n of num) {
       if (isNaN(parseInt(n, 10)))
         throw TypeError('value "' + num + '" is not a valid number');
     }

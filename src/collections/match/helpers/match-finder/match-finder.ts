@@ -54,7 +54,7 @@ export class MatchFinder {
 
     const matchItemIds = this.extractItemIds(matchItems);
 
-    for (let match of matches) {
+    for (const match of matches) {
       if (match.items.length === matchItems.length) {
         if (matchItemIds == this.extractItemIds(match.items)) {
           return match;

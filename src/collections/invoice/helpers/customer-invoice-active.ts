@@ -32,7 +32,7 @@ export class CustomerInvoiceActive {
       }
     }
 
-    for (let invoice of invoices) {
+    for (const invoice of invoices) {
       if (this.invoiceActive.isActive(invoice)) {
         return true;
       }

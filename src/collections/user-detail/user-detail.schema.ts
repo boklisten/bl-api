@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export let userDetailSchema = {
+export const userDetailSchema = {
   name: {
     type: Schema.Types.String,
   },

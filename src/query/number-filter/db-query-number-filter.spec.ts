@@ -9,7 +9,7 @@ chai.use(chaiAsPromised);
 import { DbQueryNumberFilter } from "./db-query-number-filter";
 
 describe("DbQueryNumberFilter", () => {
-  let dbQueryNumberFilter: DbQueryNumberFilter = new DbQueryNumberFilter();
+  const dbQueryNumberFilter: DbQueryNumberFilter = new DbQueryNumberFilter();
 
   describe("getNumberFilters()", () => {
     it("should throw error when no input is given", () => {
@@ -40,7 +40,7 @@ describe("DbQueryNumberFilter", () => {
     });
 
     it('should return array containing "{fieldName: "age", op: {$lt: 60}}"', () => {
-      let result = [{ fieldName: "age", op: { $lt: 60 } }];
+      const result = [{ fieldName: "age", op: { $lt: 60 } }];
 
       expect(
         dbQueryNumberFilter.getNumberFilters({ age: "<60" }, ["age"])
@@ -48,7 +48,7 @@ describe("DbQueryNumberFilter", () => {
     });
 
     it('should return array equal to [{filedName: "age", op: {$lt: 86, $gt: 12}}]', () => {
-      let result = [{ fieldName: "age", op: { $lt: 86, $gt: 12 } }];
+      const result = [{ fieldName: "age", op: { $lt: 86, $gt: 12 } }];
 
       expect(
         dbQueryNumberFilter.getNumberFilters({ age: ["<86", ">12"] }, ["age"])
@@ -56,7 +56,7 @@ describe("DbQueryNumberFilter", () => {
     });
 
     it('should return array with {fieldName: "age", op: {$eq: 10}}', () => {
-      let result = [{ fieldName: "age", op: { $eq: 10 } }];
+      const result = [{ fieldName: "age", op: { $eq: 10 } }];
 
       expect(
         dbQueryNumberFilter.getNumberFilters({ age: "10" }, ["age"])

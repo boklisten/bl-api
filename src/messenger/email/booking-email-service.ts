@@ -48,15 +48,15 @@ export class BookingEmailService {
       message = await this.messageStorage.add(message, user);
     } catch (e) {}
 
-    let userDetail = await this.userDetailStorage.get(userId);
+    const userDetail = await this.userDetailStorage.get(userId);
 
-    let branch = await this.branchStorage.get(booking.branch);
+    const branch = await this.branchStorage.get(booking.branch);
     let address = "";
     if (branch.location) {
       address = branch.location.address ? branch.location.address : "";
     }
 
-    let bookingDetails = {
+    const bookingDetails = {
       date: this.dateService.toPrintFormat(booking.from, "Europe/Oslo"),
       hour:
         "kl. " + this.dateService.format(booking.from, "Europe/Oslo", "HH:mm"),

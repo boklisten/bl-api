@@ -45,7 +45,7 @@ export class OpeningHourHelper {
   ): OpeningHour {
     let firstAvailableOpeningHour;
 
-    for (let openingHour of openingHours) {
+    for (const openingHour of openingHours) {
       if (moment(openingHour.from).isAfter(moment())) {
         if (
           !firstAvailableOpeningHour ||

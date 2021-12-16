@@ -65,13 +65,13 @@ export class OrderItemExtendValidator {
       .then((customerItem: CustomerItem) => {
         let totalOfSelectedPeriod = 0;
         if (customerItem.periodExtends) {
-          for (let periodExtend of customerItem.periodExtends) {
+          for (const periodExtend of customerItem.periodExtends) {
             if (periodExtend.periodType === orderItem.info.periodType) {
               totalOfSelectedPeriod += 1;
             }
           }
 
-          for (let extendPeriod of branch.paymentInfo.extendPeriods) {
+          for (const extendPeriod of branch.paymentInfo.extendPeriods) {
             if (extendPeriod.type === orderItem.info.periodType) {
               if (totalOfSelectedPeriod > extendPeriod.maxNumberOfPeriods) {
                 throw new BlError(
@@ -94,7 +94,7 @@ export class OrderItemExtendValidator {
       throw new BlError("the branch has no extendPeriods defined");
     }
 
-    for (let extendPeriod of branch.paymentInfo.extendPeriods) {
+    for (const extendPeriod of branch.paymentInfo.extendPeriods) {
       if (extendPeriod.type === orderItem.info.periodType) {
         return true;
       }

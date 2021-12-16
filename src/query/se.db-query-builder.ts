@@ -46,7 +46,7 @@ export class SEDbQueryBuilder {
   public getDbQuery(query: any, validQueryParams: ValidParam[]): SEDbQuery {
     this.dbQueryValidParams = new DbQueryValidParams(validQueryParams);
 
-    let dbQuery: SEDbQuery = new SEDbQuery();
+    const dbQuery: SEDbQuery = new SEDbQuery();
 
     if (
       !query ||

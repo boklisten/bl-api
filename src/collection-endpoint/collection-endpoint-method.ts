@@ -16,7 +16,7 @@ import { CollectionEndpointDocumentAuth } from "./collection-endpoint-document/c
 import { CollectionEndpointOperation } from "./collection-endpoint-operation";
 import { isBoolean, isNullOrUndefined } from "util";
 
-declare var onRequest: any;
+declare let onRequest: any;
 
 export class CollectionEndpointMethod<T extends BlDocument> {
   protected _collectionUri: string;
@@ -78,8 +78,8 @@ export class CollectionEndpointMethod<T extends BlDocument> {
 
   private createOperations(endpoint: BlEndpoint) {
     if (endpoint.operations) {
-      for (let operation of endpoint.operations) {
-        let collectionEndpointOperation = new CollectionEndpointOperation(
+      for (const operation of endpoint.operations) {
+        const collectionEndpointOperation = new CollectionEndpointOperation(
           this._router,
           this._collectionUri,
           endpoint.method,

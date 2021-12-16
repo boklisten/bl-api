@@ -54,7 +54,7 @@ describe("PasswordResetNewOperation", () => {
     return Promise.resolve(testPasswordReset);
   });
 
-  let responseHandlerSpy = sinon
+  const responseHandlerSpy = sinon
     .stub(resHandler, "sendResponse")
     .callsFake(() => {
       return true;

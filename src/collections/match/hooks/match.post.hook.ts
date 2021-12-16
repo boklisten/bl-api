@@ -33,7 +33,7 @@ export class MatchPostHook implements Hook {
       );
     }
 
-    for (let item of match.items) {
+    for (const item of match.items) {
       const customerItem = await this.customerItemStorage.get(
         item.customerItem
       );
@@ -50,7 +50,7 @@ export class MatchPostHook implements Hook {
   public async after(matches: Match[], accessToken: AccessToken): Promise<any> {
     const match = matches[0];
 
-    for (let item of match.items) {
+    for (const item of match.items) {
       try {
         await this.customerItemStorage.update(
           item.customerItem,

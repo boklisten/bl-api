@@ -34,7 +34,7 @@ export class DbQueryDateFilter {
       throw new TypeError("the given query can not be null or undefined");
 
     try {
-      for (let param in query) {
+      for (const param in query) {
         if (query.hasOwnProperty(param)) {
           if (validDateParams.indexOf(param) > -1) {
             let dateFilter: DateFilter;
@@ -83,11 +83,11 @@ export class DbQueryDateFilter {
       throw new SyntaxError("generateDateFilter(): invalid date");
     }
 
-    let isoDate = momentDate.toDate();
+    const isoDate = momentDate.toDate();
     //let lessThanIsoDate = momentDate.add(1, 'day').toISOString();
 
     if (operation) {
-      var op = {};
+      const op = {};
       op[operation] = isoDate;
 
       return {
@@ -103,11 +103,11 @@ export class DbQueryDateFilter {
     fieldName: string,
     values: string[]
   ): DateFilter[] {
-    let operations = {};
+    const operations = {};
 
-    for (let value of values) {
-      let op = this.getOperation(value);
-      let theDateString = value.substr(1, value.length);
+    for (const value of values) {
+      const op = this.getOperation(value);
+      const theDateString = value.substr(1, value.length);
       operations[op] = moment(theDateString, this.dateFormat, true).toDate();
     }
 
@@ -115,7 +115,7 @@ export class DbQueryDateFilter {
   }
 
   private getOperation(value: string): string {
-    for (let operationIdentifier of this.operationIdentifiers) {
+    for (const operationIdentifier of this.operationIdentifiers) {
       if (value.length >= operationIdentifier.atIndex) {
         if (
           operationIdentifier.opIdentifier ===

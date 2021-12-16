@@ -17,8 +17,8 @@ describe("TwilioSmsEventOperation", () => {
 
   const twilioSmsEventOperation = new TwilioSmsEventOperation(messageStorage);
 
-  let messageStorageGetIdStub = sinon.stub(messageStorage, "get");
-  let messageStorageUpdateStub = sinon.stub(messageStorage, "update");
+  const messageStorageGetIdStub = sinon.stub(messageStorage, "get");
+  const messageStorageUpdateStub = sinon.stub(messageStorage, "update");
 
   messageStorageUpdateStub.resolves(true);
 
@@ -67,7 +67,7 @@ describe("TwilioSmsEventOperation", () => {
       twilioSmsEventOperation
         .run(blApiRequest)
         .then(() => {
-          let arg = messageStorageGetIdStub.lastCall.args[0];
+          const arg = messageStorageGetIdStub.lastCall.args[0];
 
           expect(arg).to.eq("blMessage1");
 
@@ -100,7 +100,7 @@ describe("TwilioSmsEventOperation", () => {
       twilioSmsEventOperation
         .run(blApiRequest)
         .then(() => {
-          let args = messageStorageUpdateStub.lastCall.args;
+          const args = messageStorageUpdateStub.lastCall.args;
           expect(args[0]).to.eq("blMessage1");
           expect(args[1]).to.eql({ smsEvents: [twilioSmsEvent] });
 

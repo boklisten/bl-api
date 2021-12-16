@@ -67,10 +67,10 @@ describe("PasswordResetPostHook", () => {
     });
 
     context("when email (username) is not on a valid format", () => {
-      let expectedError = /passwordReset.email is not a valid email/;
+      const expectedError = /passwordReset.email is not a valid email/;
 
       it('should reject if passwordReset.email is "b.com"', () => {
-        let passwordReset = new PasswordReset();
+        const passwordReset = new PasswordReset();
         passwordReset.email = "b.com";
 
         return expect(
@@ -79,7 +79,7 @@ describe("PasswordResetPostHook", () => {
       });
 
       it('should reject if passwordReset.email is "jonman"', () => {
-        let passwordReset = new PasswordReset();
+        const passwordReset = new PasswordReset();
         passwordReset.email = "jonman";
 
         return expect(
@@ -88,7 +88,7 @@ describe("PasswordResetPostHook", () => {
       });
 
       it('should reject if passwordReset.email is "undefined"', () => {
-        let passwordReset = new PasswordReset();
+        const passwordReset = new PasswordReset();
         passwordReset.email = undefined;
 
         return expect(
@@ -106,7 +106,7 @@ describe("PasswordResetPostHook", () => {
 
     it("should reject if username (email) is not found in storage", () => {
       testUsername = "bill@mail.com";
-      let passwordReset = new PasswordReset();
+      const passwordReset = new PasswordReset();
       passwordReset.email = "notFound@mail.com";
 
       return expect(
@@ -143,7 +143,7 @@ describe("PasswordResetPostHook", () => {
   });
 
   describe("#after", () => {
-    let testUserDetail: UserDetail = {
+    const testUserDetail: UserDetail = {
       id: "userDetail1",
       name: "Test User",
       email: testUsername,
@@ -174,7 +174,7 @@ describe("PasswordResetPostHook", () => {
       return Promise.resolve(testUserDetail);
     });
 
-    let messengerPasswordResetStub = sinon
+    const messengerPasswordResetStub = sinon
       .stub(messenger, "passwordReset")
       .callsFake(() => {});
 

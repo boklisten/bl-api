@@ -62,7 +62,7 @@ export class PaymentPostHook extends Hook {
         return reject(new BlError("accessToken is undefined"));
       }
 
-      let payment = payments[0];
+      const payment = payments[0];
 
       this.paymentValidator
         .validate(payment)
@@ -120,7 +120,7 @@ export class PaymentPostHook extends Hook {
       this.orderStorage
         .get(payment.order as string)
         .then((order: Order) => {
-          let paymentIds: string[] = order.payments
+          const paymentIds: string[] = order.payments
             ? (order.payments as string[])
             : [];
 

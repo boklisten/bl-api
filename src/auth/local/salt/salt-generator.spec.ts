@@ -8,7 +8,7 @@ import { SaltGenerator } from "./salt-generator";
 chai.use(chaiAsPromised);
 
 describe("SaltGenerator", () => {
-  let saltGenerator = new SaltGenerator();
+  const saltGenerator = new SaltGenerator();
 
   describe("generate()", () => {
     it("should return a random salt", () => {

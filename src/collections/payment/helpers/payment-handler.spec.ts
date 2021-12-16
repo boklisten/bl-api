@@ -112,7 +112,7 @@ describe("PaymentHandler", () => {
     describe("when there is only one payment", () => {
       const methods = ["vipps", "card", "cash", "dibs"];
 
-      for (let method of methods) {
+      for (const method of methods) {
         it("should confirm if amount is equal to order", () => {
           const order = { amount: 100, payments: ["payment1"] } as Order;
           const payments = [{ method: method, amount: 100 }];
@@ -141,7 +141,7 @@ describe("PaymentHandler", () => {
 
       const employeeOnlyMethods = ["card", "cash", "vipps"];
 
-      for (let method of employeeOnlyMethods) {
+      for (const method of employeeOnlyMethods) {
         it("should reject if order.byCustomer is set and payment.method only permitted to customer", () => {
           const order = {
             amount: 111,

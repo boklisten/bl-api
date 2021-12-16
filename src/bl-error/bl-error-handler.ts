@@ -22,7 +22,7 @@ export class BlErrorHandler {
     this.printErrorStack(blError);
     this.storeError(blError);
 
-    let blErrorResponse = this.getErrorResponse(blError);
+    const blErrorResponse = this.getErrorResponse(blError);
 
     return new BlapiErrorResponse(
       blErrorResponse.httpStatus,
@@ -61,7 +61,7 @@ export class BlErrorHandler {
     }
 
     if (blError.errorStack && blError.errorStack.length > 0) {
-      for (let err of blError.errorStack) {
+      for (const err of blError.errorStack) {
         this.printBlError(err);
       }
     }
@@ -69,7 +69,7 @@ export class BlErrorHandler {
     logger.verbose(`! (${blError.getCode()}): ${blError.getMsg()}`);
 
     if (blError.getStore() && blError.getStore().length > 0) {
-      for (let storeData of blError.getStore()) {
+      for (const storeData of blError.getStore()) {
         logger.verbose(
           `! (${blError.getCode()}) ${JSON.stringify(storeData.value)}`
         );
@@ -78,7 +78,7 @@ export class BlErrorHandler {
   }
 
   private getErrorResponse(blError: BlError): BlapiErrorResponse {
-    let blapiErrorResponse: BlapiErrorResponse = {
+    const blapiErrorResponse: BlapiErrorResponse = {
       httpStatus: 500,
       code: blError.getCode(),
       msg: "server error",
@@ -99,7 +99,7 @@ export class BlErrorHandler {
   }
 
   private serverErrorResponse(code: number): BlapiErrorResponse {
-    let blapiErrorResponse: BlapiErrorResponse = {
+    const blapiErrorResponse: BlapiErrorResponse = {
       httpStatus: 500,
       code: code,
       msg: "server error",
@@ -116,7 +116,7 @@ export class BlErrorHandler {
   }
 
   private requestErrorResponse(code: number): BlapiErrorResponse {
-    let blapiErrorResponse: BlapiErrorResponse = {
+    const blapiErrorResponse: BlapiErrorResponse = {
       httpStatus: 500,
       code: code,
       msg: "server error",
@@ -133,7 +133,7 @@ export class BlErrorHandler {
   }
 
   private documentErrorResponse(code: number): BlapiErrorResponse {
-    let blapiErrorResponse: BlapiErrorResponse = {
+    const blapiErrorResponse: BlapiErrorResponse = {
       httpStatus: 400,
       code: code,
       msg: "bad format",
@@ -154,7 +154,7 @@ export class BlErrorHandler {
   }
 
   private authErrorResponse(code: number): BlapiErrorResponse {
-    let blapiErrorResponse: BlapiErrorResponse = {
+    const blapiErrorResponse: BlapiErrorResponse = {
       httpStatus: 401,
       code: code,
       msg: "authentication failure",

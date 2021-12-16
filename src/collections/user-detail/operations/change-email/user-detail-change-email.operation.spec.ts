@@ -87,9 +87,9 @@ describe("UserDetailChangeEmailOperation", () => {
   });
 
   const permissions: any[] = ["customer", "employee", "manager", "admin"];
-  let higherPermissions: any[] = ["customer", "employee", "manager", "admin"];
-  for (let permission of permissions) {
-    for (let higherPermission of higherPermissions) {
+  const higherPermissions: any[] = ["customer", "employee", "manager", "admin"];
+  for (const permission of permissions) {
+    for (const higherPermission of higherPermissions) {
       it(`should reject if blApiRequest.user.permission "${permission}" tries to change a higher permission "${higherPermission}"`, () => {
         userDetailGetStub.resolves({
           blid: "blid1",

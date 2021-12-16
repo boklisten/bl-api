@@ -31,7 +31,7 @@ export class CollectionEndpointOperation {
   }
 
   public create() {
-    let uri = this.createUri(
+    const uri = this.createUri(
       this.collectionUri,
       this._operation.name,
       this._method

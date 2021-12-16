@@ -24,7 +24,7 @@ export class LocalLoginCreator {
 
   public create(username: string, password: string): Promise<LocalLogin> {
     return new Promise((resolve, reject) => {
-      let blError = new BlError("")
+      const blError = new BlError("")
         .className("LocalLoginCreator")
         .methodName("create");
       if (!username || !isEmail(username))
@@ -40,7 +40,7 @@ export class LocalLoginCreator {
         (hashedPasswordAndSalt: { hashedPassword: string; salt: string }) => {
           this._providerIdGenerator.generate(username).then(
             (providerId: string) => {
-              let newLocalLogin = new LocalLogin();
+              const newLocalLogin = new LocalLogin();
               newLocalLogin.username = username;
               newLocalLogin.hashedPassword =
                 hashedPasswordAndSalt.hashedPassword;

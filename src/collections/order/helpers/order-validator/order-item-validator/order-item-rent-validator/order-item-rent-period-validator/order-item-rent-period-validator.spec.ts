@@ -22,11 +22,11 @@ describe("OrderItemRentPeriodValidator", () => {
 
   describe("#validate", () => {
     it("should reject if period is not found in branchPaymentInfo", () => {
-      let branchPaymentInfo: any = {
+      const branchPaymentInfo: any = {
         rentPeriods: [{ type: "year" }],
       };
 
-      let orderItem: any = {
+      const orderItem: any = {
         type: "rent",
         info: {
           periodType: "semester",
@@ -51,7 +51,7 @@ describe("OrderItemRentPeriodValidator", () => {
       });
 
       it("should reject if not all amounts is equal to 0 on orderItem", () => {
-        let orderItem: any = {
+        const orderItem: any = {
           type: "rent",
           amount: 100,
           taxAmount: 20,
@@ -71,7 +71,7 @@ describe("OrderItemRentPeriodValidator", () => {
       });
 
       it("should resolve with true if all amounts is 0", () => {
-        let orderItem: any = {
+        const orderItem: any = {
           type: "rent",
           amount: 0,
           taxAmount: 0,
@@ -89,7 +89,7 @@ describe("OrderItemRentPeriodValidator", () => {
     });
 
     context("when orderItem is moved from another order", () => {
-      let branchPaymentInfo: any = {
+      const branchPaymentInfo: any = {
         responsible: false,
         rentPeriods: [
           {
@@ -98,7 +98,7 @@ describe("OrderItemRentPeriodValidator", () => {
         ],
       };
 
-      let orderItem: any = {
+      const orderItem: any = {
         type: "rent",
         item: "itemA",
         amount: 0,
@@ -114,7 +114,7 @@ describe("OrderItemRentPeriodValidator", () => {
         movedFromOrder: "orderB",
       };
 
-      let orderB: any = {
+      const orderB: any = {
         id: "orderB",
         amount: 200,
         orderItems: [
@@ -204,7 +204,7 @@ describe("OrderItemRentPeriodValidator", () => {
             orderB.orderItems[0].amount = 200;
             orderB.orderItems[0].info.periodType = "semester";
 
-            let itemPrice = 500;
+            const itemPrice = 500;
 
             orderItem.amount = 100; // this should actually be (itemPrice 500 * percentage 0.5)- oldOrderItem 200 = 50
             orderItem.type = "rent";
@@ -243,7 +243,7 @@ describe("OrderItemRentPeriodValidator", () => {
             orderB.orderItems[0].amount = 750;
             orderB.orderItems[0].info.periodType = "year";
 
-            let itemPrice = 1000;
+            const itemPrice = 1000;
 
             orderItem.amount = 0; // this should actually be (itemPrice 1000 * percentage 0.5)- oldOrderItem 750 = -250
             orderItem.type = "rent";
@@ -282,7 +282,7 @@ describe("OrderItemRentPeriodValidator", () => {
             orderB.orderItems[0].amount = 750;
             orderB.orderItems[0].info.periodType = "year";
 
-            let itemPrice = 1000;
+            const itemPrice = 1000;
 
             orderItem.amount = -250; // this should be (itemPrice 1000 * percentage 0.5)- oldOrderItem 750 = -250
             orderItem.type = "rent";

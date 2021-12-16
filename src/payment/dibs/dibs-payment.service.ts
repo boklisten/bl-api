@@ -84,9 +84,9 @@ export class DibsPaymentService {
     this.validateOrder(order);
     this.validateOrderPayments(order.payments as string[]);
 
-    let items: DibsEasyItem[] = [];
+    const items: DibsEasyItem[] = [];
 
-    for (let orderItem of order.orderItems) {
+    for (const orderItem of order.orderItems) {
       items.push(this.orderItemToEasyItem(orderItem));
     }
 
@@ -94,14 +94,14 @@ export class DibsPaymentService {
       items.push(this.deliveryToDibsEasyItem(delivery));
     }
 
-    let dibsEasyOrder: DibsEasyOrder = new DibsEasyOrder();
+    const dibsEasyOrder: DibsEasyOrder = new DibsEasyOrder();
 
     dibsEasyOrder.order.reference = order.id;
     dibsEasyOrder.order.items = items;
     dibsEasyOrder.order.amount = this.getTotalGrossAmount(items);
     dibsEasyOrder.order.currency = "NOK";
 
-    let userDetailValid = this._userDetailHelper.isValid(userDetail);
+    const userDetailValid = this._userDetailHelper.isValid(userDetail);
 
     dibsEasyOrder.checkout = {
       url: process.env.CLIENT_URI + APP_CONFIG.path.client.checkout,
@@ -183,14 +183,14 @@ export class DibsPaymentService {
 
   private getTotalGrossAmount(dibsEasyItems: DibsEasyItem[]): number {
     let sum = 0;
-    for (let dbi of dibsEasyItems) {
+    for (const dbi of dibsEasyItems) {
       sum += dbi.grossTotalAmount;
     }
     return sum;
   }
 
   private orderItemToEasyItem(orderItem: OrderItem): DibsEasyItem {
-    let dibsEasyItem = new DibsEasyItem();
+    const dibsEasyItem = new DibsEasyItem();
 
     dibsEasyItem.reference = orderItem.item as string;
     dibsEasyItem.name = orderItem.title;

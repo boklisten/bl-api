@@ -9,7 +9,8 @@ chai.use(chaiAsPromised);
 
 describe("DbQueryOnlyGetFilter", () => {
   describe("getOnlyGetFilters()", () => {
-    let dbQueryOnlyGetFilter: DbQueryOnlyGetFilter = new DbQueryOnlyGetFilter();
+    const dbQueryOnlyGetFilter: DbQueryOnlyGetFilter =
+      new DbQueryOnlyGetFilter();
 
     it("should throw TypeError if query is null or empty", () => {
       expect(() => {
@@ -24,7 +25,7 @@ describe("DbQueryOnlyGetFilter", () => {
     });
 
     it("should return array with correct onlyGet fields", () => {
-      let result = [
+      const result = [
         { fieldName: "name", value: 1 },
         { fieldName: "age", value: 1 },
       ];

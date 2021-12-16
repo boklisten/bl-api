@@ -15,7 +15,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   private permissionService: PermissionService;
 
   constructor(collectionName: string, schema: any) {
-    let mongoose = require("mongoose");
+    const mongoose = require("mongoose");
     mongoose.Promise = require("bluebird");
     const mongooseModelCreator = new MongooseModelCreator(
       collectionName,
@@ -27,7 +27,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public get(id: string, userPermission?: UserPermission): Promise<T> {
     return new Promise((resolve, reject) => {
-      let filter: any = { _id: id };
+      const filter: any = { _id: id };
 
       this.mongooseModel.findOne(filter, (error, doc) => {
         if (error) {
@@ -104,7 +104,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     return new Promise((resolve, reject) => {
       const idArr = [];
 
-      for (let id of ids) {
+      for (const id of ids) {
         try {
           idArr.push(mongoose.Types.ObjectId(id));
         } catch (e) {
@@ -179,7 +179,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         doc.user = user;
       }
 
-      let newDocument = new this.mongooseModel(doc);
+      const newDocument = new this.mongooseModel(doc);
 
       newDocument.save((error, addedDoc) => {
         if (error) {
@@ -320,10 +320,10 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       return Promise.resolve(docs);
     }
 
-    let expandedNestedDocuments = [];
+    const expandedNestedDocuments = [];
 
-    for (let expandFilter of expandFilters) {
-      for (let nestedDocument of allowedNestedDocuments) {
+    for (const expandFilter of expandFilters) {
+      for (const nestedDocument of allowedNestedDocuments) {
         if (expandFilter.fieldName === nestedDocument.field) {
           expandedNestedDocuments.push(nestedDocument);
         }
@@ -332,7 +332,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
     allowedNestedDocuments = expandedNestedDocuments;
 
-    for (let doc of docs) {
+    for (const doc of docs) {
       promiseArr.push(
         this.getNestedDocuments(doc, allowedNestedDocuments, userPermission)
       );

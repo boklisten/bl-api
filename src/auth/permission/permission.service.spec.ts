@@ -14,7 +14,7 @@ describe("PermissionSerivice", () => {
 
   describe("#getLowestPermission()", () => {
     it("should return Customer if customer is the lowest permission in array", () => {
-      let permissions: UserPermission[] = ["customer", "admin"];
+      const permissions: UserPermission[] = ["customer", "admin"];
 
       expect(permissionService.getLowestPermission(permissions)).to.eql(
         "customer"
@@ -22,7 +22,7 @@ describe("PermissionSerivice", () => {
     });
 
     it("should return Customer even if customer is the last element in array", () => {
-      let permissions: UserPermission[] = ["admin", "employee", "customer"];
+      const permissions: UserPermission[] = ["admin", "employee", "customer"];
 
       expect(permissionService.getLowestPermission(permissions)).to.eql(
         "customer"
@@ -30,7 +30,7 @@ describe("PermissionSerivice", () => {
     });
 
     it("should return employee if that is the lowest permission", () => {
-      let permissions: UserPermission[] = ["admin", "employee"];
+      const permissions: UserPermission[] = ["admin", "employee"];
 
       expect(permissionService.getLowestPermission(permissions)).to.eql(
         "employee"
@@ -44,12 +44,12 @@ describe("PermissionSerivice", () => {
 
   describe("#haveRestrictedDocumentPermission()", () => {
     it("should return true if document.user.id is the same as userId even if UserPermission is not correct", () => {
-      let userId = "aabc";
-      let doc: BlDocument = {
+      const userId = "aabc";
+      const doc: BlDocument = {
         id: "doc1",
         user: { id: userId, permission: "admin" },
       };
-      let endpointRestriction = {} as BlEndpointRestriction;
+      const endpointRestriction = {} as BlEndpointRestriction;
 
       expect(
         permissionService.haveRestrictedDocumentPermission(
@@ -62,12 +62,12 @@ describe("PermissionSerivice", () => {
     });
 
     it("should return false if userId is not equal to document.user.id and UserPermission is not valid", () => {
-      let userId = "abc";
-      let doc: BlDocument = {
+      const userId = "abc";
+      const doc: BlDocument = {
         id: "doc1",
         user: { id: "123", permission: "admin" },
       };
-      let endpointRestriction = {} as BlEndpointRestriction;
+      const endpointRestriction = {} as BlEndpointRestriction;
 
       expect(
         permissionService.haveRestrictedDocumentPermission(
@@ -80,12 +80,12 @@ describe("PermissionSerivice", () => {
     });
 
     it("should return false if userId is not equal to document.user.id and user.permission is customer", () => {
-      let userId = "abc";
-      let doc: BlDocument = {
+      const userId = "abc";
+      const doc: BlDocument = {
         id: "doc1",
         user: { id: "123", permission: "admin" },
       };
-      let endpointRestriction = {} as BlEndpointRestriction;
+      const endpointRestriction = {} as BlEndpointRestriction;
       expect(
         permissionService.haveRestrictedDocumentPermission(
           userId,
@@ -97,12 +97,12 @@ describe("PermissionSerivice", () => {
     });
 
     it("should return true if userId is not equal to document.user.id but UserPermission is over the document.user.permission", () => {
-      let userId = "abc";
-      let doc: BlDocument = {
+      const userId = "abc";
+      const doc: BlDocument = {
         id: "123",
         user: { id: "123", permission: "employee" },
       };
-      let endpointRestriction = {} as BlEndpointRestriction;
+      const endpointRestriction = {} as BlEndpointRestriction;
 
       expect(
         permissionService.haveRestrictedDocumentPermission(

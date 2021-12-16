@@ -9,7 +9,7 @@ chai.use(chaiAsPromised);
 
 describe("DbQuerySortFilter", () => {
   describe("getSortFilter()", () => {
-    let dbQuerySortFilter: DbQuerySortFilter = new DbQuerySortFilter();
+    const dbQuerySortFilter: DbQuerySortFilter = new DbQuerySortFilter();
 
     it("should throw TypeError when query is null or empty", () => {
       expect(() => {
@@ -30,7 +30,7 @@ describe("DbQuerySortFilter", () => {
     });
 
     it("should return correct array with the given input", () => {
-      let result = [
+      const result = [
         { fieldName: "name", direction: 1 },
         { fieldName: "age", direction: -1 },
       ];

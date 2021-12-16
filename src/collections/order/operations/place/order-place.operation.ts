@@ -129,8 +129,8 @@ export class OrderPlaceOperation implements Operation {
     customerItems: CustomerItem[],
     user: any
   ): Promise<CustomerItem[]> {
-    let addedCustomerItems = [];
-    for (let customerItem of customerItems) {
+    const addedCustomerItems = [];
+    for (const customerItem of customerItems) {
       try {
         const ci = await this._customerItemStorage.add(customerItem, user);
         addedCustomerItems.push(ci);
@@ -145,7 +145,7 @@ export class OrderPlaceOperation implements Operation {
     customerId: string,
     user: { id: string; permission: any }
   ): Promise<boolean> {
-    let customerItemIds: string[] = customerItems.map((ci) => {
+    const customerItemIds: string[] = customerItems.map((ci) => {
       return ci.id.toString();
     });
 
@@ -181,8 +181,8 @@ export class OrderPlaceOperation implements Operation {
     order: Order,
     customerItems: CustomerItem[]
   ) {
-    for (let customerItem of customerItems) {
-      for (let orderItem of order.orderItems) {
+    for (const customerItem of customerItems) {
+      for (const orderItem of order.orderItems) {
         if (customerItem.item === orderItem.item) {
           orderItem.customerItem = customerItem.id;
         }

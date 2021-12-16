@@ -57,7 +57,7 @@ export class EmailValidationConfirmOperation implements Operation {
               resolve(true);
             })
             .catch((updateUserDetailError: BlError) => {
-              let err = new BlError(
+              const err = new BlError(
                 `could not update userDetail "${emailValidation.id}" with emailConfirmed true`
               ).add(updateUserDetailError);
 

@@ -15,7 +15,7 @@ import { TokenConfig } from "../token.config";
 chai.use(chaiAsPromised);
 
 describe("", () => {
-  let refreshTokenConfig: RefreshToken = {
+  const refreshTokenConfig: RefreshToken = {
     iss: "boklisten.co",
     aud: "boklisten.co",
     expiresIn: "12h",
@@ -24,7 +24,7 @@ describe("", () => {
     username: "",
   };
 
-  let accessTokenConfig: AccessToken = {
+  const accessTokenConfig: AccessToken = {
     iss: "boklisten.co",
     aud: "boklisten.co",
     expiresIn: "30s",
@@ -35,10 +35,10 @@ describe("", () => {
     details: "",
   };
 
-  let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
-  let accessTokenValidator = new AccessTokenValidator();
-  let refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
-  let accessTokenCreator = new AccessTokenCreator(tokenConfig);
+  const tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
+  const accessTokenValidator = new AccessTokenValidator();
+  const refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
+  const accessTokenCreator = new AccessTokenCreator(tokenConfig);
 
   describe("validate()", () => {
     context("when accessToken is empty or undefined", () => {
@@ -62,8 +62,8 @@ describe("", () => {
 
     context("when accessToken is expired", () => {
       it("should reject with BlError code 910", (done) => {
-        let username = "bill@butt.com";
-        let jwt = require("jsonwebtoken");
+        const username = "bill@butt.com";
+        const jwt = require("jsonwebtoken");
 
         jwt.sign(
           {
@@ -86,10 +86,10 @@ describe("", () => {
 
     context("when accessToken is valid", () => {
       it("should resolve with a payload", (done) => {
-        let username = "bill@anderson.com";
-        let userid = "123";
-        let permission: UserPermission = "admin";
-        let userDetailId = "abc";
+        const username = "bill@anderson.com";
+        const userid = "123";
+        const permission: UserPermission = "admin";
+        const userDetailId = "abc";
         refreshTokenCreator
           .create(username, userid)
           .then((refreshToken: string) => {

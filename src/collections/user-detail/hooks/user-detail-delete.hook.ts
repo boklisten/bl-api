@@ -54,7 +54,7 @@ export class UserDetailDeleteHook extends Hook {
     accessToken: AccessToken
   ): Promise<boolean> {
     try {
-      let canDelete = await this.userCanDeleteUserDetail.canDelete(
+      const canDelete = await this.userCanDeleteUserDetail.canDelete(
         id,
         accessToken
       );

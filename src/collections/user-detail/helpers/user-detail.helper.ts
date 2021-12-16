@@ -22,7 +22,7 @@ export class UserDetailHelper {
       this._userDetailStorage
         .get(userDetailId)
         .then((userDetail: UserDetail) => {
-          let updateObject = this.getUserDetailUpdateObject(
+          const updateObject = this.getUserDetailUpdateObject(
             dibsEasyPayment,
             userDetail
           );
@@ -57,10 +57,10 @@ export class UserDetailHelper {
     dibsEasyPayment: DibsEasyPayment,
     userDetail: UserDetail
   ): any {
-    let dibsUserDetail = dibsEasyPayment.consumer.privatePerson;
-    let dibsShippingAddress = dibsEasyPayment.consumer.shippingAddress;
+    const dibsUserDetail = dibsEasyPayment.consumer.privatePerson;
+    const dibsShippingAddress = dibsEasyPayment.consumer.shippingAddress;
 
-    let userDetailUpdateObject = {};
+    const userDetailUpdateObject = {};
 
     if (isNullOrUndefined(userDetail.name) || userDetail.name.length <= 0) {
       if (dibsUserDetail.firstName && dibsUserDetail.lastName) {
@@ -109,13 +109,13 @@ export class UserDetailHelper {
   }
 
   public isValid(userDetail: UserDetail): boolean {
-    let invalidUserDetailFields = this.getInvalidUserDetailFields(userDetail);
+    const invalidUserDetailFields = this.getInvalidUserDetailFields(userDetail);
 
     return invalidUserDetailFields.length <= 0 && userDetail.active;
   }
 
   public getFirstName(name: string) {
-    let splitName = name.trimRight().split(" ");
+    const splitName = name.trimRight().split(" ");
     if (splitName.length <= 1) {
       return name.trim();
     } else {
@@ -124,7 +124,7 @@ export class UserDetailHelper {
   }
 
   public getLastName(name: string) {
-    let splitName = name.trimRight().split(" ");
+    const splitName = name.trimRight().split(" ");
     if (splitName.length <= 1) {
       return "";
     } else {
@@ -133,7 +133,7 @@ export class UserDetailHelper {
   }
 
   public getInvalidUserDetailFields(userDetail: UserDetail) {
-    let invalidFields = [];
+    const invalidFields = [];
 
     if (isNullOrUndefined(userDetail.name) || userDetail.name.length <= 0) {
       invalidFields.push("name");

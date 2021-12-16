@@ -46,7 +46,7 @@ export class PasswordResetNewOperation implements Operation {
         );
       }
 
-      let newPassword = blApiRequest.data["password"];
+      const newPassword = blApiRequest.data["password"];
 
       if (newPassword.length < 6) {
         return reject(

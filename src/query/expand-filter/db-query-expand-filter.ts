@@ -43,9 +43,9 @@ export class DbQueryExpandFilter {
       expandFilterArray = expand;
     }
 
-    let expandFilters: ExpandFilter[] = [];
+    const expandFilters: ExpandFilter[] = [];
 
-    for (let expandFilter of expandFilterArray) {
+    for (const expandFilter of expandFilterArray) {
       if (validExpandParams.indexOf(expandFilter) <= -1) {
       }
       expandFilters.push({ fieldName: expandFilter });

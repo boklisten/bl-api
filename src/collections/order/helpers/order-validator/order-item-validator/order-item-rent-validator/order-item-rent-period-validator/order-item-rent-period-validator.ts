@@ -51,11 +51,11 @@ export class OrderItemRentPeriodValidator {
       return true;
     }
 
-    let period = orderItem.info.periodType;
+    const period = orderItem.info.periodType;
 
     if (!isNullOrUndefined(orderItem.movedFromOrder)) {
       try {
-        let branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
+        const branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
           period,
           branchPaymentInfo
         );
@@ -70,7 +70,7 @@ export class OrderItemRentPeriodValidator {
     }
 
     try {
-      let branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
+      const branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
         period,
         branchPaymentInfo
       );
@@ -138,7 +138,7 @@ export class OrderItemRentPeriodValidator {
 
         if (order.payments && order.payments.length > 0) {
           // the order is payed
-          let movedFromOrderItem = this.getOrderItemFromOrder(
+          const movedFromOrderItem = this.getOrderItemFromOrder(
             orderItem.item as string,
             order
           );
@@ -153,7 +153,7 @@ export class OrderItemRentPeriodValidator {
             }
           } else {
             // the periodType is changed after the original placed order
-            let expectedOrderItemAmount =
+            const expectedOrderItemAmount =
               this._priceService.round(
                 this._priceService.sanitize(
                   itemPrice * branchRentPeriod.percentage

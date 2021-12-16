@@ -9,7 +9,7 @@ chai.use(chaiAsPromised);
 
 describe("DbQuerySkipFilter", () => {
   describe("getSkipFilter()", () => {
-    let dbQuerySkipFilter: DbQuerySkipFilter = new DbQuerySkipFilter();
+    const dbQuerySkipFilter: DbQuerySkipFilter = new DbQuerySkipFilter();
 
     it("should throw TypeError if query is null or empty", () => {
       expect(() => {

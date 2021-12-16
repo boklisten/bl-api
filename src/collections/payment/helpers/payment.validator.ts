@@ -72,7 +72,7 @@ export class PaymentValidator {
     return this.deliveryStorage
       .get(order.delivery as string)
       .then((delivery: Delivery) => {
-        let expectedAmount = order.amount + delivery.amount;
+        const expectedAmount = order.amount + delivery.amount;
 
         if (payment.amount !== expectedAmount) {
           throw new BlError(

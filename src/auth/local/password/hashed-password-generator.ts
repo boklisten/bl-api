@@ -10,7 +10,7 @@ export class HashedPasswordGenerator {
 
   public generate(password): Promise<{ hashedPassword: string; salt: string }> {
     return new Promise((resolve, reject) => {
-      let blError = new BlError("")
+      const blError = new BlError("")
         .className("HashedPasswordGenerator")
         .methodName("generate");
       if (!password || password.length < 6)

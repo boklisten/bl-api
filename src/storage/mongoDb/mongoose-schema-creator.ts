@@ -4,7 +4,7 @@ export class MongooseModelCreator {
   constructor(private collectionName: string, private schema: any) {}
 
   create(): any {
-    let mongooseSchema = this.createMongooseSchema(this.schema);
+    const mongooseSchema = this.createMongooseSchema(this.schema);
     if (this.collectionName === "uniqueitems") {
       mongooseSchema.index({ blid: 1 });
     }

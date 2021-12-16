@@ -62,7 +62,7 @@ export class MatchUpdater {
   private getMatchState(match: Match): MatchState {
     let matchedItemCount = 0;
 
-    for (let matchItem of match.items) {
+    for (const matchItem of match.items) {
       if (matchItem.reciever) {
         matchedItemCount += 1;
       }
@@ -81,8 +81,8 @@ export class MatchUpdater {
     matchedItems: MatchItem[]
   ) {
     let matchedItemCount = 0;
-    for (let mi of match.items) {
-      for (let matchedItem of matchedItems) {
+    for (const mi of match.items) {
+      for (const matchedItem of matchedItems) {
         if (
           mi.item.toString() === matchedItem.item.toString() &&
           !mi.reciever

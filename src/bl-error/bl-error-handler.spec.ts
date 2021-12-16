@@ -44,7 +44,7 @@ describe("BlErrorHandler", () => {
 
       blErrorHandler.storeError(blError);
 
-      let errorLog = errorLogStorageAddSpy.lastCall.args[0];
+      const errorLog = errorLogStorageAddSpy.lastCall.args[0];
 
       return expect(errorLog.errorStack).to.eql(blError.errorStack);
     });
@@ -59,7 +59,7 @@ describe("BlErrorHandler", () => {
 
       blErrorHandler.storeError(blError);
 
-      let errorLog = errorLogStorageAddSpy.lastCall.args[0];
+      const errorLog = errorLogStorageAddSpy.lastCall.args[0];
 
       return expect(errorLog.store[0].value.age).to.eql(10);
     });

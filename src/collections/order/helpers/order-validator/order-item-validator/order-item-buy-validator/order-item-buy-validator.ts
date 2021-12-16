@@ -51,7 +51,7 @@ export class OrderItemBuyValidator {
       );
     }
 
-    let expectedTaxAmount = orderItem.amount * item.taxRate;
+    const expectedTaxAmount = orderItem.amount * item.taxRate;
 
     if (orderItem.taxAmount != expectedTaxAmount) {
       throw new BlError(
@@ -82,12 +82,12 @@ export class OrderItemBuyValidator {
           );
         }
 
-        let movedFromOrderItem = this.getOrderItemFromOrder(
+        const movedFromOrderItem = this.getOrderItemFromOrder(
           orderItem.item as string,
           order
         );
 
-        let expectedOrderItemAmount =
+        const expectedOrderItemAmount =
           this.priceService.round(this.priceService.sanitize(itemPrice)) -
           movedFromOrderItem.amount;
 
@@ -141,7 +141,7 @@ export class OrderItemBuyValidator {
       price = this.priceService.sanitize(item.price);
     }
 
-    let expectedPrice = this.priceService.round(price);
+    const expectedPrice = this.priceService.round(price);
 
     if (orderItem.amount != expectedPrice) {
       throw new BlError(

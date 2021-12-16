@@ -25,7 +25,7 @@ export class PasswordResetOperation implements Operation {
       this._passwordResetStorage
         .get(blApiRequest.documentId)
         .then((passwordReset: PasswordReset) => {
-          let uri =
+          const uri =
             process.env.CLIENT_URI +
             "auth/password/" +
             passwordReset.id +

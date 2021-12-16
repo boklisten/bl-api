@@ -32,11 +32,11 @@ export class UserDetailValidOperation implements Operation {
     next?: NextFunction
   ): Promise<boolean> {
     try {
-      let userDetail = await this._userDetailStorage.get(
+      const userDetail = await this._userDetailStorage.get(
         blApiRequest.documentId
       );
 
-      let invalidUserDetailFields =
+      const invalidUserDetailFields =
         this._userDetailHelper.getInvalidUserDetailFields(userDetail);
 
       if (invalidUserDetailFields.length <= 0) {
@@ -55,7 +55,7 @@ export class UserDetailValidOperation implements Operation {
 
       return true;
     } catch (err) {
-      let responseError: BlError = new BlError(
+      const responseError: BlError = new BlError(
         "userDetail could not be validated"
       );
 

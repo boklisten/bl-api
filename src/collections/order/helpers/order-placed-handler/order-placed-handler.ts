@@ -108,7 +108,7 @@ export class OrderPlacedHandler {
     accessToken: AccessToken
   ): Promise<Order> {
     try {
-      for (let orderItem of order.orderItems) {
+      for (const orderItem of order.orderItems) {
         if (
           orderItem.type === "extend" ||
           orderItem.type === "return" ||
@@ -180,7 +180,7 @@ export class OrderPlacedHandler {
       this.userDetailStorage
         .get(order.customer as string)
         .then((userDetail: UserDetail) => {
-          let orders: string[] = userDetail.orders
+          const orders: string[] = userDetail.orders
             ? (userDetail.orders as string[])
             : [];
 
@@ -221,7 +221,7 @@ export class OrderPlacedHandler {
     accessToken: AccessToken
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      let movedFromOrderItems: {
+      const movedFromOrderItems: {
         itemId: string;
         movedFromOrderId: string;
         movedToOrderId: string;

@@ -29,23 +29,23 @@ const testLocalLogin = {
 };
 
 describe("LocalLoginValidator", () => {
-  let localLoginPasswordValidator = new LocalLoginPasswordValidator(
+  const localLoginPasswordValidator = new LocalLoginPasswordValidator(
     new SeCrypto()
   );
-  let saltGenerator = new SaltGenerator();
-  let seCrypto = new SeCrypto();
-  let hashedPasswordGenerator = new HashedPasswordGenerator(
+  const saltGenerator = new SaltGenerator();
+  const seCrypto = new SeCrypto();
+  const hashedPasswordGenerator = new HashedPasswordGenerator(
     saltGenerator,
     seCrypto
   );
-  let providerIdGenerator = new ProviderIdGenerator(seCrypto);
-  let localLoginCreator = new LocalLoginCreator(
+  const providerIdGenerator = new ProviderIdGenerator(seCrypto);
+  const localLoginCreator = new LocalLoginCreator(
     hashedPasswordGenerator,
     providerIdGenerator
   );
-  let localLoginHandler = new LocalLoginHandler();
-  let userHandler = new UserHandler();
-  let localLoginValidator = new LocalLoginValidator(
+  const localLoginHandler = new LocalLoginHandler();
+  const userHandler = new UserHandler();
+  const localLoginValidator = new LocalLoginValidator(
     localLoginHandler,
     localLoginPasswordValidator,
     localLoginCreator,
@@ -137,7 +137,7 @@ describe("LocalLoginValidator", () => {
     });
 
     it("should resolve with correct provider and providerId when username and password is correct", () => {
-      let expectedProvider = {
+      const expectedProvider = {
         provider: testLocalLogin.provider,
         providerId: testLocalLogin.providerId,
       };
@@ -158,8 +158,8 @@ describe("LocalLoginValidator", () => {
 
   describe("create()", () => {
     it("should reject with BlError if username does exist", () => {
-      let username = testLocalLogin.username;
-      let password = "something";
+      const username = testLocalLogin.username;
+      const password = "something";
 
       return localLoginValidator.create(username, password).then(
         (value: any) => {
@@ -172,8 +172,8 @@ describe("LocalLoginValidator", () => {
     });
 
     it("should resolve with provider and providerId if username and password is valid", () => {
-      let username = "amail@address.com";
-      let password = "thisIsAValidPassword";
+      const username = "amail@address.com";
+      const password = "thisIsAValidPassword";
 
       return localLoginValidator.create(username, password).then(
         (providerAndProviderId: { provider: string; providerId: string }) => {

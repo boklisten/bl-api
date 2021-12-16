@@ -21,7 +21,7 @@ export class OrderItemMovedFromOrderHandler {
   public async updateOrderItems(order: Order): Promise<boolean> {
     const orderItemsToUpdate: OrderItemToUpdate[] = [];
 
-    for (let orderItem of order.orderItems) {
+    for (const orderItem of order.orderItems) {
       if (orderItem.movedFromOrder) {
         orderItemsToUpdate.push({
           itemId: orderItem.item as string,
@@ -43,7 +43,7 @@ export class OrderItemMovedFromOrderHandler {
     orderItemsToUpdate: OrderItemToUpdate[]
   ): Promise<boolean> {
     try {
-      for (let orderItemToUpdate of orderItemsToUpdate) {
+      for (const orderItemToUpdate of orderItemsToUpdate) {
         await this.updateOrderItem(orderItemToUpdate);
       }
 
@@ -62,7 +62,7 @@ export class OrderItemMovedFromOrderHandler {
       orderItemToUpdate.originalOrderId
     );
 
-    for (let orderItem of originalOrder.orderItems) {
+    for (const orderItem of originalOrder.orderItems) {
       if (orderItem.item.toString() === orderItemToUpdate.itemId.toString()) {
         if (orderItem.movedToOrder) {
           throw new BlError(`orderItem has "movedToOrder" already set`);

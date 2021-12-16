@@ -10,7 +10,7 @@ chai.use(chaiAsPromised);
 
 describe("SeToken", () => {
   describe("createToken()", () => {
-    let seToken: SEToken = new SEToken();
+    const seToken: SEToken = new SEToken();
 
     it("should reject BlError when username is empty", () => {
       return seToken
@@ -26,7 +26,7 @@ describe("SeToken", () => {
   });
 
   describe("validateToken()", () => {
-    let seToken: SEToken = new SEToken();
+    const seToken: SEToken = new SEToken();
 
     it("should reject with BlError if token is empty", () => {
       return seToken.validateToken("").should.be.rejectedWith(BlError);

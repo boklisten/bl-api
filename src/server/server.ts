@@ -10,7 +10,7 @@ import path from "path";
 import { logger } from "../logger/logger";
 import { APP_CONFIG } from "../application-config";
 
-let bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
 const packageJson = require("../../package.json");
 
 const mongoose = require("mongoose");
@@ -105,12 +105,16 @@ export class Server {
       logger.error(`unhandeled rejection at: ${p}, reason: ${reason}`);
     });
 
-    let cors = require("cors");
-    let whitelist = process.env.URI_WHITELIST.split(" ");
-    let allowedMethods = ["GET", "PUT", "PATCH", "POST", "DELETE"];
-    let allowedHeaders = ["Content-Type", "Authorization", "X-Requested-With"];
+    const cors = require("cors");
+    const whitelist = process.env.URI_WHITELIST.split(" ");
+    const allowedMethods = ["GET", "PUT", "PATCH", "POST", "DELETE"];
+    const allowedHeaders = [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+    ];
 
-    let corsConfig = {
+    const corsConfig = {
       origin: whitelist,
       methods: allowedMethods,
       allowedHeaders: allowedHeaders,
@@ -124,8 +128,8 @@ export class Server {
     this.app.use(passport.session());
     this.router = Router();
 
-    let debugLogPath = (req: Request, res: Response, next: any) => {
-      let ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    const debugLogPath = (req: Request, res: Response, next: any) => {
+      const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
       if (req.method !== "OPTIONS") {
         // no point in showing all the preflight requests
         logger.debug(`-> ${req.method} ${req.url}`);

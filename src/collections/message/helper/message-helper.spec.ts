@@ -22,7 +22,7 @@ describe("MessageHelper", () => {
   const messageStorage = new BlDocumentStorage<Message>("messages");
   const messageHelper = new MessageHelper(messageStorage);
 
-  let messageStorageGetByQueryStub = sinon.stub(messageStorage, "getByQuery");
+  const messageStorageGetByQueryStub = sinon.stub(messageStorage, "getByQuery");
 
   describe("#isAdded", () => {
     it("should throw error if messageStorage.get fails", async () => {

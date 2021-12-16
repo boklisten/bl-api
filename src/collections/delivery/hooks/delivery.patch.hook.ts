@@ -57,7 +57,7 @@ export class DeliveryPatchHook extends Hook {
   }
 
   after(deliveries: Delivery[], accessToken: AccessToken): Promise<Delivery[]> {
-    let delivery = deliveries[0];
+    const delivery = deliveries[0];
 
     return new Promise((resolve, reject) => {
       this.orderStorage

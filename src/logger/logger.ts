@@ -5,7 +5,7 @@ const commander = require("commander");
 const colorizer = winston.format.colorize();
 
 function formatTimestamp(timestamp: string) {
-  let date = new Date(timestamp);
+  const date = new Date(timestamp);
   return moment(timestamp).format("HH:mm:ss.SSS");
 }
 

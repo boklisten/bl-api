@@ -43,8 +43,8 @@ export class GoogleAuth {
           profile: any,
           done: any
         ) => {
-          let provider = APP_CONFIG.login.google.name;
-          let providerId = profile.id;
+          const provider = APP_CONFIG.login.google.name;
+          const providerId = profile.id;
           let username;
 
           try {
@@ -82,7 +82,7 @@ export class GoogleAuth {
   private retrieveUsername(profile): string {
     let username;
 
-    for (let profileEmail of profile.emails) {
+    for (const profileEmail of profile.emails) {
       if (profileEmail.verified) {
         username = profileEmail.value;
       }

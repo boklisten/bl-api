@@ -20,7 +20,7 @@ export class LocalLoginValidator {
     password: string
   ): Promise<{ provider: string; providerId: string }> {
     return new Promise((resolve, reject) => {
-      let blError = new BlError("")
+      const blError = new BlError("")
         .className("LocalLoginValidator")
         .methodName("validate");
       if (!username || !isEmail(username))
@@ -83,7 +83,7 @@ export class LocalLoginValidator {
     password: string
   ): Promise<{ provider: string; providerId: string }> {
     return new Promise((resolve, reject) => {
-      let blError = new BlError("")
+      const blError = new BlError("")
         .className("LocalLoginValidator")
         .methodName("create");
 

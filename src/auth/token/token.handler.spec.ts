@@ -28,7 +28,7 @@ const testUser: any = {
 };
 
 describe("TokenHandler", () => {
-  let refreshTokenConfig: RefreshToken = {
+  const refreshTokenConfig: RefreshToken = {
     iss: "",
     aud: "",
     expiresIn: "12h",
@@ -37,7 +37,7 @@ describe("TokenHandler", () => {
     username: "",
   };
 
-  let accessTokenConfig: AccessToken = {
+  const accessTokenConfig: AccessToken = {
     iss: "",
     aud: "",
     expiresIn: "30s",
@@ -48,9 +48,9 @@ describe("TokenHandler", () => {
     details: "",
   };
 
-  let userHandler = new UserHandler();
-  let tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
-  let tokenHandler = new TokenHandler(userHandler);
+  const userHandler = new UserHandler();
+  const tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
+  const tokenHandler = new TokenHandler(userHandler);
 
   sinon.stub(userHandler, "getByUsername").callsFake((username: string) => {
     return new Promise((resolve, reject) => {
@@ -68,7 +68,7 @@ describe("TokenHandler", () => {
   describe("createTokens()", () => {
     context("when username is not valid", () => {
       it("should reject with BlError", () => {
-        let username = undefined;
+        const username = undefined;
         return tokenHandler
           .createTokens(username)
           .should.be.rejectedWith(BlError);

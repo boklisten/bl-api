@@ -22,7 +22,7 @@ export class DbQuerySortFilter {
     sort: any,
     validSortParams: string[]
   ): SortFilter[] {
-    let sortFilters: SortFilter[] = [];
+    const sortFilters: SortFilter[] = [];
     let sortArray = [];
     if (!Array.isArray(sort)) {
       if (typeof sort !== "string")
@@ -34,7 +34,7 @@ export class DbQuerySortFilter {
       sortArray = sort;
     }
 
-    for (let sortValue of sortArray) {
+    for (const sortValue of sortArray) {
       if (this.validSortValue(sortValue, validSortParams)) {
         sortFilters.push(this.getSortFilter(sortValue));
       }
@@ -54,7 +54,7 @@ export class DbQuerySortFilter {
     sortValue: string,
     validSortParams: string[]
   ): boolean {
-    let sval = this.getBaseSortParam(sortValue);
+    const sval = this.getBaseSortParam(sortValue);
 
     if (validSortParams.indexOf(sval) <= -1)
       throw ReferenceError(

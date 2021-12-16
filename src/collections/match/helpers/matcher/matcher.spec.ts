@@ -115,7 +115,7 @@ describe("Matcher", () => {
 
     it("should resolve if a match is found", () => {
       //matchFinderFindStub.withArgs([{item: 'item2'}]).rejects(new BlError('no match found'));
-      let match = {
+      const match = {
         state: "created",
         items: [{ item: "item3" }],
       };

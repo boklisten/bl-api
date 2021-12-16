@@ -113,7 +113,7 @@ export class DeliveryHandler {
     delivery: Delivery,
     accessToken: AccessToken
   ): Promise<boolean> {
-    let orderUpdateData = { delivery: delivery.id };
+    const orderUpdateData = { delivery: delivery.id };
 
     return this.orderStorage
       .update(order.id, orderUpdateData, {

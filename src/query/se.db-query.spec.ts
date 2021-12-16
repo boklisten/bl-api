@@ -9,7 +9,7 @@ chai.use(chaiAsPromised);
 
 describe("SEDbQuery", () => {
   describe("getFilter()", () => {
-    let dbQuery: SEDbQuery = new SEDbQuery();
+    const dbQuery: SEDbQuery = new SEDbQuery();
 
     it("should return a object containing all number, boolean, string and regex filters", () => {
       dbQuery.booleanFilters = [
@@ -23,7 +23,7 @@ describe("SEDbQuery", () => {
         { fieldName: "title", op: { $regex: "balloon", $options: "imx" } },
       ];
 
-      let result = {
+      const result = {
         isHungry: true,
         haveCar: false,
         name: "Bob Marley",
@@ -40,14 +40,14 @@ describe("SEDbQuery", () => {
 
   describe("getOgFilter()", () => {
     it("should return correct ogFilterObj based on ogFilter array", () => {
-      let dbQuery: SEDbQuery = new SEDbQuery();
+      const dbQuery: SEDbQuery = new SEDbQuery();
 
       dbQuery.onlyGetFilters = [
         { fieldName: "name", value: 1 },
         { fieldName: "age", value: 1 },
       ];
 
-      let result = {
+      const result = {
         name: 1,
         age: 1,
       };
@@ -58,14 +58,14 @@ describe("SEDbQuery", () => {
 
   describe("getSortFilter()", () => {
     it("should return correct sortFilter object based on sortFilter array", () => {
-      let dbQuery: SEDbQuery = new SEDbQuery();
+      const dbQuery: SEDbQuery = new SEDbQuery();
 
       dbQuery.sortFilters = [
         { fieldName: "age", direction: 1 },
         { fieldName: "name", direction: -1 },
       ];
 
-      let result = { age: 1, name: -1 };
+      const result = { age: 1, name: -1 };
 
       expect(dbQuery.getSortFilter()).to.eql(result);
     });

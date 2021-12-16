@@ -33,8 +33,8 @@ describe("OrderEmailHandler", () => {
   let testPayment: Payment;
   let testDelivery: Delivery;
   let emailSendSuccessful: boolean;
-  let standardTimeFormat = "DD.MM.YYYY HH.mm.ss";
-  let standardDayFormat = "DD.MM.YY";
+  const standardTimeFormat = "DD.MM.YYYY HH.mm.ss";
+  const standardDayFormat = "DD.MM.YY";
   const branchStorage = new BlDocumentStorage<Branch>("branches");
   const deliveryStorage = new BlDocumentStorage<Delivery>("deliveries");
   const paymentStorage = new BlDocumentStorage<Payment>("payments");
@@ -54,11 +54,11 @@ describe("OrderEmailHandler", () => {
     return testDelivery;
   });
 
-  let branchStorageGetStub = sinon
+  const branchStorageGetStub = sinon
     .stub(branchStorage, "get")
     .resolves({ paymentInfo: { responsible: false } });
 
-  let paymentStorageStub = sinon
+  const paymentStorageStub = sinon
     .stub(paymentStorage, "get")
     .callsFake(async (id: string) => {
       if (id !== testPayment.id) {
@@ -68,7 +68,7 @@ describe("OrderEmailHandler", () => {
       return testPayment;
     });
 
-  let sendOrderReceiptStub = sinon
+  const sendOrderReceiptStub = sinon
     .stub(emailHandler, "sendOrderReceipt")
     .callsFake(async () => {
       if (!emailSendSuccessful) {
@@ -112,14 +112,14 @@ describe("OrderEmailHandler", () => {
         });
 
         context("when user is under the age of 18", () => {
-          let ages = [
+          const ages = [
             moment(new Date()).subtract(16, "year").toDate(),
             moment(new Date()).subtract(1, "day").toDate(),
             moment(new Date()).subtract(12, "year").toDate(),
             moment(new Date()).subtract(18, "year").add(1, "day").toDate(),
           ];
 
-          for (let age of ages) {
+          for (const age of ages) {
             it(
               "should set withAgreement to true when user dob is " +
                 moment(age).format("DD.MM.YY"),
@@ -129,9 +129,9 @@ describe("OrderEmailHandler", () => {
                 orderEmailHandler
                   .sendOrderReceipt(testCustomerDetail, testOrder)
                   .then(() => {
-                    let sendOrderReceiptArguments =
+                    const sendOrderReceiptArguments =
                       sendOrderReceiptStub.lastCall.args;
-                    let withAgreement = sendOrderReceiptArguments[3];
+                    const withAgreement = sendOrderReceiptArguments[3];
 
                     expect(withAgreement).to.be.true;
 
@@ -153,9 +153,9 @@ describe("OrderEmailHandler", () => {
           orderEmailHandler
             .sendOrderReceipt(testCustomerDetail, testOrder)
             .then(() => {
-              let sendOrderReceiptArguments =
+              const sendOrderReceiptArguments =
                 sendOrderReceiptStub.lastCall.args;
-              let withAgreement = sendOrderReceiptArguments[3];
+              const withAgreement = sendOrderReceiptArguments[3];
 
               expect(withAgreement).to.be.true;
 
@@ -177,9 +177,10 @@ describe("OrderEmailHandler", () => {
             orderEmailHandler
               .sendOrderReceipt(testCustomerDetail, testOrder)
               .then(() => {
-                let sendOrderReceiptArguments = sendOrderReceiptStub.getCalls();
+                const sendOrderReceiptArguments =
+                  sendOrderReceiptStub.getCalls();
 
-                let guardianEmailSetting =
+                const guardianEmailSetting =
                   sendOrderReceiptArguments[
                     sendOrderReceiptStub.getCalls().length - 2
                   ].args[0]; // the next to last call should be to the guardian
@@ -217,9 +218,9 @@ describe("OrderEmailHandler", () => {
           orderEmailHandler
             .sendOrderReceipt(testCustomerDetail, testOrder)
             .then(() => {
-              let sendOrderReceiptArguments =
+              const sendOrderReceiptArguments =
                 sendOrderReceiptStub.lastCall.args;
-              let withAgreement = sendOrderReceiptArguments[3];
+              const withAgreement = sendOrderReceiptArguments[3];
 
               expect(withAgreement).to.be.false;
 
@@ -234,14 +235,15 @@ describe("OrderEmailHandler", () => {
 
     context("emailHandler.sendOrderReceipt: emailOrder argument", () => {
       it("should have item amount equal to order.amount", (done) => {
-        let expectedAmount = "100";
+        const expectedAmount = "100";
         testOrder.amount = parseInt(expectedAmount);
 
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1];
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1];
 
             expect(emailOrder.itemAmount).to.be.eq(expectedAmount);
 
@@ -253,14 +255,15 @@ describe("OrderEmailHandler", () => {
       });
 
       it("should have showPrice set to true when order.amount is not 0", (done) => {
-        let expectedAmount = "120";
+        const expectedAmount = "120";
         testOrder.amount = parseInt(expectedAmount);
 
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1];
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1];
 
             expect(emailOrder.showPrice).to.be.eq(true);
 
@@ -293,8 +296,9 @@ describe("OrderEmailHandler", () => {
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1];
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1];
 
             expect(emailOrder.showDeadline).to.be.false;
 
@@ -324,8 +328,9 @@ describe("OrderEmailHandler", () => {
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1];
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1];
 
             expect(emailOrder.items[0].title).to.be.eq(
               testOrder.orderItems[0].title
@@ -376,8 +381,9 @@ describe("OrderEmailHandler", () => {
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1];
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1];
 
             expect(emailOrder.items[0].title).to.be.eq(
               testOrder.orderItems[0].title
@@ -429,8 +435,9 @@ describe("OrderEmailHandler", () => {
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1];
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1];
 
             expect(emailOrder.items[0].title).to.be.eq(
               testOrder.orderItems[0].title
@@ -447,7 +454,7 @@ describe("OrderEmailHandler", () => {
       });
 
       it("should have not have a delivery object when order.delivery is not defined", (done) => {
-        let expectedAmount = "540";
+        const expectedAmount = "540";
 
         testOrder.amount = parseInt(expectedAmount);
         testOrder.delivery = undefined;
@@ -455,8 +462,9 @@ describe("OrderEmailHandler", () => {
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1];
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1];
 
             expect(emailOrder.delivery).to.be.null;
             expect(emailOrder.showDelivery).to.be.false;
@@ -473,13 +481,14 @@ describe("OrderEmailHandler", () => {
         testOrder.delivery = "delivery1";
         testDelivery.method = "bring";
         testDelivery.info["trackingNumber"] = "trackingABC";
-        let expectedAmount = testOrder.amount + testDelivery.amount;
+        const expectedAmount = testOrder.amount + testDelivery.amount;
 
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1];
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1];
 
             //delivery address should be on the form:
             // Billy Bob, Trondheimsveien 10 D, 0560 OSLO
@@ -520,8 +529,9 @@ describe("OrderEmailHandler", () => {
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1];
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1];
 
             expect(emailOrder.showDelivery).to.be.false;
             expect(emailOrder.delivery).to.be.null;
@@ -535,13 +545,14 @@ describe("OrderEmailHandler", () => {
 
       it('should have a payment object when the order includes payment type "dibs"', (done) => {
         testOrder.payments = [testPayment.id];
-        let expectedTotal = testPayment.amount;
+        const expectedTotal = testPayment.amount;
 
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1]; //second arg is the emailOrder
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1]; //second arg is the emailOrder
 
             expect(emailOrder.showPayment).to.be.true;
             expect(emailOrder.payment.total).to.be.eq(expectedTotal);
@@ -581,7 +592,7 @@ describe("OrderEmailHandler", () => {
       });
 
       it("should have a payment object that includes all the payments in order", (done) => {
-        let payments: Payment[] = [
+        const payments: Payment[] = [
           {
             id: "payment2",
             method: "cash",
@@ -615,8 +626,9 @@ describe("OrderEmailHandler", () => {
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1]; //second arg is the emailOrder
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1]; //second arg is the emailOrder
 
             expect(emailOrder.payment.total).to.be.eq(testOrder.amount);
             expect(emailOrder.payment.currency).to.be.eq("NOK");
@@ -679,8 +691,9 @@ describe("OrderEmailHandler", () => {
         orderEmailHandler
           .sendOrderReceipt(testCustomerDetail, testOrder)
           .then(() => {
-            let sendOrderReceiptArguments = sendOrderReceiptStub.lastCall.args;
-            let emailOrder = sendOrderReceiptArguments[1]; // second arg is the emailOrder
+            const sendOrderReceiptArguments =
+              sendOrderReceiptStub.lastCall.args;
+            const emailOrder = sendOrderReceiptArguments[1]; // second arg is the emailOrder
 
             expect(emailOrder.showPayment).to.be.false;
             expect(emailOrder.payment).to.be.null;

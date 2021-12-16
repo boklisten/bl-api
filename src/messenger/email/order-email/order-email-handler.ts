@@ -57,25 +57,25 @@ export class OrderEmailHandler {
     customerDetail: UserDetail,
     order: Order
   ): Promise<EmailLog> {
-    let emailSetting: EmailSetting = {
+    const emailSetting: EmailSetting = {
       toEmail: customerDetail.email,
       fromEmail: EMAIL_SETTINGS.types.receipt.fromEmail,
       subject: EMAIL_SETTINGS.types.receipt.subject,
       userId: customerDetail.id,
     };
 
-    let branchId = order.branch as string;
+    const branchId = order.branch as string;
 
-    let withAgreement: boolean = await this.shouldSendAgreement(
+    const withAgreement: boolean = await this.shouldSendAgreement(
       order,
       customerDetail,
       branchId
     );
 
-    let emailOrder: EmailOrder = await this.orderToEmailOrder(order);
+    const emailOrder: EmailOrder = await this.orderToEmailOrder(order);
     emailOrder.loan = withAgreement;
 
-    let emailUser: EmailUser = {
+    const emailUser: EmailUser = {
       id: customerDetail.id,
       dob: !isNullOrUndefined(customerDetail.dob)
         ? dateService.toPrintFormat(customerDetail.dob, "Europe/Oslo")
@@ -163,7 +163,7 @@ export class OrderEmailHandler {
   }
 
   public async orderToEmailOrder(order: Order): Promise<any> {
-    let emailOrder: EmailOrder = {
+    const emailOrder: EmailOrder = {
       id: order.id,
       showDeadline: this.shouldShowDeadline(order),
       showPrice: order.amount !== 0,
@@ -203,7 +203,7 @@ export class OrderEmailHandler {
   }
 
   private shouldShowDeadline(order: Order) {
-    for (let orderItem of order.orderItems) {
+    for (const orderItem of order.orderItems) {
       if (orderItem.type === "rent" || orderItem.type === "extend") {
         return true;
       }
@@ -218,23 +218,23 @@ export class OrderEmailHandler {
       return Promise.resolve({ payment: null, showPayment: false });
     }
 
-    let paymentPromiseArr: Promise<Payment>[] = [];
+    const paymentPromiseArr: Promise<Payment>[] = [];
 
-    for (let paymentId of order.payments) {
-      let pId = typeof paymentId === "string" ? paymentId : paymentId.id;
+    for (const paymentId of order.payments) {
+      const pId = typeof paymentId === "string" ? paymentId : paymentId.id;
       paymentPromiseArr.push(this._paymentStorage.get(pId));
     }
 
     return Promise.all(paymentPromiseArr)
       .then((payments: Payment[]) => {
-        let emailPayment = {
+        const emailPayment = {
           total: 0,
           currency: "",
           taxAmount: 0,
           payments: [],
         };
 
-        for (let payment of payments) {
+        for (const payment of payments) {
           emailPayment.total += payment.amount;
 
           emailPayment.payments.push(this.paymentToEmailPayment(payment));
@@ -259,7 +259,7 @@ export class OrderEmailHandler {
   private extractEmailOrderDeliveryFromOrder(
     order: Order
   ): Promise<{ delivery: any; showDelivery: boolean }> {
-    let deliveryId = order.delivery as string;
+    const deliveryId = order.delivery as string;
     if (isNullOrUndefined(order.delivery) || deliveryId.length <= 0) {
       return Promise.resolve({ delivery: null, showDelivery: false });
     }
@@ -287,7 +287,7 @@ export class OrderEmailHandler {
       return null;
     }
 
-    let paymentObj = {
+    const paymentObj = {
       method: "",
       amount: "",
       cardInfo: null,
@@ -307,7 +307,7 @@ export class OrderEmailHandler {
 
     if (payment.method === "dibs") {
       if (payment.info) {
-        let paymentInfo: DibsEasyPayment = payment.info as DibsEasyPayment;
+        const paymentInfo: DibsEasyPayment = payment.info as DibsEasyPayment;
         if (paymentInfo.paymentDetails) {
           if (paymentInfo.paymentDetails.paymentMethod) {
             paymentObj.method = paymentInfo.paymentDetails.paymentMethod;
@@ -379,7 +379,7 @@ export class OrderEmailHandler {
   private orderItemsToEmailItems(
     orderItems: OrderItem[]
   ): { title: string; status: string; deadline?: string; price?: string }[] {
-    let emailItems: {
+    const emailItems: {
       title: string;
       status: string;
       deadline?: string;
@@ -463,7 +463,7 @@ export class OrderEmailHandler {
     let rentFound = false;
     let onlyHandout = false;
 
-    for (let orderItem of order.orderItems) {
+    for (const orderItem of order.orderItems) {
       if (orderItem.handout) {
         onlyHandout = true;
       } else {

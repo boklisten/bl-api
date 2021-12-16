@@ -25,9 +25,9 @@ export class PdfService {
     customerDetail: UserDetail,
     order: Order
   ): Promise<EmailAttachment> {
-    let emailSetting = {} as EmailSetting;
+    const emailSetting = {} as EmailSetting;
 
-    let emailUser: EmailUser = {
+    const emailUser: EmailUser = {
       id: customerDetail.id,
       dob: !isNullOrUndefined(customerDetail.dob)
         ? moment(customerDetail.dob)
@@ -39,7 +39,7 @@ export class PdfService {
       address: customerDetail.address,
     };
 
-    let emailOrder: EmailOrder =
+    const emailOrder: EmailOrder =
       await this._orderEmailHandler.orderToEmailOrder(order);
 
     return await this._pdfHandler.getOrderReceipt(
@@ -53,9 +53,9 @@ export class PdfService {
     customerDetail: UserDetail,
     order: Order
   ): Promise<EmailAttachment> {
-    let emailSetting = {} as EmailSetting;
+    const emailSetting = {} as EmailSetting;
 
-    let emailUser: EmailUser = {
+    const emailUser: EmailUser = {
       id: customerDetail.id,
       dob: !isNullOrUndefined(customerDetail.dob)
         ? moment(customerDetail.dob)
@@ -67,7 +67,7 @@ export class PdfService {
       address: customerDetail.address,
     };
 
-    let emailOrder: EmailOrder =
+    const emailOrder: EmailOrder =
       await this._orderEmailHandler.orderToEmailOrder(order);
 
     return await this._pdfHandler.getRentAgreement(

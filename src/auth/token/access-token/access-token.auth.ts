@@ -31,7 +31,7 @@ export class AccessTokenAuth {
   }
 
   private getOptions(): any {
-    let opts: any = {};
+    const opts: any = {};
     opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
     opts.secretOrKey = this.accessTokenSecret.get();
     opts.issuer = this.tokenConfig.accessToken.iss;

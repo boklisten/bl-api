@@ -12,7 +12,7 @@ export class SeCrypto {
           new BlError("msg to short").className("SeCrypto").methodName("cipher")
         );
 
-      let msgCipher = crypto.createCipher("aes128", msg);
+      const msgCipher = crypto.createCipher("aes128", msg);
 
       let encryptedMsg = "";
 
@@ -33,7 +33,7 @@ export class SeCrypto {
 
   public hash(msg: string, salt: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      let blError = new BlError("").className("SeCrypto").methodName("hash");
+      const blError = new BlError("").className("SeCrypto").methodName("hash");
 
       if (!msg || msg.length <= 0)
         return reject(blError.msg("msg is empty or undefined"));
@@ -45,7 +45,7 @@ export class SeCrypto {
       cryptoHash.on("readable", () => {
         const data = cryptoHash.read();
         if (data) {
-          let hashedPassword = data.toString("hex");
+          const hashedPassword = data.toString("hex");
           return resolve(hashedPassword);
         }
         return reject(blError.msg("could not hash the provided message"));

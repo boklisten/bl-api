@@ -64,7 +64,7 @@ export class BookingPatchHook extends Hook {
         "admin"
       )
     ) {
-      for (let key of Object.keys(body)) {
+      for (const key of Object.keys(body)) {
         if (key !== "customer" && key !== "booked") {
           throw new BlError("can only update 'customer' and 'booked' fields");
         }
@@ -79,7 +79,7 @@ export class BookingPatchHook extends Hook {
 
     if (body.customer) {
       try {
-        let query = this.dbQueryBuilder.getDbQuery(
+        const query = this.dbQueryBuilder.getDbQuery(
           {
             customer: body.customer,
             from:
@@ -136,7 +136,7 @@ export class BookingPatchHook extends Hook {
     bookings: Booking[],
     accessToken: AccessToken
   ): Promise<Booking[]> {
-    for (let booking of bookings) {
+    for (const booking of bookings) {
       if (!booking.booked && booking.customer) {
         throw new BlError("booking.customer is set but booked is false");
       }

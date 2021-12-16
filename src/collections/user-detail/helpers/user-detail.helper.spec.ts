@@ -41,14 +41,14 @@ describe("UserDetailHelper", () => {
     userDetailStorageUpdateSuccess = true;
   });
 
-  let userDetailStorageUpdateStub = sinon
+  const userDetailStorageUpdateStub = sinon
     .stub(userDetailStorage, "update")
     .callsFake((id: string, data: any, user: any) => {
       if (!userDetailStorageUpdateSuccess) {
         return Promise.reject(new BlError("could not update"));
       }
 
-      let returnObj = Object.assign(testUserDetail, data);
+      const returnObj = Object.assign(testUserDetail, data);
       return Promise.resolve(returnObj);
     });
 
@@ -95,7 +95,7 @@ describe("UserDetailHelper", () => {
           testAccessToken
         )
         .then((updatedUserDetail: UserDetail) => {
-          let name =
+          const name =
             testDibsEasyPayment.consumer.privatePerson.firstName +
             " " +
             testDibsEasyPayment.consumer.privatePerson.lastName;
@@ -111,7 +111,7 @@ describe("UserDetailHelper", () => {
             testDibsEasyPayment.consumer.shippingAddress.city
           );
 
-          let expectedAddress =
+          const expectedAddress =
             testDibsEasyPayment.consumer.shippingAddress.addressLine1 +
             " " +
             testDibsEasyPayment.consumer.shippingAddress.addressLine2;
@@ -156,7 +156,7 @@ describe("UserDetailHelper", () => {
         { n: "       Bobby            Bobson", f: "Bobby" },
       ];
 
-      for (let name of names) {
+      for (const name of names) {
         expect(userDetailHelper.getFirstName(name.n)).to.eq(name.f);
       }
       done();
@@ -177,7 +177,7 @@ describe("UserDetailHelper", () => {
         { n: "     Bjorn   Belto ", f: "Belto" },
       ];
 
-      for (let name of names) {
+      for (const name of names) {
         expect(userDetailHelper.getLastName(name.n)).to.eq(name.f);
       }
       done();

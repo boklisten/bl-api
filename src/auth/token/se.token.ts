@@ -44,7 +44,7 @@ export class SEToken {
     permission: UserPermission,
     blid: string
   ): Promise<string> {
-    let blError = new BlError("")
+    const blError = new BlError("")
       .className("SeToken")
       .methodName("createToken");
     if (username.length <= 0)
@@ -79,7 +79,7 @@ export class SEToken {
     token: string,
     validLoginOptions?: any
   ): Promise<JwtPayload> {
-    let blError = new BlError("")
+    const blError = new BlError("")
       .className("SeToken")
       .methodName("validateToken");
     if (token.length <= 0) return Promise.reject(blError.msg("token is empty"));
@@ -196,7 +196,7 @@ export class SEToken {
     tokenPermission: UserPermission,
     permissions: UserPermission[]
   ) {
-    let lowestPermission = permissions[0];
+    const lowestPermission = permissions[0];
 
     if (tokenPermission === lowestPermission) return true;
 

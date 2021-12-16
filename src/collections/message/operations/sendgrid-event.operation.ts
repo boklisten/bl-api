@@ -34,7 +34,7 @@ export class SendgridEventOperation implements Operation {
       throw new BlError("blApiRequest.data is not an array").code(701);
     }
 
-    for (let sendgridEvent of blApiRequest.data) {
+    for (const sendgridEvent of blApiRequest.data) {
       await this.parseSendgridEvent(sendgridEvent as SendgridEvent);
     }
 
@@ -42,8 +42,8 @@ export class SendgridEventOperation implements Operation {
   }
 
   private async parseSendgridEvent(sendgridEvent: SendgridEvent) {
-    let blMessageId = sendgridEvent["bl_message_id"];
-    let messageType = sendgridEvent["bl_message_type"];
+    const blMessageId = sendgridEvent["bl_message_id"];
+    const messageType = sendgridEvent["bl_message_type"];
 
     if (!blMessageId) {
       logger.debug(`sendgrid event did not have a bl_message_id`);
@@ -57,7 +57,7 @@ export class SendgridEventOperation implements Operation {
     }
 
     try {
-      let message = await this._messageStorage.get(blMessageId);
+      const message = await this._messageStorage.get(blMessageId);
       await this.updateMessageWithSendgridEvent(message, sendgridEvent);
     } catch (e) {
       logger.warn(`could not update sendgrid event ${e}`);
@@ -71,7 +71,7 @@ export class SendgridEventOperation implements Operation {
     message: Message,
     sendgridEvent: SendgridEvent
   ): Promise<boolean> {
-    let newSendgridEvents =
+    const newSendgridEvents =
       message.events && message.events.length > 0 ? message.events : [];
 
     newSendgridEvents.push(sendgridEvent);

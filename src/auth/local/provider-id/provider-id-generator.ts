@@ -7,7 +7,7 @@ export class ProviderIdGenerator {
 
   generate(username: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      let blError = new BlError("")
+      const blError = new BlError("")
         .className("ProviderIdGenerator")
         .methodName("generate");
       if (!username || username.length <= 0)

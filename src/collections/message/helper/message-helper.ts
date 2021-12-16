@@ -31,7 +31,7 @@ export class MessageHelper {
     try {
       const docs = await this.messageStorage.getByQuery(dbQuery);
       if (docs) {
-        for (let doc of docs) {
+        for (const doc of docs) {
           if (
             JSON.stringify(doc.htmlContent) ===
             JSON.stringify(message.htmlContent)

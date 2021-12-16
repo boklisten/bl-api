@@ -10,7 +10,7 @@ export class LocalLoginPasswordValidator {
     hashedPassword: string
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      let blError = new BlError("")
+      const blError = new BlError("")
         .className("LocalLoginPasswordValidator")
         .methodName("validate");
 

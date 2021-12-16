@@ -9,7 +9,7 @@ chai.use(chaiAsPromised);
 
 describe("DbQueryLimitFilter", () => {
   describe("getLimitFilter()", () => {
-    let dbQueryLimitFilter = new DbQueryLimitFilter();
+    const dbQueryLimitFilter = new DbQueryLimitFilter();
 
     it("should throw error if query is empty or null", () => {
       expect(() => {

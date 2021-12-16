@@ -324,9 +324,9 @@ export class EmailService implements MessengerService {
     message: Message,
     customerItems: CustomerItem[]
   ) {
-    let items = [];
+    const items = [];
 
-    for (let customerItem of customerItems) {
+    for (const customerItem of customerItems) {
       const item = await this._itemStorage.get(customerItem.item as string);
       items.push(this.customerItemToEmailItem(message, customerItem, item));
     }
@@ -388,8 +388,8 @@ export class EmailService implements MessengerService {
   private async customerItemsToEmailOrderItems(customerItems: CustomerItem[]) {
     const emailOrderItems = [];
 
-    for (let customerItem of customerItems) {
-      let itemId =
+    for (const customerItem of customerItems) {
+      const itemId =
         typeof customerItem.item === "string" ? customerItem.item : "";
       const item = await this._itemStorage.get(itemId);
 
@@ -411,7 +411,7 @@ export class EmailService implements MessengerService {
     order: Order,
     delivery: Delivery
   ) {
-    let emailSetting: EmailSetting = {
+    const emailSetting: EmailSetting = {
       toEmail: customerDetail.email,
       fromEmail: EMAIL_SETTINGS.types.deliveryInformation.fromEmail,
       subject: EMAIL_SETTINGS.types.deliveryInformation.subject,
@@ -426,7 +426,7 @@ export class EmailService implements MessengerService {
       ],
     };
 
-    let emailUser: EmailUser = {
+    const emailUser: EmailUser = {
       id: customerDetail.id,
       name: customerDetail.name,
       dob: !isNullOrUndefined(customerDetail.dob)
@@ -477,7 +477,7 @@ export class EmailService implements MessengerService {
 
   private orderItemsToDeliveryInformationItems(orderItems: OrderItem[]) {
     const emailInformaitionItems: { title: string; status: string }[] = [];
-    for (let orderItem of orderItems) {
+    for (const orderItem of orderItems) {
       emailInformaitionItems.push({
         title: orderItem.title,
         status: "utlevering via Bring",
@@ -490,7 +490,7 @@ export class EmailService implements MessengerService {
     customerDetail: UserDetail,
     confirmationCode: string
   ) {
-    let emailSetting: EmailSetting = {
+    const emailSetting: EmailSetting = {
       toEmail: customerDetail.email,
       fromEmail: EMAIL_SETTINGS.types.emailConfirmation.fromEmail,
       subject: EMAIL_SETTINGS.types.emailConfirmation.subject,
@@ -510,7 +510,7 @@ export class EmailService implements MessengerService {
   }
 
   public passwordReset(customerDetail: UserDetail, passwordResetCode: string) {
-    let emailSetting: EmailSetting = {
+    const emailSetting: EmailSetting = {
       toEmail: customerDetail.email,
       fromEmail: EMAIL_SETTINGS.types.passwordReset.fromEmail,
       subject: EMAIL_SETTINGS.types.passwordReset.subject,

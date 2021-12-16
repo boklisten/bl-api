@@ -43,7 +43,7 @@ export class TwilioSmsEventOperation implements Operation {
     const blMessageId = blApiRequest.query["bl_message_id"];
 
     if (Array.isArray(blApiRequest.data)) {
-      for (let twilioEvent of blApiRequest.data) {
+      for (const twilioEvent of blApiRequest.data) {
         await this.parseAndAddTwilioEvent(twilioEvent, blMessageId);
       }
     } else {
@@ -60,7 +60,7 @@ export class TwilioSmsEventOperation implements Operation {
     }
 
     try {
-      let message = await this._messageStorage.get(blMessageId);
+      const message = await this._messageStorage.get(blMessageId);
       await this.updateMessageWithTwilioSmsEvent(message, twilioEvent);
     } catch (e) {
       logger.warn(`could not update sendgrid event ${e}`);
@@ -74,7 +74,7 @@ export class TwilioSmsEventOperation implements Operation {
     message: Message,
     smsEvent: any
   ): Promise<boolean> {
-    let newSmsEvents =
+    const newSmsEvents =
       message.smsEvents && message.smsEvents.length > 0
         ? message.smsEvents
         : [];

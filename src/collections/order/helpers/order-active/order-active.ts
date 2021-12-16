@@ -31,7 +31,7 @@ export class OrderActive {
       throw e;
     }
 
-    for (let order of orders) {
+    for (const order of orders) {
       if (this.isOrderActive(order)) {
         return true;
       }
@@ -45,7 +45,7 @@ export class OrderActive {
       return false;
     }
 
-    for (let orderItem of order.orderItems) {
+    for (const orderItem of order.orderItems) {
       if (this.isOrderItemActive(orderItem)) {
         return true;
       }

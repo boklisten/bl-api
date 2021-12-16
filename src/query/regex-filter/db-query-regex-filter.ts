@@ -32,9 +32,9 @@ export class DbQueryRegexFilter {
   }
 
   private sanitizeSearchString(searchString: string) {
-    let searchStringArr = searchString.split(" ");
+    const searchStringArr = searchString.split(" ");
     let returnString = "";
-    for (let word of searchStringArr) {
+    for (const word of searchStringArr) {
       if (returnString.length > 0) {
         returnString += "[^\\\\S]";
       }
@@ -47,9 +47,9 @@ export class DbQueryRegexFilter {
     searchString: string,
     validRegexParams: string[]
   ): RegexFilter[] {
-    let regexFilters: RegexFilter[] = [];
+    const regexFilters: RegexFilter[] = [];
 
-    for (let validRegexParam of validRegexParams) {
+    for (const validRegexParam of validRegexParams) {
       regexFilters.push({
         fieldName: validRegexParam,
         op: { $regex: searchString, $options: "imx" },

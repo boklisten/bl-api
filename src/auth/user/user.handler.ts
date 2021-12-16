@@ -46,7 +46,7 @@ export class UserHandler {
       if (!username)
         return reject(new BlError("username is empty or undefined"));
 
-      let dbQuery = new SEDbQuery();
+      const dbQuery = new SEDbQuery();
       dbQuery.stringFilters = [{ fieldName: "username", value: username }];
 
       this.userStorage.getByQuery(dbQuery).then(
@@ -83,7 +83,7 @@ export class UserHandler {
 
     let selectedUser = null;
 
-    for (let user of users) {
+    for (const user of users) {
       if (user.primary) {
         selectedUser = user;
       }
@@ -97,7 +97,7 @@ export class UserHandler {
       return this.userStorage
         .update(selectedUser, { primary: true }, new SystemUser())
         .then((primaryUser) => {
-          let promiseArr: Promise<User>[] = [];
+          const promiseArr: Promise<User>[] = [];
 
           for (let i = 1; i < users.length; i++) {
             promiseArr.push(
@@ -128,7 +128,9 @@ export class UserHandler {
   }
 
   public get(provider: string, providerId: string): Promise<User> {
-    let blError = new BlError("").className("userHandler").methodName("exists");
+    const blError = new BlError("")
+      .className("userHandler")
+      .methodName("exists");
 
     return new Promise((resolve, reject) => {
       if (!provider || provider.length <= 0)
@@ -136,7 +138,7 @@ export class UserHandler {
       if (!providerId || providerId.length <= 0)
         reject(blError.msg("providerId is empty of undefined"));
 
-      let dbQuery = new SEDbQuery();
+      const dbQuery = new SEDbQuery();
       dbQuery.stringFilters = [
         { fieldName: "login.provider", value: provider },
         { fieldName: "login.providerId", value: providerId },
@@ -201,7 +203,7 @@ export class UserHandler {
 
     try {
       const blid = await this.blid.createUserBlid(provider, providerId);
-      let userDetail: any = {
+      const userDetail: any = {
         email: username,
         blid: blid,
         emailConfirmed: this.isThirdPartyProvider(provider), // email is only valid on creation if using Google or Facebook
@@ -224,7 +226,7 @@ export class UserHandler {
         await this.sendEmailValidationLink(addedUserDetail);
       }
 
-      let newUser: any = {
+      const newUser: any = {
         userDetail: addedUserDetail.id,
         permission: "customer",
         blid: blid,
@@ -241,7 +243,7 @@ export class UserHandler {
         permission: newUser.permission,
       });
     } catch (e) {
-      let blError = new BlError("user creation failed").code(903);
+      const blError = new BlError("user creation failed").code(903);
 
       if (e instanceof BlError) {
         blError.add(e);
@@ -295,7 +297,7 @@ export class UserHandler {
       );
     }
 
-    let dbQuery = new SEDbQuery();
+    const dbQuery = new SEDbQuery();
     dbQuery.stringFilters = [
       { fieldName: "login.provider", value: provider },
       { fieldName: "login.providerId", value: providerId },

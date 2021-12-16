@@ -198,7 +198,7 @@ describe("CustomerItemPostHook", () => {
 
     it("should update userDetail with the ids array if it was empty", (done) => {
       testUserDetail.customerItems = [];
-      let ids = ["customerItem1"];
+      const ids = ["customerItem1"];
 
       customerItemPostHook
         .after([testCustomerItem], testAccessToken)
@@ -214,7 +214,7 @@ describe("CustomerItemPostHook", () => {
 
     it("should add the new id to the old userDetail.customerItem array", (done) => {
       testUserDetail.customerItems = ["customerItem2"];
-      let ids = ["customerItem1"];
+      const ids = ["customerItem1"];
 
       customerItemPostHook
         .after([testCustomerItem], testAccessToken)

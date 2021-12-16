@@ -74,7 +74,7 @@ export class PaymentHandler {
     await this.validateOrderAmount(order, payments);
     this.validatePaymentMethods(payments);
 
-    for (let payment of payments) {
+    for (const payment of payments) {
       if (payment.confirmed) {
         continue;
       }
@@ -137,7 +137,7 @@ export class PaymentHandler {
 
   private validatePaymentMethods(payments: Payment[]) {
     if (payments.length > 1) {
-      for (let payment of payments) {
+      for (const payment of payments) {
         if (payment.method == "dibs") {
           throw new BlError(
             `multiple payments found but "${payment.id}" have method dibs`
