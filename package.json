@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "watch": "grunt watch",
-    "start": "tsc -p tsconfig.build.json && node ./dist/index.js",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node ./dist/index.js",
     "pkg": "grunt pkg",
     "release": "standard-version && grunt pkg",
     "test": "mocha \"**/*.spec.ts\"",
