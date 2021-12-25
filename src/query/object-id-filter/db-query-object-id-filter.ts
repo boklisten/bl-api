@@ -6,8 +6,6 @@ export type ObjectIdFilter = {
 };
 
 export class DbQueryObjectIdFilter {
-  constructor() {}
-
   getObjectIdFilters(
     query: any,
     validStringParams: string[]
@@ -24,7 +22,7 @@ export class DbQueryObjectIdFilter {
 
     try {
       for (const param in query) {
-        if (validStringParams.indexOf(param) > -1) {
+        if (validStringParams.includes(param)) {
           if (Array.isArray(query[param])) {
             const valueArr = [];
             query[param].forEach((paramValue) => {
@@ -83,10 +81,10 @@ export class DbQueryObjectIdFilter {
   }
 
   private validateStringParam(param: string): boolean {
-    if (!param) return false;
-    if (new Types.ObjectId(param).toString() !== param) return false;
-    if (!(typeof param === "string")) return false;
-    if (param.length <= 0) return false;
-    return true;
+    return (
+      param &&
+      new Types.ObjectId(param).toString() === param &&
+      param.length > 0
+    );
   }
 }

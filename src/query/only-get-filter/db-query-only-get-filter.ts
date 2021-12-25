@@ -17,8 +17,7 @@ export class DbQueryOnlyGetFilter {
       throw new TypeError("query can not be undefined or empty");
     }
 
-    if (!query.og) return [];
-    if (validOnlyGetParams.length <= 0) return [];
+    if (!query.og || validOnlyGetParams.length <= 0) return [];
 
     return this.generateOnlyGetFilters(query.og, validOnlyGetParams);
   }
@@ -27,24 +26,14 @@ export class DbQueryOnlyGetFilter {
     og: any,
     validOnlyGetParams: string[]
   ): OnlyGetFilter[] {
-    let onlyGetParamArray = [];
+    const onlyGetParamArray = Array.isArray(og) ? og : [og];
 
-    if (!Array.isArray(og)) {
-      onlyGetParamArray.push(og);
-    } else {
-      onlyGetParamArray = og;
-    }
-
-    const onlyGetFilters: OnlyGetFilter[] = [];
-
-    for (const onlyGetParam of onlyGetParamArray) {
-      if (validOnlyGetParams.indexOf(onlyGetParam) <= -1)
+    return onlyGetParamArray.map((onlyGetParam) => {
+      if (!validOnlyGetParams.includes(onlyGetParam))
         throw ReferenceError(
           'the parameter "' + onlyGetParam + '" is not in validOnlyGetParams'
         );
-      onlyGetFilters.push({ fieldName: onlyGetParam, value: 1 });
-    }
-
-    return onlyGetFilters;
+      return { fieldName: onlyGetParam, value: 1 };
+    });
   }
 }

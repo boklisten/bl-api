@@ -9,9 +9,8 @@ export class CustomerInvoiceActive {
   private invoiceActive: InvoiceActive;
 
   constructor(private invoiceStorage?: BlDocumentStorage<Invoice>) {
-    this.invoiceStorage = this.invoiceStorage
-      ? this.invoiceStorage
-      : new BlDocumentStorage("invoices", invoiceSchema);
+    this.invoiceStorage =
+      this.invoiceStorage ?? new BlDocumentStorage("invoices", invoiceSchema);
     this.queryBuilder = new SEDbQueryBuilder();
     this.invoiceActive = new InvoiceActive();
   }
@@ -25,19 +24,11 @@ export class CustomerInvoiceActive {
     try {
       invoices = await this.invoiceStorage.getByQuery(dbQuery);
     } catch (e) {
-      if (e instanceof BlError) {
-        if (e.getCode() == 702) {
-          return false;
-        }
+      if (e instanceof BlError && e.getCode() == 702) {
+        return false;
       }
     }
 
-    for (const invoice of invoices) {
-      if (this.invoiceActive.isActive(invoice)) {
-        return true;
-      }
-    }
-
-    return false;
+    return invoices.some((invoice) => this.invoiceActive.isActive(invoice));
   }
 }

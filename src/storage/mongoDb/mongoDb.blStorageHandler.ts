@@ -15,7 +15,6 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   private permissionService: PermissionService;
 
   constructor(collectionName: string, schema: any) {
-    const mongoose = require("mongoose");
     mongoose.Promise = require("bluebird");
     const mongooseModelCreator = new MongooseModelCreator(
       collectionName,
@@ -314,8 +313,6 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     expandFilters: ExpandFilter[],
     userPermission?: UserPermission
   ): Promise<BlDocument[]> {
-    const promiseArr: Promise<BlDocument>[] = [];
-
     if (!expandFilters || expandFilters.length <= 0) {
       return Promise.resolve(docs);
     }
@@ -332,15 +329,11 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
     allowedNestedDocuments = expandedNestedDocuments;
 
-    for (const doc of docs) {
-      promiseArr.push(
+    try {
+      const promiseArr = docs.map((doc) =>
         this.getNestedDocuments(doc, allowedNestedDocuments, userPermission)
       );
-    }
-
-    try {
-      const docsWithExpandedDocs = await Promise.all(promiseArr);
-      return docsWithExpandedDocs;
+      return await Promise.all(promiseArr);
     } catch (e) {
       throw new BlError("could not retrieve nested documents").code(702).add(e);
     }
@@ -351,19 +344,17 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     nestedDocuments: NestedDocument[],
     userPermission?: UserPermission
   ): Promise<any> {
-    const nestedDocumentsPromArray: Promise<any>[] = [];
-
-    for (const nestedDocument of nestedDocuments) {
-      if (doc && doc[nestedDocument.field]) {
-        nestedDocumentsPromArray.push(
-          this.getNestedDocument(
-            doc[nestedDocument.field],
-            nestedDocument,
-            userPermission
-          )
-        );
-      }
-    }
+    const nestedDocumentsPromArray = nestedDocuments.flatMap((nestedDocument) =>
+      doc && doc[nestedDocument.field]
+        ? [
+            this.getNestedDocument(
+              doc[nestedDocument.field],
+              nestedDocument,
+              userPermission
+            ),
+          ]
+        : []
+    );
 
     try {
       const nestedDocs = await Promise.all(nestedDocumentsPromArray);

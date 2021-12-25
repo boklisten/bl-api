@@ -1,31 +1,25 @@
 import winston from "winston";
 import { getLogLevel } from "../server/commander/commander";
 import moment from "moment";
-const commander = require("commander");
-const colorizer = winston.format.colorize();
 
 function formatTimestamp(timestamp: string) {
-  const date = new Date(timestamp);
   return moment(timestamp).format("HH:mm:ss.SSS");
 }
 
 const customLevels = {
-  levels: {
-    error: 0,
-    warn: 1,
-    info: 2,
-    verbose: 3,
-    debug: 4,
-    silly: 5,
-  },
+  error: 0,
+  warn: 1,
+  info: 2,
+  verbose: 3,
+  debug: 4,
+  silly: 5,
 };
 
-//winston.addColors(customLevels.colors);
-
 export const logger = winston.createLogger({
-  levels: customLevels.levels,
+  levels: customLevels,
   format: winston.format.combine(
     winston.format.printf((info: any) => {
+      const colorizer = winston.format.colorize();
       if (
         process.env.NODE_ENV === "production" ||
         process.env.NODE_ENV === "dev"

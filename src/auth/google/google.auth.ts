@@ -80,13 +80,7 @@ export class GoogleAuth {
   }
 
   private retrieveUsername(profile): string {
-    let username;
-
-    for (const profileEmail of profile.emails) {
-      if (profileEmail.verified) {
-        username = profileEmail.value;
-      }
-    }
+    const username = profile.emails.find((email) => email.verified)?.value;
 
     if (!username || username.length <= 0) {
       throw new BlError("username not found by google").code(902);

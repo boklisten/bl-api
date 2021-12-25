@@ -4,8 +4,6 @@ export type StringFilter = {
 };
 
 export class DbQueryStringFilter {
-  constructor() {}
-
   getStringFilters(query: any, validStringParams: string[]): StringFilter[] {
     if (
       !query ||
@@ -19,15 +17,13 @@ export class DbQueryStringFilter {
 
     try {
       for (const param in query) {
-        if (validStringParams.indexOf(param) > -1) {
-          if (Array.isArray(query[param])) {
-            stringFilters.push({ fieldName: param, value: query[param] });
-          } else {
-            stringFilters.push({
-              fieldName: param,
-              value: this.getStringParamValue(query[param]),
-            });
-          }
+        if (validStringParams.includes(param)) {
+          stringFilters.push({
+            fieldName: param,
+            value: Array.isArray(query[param])
+              ? query[param]
+              : this.getStringParamValue(query[param]),
+          });
         }
       }
 
@@ -56,9 +52,6 @@ export class DbQueryStringFilter {
   }
 
   private validateStringParam(param: string): boolean {
-    if (!param) return false;
-    if (!(typeof param === "string")) return false;
-    if (param.length <= 0) return false;
-    return true;
+    return param && typeof param === "string" && param.length > 0;
   }
 }

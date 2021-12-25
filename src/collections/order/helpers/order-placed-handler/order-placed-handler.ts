@@ -1,28 +1,20 @@
 import {
   Order,
   CustomerItem,
-  OrderItem,
   BlError,
   AccessToken,
-  Payment,
   UserDetail,
-  Delivery,
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { customerItemSchema } from "../../../customer-item/customer-item.schema";
 import { orderSchema } from "../../order.schema";
 import { PaymentHandler } from "../../../payment/helpers/payment-handler";
 import { userDetailSchema } from "../../../user-detail/user-detail.schema";
-import { EmailService } from "../../../../messenger/email/email-service";
-import { deliverySchema } from "../../../delivery/delivery.schema";
 import { Messenger } from "../../../../messenger/messenger";
 import { CustomerItemHandler } from "../../../customer-item/helpers/customer-item-handler";
 import { OrderItemMovedFromOrderHandler } from "../order-item-moved-from-order-handler/order-item-moved-from-order-handler";
-import { isNullOrUndefined } from "util";
 import { Matcher } from "../../../match/helpers/matcher/matcher";
 
 export class OrderPlacedHandler {
-  private customerItemStorage: BlDocumentStorage<CustomerItem>;
   private orderStorage: BlDocumentStorage<Order>;
   private paymentHandler: PaymentHandler;
   private userDetailStorage: BlDocumentStorage<UserDetail>;
@@ -40,41 +32,25 @@ export class OrderPlacedHandler {
     orderItemMovedFromOrderHandler?: OrderItemMovedFromOrderHandler,
     private _matcher?: Matcher
   ) {
-    this.customerItemStorage = customerItemStorage
-      ? customerItemStorage
-      : new BlDocumentStorage("customeritems", customerItemSchema);
-    this.orderStorage = orderStorage
-      ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
-    this.paymentHandler = paymentHandler
-      ? paymentHandler
-      : new PaymentHandler();
-    this.userDetailStorage = userDetailStorage
-      ? userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
-    this._messenger = messenger ? messenger : new Messenger();
-    this._customerItemHandler = customerItemHandler
-      ? customerItemHandler
-      : new CustomerItemHandler();
-    this._orderItemMovedFromOrderHandler = orderItemMovedFromOrderHandler
-      ? orderItemMovedFromOrderHandler
-      : new OrderItemMovedFromOrderHandler();
+    this.orderStorage =
+      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
+    this.paymentHandler = paymentHandler ?? new PaymentHandler();
+    this.userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage("userdetails", userDetailSchema);
+    this._messenger = messenger ?? new Messenger();
+    this._customerItemHandler =
+      customerItemHandler ?? new CustomerItemHandler();
+    this._orderItemMovedFromOrderHandler =
+      orderItemMovedFromOrderHandler ?? new OrderItemMovedFromOrderHandler();
 
-    this._matcher = this._matcher ? this._matcher : new Matcher();
+    this._matcher = this._matcher ?? new Matcher();
   }
 
   public async placeOrder(
     order: Order,
     accessToken: AccessToken
   ): Promise<Order> {
-    let userDetail;
-
-    try {
-      userDetail = await this.userDetailStorage.get(order.customer as string);
-    } catch (e) {
-      userDetail = null;
-    }
-
     try {
       const payments = await this.paymentHandler.confirmPayments(
         order,
@@ -173,7 +149,7 @@ export class OrderPlacedHandler {
     order: Order,
     accessToken: AccessToken
   ): Promise<boolean> {
-    if (isNullOrUndefined(order.customer) || !order.customer) {
+    if (!order?.customer) {
       return Promise.resolve(true);
     }
     return new Promise((resolve, reject) => {
@@ -184,7 +160,7 @@ export class OrderPlacedHandler {
             ? (userDetail.orders as string[])
             : [];
 
-          if (orders.indexOf(order.id) <= -1) {
+          if (!orders.includes(order.id)) {
             orders.push(order.id);
 
             this.userDetailStorage
@@ -193,17 +169,16 @@ export class OrderPlacedHandler {
                 { orders: orders },
                 { id: accessToken.sub, permission: accessToken.permission }
               )
-              .then((updatedUserDetail: UserDetail) => {
+              .then(() => {
                 resolve(true);
               })
-              .catch((updateUserDetailError: BlError) => {
+              .catch(() => {
                 reject(
                   new BlError("could not update userDetail with placed order")
                 );
               });
           } else {
             resolve(true);
-            //reject(new BlError('the order was already in userDetails'));
           }
         })
         .catch((getUserDetailError: BlError) => {
@@ -213,21 +188,6 @@ export class OrderPlacedHandler {
             )
           );
         });
-    });
-  }
-
-  private updateLastOrderItemsIfMovedFromOrder(
-    order: Order,
-    accessToken: AccessToken
-  ): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      const movedFromOrderItems: {
-        itemId: string;
-        movedFromOrderId: string;
-        movedToOrderId: string;
-      }[] = [];
-
-      reject(new Error(""));
     });
   }
 
@@ -242,8 +202,7 @@ export class OrderPlacedHandler {
             this._messenger.orderPlaced(customerDetail, order);
           }
         })
-        .catch((getCustomerDetailError) => {});
-    } else {
+        .catch();
     }
   }
 }

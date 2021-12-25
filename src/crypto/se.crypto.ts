@@ -3,8 +3,6 @@ import { BlError } from "@boklisten/bl-model";
 const crypto = require("crypto");
 
 export class SeCrypto {
-  constructor() {}
-
   public cipher(msg: string): Promise<string> {
     return new Promise((resolve, reject) => {
       if (msg.length <= 0)

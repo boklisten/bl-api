@@ -7,8 +7,6 @@ export type RegexFilter = {
 };
 
 export class DbQueryRegexFilter {
-  constructor() {}
-
   getRegexFilters(query: any, validRegexParams: string[]): RegexFilter[] {
     if (
       !query ||
@@ -47,14 +45,9 @@ export class DbQueryRegexFilter {
     searchString: string,
     validRegexParams: string[]
   ): RegexFilter[] {
-    const regexFilters: RegexFilter[] = [];
-
-    for (const validRegexParam of validRegexParams) {
-      regexFilters.push({
-        fieldName: validRegexParam,
-        op: { $regex: searchString, $options: "imx" },
-      });
-    }
-    return regexFilters;
+    return validRegexParams.map((validRegexParam) => ({
+      fieldName: validRegexParam,
+      op: { $regex: searchString, $options: "imx" },
+    }));
   }
 }

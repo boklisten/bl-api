@@ -71,19 +71,11 @@ export class LocalLoginHandler {
   public async createDefaultLocalLoginIfNoneIsFound(
     username: string
   ): Promise<boolean> {
-    let localLogin: LocalLogin = null;
-
     try {
-      localLogin = await this.get(username);
+      await this.get(username);
     } catch (e) {
-      localLogin = null;
-
-      if (e instanceof BlError) {
-        if (e.getCode() === 702) {
-          const createDefaultLocalLogin = await this.createDefaultLocalLogin(
-            username
-          );
-        }
+      if (e instanceof BlError && e.getCode() === 702) {
+        await this.createDefaultLocalLogin(username);
       } else {
         throw new BlError("could not create default localLogin");
       }

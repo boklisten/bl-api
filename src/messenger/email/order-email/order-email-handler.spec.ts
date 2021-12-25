@@ -16,12 +16,7 @@ import {
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { OrderEmailHandler } from "./order-email-handler";
 import { dateService } from "../../../blc/date.service";
-import {
-  EmailHandler,
-  EmailLog,
-  EmailTemplateInput,
-} from "@boklisten/bl-email";
-import { EMAIL_SETTINGS } from "../email-settings";
+import { EmailHandler } from "@boklisten/bl-email";
 import { isNullOrUndefined } from "util";
 import moment from "moment-timezone";
 

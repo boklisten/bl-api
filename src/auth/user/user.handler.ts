@@ -6,12 +6,9 @@ import { User } from "../../collections/user/user";
 import { UserSchema } from "../../collections/user/user.schema";
 import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { PasswordReset } from "../../collections/password-reset/password-reset";
 import { EmailValidationHelper } from "../../collections/email-validation/helpers/email-validation.helper";
 import { SystemUser } from "../permission/permission.service";
 import { LocalLoginHandler } from "../local/local-login.handler";
-import { LocalLoginValidator } from "../local/local-login.validator";
-import { LocalLogin } from "../../collections/local-login/local-login";
 
 export class UserHandler {
   private blid: Blid;
@@ -187,7 +184,7 @@ export class UserHandler {
       } else if (this.isThirdPartyProvider(provider)) {
         // if user already exists and the creation is with google or facebook
         try {
-          const localLogin = await this._localLoginHandler.get(username);
+          await this._localLoginHandler.get(username);
         } catch (e) {
           // if localLogin is not found, should create a default one
           await this._localLoginHandler.createDefaultLocalLogin(username);

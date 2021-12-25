@@ -3,8 +3,6 @@ export type SortFilter = {
   direction: 1 | -1;
 };
 export class DbQuerySortFilter {
-  constructor() {}
-
   public getSortFilters(query: any, validSortParams: string[]): SortFilter[] {
     if (
       !query ||
@@ -22,25 +20,16 @@ export class DbQuerySortFilter {
     sort: any,
     validSortParams: string[]
   ): SortFilter[] {
-    const sortFilters: SortFilter[] = [];
-    let sortArray = [];
-    if (!Array.isArray(sort)) {
-      if (typeof sort !== "string")
-        throw new TypeError(
-          'sort of value "' + sort + '" is not of type Array[string] or string'
-        );
-      sortArray.push(sort);
-    } else {
-      sortArray = sort;
-    }
+    if (!Array.isArray(sort) && typeof sort !== "string")
+      throw new TypeError(
+        'sort of value "' + sort + '" is not of type Array[string] or string'
+      );
 
-    for (const sortValue of sortArray) {
-      if (this.validSortValue(sortValue, validSortParams)) {
-        sortFilters.push(this.getSortFilter(sortValue));
-      }
-    }
+    const sortArray = Array.isArray(sort) ? sort : [sort];
 
-    return sortFilters;
+    return sortArray
+      .filter((sortValue) => this.validSortValue(sortValue, validSortParams))
+      .map((sortValue) => this.getSortFilter(sortValue));
   }
 
   private getSortFilter(sortValue: string): SortFilter {
@@ -56,7 +45,7 @@ export class DbQuerySortFilter {
   ): boolean {
     const sval = this.getBaseSortParam(sortValue);
 
-    if (validSortParams.indexOf(sval) <= -1)
+    if (!validSortParams.includes(sval))
       throw ReferenceError(
         'sort parameter "' + sval + '" is not in validSortParams'
       );
@@ -65,14 +54,10 @@ export class DbQuerySortFilter {
   }
 
   private getBaseSortParam(sortValue: string) {
-    if (sortValue[0] === "-") {
-      return sortValue.substr(1, sortValue.length);
-    }
-    return sortValue;
+    return sortValue[0] === "-" ? sortValue.slice(1) : sortValue;
   }
 
   private getDirection(sortValue: string): 1 | -1 {
-    if (sortValue[0] === "-") return -1;
-    return 1;
+    return sortValue[0] === "-" ? -1 : 1;
   }
 }

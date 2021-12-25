@@ -82,13 +82,10 @@ export class DibsPaymentService {
     delivery?: Delivery
   ): DibsEasyOrder {
     this.validateOrder(order);
-    this.validateOrderPayments(order.payments as string[]);
 
-    const items: DibsEasyItem[] = [];
-
-    for (const orderItem of order.orderItems) {
-      items.push(this.orderItemToEasyItem(orderItem));
-    }
+    const items: DibsEasyItem[] = order.orderItems.map((orderItem) =>
+      this.orderItemToEasyItem(orderItem)
+    );
 
     if (order.delivery && delivery && delivery.amount > 0) {
       items.push(this.deliveryToDibsEasyItem(delivery));
@@ -161,32 +158,11 @@ export class DibsPaymentService {
     if (order.amount == 0) throw new BlError("order.amount is zero");
   }
 
-  private validateOrderPayments(payments: string[]) {
-    /*
-		let numOfDibsPayments = 0;
-
-		for (let payment of payments) {
-			if (payment.method === "dibs") {
-				numOfDibsPayments += 1;
-			}
-		}
-
-		if (numOfDibsPayments > 1) {
-			throw new BlError('order.payments include more than one payment with method "dibs"');
-		}
-
-		if (numOfDibsPayments < 1) {
-			throw new BlError('order.payments does not include a payment with method "dibs"');
-		}
-		*/
-  }
-
   private getTotalGrossAmount(dibsEasyItems: DibsEasyItem[]): number {
-    let sum = 0;
-    for (const dbi of dibsEasyItems) {
-      sum += dbi.grossTotalAmount;
-    }
-    return sum;
+    return dibsEasyItems.reduce(
+      (subTotal, dbi) => subTotal + dbi.grossTotalAmount,
+      0
+    );
   }
 
   private orderItemToEasyItem(orderItem: OrderItem): DibsEasyItem {

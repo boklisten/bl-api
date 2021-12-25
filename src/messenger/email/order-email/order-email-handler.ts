@@ -7,7 +7,6 @@ import {
   Payment,
   UserDetail,
   BlError,
-  CustomerItem,
   Branch,
 } from "@boklisten/bl-model";
 import { EMAIL_SETTINGS } from "../email-settings";
@@ -20,7 +19,6 @@ import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
 import { isNullOrUndefined } from "util";
 import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import moment = require("moment-timezone");
-import { branchItemSchema } from "../../../collections/branch-item/branch-item.schema";
 import { branchSchema } from "../../../collections/branch/branch.schema";
 import { dateService } from "../../../blc/date.service";
 
@@ -33,7 +31,6 @@ export class OrderEmailHandler {
     "Dette er kun en reservasjon, du har ikke betalt enda. Du betaler først når du kommer til oss på stand.";
   private agreementTextBlock =
     "Vedlagt i denne mailen ligger en kontrakt som du trenger å skrive under på for å få lånt bøkene. Kontrakten må du ha med deg når du kommer til oss på stand.";
-  private guardianTextBlock = "";
   private utcOffset = 120;
 
   constructor(
@@ -77,7 +74,7 @@ export class OrderEmailHandler {
 
     const emailUser: EmailUser = {
       id: customerDetail.id,
-      dob: !isNullOrUndefined(customerDetail.dob)
+      dob: customerDetail.dob
         ? dateService.toPrintFormat(customerDetail.dob, "Europe/Oslo")
         : "",
       name: customerDetail.name,
@@ -104,18 +101,14 @@ export class OrderEmailHandler {
   }
 
   private paymentNeeded(order: Order): boolean {
-    if (order.amount > 0) {
-      if (isNullOrUndefined(order.payments) || order.payments.length <= 0) {
-        return true;
-      }
-    }
-    return false;
+    return (
+      order.amount > 0 &&
+      (!Array.isArray(order.payments) || !order.payments.length)
+    );
   }
 
   private addNoPaymentProvidedNotice(emailSetting: EmailSetting) {
-    if (isNullOrUndefined(emailSetting.textBlocks)) {
-      emailSetting.textBlocks = [];
-    }
+    emailSetting.textBlocks ??= [];
 
     emailSetting.textBlocks.push({
       text: this.noPaymentNoticeText,
@@ -128,37 +121,33 @@ export class OrderEmailHandler {
     emailOrder: EmailOrder,
     emailUser: EmailUser
   ) {
-    if (moment(customerDetail.dob).isValid()) {
-      if (
-        moment(customerDetail.dob).isAfter(
-          moment(new Date()).subtract(18, "years")
-        )
-      ) {
-        if (customerDetail.guardian && customerDetail.guardian.email) {
-          const emailSetting: EmailSetting = {
-            toEmail: customerDetail.guardian.email,
-            fromEmail: EMAIL_SETTINGS.types.receipt.fromEmail,
-            subject: EMAIL_SETTINGS.types.receipt.subject,
-            userId: customerDetail.id,
-            userFullName: customerDetail.guardian.name,
-          };
+    if (
+      moment(customerDetail.dob).isValid() &&
+      moment(customerDetail.dob).isAfter(
+        moment(new Date()).subtract(18, "years")
+      ) &&
+      customerDetail?.guardian?.email
+    ) {
+      const emailSetting: EmailSetting = {
+        toEmail: customerDetail.guardian.email,
+        fromEmail: EMAIL_SETTINGS.types.receipt.fromEmail,
+        subject: EMAIL_SETTINGS.types.receipt.subject,
+        userId: customerDetail.id,
+        userFullName: customerDetail.guardian.name,
+      };
 
-          emailSetting.textBlocks = [
-            {
-              text:
-                "Du får denne e-posten fordi du er oppgitt som foresatt til " +
-                customerDetail.name +
-                ". Vær vennlig å skriv under på kontrakten som" +
-                " ligger vedlagt og la eleven levere denne når bøkene skal leveres ut. Eleven vil ikke kunne hente ut bøker uten underskrift fra foresatt.",
-            },
-          ];
+      emailSetting.textBlocks = [
+        {
+          text: `Du får denne e-posten fordi du er oppgitt som foresatt til ${customerDetail.name}. Vær vennlig å skriv under på kontrakten som ligger vedlagt og la eleven levere denne når bøkene skal leveres ut. Eleven vil ikke kunne hente ut bøker uten underskrift fra foresatt.`,
+        },
+      ];
 
-          this._emailHandler
-            .sendOrderReceipt(emailSetting, emailOrder, emailUser, true)
-            .then(() => {})
-            .catch(() => {});
-        }
-      }
+      this._emailHandler.sendOrderReceipt(
+        emailSetting,
+        emailOrder,
+        emailUser,
+        true
+      );
     }
   }
 
@@ -203,50 +192,45 @@ export class OrderEmailHandler {
   }
 
   private shouldShowDeadline(order: Order) {
-    for (const orderItem of order.orderItems) {
-      if (orderItem.type === "rent" || orderItem.type === "extend") {
-        return true;
-      }
-    }
-    return false;
+    return order.orderItems.some(
+      (orderItem) => orderItem.type === "rent" || orderItem.type === "extend"
+    );
   }
 
   private extractEmailOrderPaymentFromOrder(
     order: Order
   ): Promise<{ payment: any; showPayment: boolean }> {
-    if (isNullOrUndefined(order.payments) || order.payments.length <= 0) {
+    if (!Array.isArray(order.payments) || !order.payments.length) {
       return Promise.resolve({ payment: null, showPayment: false });
     }
 
-    const paymentPromiseArr: Promise<Payment>[] = [];
+    const paymentPromises: Promise<Payment>[] = order.payments.map((payment) =>
+      this._paymentStorage.get(
+        typeof payment === "string" ? payment : payment.id
+      )
+    );
 
-    for (const paymentId of order.payments) {
-      const pId = typeof paymentId === "string" ? paymentId : paymentId.id;
-      paymentPromiseArr.push(this._paymentStorage.get(pId));
-    }
-
-    return Promise.all(paymentPromiseArr)
+    return Promise.all(paymentPromises)
       .then((payments: Payment[]) => {
         const emailPayment = {
-          total: 0,
-          currency: "",
+          total: payments.reduce(
+            (subTotal, payment) => subTotal + payment.amount,
+            0
+          ),
+          currency: this.defaultCurrency,
           taxAmount: 0,
-          payments: [],
+          payments: payments.map((payment) =>
+            this.paymentToEmailPayment(payment)
+          ),
         };
 
-        for (const payment of payments) {
-          emailPayment.total += payment.amount;
-
-          emailPayment.payments.push(this.paymentToEmailPayment(payment));
-        }
-
-        emailPayment.currency = this.defaultCurrency;
-
-        if (emailPayment.payments[0] && emailPayment.payments[0].info) {
-          if (emailPayment.payments[0].info["orderDetails"]) {
-            emailPayment.currency =
-              emailPayment.payments[0].info["orderDetails"].currency;
-          }
+        if (
+          emailPayment.payments[0] &&
+          emailPayment.payments[0].info &&
+          emailPayment.payments[0].info["orderDetails"]
+        ) {
+          emailPayment.currency =
+            emailPayment.payments[0].info["orderDetails"].currency;
         }
 
         return { payment: emailPayment, showPayment: true };
@@ -260,22 +244,19 @@ export class OrderEmailHandler {
     order: Order
   ): Promise<{ delivery: any; showDelivery: boolean }> {
     const deliveryId = order.delivery as string;
-    if (isNullOrUndefined(order.delivery) || deliveryId.length <= 0) {
+    if (!order.delivery || !deliveryId.length) {
       return Promise.resolve({ delivery: null, showDelivery: false });
     }
 
     return this._deliveryStorage
       .get(deliveryId)
       .then((delivery: Delivery) => {
-        if (delivery.method !== "bring") {
-          // should only show delivery if user has ordered to mail
-          return { delivery: null, showDelivery: false };
-        }
-
-        return {
-          delivery: this.deliveryToEmailDelivery(delivery),
-          showDelivery: true,
-        };
+        return delivery.method !== "bring"
+          ? { delivery: null, showDelivery: false }
+          : {
+              delivery: this.deliveryToEmailDelivery(delivery),
+              showDelivery: true,
+            };
       })
       .catch((getDeliveryError: BlError) => {
         throw getDeliveryError;
@@ -291,12 +272,12 @@ export class OrderEmailHandler {
       method: "",
       amount: "",
       cardInfo: null,
-      taxAmount: !isNullOrUndefined(payment.taxAmount)
+      taxAmount: !isNaN(payment.taxAmount)
         ? payment.taxAmount.toString()
         : null,
       paymentId: "",
       status: this.translatePaymentConfirmed(),
-      creationTime: !isNullOrUndefined(payment.creationTime)
+      creationTime: payment.creationTime
         ? dateService.format(
             payment.creationTime,
             "Europe/Oslo",
@@ -313,23 +294,17 @@ export class OrderEmailHandler {
             paymentObj.method = paymentInfo.paymentDetails.paymentMethod;
           }
 
-          if (paymentInfo.paymentDetails.cardDetails) {
-            if (paymentInfo.paymentDetails.cardDetails.maskedPan) {
-              paymentObj.cardInfo =
-                "***" +
-                this.stripTo4LastDigits(
-                  paymentInfo.paymentDetails.cardDetails.maskedPan
-                );
-            }
+          if (paymentInfo.paymentDetails.cardDetails?.maskedPan) {
+            paymentObj.cardInfo = `***${this.stripTo4LastDigits(
+              paymentInfo.paymentDetails.cardDetails.maskedPan
+            )}`;
           }
         }
 
-        if (paymentInfo.orderDetails) {
-          if (paymentInfo.orderDetails.amount) {
-            paymentObj.amount = (
-              parseInt(paymentInfo.orderDetails.amount.toString()) / 100
-            ).toString();
-          }
+        if (paymentInfo.orderDetails?.amount) {
+          paymentObj.amount = (
+            parseInt(paymentInfo.orderDetails.amount.toString()) / 100
+          ).toString();
         }
 
         if (paymentInfo.paymentId) {
@@ -354,19 +329,13 @@ export class OrderEmailHandler {
   }
 
   private deliveryToEmailDelivery(delivery: Delivery): any {
-    let deliveryAddress = null;
-
-    if (delivery.info["shipmentAddress"]) {
-      deliveryAddress = delivery.info["shipmentAddress"].name;
-      deliveryAddress += ", " + delivery.info["shipmentAddress"].address;
-      deliveryAddress += ", " + delivery.info["shipmentAddress"].postalCode;
-      deliveryAddress += " " + delivery.info["shipmentAddress"].postalCity;
-    }
     return {
       method: delivery.method,
       currency: this.defaultCurrency,
       amount: delivery.amount,
-      address: deliveryAddress,
+      address: delivery.info["shipmentAddress"]
+        ? `${delivery.info["shipmentAddress"].name}, ${delivery.info["shipmentAddress"].address}, ${delivery.info["shipmentAddress"].postalCode} ${delivery.info["shipmentAddress"].postalCity}`
+        : null,
       trackingNumber: delivery.info["trackingNumber"],
       estimatedDeliveryDate: delivery.info["estimatedDelivery"]
         ? moment(delivery.info["estimatedDelivery"])
@@ -379,77 +348,46 @@ export class OrderEmailHandler {
   private orderItemsToEmailItems(
     orderItems: OrderItem[]
   ): { title: string; status: string; deadline?: string; price?: string }[] {
-    const emailItems: {
-      title: string;
-      status: string;
-      deadline?: string;
-      price?: string;
-    }[] = [];
-
-    for (const orderItem of orderItems) {
-      emailItems.push({
-        title: orderItem.title,
-        status: this.translateOrderItemType(orderItem.type, orderItem.handout),
-        deadline:
-          orderItem.type === "rent" || orderItem.type === "extend"
-            ? dateService.toPrintFormat(orderItem.info.to, "Europe/Oslo")
-            : null,
-        price:
-          orderItem.type !== "return" && orderItem.amount
-            ? orderItem.amount.toString()
-            : null,
-      });
-    }
-
-    return emailItems;
+    return orderItems.map((orderItem) => ({
+      title: orderItem.title,
+      status: this.translateOrderItemType(orderItem.type, orderItem.handout),
+      deadline:
+        orderItem.type === "rent" || orderItem.type === "extend"
+          ? dateService.toPrintFormat(orderItem.info.to, "Europe/Oslo")
+          : null,
+      price:
+        orderItem.type !== "return" && orderItem.amount
+          ? orderItem.amount.toString()
+          : null,
+    }));
   }
 
   private stripTo4LastDigits(cardNum: string) {
-    if (cardNum && cardNum.length > 4) {
-      let last4 = cardNum[cardNum.length - 4];
-      last4 += cardNum[cardNum.length - 3];
-      last4 += cardNum[cardNum.length - 2];
-      last4 += cardNum[cardNum.length - 1];
-      return last4;
-    }
-    return cardNum;
+    return cardNum && cardNum.length > 4 ? cardNum.slice(-4) : cardNum;
   }
 
   private translatePaymentConfirmed(): string {
-    if (this.localeSetting === "nb") {
-      return "bekreftet";
-    }
-    return "confirmed";
+    return this.localeSetting === "nb" ? "bekreftet" : "confirmed";
   }
 
   private translateOrderItemType(
     orderItemType: OrderItemType,
     handout?: boolean
   ): string {
-    let trans = "";
     if (this.localeSetting === "nb") {
-      if (orderItemType === "rent") {
-        trans += "lån";
-      } else if (orderItemType === "return") {
-        trans += "returnert";
-      } else if (orderItemType === "extend") {
-        trans += "forlenget";
-      } else if (orderItemType === "cancel") {
-        trans += "kansellert";
-      } else if (orderItemType === "buy") {
-        trans += "kjøp";
-      } else if (orderItemType === "partly-payment") {
-        trans += "delbetaling";
-      } else if (orderItemType === "buyback") {
-        trans += "tilbakekjøp";
-      } else if (orderItemType === "buyout") {
-        trans += "utkjøp";
-      }
-
-      if (handout && orderItemType !== "return") {
-        trans += " - utlevert";
-      }
-      return trans;
+      const translations = {
+        rent: "lån",
+        return: "returnert",
+        extend: "forlenget",
+        cancel: "kansellert",
+        buy: "kjøp",
+        "partly-payment": "delbetaling",
+        buyback: "tilbakekjøp",
+        buyout: "utkjøp",
+      };
+      return `${translations[orderItemType] ?? orderItemType}${
+        handout && orderItemType !== "return" ? " - utlevert" : ""
+      }`;
     }
 
     return orderItemType;
@@ -460,20 +398,10 @@ export class OrderEmailHandler {
     customerDetail: UserDetail,
     branchId: string
   ): Promise<boolean> {
-    let rentFound = false;
-    let onlyHandout = false;
-
-    for (const orderItem of order.orderItems) {
-      if (orderItem.handout) {
-        onlyHandout = true;
-      } else {
-        onlyHandout = false;
-      }
-
-      if (orderItem.type === "rent") {
-        rentFound = true;
-      }
-    }
+    const onlyHandout = order.orderItems.at(0).handout;
+    const rentFound = order.orderItems.some(
+      (orderItem) => orderItem.type === "rent"
+    );
 
     if (onlyHandout) {
       return Promise.resolve(false);

@@ -1,30 +1,29 @@
-// IMPORTANT TO HAVE ON TOP
-require("dotenv").config(); //adds the .env file to environment variables
+import dotenv from "dotenv";
+// IMPORTANT TO KEEP THIS ON TOP
+dotenv.config(); //adds the .env file to environment variables
+
 import express from "express";
 import { Application, Request, Response, Router } from "express";
 import passport from "passport";
 import { BlAuth } from "../auth/bl.auth";
 import { CollectionEndpointCreator } from "../collection-endpoint/collection-endpoint-creator";
 import path from "path";
-
 import { logger } from "../logger/logger";
-import { APP_CONFIG } from "../application-config";
-
-const bodyParser = require("body-parser");
-const packageJson = require("../../package.json");
-
-const mongoose = require("mongoose");
+import * as packageJson from "../../package.json";
+import mongoose from "mongoose";
+import bodyParser from "body-parser";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
 export class Server {
   public app: Application;
   private router: Router;
-  private blAuth: BlAuth;
 
   constructor() {
     this.printServerStartMessage();
     this.initialServerConfig();
     this.initialPassportConfig();
-    this.blAuth = new BlAuth(this.router);
+    new BlAuth(this.router);
     this.generateEndpoints();
     this.connectToDbAndStartServer();
   }
@@ -70,17 +69,13 @@ export class Server {
         logger.warn("mongoose connection was reconnected");
       });
 
-      mongoose.connection.on("error", (err) => {
+      mongoose.connection.on("error", () => {
         logger.error("mongoose connection has error");
       });
 
       mongoose
         .connect(process.env.MONGODB_URI, {
-          //useMongoClient: true,
-          //reconnectTries: Number.MAX_VALUE,
-          //reconnectInterval: 500,
-          //autoReconnect: true,
-          poolSize: 10,
+          maxPoolSize: 10,
           connectTimeoutMS: 10000,
           socketTimeoutMS: 45000,
           useNewUrlParser: true,
@@ -105,7 +100,6 @@ export class Server {
       logger.error(`unhandeled rejection at: ${p}, reason: ${reason}`);
     });
 
-    const cors = require("cors");
     const whitelist = process.env.URI_WHITELIST.split(" ");
     const allowedMethods = ["GET", "PUT", "PATCH", "POST", "DELETE"];
     const allowedHeaders = [
@@ -123,26 +117,25 @@ export class Server {
     };
 
     this.app.use(cors(corsConfig));
-    this.app.use(require("cookie-parser")());
+    this.app.use(cookieParser());
     this.app.use(passport.initialize());
     this.app.use(passport.session());
     this.router = Router();
 
-    const debugLogPath = (req: Request, res: Response, next: any) => {
-      const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    const debugLogPath = (req: Request, _res: Response, next: () => void) => {
       if (req.method !== "OPTIONS") {
         // no point in showing all the preflight requests
         logger.debug(`-> ${req.method} ${req.url}`);
-        let body;
-        try {
-          body = JSON.stringify(req.body);
-        } catch (e) {
-          body = req.body.toString("utf8");
-        }
-
         if (
           !(req.url.includes("auth") && process.env.NODE_ENV === "production")
         ) {
+          let body: string;
+          try {
+            body = JSON.stringify(req.body);
+          } catch (e) {
+            body = req.body.toString("utf8");
+          }
+
           logger.silly(`-> ${body}`);
         }
       }
@@ -161,7 +154,6 @@ export class Server {
     });
 
     this.app.use(debugLogPath);
-    this.initModules();
     this.app.use(this.router);
   }
 
@@ -171,8 +163,6 @@ export class Server {
     );
     collectionEndpointCreator.create();
   }
-
-  private initModules() {}
 
   private initialPassportConfig() {
     passport.serializeUser((user: any, done: any) => {

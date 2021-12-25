@@ -8,7 +8,6 @@ import {
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { paymentSchema } from "../payment.schema";
 import { DibsPaymentService } from "../../../payment/dibs/dibs-payment.service";
-import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { isNullOrUndefined } from "util";
 import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
 import { PaymentDibsConfirmer } from "./dibs/payment-dibs-confirmer";
@@ -152,12 +151,11 @@ export class PaymentHandler {
     order,
     payments: Payment[]
   ): Promise<boolean> {
-    let total = 0;
+    const total = payments.reduce(
+      (subTotal, payment) => subTotal + payment.amount,
+      0
+    );
     let orderTotal = order.amount;
-
-    payments.forEach((payment) => {
-      total += payment.amount;
-    });
 
     if (order.delivery) {
       try {

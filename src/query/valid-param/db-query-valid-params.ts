@@ -35,24 +35,12 @@ export class DbQueryValidParams {
   }
 
   public getAllValidParams(): string[] {
-    const allValidParams: string[] = [];
-
-    for (const validParam of this.validParams) {
-      allValidParams.push(validParam.fieldName);
-    }
-
-    return allValidParams;
+    return this.validParams.map((validParam) => validParam.fieldName);
   }
 
   private getValidParamsBasedOnType(type: string) {
-    const validParamsBasedOnType: string[] = [];
-
-    for (const validParam of this.validParams) {
-      if (validParam.type === type) {
-        validParamsBasedOnType.push(validParam.fieldName);
-      }
-    }
-
-    return validParamsBasedOnType;
+    return this.validParams
+      .filter((validParam) => validParam.type === type)
+      .map((validParam) => validParam.fieldName);
   }
 }

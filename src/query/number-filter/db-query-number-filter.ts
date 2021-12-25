@@ -15,8 +15,6 @@ export class DbQueryNumberFilter {
 
   private equalOperation = "$eq";
 
-  constructor() {}
-
   public getNumberFilters(
     query: any,
     validNumberParams: string[]
@@ -32,7 +30,7 @@ export class DbQueryNumberFilter {
 
     try {
       for (const param in query) {
-        if (validNumberParams.indexOf(param) > -1) {
+        if (validNumberParams.includes(param)) {
           let numberFilter: NumberFilter;
 
           if (Array.isArray(query[param])) {
@@ -119,13 +117,18 @@ export class DbQueryNumberFilter {
   }
 
   private valueHasOperationIdentifier(value: string): boolean {
+    return this.operationIdentifiers.some(
+      (operationIdentifier) =>
+        value.length >= operationIdentifier.atIndex &&
+        operationIdentifier.opIdentifier === value[operationIdentifier.atIndex]
+    );
     for (const operationIdentifiers of this.operationIdentifiers) {
-      if (value.length >= operationIdentifiers.atIndex) {
-        if (
-          operationIdentifiers.opIdentifier ===
+      if (
+        value.length >= operationIdentifiers.atIndex &&
+        operationIdentifiers.opIdentifier ===
           value[operationIdentifiers.atIndex]
-        )
-          return true;
+      ) {
+        return true;
       }
     }
     return false;
@@ -136,13 +139,9 @@ export class DbQueryNumberFilter {
     value: number;
   } {
     const operation = this.getOperation(value);
-    let number;
-
-    if (operation === this.equalOperation) {
-      number = this.extractNumberFromQueryString(value);
-    } else {
-      number = this.extractNumberFromQueryString(value.substr(1, value.length));
-    }
+    const number: number = this.extractNumberFromQueryString(
+      operation === this.equalOperation ? value : value.slice(1)
+    );
 
     return {
       operation: operation,
@@ -151,24 +150,18 @@ export class DbQueryNumberFilter {
   }
 
   private getOperation(value: string): string {
-    for (const operationIdentifier of this.operationIdentifiers) {
-      if (value.length >= operationIdentifier.atIndex) {
-        if (
-          operationIdentifier.opIdentifier ===
-          value[operationIdentifier.atIndex]
-        ) {
-          return operationIdentifier.op;
-        }
-      }
-    }
+    const foundOperation = this.operationIdentifiers.find(
+      (operationIdentifier) =>
+        value.length >= operationIdentifier.atIndex &&
+        operationIdentifier.opIdentifier === value[operationIdentifier.atIndex]
+    )?.op;
 
-    return this.equalOperation;
+    return foundOperation ?? this.equalOperation;
   }
 
   private extractNumberFromQueryString(num: string): number {
-    for (const n of num) {
-      if (isNaN(parseInt(n, 10)))
-        throw TypeError('value "' + num + '" is not a valid number');
+    if (num.split("").some((n) => isNaN(parseInt(n, 10)))) {
+      throw TypeError('value "' + num + '" is not a valid number');
     }
     return parseInt(num, 10);
   }
