@@ -8,12 +8,11 @@ export class EmailValidationPostHook extends Hook {
 
   constructor(emailValidationHelper?: EmailValidationHelper) {
     super();
-    this._emailValidationHelper = emailValidationHelper
-      ? emailValidationHelper
-      : new EmailValidationHelper();
+    this._emailValidationHelper =
+      emailValidationHelper ?? new EmailValidationHelper();
   }
 
-  public after(
+  public override after(
     emailValidations: EmailValidation[],
     accessToken?: AccessToken
   ): Promise<EmailValidation[]> {

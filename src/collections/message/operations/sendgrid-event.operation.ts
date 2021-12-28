@@ -65,6 +65,7 @@ export class SendgridEventOperation implements Operation {
       // this is just for logging anyway, and we can handle some losses
       return true;
     }
+    return undefined;
   }
 
   private async updateMessageWithSendgridEvent(

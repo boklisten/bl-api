@@ -4,12 +4,6 @@ import { messageSchema } from "../../collections/message/message.schema";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import { branchSchema } from "../../collections/branch/branch.schema";
 import { DateService } from "../../blc/date.service";
-import {
-  Recipient,
-  MessageOptions,
-  PostOffice,
-  postOffice,
-} from "@boklisten/bl-post-office";
 import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
 
 export class BookingEmailService {

@@ -1,6 +1,5 @@
 import { EmailService } from "./email/email-service";
 import {
-  BlError,
   Delivery,
   Order,
   UserDetail,

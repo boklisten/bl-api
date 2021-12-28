@@ -1,12 +1,9 @@
 import {
-  CustomerItem,
   BlError,
   Message,
   UserDetail,
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { SEDbQuery } from "../../query/se.db-query";
-import moment = require("moment");
 import { CustomerItemHandler } from "../../collections/customer-item/helpers/customer-item-handler";
 import { EmailService } from "../email/email-service";
 import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";

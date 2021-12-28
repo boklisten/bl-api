@@ -35,10 +35,8 @@ export class DbQueryDateFilter {
 
     try {
       for (const param in query) {
-        if (query.hasOwnProperty(param)) {
+        if (Object.prototype.hasOwnProperty.call(query, param)) {
           if (validDateParams.indexOf(param) > -1) {
-            let dateFilter: DateFilter;
-
             if (Array.isArray(query[param])) {
               return this.generateMultipleDateFilter(param, query[param]);
             } else {
@@ -54,6 +52,7 @@ export class DbQueryDateFilter {
         throw new SyntaxError();
       }
     }
+    return undefined;
   }
 
   private generateSingleDayFilter(
@@ -107,7 +106,7 @@ export class DbQueryDateFilter {
 
     for (const value of values) {
       const op = this.getOperation(value);
-      const theDateString = value.substr(1, value.length);
+      const theDateString = value.slice(1);
       operations[op] = moment(theDateString, this.dateFormat, true).toDate();
     }
 

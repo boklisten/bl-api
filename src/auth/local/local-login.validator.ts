@@ -1,7 +1,7 @@
 import { LocalLoginHandler } from "./local-login.handler";
 import isEmail from "validator/lib/isEmail";
 import { LocalLogin } from "../../collections/local-login/local-login";
-import { BlApiError, BlError } from "@boklisten/bl-model";
+import { BlError } from "@boklisten/bl-model";
 import { LocalLoginPasswordValidator } from "./password/local-login-password.validator";
 import { LocalLoginCreator } from "./local-login-creator/local-login-creator";
 import { UserHandler } from "../user/user.handler";

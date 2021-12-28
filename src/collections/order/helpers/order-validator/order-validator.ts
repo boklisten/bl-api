@@ -1,15 +1,9 @@
 import {
   BlError,
   Branch,
-  CustomerItem,
-  Item,
   Order,
-  OrderItem,
-  Payment,
-  Delivery,
 } from "@boklisten/bl-model";
 import { BranchValidator } from "./branch-validator/branch-validator";
-import { ItemValidator } from "./item-validator/item-validator";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { OrderPlacedValidator } from "./order-placed-validator/order-placed-validator";
 import { OrderItemValidator } from "./order-item-validator/order-item-validator";

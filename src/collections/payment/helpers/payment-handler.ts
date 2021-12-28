@@ -8,15 +8,12 @@ import {
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { paymentSchema } from "../payment.schema";
 import { DibsPaymentService } from "../../../payment/dibs/dibs-payment.service";
-import { isNullOrUndefined } from "util";
 import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
 import { PaymentDibsConfirmer } from "./dibs/payment-dibs-confirmer";
 import { deliverySchema } from "../../delivery/delivery.schema";
 
 export class PaymentHandler {
   private paymentStorage: BlDocumentStorage<Payment>;
-  private dibsPaymentService: DibsPaymentService;
-  private _userDetailHelper: UserDetailHelper;
 
   constructor(
     paymentStorage?: BlDocumentStorage<Payment>,
@@ -28,12 +25,6 @@ export class PaymentHandler {
     this.paymentStorage = paymentStorage
       ? paymentStorage
       : new BlDocumentStorage("payments", paymentSchema);
-    this.dibsPaymentService = dibsPaymentService
-      ? dibsPaymentService
-      : new DibsPaymentService();
-    this._userDetailHelper = userDetailHelper
-      ? userDetailHelper
-      : new UserDetailHelper();
     this._paymentDibsConfirmer = _paymentDibsConfirmer
       ? _paymentDibsConfirmer
       : new PaymentDibsConfirmer();

@@ -2,9 +2,7 @@ import { Hook } from "../../../hook/hook";
 import { AccessToken, BlError, UserDetail } from "@boklisten/bl-model";
 import { PasswordReset } from "../password-reset";
 import isEmail from "validator/lib/isEmail";
-import { isNullOrUndefined } from "util";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { passwordResetSchema } from "../password-reset.schema";
 import { UserHandler } from "../../../auth/user/user.handler";
 import { User } from "../../user/user";
 import { SeCrypto } from "../../../crypto/se.crypto";
@@ -24,26 +22,23 @@ export class PasswordResetPostHook extends Hook {
     messenger?: Messenger
   ) {
     super();
-    this._userDetailStorage = userDetailStorage
-      ? userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
-    this._userHandler = userHandler ? userHandler : new UserHandler();
-    this._seCrypto = seCrypto ? seCrypto : new SeCrypto();
-    this._messenger = messenger ? messenger : new Messenger();
+    this._userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage("userdetails", userDetailSchema);
+    this._userHandler = userHandler ?? new UserHandler();
+    this._seCrypto = seCrypto ?? new SeCrypto();
+    this._messenger = messenger ?? new Messenger();
   }
 
-  before(
+  override before(
     passwordReset: PasswordReset,
     accessToken?: AccessToken
   ): Promise<PasswordReset> {
-    if (isNullOrUndefined(passwordReset)) {
+    if (!passwordReset) {
       return Promise.reject(new BlError("passwordReset is empty or undefined"));
     }
 
-    if (
-      isNullOrUndefined(passwordReset.email) ||
-      !isEmail(passwordReset.email)
-    ) {
+    if (!passwordReset.email || !isEmail(passwordReset.email)) {
       return Promise.reject(
         new BlError(`passwordReset.email is not a valid email`)
       );
@@ -72,7 +67,7 @@ export class PasswordResetPostHook extends Hook {
     });
   }
 
-  after(
+  override after(
     passwordResets: PasswordReset[],
     accessToken?: AccessToken
   ): Promise<PasswordReset[]> {

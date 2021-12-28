@@ -2,12 +2,9 @@ import { BlDocument, BlError } from "@boklisten/bl-model";
 import { Router } from "express";
 import {
   BlCollection,
-  BlDocumentPermission,
   BlEndpoint,
-  BlEndpointRestriction,
 } from "../collections/bl-collection";
 import { BlDocumentStorage } from "../storage/blDocumentStorage";
-import { SEResponseHandler } from "../response/se.response.handler";
 import { PermissionService } from "../auth/permission/permission.service";
 import { ApiPath } from "../config/api-path";
 import { CollectionEndpointGetAll } from "./collection-endpoint-get-all/collection-endpoint-get-all";
@@ -15,21 +12,18 @@ import { CollectionEndpointGetId } from "./collection-endpoint-get-id/collection
 import { CollectionEndpointPost } from "./collection-endpoint-post/collection-endpoint-post";
 import { CollectionEndpointDelete } from "./collection-endpoint-delete/collection-endpoint-delete";
 import { CollectionEndpointPatch } from "./collection-endpoint-patch/collection-endpoint-patch";
-import { Hook } from "../hook/hook";
 import { logger } from "../logger/logger";
 
 export class CollectionEndpoint<T extends BlDocument> {
   private _documentStorage: BlDocumentStorage<T>;
-  private _permissionService: PermissionService;
-  private _apiPath: ApiPath;
 
   constructor(private _router: Router, private _collection: BlCollection) {
     this._documentStorage = new BlDocumentStorage<T>(
       _collection.collectionName,
       _collection.mongooseSchema
     );
-    this._permissionService = new PermissionService();
-    this._apiPath = new ApiPath();
+    new PermissionService();
+    new ApiPath();
   }
 
   public create() {
@@ -90,27 +84,6 @@ export class CollectionEndpoint<T extends BlDocument> {
         }
       }
     }
-  }
-
-  private getRestrictionPrintout(restriction: BlEndpointRestriction): string {
-    const permissionService: PermissionService = new PermissionService();
-    let output = "";
-
-    if (restriction && restriction.permissions) {
-      output +=
-        "[" +
-        permissionService.getLowestPermission(restriction.permissions) +
-        "]";
-    } else {
-      output += "[everyone]";
-    }
-
-    output += "";
-
-    if (restriction && restriction.restricted) {
-      output += " -R";
-    }
-    return output;
   }
 
   private createGetAll(endpoint: BlEndpoint) {

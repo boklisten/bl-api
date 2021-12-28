@@ -2,25 +2,18 @@ import { Hook } from "../../../hook/hook";
 import {
   BlError,
   Delivery,
-  DeliveryInfoBring,
   Item,
   Order,
   AccessToken,
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { orderSchema } from "../../order/order.schema";
-import { itemSchema } from "../../item/item.schema";
 import { BringDeliveryService } from "../helpers/deliveryBring/bringDelivery.service";
-import { deliverySchema } from "../delivery.schema";
 import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
 import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
 
 export class DeliveryPostHook extends Hook {
   private orderStorage: BlDocumentStorage<Order>;
-  private deliveryStorage: BlDocumentStorage<Delivery>;
-  private itemStorage: BlDocumentStorage<Item>;
-  rrt;
-  private bringDeliveryService: BringDeliveryService;
   private deliveryValidator: DeliveryValidator;
   private deliveryHandler: DeliveryHandler;
 
@@ -33,28 +26,13 @@ export class DeliveryPostHook extends Hook {
     bringDeliveryService?: BringDeliveryService
   ) {
     super();
-    this.deliveryValidator = deliveryValidator
-      ? deliveryValidator
-      : new DeliveryValidator();
-    this.deliveryHandler = deliveryHandler
-      ? deliveryHandler
-      : new DeliveryHandler();
-
-    this.deliveryStorage = deliveryStorage
-      ? deliveryStorage
-      : new BlDocumentStorage("deliveries", deliverySchema);
-    this.orderStorage = orderStorage
-      ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
-    this.itemStorage = itemStorage
-      ? itemStorage
-      : new BlDocumentStorage("items", itemSchema);
-    this.bringDeliveryService = bringDeliveryService
-      ? bringDeliveryService
-      : new BringDeliveryService();
+    this.deliveryValidator = deliveryValidator ?? new DeliveryValidator();
+    this.deliveryHandler = deliveryHandler ?? new DeliveryHandler();
+    this.orderStorage =
+      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
   }
 
-  public after(
+  public override after(
     deliveries: Delivery[],
     accessToken?: AccessToken
   ): Promise<Delivery[]> {

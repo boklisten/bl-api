@@ -1,6 +1,5 @@
 import { Hook } from "../../../hook/hook";
-import { UserDetail, AccessToken, BlError } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { AccessToken, BlError } from "@boklisten/bl-model";
 import { OrderActive } from "../../order/helpers/order-active/order-active";
 import { CustomerHaveActiveCustomerItems } from "../../customer-item/helpers/customer-have-active-customer-items";
 import { CustomerInvoiceActive } from "../../invoice/helpers/customer-invoice-active";
@@ -31,7 +30,7 @@ export class UserDetailDeleteHook extends Hook {
       : new UserDeleteAllInfo();
   }
 
-  public async before(
+  public override async before(
     body: any,
     accessToken: AccessToken,
     id: string

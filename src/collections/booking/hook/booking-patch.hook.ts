@@ -1,13 +1,10 @@
 import { Hook } from "../../../hook/hook";
-import { AccessToken, Booking, BlError, UserDetail } from "@boklisten/bl-model";
+import { AccessToken, Booking, BlError } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { bookingSchema } from "../booking.schema";
 import { PermissionService } from "../../../auth/permission/permission.service";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 import { DateService } from "../../../blc/date.service";
-import { isNullOrUndefined } from "util";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { EmailService } from "../../../messenger/email/email-service";
 import { BookingEmailService } from "../../../messenger/email/booking-email-service";
 
 export class BookingPatchHook extends Hook {
@@ -22,18 +19,16 @@ export class BookingPatchHook extends Hook {
     bookingEmailService?: BookingEmailService
   ) {
     super();
-    this.bookingStorage = bookingStorage
-      ? bookingStorage
-      : new BlDocumentStorage<Booking>("bookings", bookingSchema);
+    this.bookingStorage =
+      bookingStorage ??
+      new BlDocumentStorage<Booking>("bookings", bookingSchema);
     this.permissionService = new PermissionService();
     this.dbQueryBuilder = new SEDbQueryBuilder();
     this.dateService = new DateService();
-    this.bookingEmailService = bookingEmailService
-      ? bookingEmailService
-      : new BookingEmailService();
+    this.bookingEmailService = bookingEmailService ?? new BookingEmailService();
   }
 
-  public async before(
+  public override async before(
     body: any,
     accessToken: AccessToken,
     id: string
@@ -132,7 +127,7 @@ export class BookingPatchHook extends Hook {
     return false;
   }
 
-  public async after(
+  public override async after(
     bookings: Booking[],
     accessToken: AccessToken
   ): Promise<Booking[]> {
@@ -141,7 +136,7 @@ export class BookingPatchHook extends Hook {
         throw new BlError("booking.customer is set but booked is false");
       }
 
-      if (booking.booked && isNullOrUndefined(booking.customer)) {
+      if (booking.booked && !booking.customer) {
         throw new BlError(
           "booking.booked is set but customer is null or undefined"
         );
@@ -157,13 +152,13 @@ export class BookingPatchHook extends Hook {
 
         if (booking.booked && booking.customer) {
           subtype = "confirmed";
-        } else if (!booking.booked && isNullOrUndefined(booking.customer)) {
+        } else if (!booking.booked && !booking.customer) {
           subtype = "canceled";
         }
 
         if (subtype) {
           try {
-            const result = await this.bookingEmailService.sendBookingEmail(
+            await this.bookingEmailService.sendBookingEmail(
               accessToken.details,
               booking,
               subtype,

@@ -4,8 +4,6 @@ import {
   BlEndpoint,
 } from "../bl-collection";
 import { orderSchema } from "./order.schema";
-import { OrderValidator } from "./helpers/order-validator/order-validator";
-import { Schema } from "mongoose";
 import { OrderPatchHook } from "./hooks/order.patch.hook";
 import { OrderPostHook } from "./hooks/order.post.hook";
 import { OrderReceiptPdfOperation } from "./operations/order-receipt-pdf.operation";

@@ -1,8 +1,6 @@
 import { Order, OrderItem, BlError, Branch, Item } from "@boklisten/bl-model";
-import { isNullOrUndefined, isNumber } from "util";
 import { OrderItemExtendValidator } from "./order-item-extend-validator/order-item-extend-validator";
 import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
-import { branchSchema } from "../../../../branch/branch.schema";
 import { itemSchema } from "../../../../item/item.schema";
 import { OrderItemBuyValidator } from "./order-item-buy-validator/order-item-buy-validator";
 import { OrderItemRentValidator } from "./order-item-rent-validator/order-item-rent-validator";
@@ -16,7 +14,6 @@ export class OrderItemValidator {
   private orderItemBuyValidator: OrderItemBuyValidator;
   private orderItemRentValidator: OrderItemRentValidator;
   private orderItemPartlyPaymentValidator: OrderItemPartlyPaymentValidator;
-  private branchStorage: BlDocumentStorage<Branch>;
   private itemStorage: BlDocumentStorage<Item>;
   private priceService: PriceService;
 
@@ -29,29 +26,20 @@ export class OrderItemValidator {
     orderItemExtendValidator?: OrderItemExtendValidator,
     orderItemPartlyPaymentValidator?: OrderItemPartlyPaymentValidator
   ) {
-    this.branchStorage = branchStorage
-      ? branchStorage
-      : new BlDocumentStorage("branches", branchSchema);
-    this.itemStorage = itemStorage
-      ? itemStorage
-      : new BlDocumentStorage("items", itemSchema);
+    this.itemStorage =
+      itemStorage ?? new BlDocumentStorage("items", itemSchema);
 
-    this.orderItemFieldValidator = orderItemFieldValidator
-      ? orderItemFieldValidator
-      : new OrderFieldValidator();
-    this.orderItemRentValidator = orderItemRentValidator
-      ? orderItemRentValidator
-      : new OrderItemRentValidator();
-    this.orderItemBuyValidator = orderItemBuyValidator
-      ? orderItemBuyValidator
-      : new OrderItemBuyValidator();
-    this.orderItemExtendValidator = orderItemExtendValidator
-      ? orderItemExtendValidator
-      : new OrderItemExtendValidator();
+    this.orderItemFieldValidator =
+      orderItemFieldValidator ?? new OrderFieldValidator();
+    this.orderItemRentValidator =
+      orderItemRentValidator ?? new OrderItemRentValidator();
+    this.orderItemBuyValidator =
+      orderItemBuyValidator ?? new OrderItemBuyValidator();
+    this.orderItemExtendValidator =
+      orderItemExtendValidator ?? new OrderItemExtendValidator();
     this.priceService = new PriceService({ roundDown: true });
-    this.orderItemPartlyPaymentValidator = orderItemPartlyPaymentValidator
-      ? orderItemPartlyPaymentValidator
-      : new OrderItemPartlyPaymentValidator();
+    this.orderItemPartlyPaymentValidator =
+      orderItemPartlyPaymentValidator ?? new OrderItemPartlyPaymentValidator();
   }
 
   public async validate(branch: Branch, order: Order): Promise<boolean> {
@@ -75,6 +63,7 @@ export class OrderItemValidator {
         )
       );
     }
+    return undefined;
   }
 
   private async validateOrderItemBasedOnType(
@@ -104,6 +93,7 @@ export class OrderItemValidator {
       case "extend":
         return await this.orderItemExtendValidator.validate(branch, orderItem);
     }
+    return undefined;
   }
 
   private validateOrderItemAmounts(orderItem: OrderItem) {

@@ -16,7 +16,6 @@ import { deliverySchema } from "../../../collections/delivery/delivery.schema";
 import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
 import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
 import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
-import { isNullOrUndefined } from "util";
 import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import moment = require("moment-timezone");
 import { branchSchema } from "../../../collections/branch/branch.schema";

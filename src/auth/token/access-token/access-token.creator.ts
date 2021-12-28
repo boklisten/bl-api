@@ -3,7 +3,6 @@ import { UserPermission } from "../../user/user-permission";
 import { BlError } from "@boklisten/bl-model";
 import { AccessTokenSecret } from "./access-token.secret";
 import { TokenConfig } from "../token.config";
-import { AccessToken } from "./access-token";
 
 export class AccessTokenCreator {
   private refreshTokenValidator: RefreshTokenValidator;

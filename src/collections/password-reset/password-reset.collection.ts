@@ -1,7 +1,6 @@
 import { BlCollection, BlEndpoint } from "../bl-collection";
 import { passwordResetSchema } from "./password-reset.schema";
 import { PasswordResetPostHook } from "./hooks/password-reset-post.hook";
-import { Schema } from "mongoose";
 import { PasswordResetOperation } from "./operations/password-reset.operation";
 import { PasswordResetNewOperation } from "./operations/password-reset-new.operation";
 

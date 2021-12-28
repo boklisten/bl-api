@@ -3,7 +3,6 @@ import {
   UserDetail,
   BlError,
   Delivery,
-  Match,
   MatchProfile,
   MatchItem,
 } from "@boklisten/bl-model";

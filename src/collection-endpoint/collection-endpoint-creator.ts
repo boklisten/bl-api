@@ -1,4 +1,4 @@
-import { Request, Router } from "express";
+import { Router } from "express";
 import { SEResponseHandler } from "../response/se.response.handler";
 import {
   BlDocument,
@@ -43,10 +43,9 @@ import { BookingCollection } from "../collections/booking/booking.collection";
 import { UniqueItemCollection } from "../collections/unique-item/unique-item.collection";
 
 export class CollectionEndpointCreator {
-  private _responseHandler: SEResponseHandler;
 
   constructor(private _router: Router) {
-    this._responseHandler = new SEResponseHandler();
+    new SEResponseHandler();
   }
 
   create() {

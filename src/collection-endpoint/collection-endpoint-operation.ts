@@ -11,7 +11,6 @@ import { BlApiRequest } from "../request/bl-api-request";
 import { BlapiResponse } from "@boklisten/bl-model";
 
 export class CollectionEndpointOperation {
-  private _uri: string;
   private _collectionEndpointAuth: CollectionEndpointAuth;
   private _responseHandler: SEResponseHandler;
 
@@ -21,7 +20,7 @@ export class CollectionEndpointOperation {
     private _method: BlEndpointMethod,
     protected _operation: BlEndpointOperation
   ) {
-    this._uri = this.createUri(
+    this.createUri(
       this.collectionUri,
       this._operation.name,
       _method

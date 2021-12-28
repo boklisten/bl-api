@@ -1,7 +1,6 @@
 import { BlCollection, BlEndpoint } from "../bl-collection";
 import { MessagePostHook } from "./hooks/message-post.hook";
 import { messageSchema } from "./message.schema";
-import { Schema } from "mongoose";
 import { SendgridEventOperation } from "./operations/sendgrid-event.operation";
 import { TwilioSmsEventOperation } from "./operations/twillio-sms-event.operation";
 

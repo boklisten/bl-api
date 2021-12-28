@@ -2,22 +2,17 @@ import { Delivery, BlError, Order } from "@boklisten/bl-model";
 import { DeliveryBranchHandler } from "../deliveryBranch/delivery-branch-handler";
 import { isNullOrUndefined } from "util";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { orderSchema } from "../../../order/order.schema";
 import { DeliveryBringHandler } from "../deliveryBring/delivery-bring-handler";
 
 export class DeliveryValidator {
   private deliveryBranchHandler: DeliveryBranchHandler;
   private deliveryBringHandler: DeliveryBringHandler;
-  private orderStorage: BlDocumentStorage<Order>;
 
   constructor(
     orderStorage?: BlDocumentStorage<Order>,
     deliveryBranchHandler?: DeliveryBranchHandler,
     deliveryBringHandler?: DeliveryBringHandler
   ) {
-    this.orderStorage = orderStorage
-      ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
     this.deliveryBranchHandler = deliveryBranchHandler
       ? deliveryBranchHandler
       : new DeliveryBranchHandler();

@@ -22,5 +22,5 @@ if (program.generateDevEnvironment) {
   //if (program.port) console.log('the port flag', program.port);
   //if (program.host) console.log('the host flag', program.host);
 
-  const server = new Server();
+  new Server();
 }

@@ -1,13 +1,6 @@
-import {
-  Order,
-  OrderItem,
-  CustomerItem,
-  BlError,
-  Branch,
-} from "@boklisten/bl-model";
+import { OrderItem, CustomerItem, BlError, Branch } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
 import { customerItemSchema } from "../../../../../customer-item/customer-item.schema";
-import { isNullOrUndefined } from "util";
 
 export class OrderItemExtendValidator {
   private customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -45,11 +38,11 @@ export class OrderItemExtendValidator {
       throw new BlError(`orderItem.type "${orderItem.type}" is not "extend"`);
     }
 
-    if (isNullOrUndefined(orderItem.info)) {
+    if (!orderItem.info) {
       throw new BlError("orderItem.info is not defined");
     }
 
-    if (isNullOrUndefined(orderItem.info.customerItem)) {
+    if (!orderItem.info.customerItem) {
       throw new BlError("orderItem.info.customerItem is not defined");
     }
 
@@ -83,6 +76,7 @@ export class OrderItemExtendValidator {
 
           return true;
         }
+        return undefined;
       })
       .catch((blError: BlError) => {
         return Promise.reject(blError);
@@ -90,7 +84,7 @@ export class OrderItemExtendValidator {
   }
 
   private checkPeriodType(orderItem: OrderItem, branch: Branch) {
-    if (isNullOrUndefined(branch.paymentInfo.extendPeriods)) {
+    if (!branch.paymentInfo.extendPeriods) {
       throw new BlError("the branch has no extendPeriods defined");
     }
 

@@ -3,15 +3,13 @@ import { NextFunction, Request, Response } from "express";
 import { UserSchema } from "../../../user/user.schema";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { User } from "../../../user/user";
-import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
+import { BlapiResponse, UserDetail } from "@boklisten/bl-model";
 import { userDetailSchema } from "../../user-detail.schema";
 import { PermissionService } from "../../../../auth/permission/permission.service";
-import { isNullOrUndefined } from "util";
 import { SEResponseHandler } from "../../../../response/se.response.handler";
 import { Operation } from "../../../../operation/operation";
 
 export class UserDetailReadPermissionOperation implements Operation {
-  private _permissionService: PermissionService;
 
   constructor(
     private _userDetailStorage?: BlDocumentStorage<UserDetail>,
@@ -28,7 +26,7 @@ export class UserDetailReadPermissionOperation implements Operation {
 
     this._resHandler = _resHandler ? _resHandler : new SEResponseHandler();
 
-    this._permissionService = new PermissionService();
+    new PermissionService();
   }
 
   async run(

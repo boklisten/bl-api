@@ -6,8 +6,6 @@ import { APP_CONFIG } from "../../application-config";
 import { BlError } from "@boklisten/bl-model";
 import { HttpHandler } from "../../http/http.handler";
 import { SEResponseHandler } from "../../response/se.response.handler";
-import { User } from "../../collections/user/user";
-import { LocalLoginHandler } from "../local/local-login.handler";
 import { UserProvider } from "../user/user-provider/user-provider";
 
 export class FeideAuth {
@@ -51,7 +49,6 @@ export class FeideAuth {
 
           const feideUser = feideUserInfo["user"];
           const feideEmail = feideUser["email"];
-          const feideName = feideUser["name"];
           const feideUserId = feideUser["userid"];
           const provider = APP_CONFIG.login.feide.name;
 

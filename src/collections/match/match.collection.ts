@@ -1,6 +1,5 @@
 import { BlCollection, BlEndpoint } from "../bl-collection";
 import { matchSchema } from "./match.schema";
-import { Schema } from "mongoose";
 import { MatchPostHook } from "./hooks/match.post.hook";
 
 export class MatchCollection implements BlCollection {

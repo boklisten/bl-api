@@ -1,16 +1,13 @@
 import { Branch, OrderItem, Item, BlError, Order } from "@boklisten/bl-model";
 import { isNullOrUndefined } from "util";
-import { PriceService } from "../../../../../../price/price.service";
 import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
 import { orderSchema } from "../../../../order.schema";
 import { OrderItemRentPeriodValidator } from "./order-item-rent-period-validator/order-item-rent-period-validator";
 
 export class OrderItemRentValidator {
-  private priceService: PriceService;
   private orderItemRentPeriodValidator: OrderItemRentPeriodValidator;
 
   constructor(private _orderStorage?: BlDocumentStorage<Order>) {
-    this.priceService = new PriceService({ roundDown: true });
     this._orderStorage = _orderStorage
       ? _orderStorage
       : new BlDocumentStorage("orders", orderSchema);

@@ -5,7 +5,6 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { userDetailSchema } from "../user-detail.schema";
 import { SEResponseHandler } from "../../../response/se.response.handler";
-import { isNullOrUndefined } from "util";
 import { UserDetailHelper } from "../helpers/user-detail.helper";
 
 export class UserDetailValidOperation implements Operation {

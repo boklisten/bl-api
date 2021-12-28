@@ -2,20 +2,14 @@ import {
   Payment,
   Order,
   BlError,
-  Branch,
-  UserDetail,
   Delivery,
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { orderSchema } from "../../order/order.schema";
-import { branchSchema } from "../../branch/branch.schema";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { deliverySchema } from "../../delivery/delivery.schema";
 
 export class PaymentValidator {
   private orderStorage?: BlDocumentStorage<Order>;
-  private paymentStorage?: BlDocumentStorage<Payment>;
-  private branchStorage?: BlDocumentStorage<Branch>;
   private deliveryStorage?: BlDocumentStorage<Delivery>;
 
   constructor(
@@ -26,9 +20,6 @@ export class PaymentValidator {
     this.orderStorage = orderStorage
       ? orderStorage
       : new BlDocumentStorage("orders", orderSchema);
-    this.paymentStorage = paymentStorage
-      ? paymentStorage
-      : new BlDocumentStorage("payments", paymentStorage);
     this.deliveryStorage = deliveryStorage
       ? deliveryStorage
       : new BlDocumentStorage<Delivery>("deliveries", deliverySchema);
@@ -129,10 +120,4 @@ export class PaymentValidator {
     return Promise.resolve(true);
   }
 
-  private validatePaymentLater(
-    payment: Payment,
-    order: Order
-  ): Promise<boolean> {
-    return Promise.resolve(true);
-  }
 }

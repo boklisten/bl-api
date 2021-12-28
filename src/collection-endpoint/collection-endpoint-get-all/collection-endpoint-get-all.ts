@@ -1,7 +1,4 @@
-import { AccessToken, BlDocument, BlError } from "@boklisten/bl-model";
-import { Request, Router } from "express";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { BlEndpoint } from "../../collections/bl-collection";
+import { BlDocument, BlError } from "@boklisten/bl-model";
 import { SEDbQueryBuilder } from "../../query/se.db-query-builder";
 import { CollectionEndpointMethod } from "../collection-endpoint-method";
 import { CollectionEndpointOnRequest } from "../collection-endpoint-on-request";
@@ -12,7 +9,7 @@ export class CollectionEndpointGetAll<T extends BlDocument>
   extends CollectionEndpointMethod<T>
   implements CollectionEndpointOnRequest<T>
 {
-  public onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
+  public override onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
     if (
       blApiRequest.query &&
       Object.getOwnPropertyNames(blApiRequest.query).length > 0 &&

@@ -1,6 +1,5 @@
 import { Hook } from "../../../hook/hook";
 import { Branch, AccessToken } from "@boklisten/bl-model";
-import { isNullOrUndefined } from "util";
 import { PermissionService } from "../../../auth/permission/permission.service";
 
 export class BranchGetHook extends Hook {
@@ -11,7 +10,7 @@ export class BranchGetHook extends Hook {
     this.permissionService = new PermissionService();
   }
 
-  public after(
+  public override after(
     branches: Branch[],
     accessToken: AccessToken
   ): Promise<Branch[]> {
@@ -21,8 +20,8 @@ export class BranchGetHook extends Hook {
   }
 
   private resolveBranchItems(branch: Branch, accessToken: AccessToken) {
-    if (!isNullOrUndefined(branch.isBranchItemsLive)) {
-      if (isNullOrUndefined(accessToken)) {
+    if (branch.isBranchItemsLive !== undefined && branch.isBranchItemsLive !== null) {
+      if (!accessToken) {
         // no user found must be "online" (bl-web)
         if (!branch.isBranchItemsLive.online) {
           // should not show branchItems

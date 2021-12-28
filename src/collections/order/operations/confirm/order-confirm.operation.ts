@@ -9,9 +9,7 @@ import {
   BlError,
   BlapiResponse,
   Order,
-  UserDetail,
 } from "@boklisten/bl-model";
-import { PaymentHandler } from "../../../payment/helpers/payment-handler";
 import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
 
 export class OrderConfirmOperation implements Operation {

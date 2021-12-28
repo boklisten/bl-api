@@ -1,5 +1,5 @@
 import { IHook } from "./IHook";
-import { BlDocument, AccessToken, BlError } from "@boklisten/bl-model";
+import { BlDocument, AccessToken } from "@boklisten/bl-model";
 
 export class Hook implements IHook {
   constructor() {}

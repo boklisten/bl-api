@@ -2,7 +2,6 @@ import { Delivery, Order, BlError, AccessToken } from "@boklisten/bl-model";
 import { Hook } from "../../../hook/hook";
 import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { isNullOrUndefined } from "util";
 import { orderSchema } from "../../order/order.schema";
 import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
 import { deliverySchema } from "../delivery.schema";
@@ -20,30 +19,29 @@ export class DeliveryPatchHook extends Hook {
     deliveryHandler?: DeliveryHandler
   ) {
     super();
-    this.deliveryValidator = deliveryValidator
-      ? deliveryValidator
-      : new DeliveryValidator();
-    this.deliveryStorage = deliveryStorage
-      ? deliveryStorage
-      : new BlDocumentStorage<Delivery>("deliveries", deliverySchema);
-    this.orderStorage = orderStorage
-      ? orderStorage
-      : new BlDocumentStorage<Order>("orders", orderSchema);
-    this.deliveryHandler = deliveryHandler
-      ? deliveryHandler
-      : new DeliveryHandler();
+    this.deliveryValidator = deliveryValidator ?? new DeliveryValidator();
+    this.deliveryStorage =
+      deliveryStorage ??
+      new BlDocumentStorage<Delivery>("deliveries", deliverySchema);
+    this.orderStorage =
+      orderStorage ?? new BlDocumentStorage<Order>("orders", orderSchema);
+    this.deliveryHandler = deliveryHandler ?? new DeliveryHandler();
   }
 
-  before(body: any, accessToken?: AccessToken, id?: string): Promise<boolean> {
-    if (body === null || isNullOrUndefined(body)) {
+  override before(
+    body: any,
+    accessToken?: AccessToken,
+    id?: string
+  ): Promise<boolean> {
+    if (!body) {
       return Promise.reject(new BlError("body is undefined"));
     }
 
-    if (isNullOrUndefined(id)) {
+    if (!id) {
       return Promise.reject(new BlError("id is undefined"));
     }
 
-    if (isNullOrUndefined(accessToken)) {
+    if (!accessToken) {
       return Promise.reject(new BlError("accessToken is undefined"));
     }
 
@@ -56,7 +54,10 @@ export class DeliveryPatchHook extends Hook {
       });
   }
 
-  after(deliveries: Delivery[], accessToken: AccessToken): Promise<Delivery[]> {
+  override after(
+    deliveries: Delivery[],
+    accessToken: AccessToken
+  ): Promise<Delivery[]> {
     const delivery = deliveries[0];
 
     return new Promise((resolve, reject) => {

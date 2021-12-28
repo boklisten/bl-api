@@ -1,11 +1,6 @@
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
-import {
-  Message,
-  BlError,
-  BlapiResponse,
-  SendgridEvent,
-} from "@boklisten/bl-model";
+import { Message, BlError, BlapiResponse } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { messageSchema } from "../message.schema";
 import { Request, Response, NextFunction } from "express";
@@ -68,6 +63,7 @@ export class TwilioSmsEventOperation implements Operation {
       // this is just for logging anyway, and we can handle some losses
       return true;
     }
+    return undefined;
   }
 
   private async updateMessageWithTwilioSmsEvent(

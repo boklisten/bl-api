@@ -2,10 +2,8 @@ import {
   BlCollection,
   BlDocumentPermission,
   BlEndpoint,
-  BlEndpointRestriction,
 } from "../bl-collection";
 import { userDetailSchema } from "./user-detail.schema";
-import { Schema } from "mongoose";
 import { UserDetailValidOperation } from "./operations/user-detail-valid.operation";
 import { UserDetailDeleteHook } from "./hooks/user-detail-delete.hook";
 import { UserDetailPermissionOperation } from "./operations/permission/user-detail-permission.operation";

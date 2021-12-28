@@ -1,6 +1,5 @@
 import { BlError, Item, OrderItem, Branch, Order } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
-import { isNullOrUndefined } from "util";
 import { PriceService } from "../../../../../../price/price.service";
 import { orderSchema } from "../../../../order.schema";
 
@@ -12,12 +11,9 @@ export class OrderItemBuyValidator {
     priceService?: PriceService,
     orderStorage?: BlDocumentStorage<Order>
   ) {
-    this.priceService = priceService
-      ? priceService
-      : new PriceService({ roundDown: true });
-    this.orderStorage = orderStorage
-      ? orderStorage
-      : new BlDocumentStorage<Order>("orders", orderSchema);
+    this.priceService = priceService ?? new PriceService({ roundDown: true });
+    this.orderStorage =
+      orderStorage ?? new BlDocumentStorage<Order>("orders", orderSchema);
   }
 
   public async validate(
@@ -102,6 +98,7 @@ export class OrderItemBuyValidator {
       .catch(() => {
         return false;
       });
+    return undefined;
   }
 
   private getOrderItemFromOrder(itemId: string, order: Order): OrderItem {
@@ -121,12 +118,15 @@ export class OrderItemBuyValidator {
     let price;
     let discount = 0;
 
-    if (!isNullOrUndefined(orderItem.movedFromOrder)) {
+    if (
+      orderItem.movedFromOrder !== undefined &&
+      orderItem.movedFromOrder !== null
+    ) {
       return await this.validateIfMovedFromOrder(orderItem, item.price);
     }
 
     if (orderItem.discount) {
-      if (isNullOrUndefined(orderItem.discount.amount)) {
+      if (!orderItem.discount.amount) {
         throw new BlError(
           "orderItem.discount was set, but no discount.amount provided"
         );

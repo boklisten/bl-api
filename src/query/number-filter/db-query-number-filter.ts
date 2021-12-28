@@ -122,16 +122,6 @@ export class DbQueryNumberFilter {
         value.length >= operationIdentifier.atIndex &&
         operationIdentifier.opIdentifier === value[operationIdentifier.atIndex]
     );
-    for (const operationIdentifiers of this.operationIdentifiers) {
-      if (
-        value.length >= operationIdentifiers.atIndex &&
-        operationIdentifiers.opIdentifier ===
-          value[operationIdentifiers.atIndex]
-      ) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private getOperationWithValue(value: string): {

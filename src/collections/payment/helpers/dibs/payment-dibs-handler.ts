@@ -1,7 +1,6 @@
 import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.service";
 import { DibsEasyOrder } from "../../../../payment/dibs/dibs-easy-order/dibs-easy-order";
 import {
-  BlError,
   Payment,
   Order,
   AccessToken,
@@ -11,7 +10,6 @@ import {
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { paymentSchema } from "../../payment.schema";
 import { orderSchema } from "../../../order/order.schema";
-import { SystemUser } from "../../../../auth/permission/permission.service";
 import { deliverySchema } from "../../../delivery/delivery.schema";
 import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 
@@ -50,8 +48,6 @@ export class PaymentDibsHandler {
     payment: Payment,
     accessToken: AccessToken
   ): Promise<Payment> {
-    let order: Order;
-
     try {
       const order = await this.orderStorage.get(payment.order as string);
       const userDetail = await this.userDetailStorage.get(

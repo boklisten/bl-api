@@ -1,8 +1,6 @@
-import { BlCollection } from "../collections/bl-collection";
 import {
   BlDocument,
   BlError,
-  UserDetail,
   UserPermission,
 } from "@boklisten/bl-model";
 import { BlStorageHandler } from "./blStorageHandler";

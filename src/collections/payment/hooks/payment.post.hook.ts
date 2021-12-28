@@ -1,23 +1,11 @@
 import { Hook } from "../../../hook/hook";
-import {
-  BlDocument,
-  BlError,
-  Order,
-  Payment,
-  AccessToken,
-} from "@boklisten/bl-model";
+import { BlError, Order, Payment, AccessToken } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { paymentSchema } from "../payment.schema";
-import { DibsPaymentService } from "../../../payment/dibs/dibs-payment.service";
-import { DibsEasyOrder } from "../../../payment/dibs/dibs-easy-order/dibs-easy-order";
-import { SystemUser } from "../../../auth/permission/permission.service";
 import { orderSchema } from "../../order/order.schema";
 import { PaymentValidator } from "../helpers/payment.validator";
-import { isNullOrUndefined } from "util";
 import { PaymentDibsHandler } from "../helpers/dibs/payment-dibs-handler";
 
 export class PaymentPostHook extends Hook {
-  private paymentStorage: BlDocumentStorage<Payment>;
   private orderStorage: BlDocumentStorage<Order>;
   private paymentValidator: PaymentValidator;
   private paymentDibsHandler: PaymentDibsHandler;
@@ -29,27 +17,19 @@ export class PaymentPostHook extends Hook {
     paymentDibsHandler?: PaymentDibsHandler
   ) {
     super();
-    this.paymentValidator = paymentValidator
-      ? paymentValidator
-      : new PaymentValidator();
-    this.paymentStorage = paymentStorage
-      ? paymentStorage
-      : new BlDocumentStorage("payments", paymentSchema);
-    this.orderStorage = orderStorage
-      ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
-    this.paymentDibsHandler = paymentDibsHandler
-      ? paymentDibsHandler
-      : new PaymentDibsHandler();
+    this.paymentValidator = paymentValidator ?? new PaymentValidator();
+    this.orderStorage =
+      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
+    this.paymentDibsHandler = paymentDibsHandler ?? new PaymentDibsHandler();
   }
 
-  public before(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+  public override before(): Promise<boolean> {
+    return new Promise((resolve) => {
       resolve(true);
     });
   }
 
-  public after(
+  public override after(
     payments: Payment[],
     accessToken: AccessToken
   ): Promise<Payment[]> {
@@ -58,7 +38,7 @@ export class PaymentPostHook extends Hook {
         return reject(new BlError("payments is empty or undefined"));
       }
 
-      if (isNullOrUndefined(accessToken)) {
+      if (!accessToken) {
         return reject(new BlError("accessToken is undefined"));
       }
 
@@ -133,25 +113,20 @@ export class PaymentPostHook extends Hook {
           } else {
             paymentIds.push(payment.id);
           }
-          /*
-				if (paymentIds.length > 1) {
-					reject(new BlError(`order.payments includes more than one payment`).store('payments', paymentIds));
-				}
-*/
           return this.orderStorage
             .update(
               order.id,
               { payments: paymentIds },
               { id: accessToken.sub, permission: accessToken.permission }
             )
-            .then((updatedOrder: Order) => {
+            .then(() => {
               resolve(payment);
             })
             .catch((blError: BlError) => {
               reject(new BlError("could not update orders").add(blError));
             });
         })
-        .catch((getOrder) => {
+        .catch(() => {
           reject(new BlError("could not get order when adding payment id"));
         });
     });

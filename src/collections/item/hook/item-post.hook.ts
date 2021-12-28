@@ -6,11 +6,17 @@ export class ItemPostHook extends Hook {
     super();
   }
 
-  public before(body: Item, accessToken: AccessToken): Promise<boolean> {
+  public override before(
+    body: Item,
+    accessToken: AccessToken
+  ): Promise<boolean> {
     return Promise.resolve(true);
   }
 
-  public after(items: Item[], accessToken: AccessToken): Promise<Item[]> {
+  public override after(
+    items: Item[],
+    accessToken: AccessToken
+  ): Promise<Item[]> {
     return Promise.resolve(items);
   }
 }

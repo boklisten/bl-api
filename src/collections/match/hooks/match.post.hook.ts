@@ -4,7 +4,6 @@ import {
   Match,
   AccessToken,
   BlError,
-  UserDetail,
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { matchSchema } from "../match.schema";

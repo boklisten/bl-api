@@ -1,6 +1,5 @@
 import { BlCollection, BlEndpoint } from "../bl-collection";
 import { branchSchema } from "./branch.schema";
-import { Schema } from "mongoose";
 import { BranchPostHook } from "./hook/branch-post.hook";
 import { BranchGetHook } from "./hook/branch-get.hook";
 import { BranchBookingTimesOperation } from "./operations/branch-booking-times.operation";

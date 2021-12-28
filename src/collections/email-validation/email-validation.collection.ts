@@ -1,7 +1,6 @@
 import { BlCollection, BlEndpoint } from "../bl-collection";
 import { emailValidationSchema } from "./email-validation.schema";
 import { EmailValidationConfirmOperation } from "./operations/email-validation-confirm.operation";
-import { Schema } from "mongoose";
 import { EmailValidationPostHook } from "./hooks/email-validation-post.hook";
 
 export class EmailValidationCollection implements BlCollection {

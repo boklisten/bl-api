@@ -16,16 +16,9 @@ import { ProviderIdGenerator } from "./local/provider-id/provider-id-generator";
 import { SEResponseHandler } from "../response/se.response.handler";
 import { TokenEndpoint } from "./token/token.endpoint";
 import { TokenHandler } from "./token/token.handler";
-import { TokenConfig } from "./token/token.config";
 import { FeideAuth } from "./feide/feide.auth";
 
 export class BlAuth {
-  private jwtAuth: AccessTokenAuth;
-  private googleAuth: GoogleAuth;
-  private facebookAuth: FacebookAuth;
-  private localAuth: LocalAuth;
-  private tokenEndpoint: TokenEndpoint;
-  private feideAuth: FeideAuth;
 
   constructor(router: Router) {
     const userHandler = new UserHandler();
@@ -56,17 +49,17 @@ export class BlAuth {
 
     const tokenHandler = new TokenHandler(userHandler);
 
-    this.jwtAuth = new AccessTokenAuth(userHandler);
+    new AccessTokenAuth(userHandler);
 
-    this.googleAuth = new GoogleAuth(router, resHandler);
-    this.facebookAuth = new FacebookAuth(router, resHandler);
-    this.localAuth = new LocalAuth(
+    new GoogleAuth(router, resHandler);
+    new FacebookAuth(router, resHandler);
+    new LocalAuth(
       router,
       resHandler,
       localLoginValidator,
       tokenHandler
     );
-    this.tokenEndpoint = new TokenEndpoint(router, resHandler, tokenHandler);
-    this.feideAuth = new FeideAuth(router, resHandler);
+    new TokenEndpoint(router, resHandler, tokenHandler);
+    new FeideAuth(router, resHandler);
   }
 }

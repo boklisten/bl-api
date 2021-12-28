@@ -7,14 +7,11 @@ import { TokenConfig } from "../token.config";
 import { AccessToken } from "./access-token";
 
 export class AccessTokenAuth {
-  private seToken: SEToken;
-  private userHandler: UserHandler;
   private accessTokenSecret: AccessTokenSecret;
   private tokenConfig: TokenConfig;
 
   constructor(userHandler: UserHandler) {
-    this.seToken = new SEToken();
-    this.userHandler = userHandler;
+    new SEToken();
     this.accessTokenSecret = new AccessTokenSecret();
     const appTokenConfig = require("../../../application-config").APP_CONFIG
       .token;

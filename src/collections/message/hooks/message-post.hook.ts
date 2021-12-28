@@ -4,17 +4,13 @@ import { isNullOrUndefined } from "util";
 import { MessengerReminder } from "../../../messenger/reminder/messenger-reminder";
 import { PermissionService } from "../../../auth/permission/permission.service";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { messageSchema } from "../message.schema";
 import { MessageHelper } from "../helper/message-helper";
-import { logger } from "../../../logger/logger";
 import { Messenger } from "../../../messenger/messenger";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 
 export class MessagePostHook implements Hook {
   private messengerReminder: MessengerReminder;
-  private messageStorage: BlDocumentStorage<Message>;
   private permissionService: PermissionService;
-  private messageHelper: MessageHelper;
   private messenger: Messenger;
   private userDetailStorage: BlDocumentStorage<UserDetail>;
 
@@ -28,13 +24,7 @@ export class MessagePostHook implements Hook {
     this.messengerReminder = messengerReminder
       ? messengerReminder
       : new MessengerReminder();
-    this.messageStorage = messageStorage
-      ? messageStorage
-      : new BlDocumentStorage("messages", messageSchema);
     this.permissionService = new PermissionService();
-    this.messageHelper = messageHelper
-      ? messageHelper
-      : new MessageHelper(this.messageStorage);
     this.messenger = messenger ? messenger : new Messenger();
     this.userDetailStorage = userDetailStorage
       ? userDetailStorage

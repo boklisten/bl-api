@@ -155,24 +155,11 @@ export class SEToken {
     return this.options;
   }
 
-  private validateUsername(
-    decodedUsername: string,
-    validUsername: string
-  ): boolean {
-    if (decodedUsername !== validUsername) return false;
-    return true;
-  }
-
   private validatePermissions(
     decodedPermission: UserPermission,
     validPermissions: string[]
   ): boolean {
     if (validPermissions.indexOf(decodedPermission) <= -1) return false;
-    return true;
-  }
-
-  private validateBlid(decodedBlid: string, validBlid: string): boolean {
-    if (decodedBlid !== validBlid) return false;
     return true;
   }
 

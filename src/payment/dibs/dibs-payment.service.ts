@@ -11,12 +11,10 @@ import { HttpHandler } from "../../http/http.handler";
 import { APP_CONFIG } from "../../application-config";
 import { DibsEasyPayment } from "./dibs-easy-payment/dibs-easy-payment";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { deliverySchema } from "../../collections/delivery/delivery.schema";
 import { TypedJSON } from "typedjson-npm";
 import { UserDetailHelper } from "../../collections/user-detail/helpers/user-detail.helper";
 
 export class DibsPaymentService {
-  private deliveryStorage: BlDocumentStorage<Delivery>;
   private _userDetailHelper: UserDetailHelper;
   private _httpHandler: HttpHandler;
 
@@ -24,10 +22,7 @@ export class DibsPaymentService {
     deliveryStorage?: BlDocumentStorage<Delivery>,
     httpHandler?: HttpHandler
   ) {
-    this.deliveryStorage = deliveryStorage
-      ? deliveryStorage
-      : new BlDocumentStorage<Delivery>("deliveries", deliverySchema);
-    this._httpHandler = httpHandler ? httpHandler : new HttpHandler();
+    this._httpHandler = httpHandler ?? new HttpHandler();
     this._userDetailHelper = new UserDetailHelper();
   }
 

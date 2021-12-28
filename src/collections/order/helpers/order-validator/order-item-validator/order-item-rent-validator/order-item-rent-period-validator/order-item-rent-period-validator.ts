@@ -1,5 +1,5 @@
 import { Period } from "@boklisten/bl-model/dist/period/period";
-import { BlError, Branch, Order, OrderItem } from "@boklisten/bl-model";
+import { BlError, Order, OrderItem } from "@boklisten/bl-model";
 import { BranchPaymentInfo } from "@boklisten/bl-model/dist/branch/branch-payment-info";
 import { BlDocumentStorage } from "../../../../../../../storage/blDocumentStorage";
 import { orderSchema } from "../../../../../order.schema";

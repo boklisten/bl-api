@@ -1,7 +1,6 @@
 import { Message, BlError } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
-import { logger } from "../../../logger/logger";
 
 export class MessageHelper {
   private queryBuilder: SEDbQueryBuilder;

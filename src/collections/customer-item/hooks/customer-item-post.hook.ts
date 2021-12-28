@@ -7,17 +7,14 @@ import {
   UserDetail,
 } from "@boklisten/bl-model";
 import { CustomerItemValidator } from "../validators/customer-item-validator";
-import { isNullOrUndefined } from "util";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { customerItemSchema } from "../customer-item.schema";
 import { orderSchema } from "../../order/order.schema";
 import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
 
 export class CustomerItemPostHook extends Hook {
   private _customerItemValidator: CustomerItemValidator;
   private _userDetailStorage: BlDocumentStorage<UserDetail>;
-  private _customerItemStorage: BlDocumentStorage<CustomerItem>;
   private _orderStorage: BlDocumentStorage<Order>;
   private _userDetailHelper: UserDetailHelper;
 
@@ -29,29 +26,22 @@ export class CustomerItemPostHook extends Hook {
     userDetailHelper?: UserDetailHelper
   ) {
     super();
-    this._customerItemValidator = customerItemValidator
-      ? customerItemValidator
-      : new CustomerItemValidator();
-    this._userDetailStorage = userDetailStorage
-      ? userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
-    this._customerItemStorage = customerItemStorage
-      ? customerItemStorage
-      : new BlDocumentStorage("customeritems", customerItemSchema);
-    this._orderStorage = orderStorage
-      ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
-    this._userDetailHelper = userDetailHelper
-      ? userDetailHelper
-      : new UserDetailHelper();
+    this._customerItemValidator =
+      customerItemValidator ?? new CustomerItemValidator();
+    this._userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage("userdetails", userDetailSchema);
+    this._orderStorage =
+      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
+    this._userDetailHelper = userDetailHelper ?? new UserDetailHelper();
   }
 
-  public before(
+  public override before(
     customerItem: CustomerItem,
     accessToken: AccessToken,
     id?: string
   ): Promise<boolean> {
-    if (isNullOrUndefined(customerItem)) {
+    if (!customerItem) {
       return Promise.reject(new BlError("customerItem is undefined"));
     }
 
@@ -78,13 +68,13 @@ export class CustomerItemPostHook extends Hook {
       });
   }
 
-  public after(
+  public override after(
     customerItems: CustomerItem[],
     accessToken: AccessToken
   ): Promise<CustomerItem[]> {
     // we know that the customerItem that is sent here are valid, we can just update the userDetail
 
-    if (isNullOrUndefined(customerItems) || customerItems.length <= 0) {
+    if (!customerItems || customerItems.length <= 0) {
       return Promise.reject(new BlError("customerItems is empty or undefined"));
     }
 
@@ -96,7 +86,7 @@ export class CustomerItemPostHook extends Hook {
 
     const customerItem: CustomerItem = customerItems[0];
 
-    if (isNullOrUndefined(customerItem.orders)) {
+    if (!customerItem.orders) {
       return Promise.reject(new BlError("customerItem.orders is not defined"));
     }
 
@@ -127,14 +117,14 @@ export class CustomerItemPostHook extends Hook {
           { id: accessToken.sub, permission: accessToken.permission }
         );
       })
-      .then((updatedOrder: Order) => {
+      .then(() => {
         return this._userDetailStorage.get(customerItem.customer as any);
       })
       .then((userDetail: UserDetail) => {
         let newCustomerItems = [];
 
         if (
-          isNullOrUndefined(userDetail.customerItems) ||
+          !userDetail.customerItems ||
           (userDetail.customerItems && userDetail.customerItems.length === 0)
         ) {
           newCustomerItems.push(customerItem.id);
@@ -152,7 +142,7 @@ export class CustomerItemPostHook extends Hook {
           { id: accessToken.sub, permission: accessToken.permission }
         );
       })
-      .then((updatedUserDetail: UserDetail) => {
+      .then(() => {
         return [customerItem];
       })
       .catch((blError: BlError) => {

@@ -1,6 +1,5 @@
 import { BlCollection, BlEndpoint } from "../bl-collection";
 import { branchItemSchema } from "./branch-item.schema";
-import { Schema } from "mongoose";
 
 export class BranchItemCollection implements BlCollection {
   collectionName = "branchitems";

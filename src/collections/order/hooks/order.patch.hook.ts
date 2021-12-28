@@ -1,20 +1,11 @@
 import { Hook } from "../../../hook/hook";
-import {
-  AccessToken,
-  BlError,
-  Order,
-  UserDetail,
-  Delivery,
-} from "@boklisten/bl-model";
-import { isNullOrUndefined } from "util";
+import { AccessToken, BlError, Order, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { OrderValidator } from "../helpers/order-validator/order-validator";
 import { orderSchema } from "../order.schema";
 import { OrderPlacedHandler } from "../helpers/order-placed-handler/order-placed-handler";
 
 export class OrderPatchHook extends Hook {
-  private userDetailStorage: BlDocumentStorage<UserDetail>;
   private orderValidator: OrderValidator;
   private orderStorage: BlDocumentStorage<Order>;
   private orderPlacedHandler: OrderPlacedHandler;
@@ -26,42 +17,38 @@ export class OrderPatchHook extends Hook {
     orderPlacedHandler?: OrderPlacedHandler
   ) {
     super();
-    this.userDetailStorage = userDetailStorage
-      ? userDetailStorage
-      : new BlDocumentStorage<UserDetail>("userdetails", userDetailSchema);
-    this.orderStorage = orderStorage
-      ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
-    this.orderValidator = orderValidator
-      ? orderValidator
-      : new OrderValidator();
-    this.orderPlacedHandler = orderPlacedHandler
-      ? orderPlacedHandler
-      : new OrderPlacedHandler();
+    this.orderStorage =
+      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
+    this.orderValidator = orderValidator ?? new OrderValidator();
+    this.orderPlacedHandler = orderPlacedHandler ?? new OrderPlacedHandler();
   }
 
-  before(body: any, accessToken: AccessToken, id: string): Promise<boolean> {
-    if (body === {} || typeof body == "undefined" || isNullOrUndefined(body)) {
+  override before(
+    body: any,
+    accessToken: AccessToken,
+    id: string
+  ): Promise<boolean> {
+    if (body === {} || typeof body == "undefined" || !body) {
       return Promise.reject(new BlError("body not defined"));
     }
 
-    if (isNullOrUndefined(accessToken)) {
+    if (!accessToken) {
       return Promise.reject(new BlError("accessToken not defined"));
     }
 
-    if (isNullOrUndefined(id)) {
+    if (!id) {
       return Promise.reject(new BlError("id not defined"));
     }
 
     return Promise.resolve(true);
   }
 
-  after(orders: Order[], accessToken: AccessToken): Promise<Order[]> {
+  override after(orders: Order[], accessToken: AccessToken): Promise<Order[]> {
     if (orders.length > 1) {
       return Promise.reject(new BlError("can only patch one order at a time"));
     }
 
-    if (isNullOrUndefined(accessToken)) {
+    if (!accessToken) {
       return Promise.reject(new BlError("accessToken not defined"));
     }
 

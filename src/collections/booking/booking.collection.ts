@@ -1,5 +1,4 @@
 import { BlCollection, BlEndpoint } from "../bl-collection";
-import { Schema } from "mongoose";
 import { bookingSchema } from "./booking.schema";
 import { BookingPatchHook } from "./hook/booking-patch.hook";
 

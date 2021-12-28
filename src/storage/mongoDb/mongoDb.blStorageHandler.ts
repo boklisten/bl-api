@@ -128,6 +128,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         }
         resolve(docs);
       });
+      return undefined;
     });
   }
 

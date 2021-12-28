@@ -1,5 +1,4 @@
 import { BlError } from "@boklisten/bl-model";
-const querystring = require("querystring");
 const qs = require("qs");
 const request = require("request");
 const rp = require("request-promise");

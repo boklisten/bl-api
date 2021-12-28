@@ -1,8 +1,4 @@
-import {
-  EmailHandler,
-  EmailLog,
-  EmailTemplateInput,
-} from "@boklisten/bl-email";
+import { EmailHandler } from "@boklisten/bl-email";
 import {
   Recipient,
   MessageOptions,
@@ -10,12 +6,9 @@ import {
   postOffice,
 } from "@boklisten/bl-post-office";
 import {
-  BlError,
   Delivery,
   Order,
   OrderItem,
-  Booking,
-  Payment,
   UserDetail,
   CustomerItem,
   Item,
@@ -23,10 +16,6 @@ import {
 } from "@boklisten/bl-model";
 import { dateService } from "../../blc/date.service";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { OrderItemType } from "@boklisten/bl-model/dist/order/order-item/order-item-type";
-import fs from "fs";
-import { EmailAttachment } from "@boklisten/bl-email/dist/ts/template/email-attachment";
-import { type } from "os";
 import { OrderEmailHandler } from "./order-email/order-email-handler";
 import {
   MessengerService,
@@ -36,14 +25,12 @@ import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting
 import { EMAIL_SETTINGS } from "./email-settings";
 import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
 import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
-import { isNullOrUndefined } from "util";
 import { logger } from "../../logger/logger";
 import { itemSchema } from "../../collections/item/item.schema";
 
 export class EmailService implements MessengerService {
   private _emailHandler: EmailHandler;
   private _orderEmailHandler: OrderEmailHandler;
-  private _dateFormat: string;
   private _itemStorage: BlDocumentStorage<Item>;
   private _postOffice: PostOffice;
 
@@ -64,7 +51,6 @@ export class EmailService implements MessengerService {
     this._itemStorage = itemStorage
       ? itemStorage
       : new BlDocumentStorage<Item>("items", itemSchema);
-    this._dateFormat = "DD.MM.YYYY";
     this._orderEmailHandler = new OrderEmailHandler(this._emailHandler);
     this._postOffice = inputPostOffice ? inputPostOffice : postOffice;
     this._postOffice.overrideLogger(logger);
@@ -110,11 +96,12 @@ export class EmailService implements MessengerService {
     };
 
     try {
-      const result = await this._postOffice.send([recipient], messageOptions);
+      await this._postOffice.send([recipient], messageOptions);
       return true;
     } catch (e) {
       logger.error(`could not send generic mail: ${e}`);
     }
+    return undefined;
   }
 
   public async sendBookingEmail(
@@ -142,11 +129,12 @@ export class EmailService implements MessengerService {
     };
 
     try {
-      const result = await this._postOffice.send([recipient], messageOptions);
+      await this._postOffice.send([recipient], messageOptions);
       return true;
     } catch (e) {
       logger.error(`could not send booking confirmation: ${e}`);
     }
+    return undefined;
   }
 
   public async sendMatch(
@@ -170,11 +158,12 @@ export class EmailService implements MessengerService {
     };
 
     try {
-      const result = await this._postOffice.send([recipient], messageOptions);
+      await this._postOffice.send([recipient], messageOptions);
       return true;
     } catch (e) {
       logger.error(`could not send match message: ${e}`);
     }
+    return undefined;
   }
 
   /**
@@ -204,7 +193,7 @@ export class EmailService implements MessengerService {
     };
 
     try {
-      const result = await this._postOffice.send([recipient], messageOptions);
+      await this._postOffice.send([recipient], messageOptions);
 
       if (
         customerDetail.dob &&
@@ -267,8 +256,8 @@ export class EmailService implements MessengerService {
   public orderPlaced(customerDetail: UserDetail, order: Order) {
     this._orderEmailHandler
       .sendOrderReceipt(customerDetail, order)
-      .then((emailLog) => {})
-      .catch((emailError) => {});
+      .then(() => {})
+      .catch(() => {});
   }
 
   private async customerDetailToRecipient(
@@ -356,7 +345,7 @@ export class EmailService implements MessengerService {
   }
 
   private formatDeadline(deadline) {
-    return !isNullOrUndefined(deadline)
+    return deadline !== null && deadline !== undefined
       ? dateService.toPrintFormat(deadline, "Europe/Oslo")
       : "";
   }
@@ -371,39 +360,6 @@ export class EmailService implements MessengerService {
       total += cu.amountLeftToPay;
     });
     return total;
-  }
-
-  private customerDetailToEmailUser(customerDetail: UserDetail): EmailUser {
-    return {
-      id: customerDetail.id,
-      name: customerDetail.name,
-      dob: !isNullOrUndefined(customerDetail.dob)
-        ? dateService.format(customerDetail.dob, "Europe/Oslo", "DD.MM.YYYY")
-        : "",
-      email: customerDetail.email,
-      address: customerDetail.address,
-    };
-  }
-
-  private async customerItemsToEmailOrderItems(customerItems: CustomerItem[]) {
-    const emailOrderItems = [];
-
-    for (const customerItem of customerItems) {
-      const itemId =
-        typeof customerItem.item === "string" ? customerItem.item : "";
-      const item = await this._itemStorage.get(itemId);
-
-      emailOrderItems.push({
-        title: item.title,
-        deadline: dateService.format(
-          customerItem.deadline,
-          "Europe/Oslo",
-          this._dateFormat
-        ),
-      });
-    }
-
-    return emailOrderItems;
   }
 
   public deliveryInformation(
@@ -429,9 +385,10 @@ export class EmailService implements MessengerService {
     const emailUser: EmailUser = {
       id: customerDetail.id,
       name: customerDetail.name,
-      dob: !isNullOrUndefined(customerDetail.dob)
-        ? dateService.format(customerDetail.dob, "Europe/Oslo", "DD.MM.YYYY")
-        : "",
+      dob:
+        customerDetail.dob !== undefined && customerDetail.dob !== null
+          ? dateService.format(customerDetail.dob, "Europe/Oslo", "DD.MM.YYYY")
+          : "",
       email: customerDetail.email,
       address: customerDetail.address,
     };
@@ -505,8 +462,8 @@ export class EmailService implements MessengerService {
 
     this._emailHandler
       .sendEmailVerification(emailSetting, emailVerificationUri)
-      .then((emailLog) => {})
-      .catch((emailError) => {});
+      .then(() => {})
+      .catch(() => {});
   }
 
   public passwordReset(customerDetail: UserDetail, passwordResetCode: string) {
@@ -525,7 +482,7 @@ export class EmailService implements MessengerService {
 
     this._emailHandler
       .sendPasswordReset(emailSetting, passwordResetUri)
-      .then((emailLog) => {})
-      .catch((emailError) => {});
+      .then(() => {})
+      .catch(() => {});
   }
 }

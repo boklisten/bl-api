@@ -1,20 +1,5 @@
 import { Hook } from "../../../hook/hook";
-import {
-  BlDocument,
-  BlError,
-  Order,
-  Payment,
-  AccessToken,
-} from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { paymentSchema } from "../payment.schema";
-import { DibsPaymentService } from "../../../payment/dibs/dibs-payment.service";
-import { DibsEasyOrder } from "../../../payment/dibs/dibs-easy-order/dibs-easy-order";
-import { SystemUser } from "../../../auth/permission/permission.service";
-import { orderSchema } from "../../order/order.schema";
-import { PaymentValidator } from "../helpers/payment.validator";
-import { isNullOrUndefined } from "util";
-import { PaymentDibsHandler } from "../helpers/dibs/payment-dibs-handler";
+import { BlError, Payment, AccessToken } from "@boklisten/bl-model";
 import { PermissionService } from "../../../auth/permission/permission.service";
 
 export class PaymentGetAllHook extends Hook {
@@ -25,7 +10,7 @@ export class PaymentGetAllHook extends Hook {
     this._permissionService = new PermissionService();
   }
 
-  public async before(
+  public override async before(
     body: any,
     accessToken?: AccessToken,
     id?: string,
@@ -49,7 +34,7 @@ export class PaymentGetAllHook extends Hook {
     return true;
   }
 
-  public async after(payments: Payment[]): Promise<any> {
+  public override async after(payments: Payment[]): Promise<any> {
     return payments;
   }
 }

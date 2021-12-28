@@ -1,14 +1,13 @@
-import { AccessToken, BlDocument, BlError } from "@boklisten/bl-model";
+import { BlDocument, BlError } from "@boklisten/bl-model";
 import { CollectionEndpointMethod } from "../collection-endpoint-method";
 import { CollectionEndpointOnRequest } from "../collection-endpoint-on-request";
-import { Request } from "express";
 import { BlApiRequest } from "../../request/bl-api-request";
 
 export class CollectionEndpointPost<T extends BlDocument>
   extends CollectionEndpointMethod<T>
   implements CollectionEndpointOnRequest<T>
 {
-  onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
+  override onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
     return this._documentStorage
       .add(blApiRequest.data, {
         id: blApiRequest.user.id,

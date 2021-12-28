@@ -1,6 +1,5 @@
 import { BlCollection, BlEndpoint } from "../bl-collection";
 import { invoiceSchema } from "./invoice.schema";
-import { Schema } from "mongoose";
 
 export class InvoiceCollection implements BlCollection {
   collectionName = "invoices";

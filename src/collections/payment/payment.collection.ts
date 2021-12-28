@@ -1,11 +1,9 @@
-import { Schema } from "mongoose";
 import {
   BlCollection,
   BlDocumentPermission,
   BlEndpoint,
 } from "../bl-collection";
 import { paymentSchema } from "./payment.schema";
-import { BlDocument } from "@boklisten/bl-model";
 import { PaymentPostHook } from "./hooks/payment.post.hook";
 import { PaymentPatchHook } from "./hooks/payment.patch.hook";
 import { PaymentGetAllHook } from "./hooks/payment.get-all.hook";

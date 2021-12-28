@@ -69,6 +69,7 @@ export class MatchFinderPartlyMatch {
     if (matchedItemsCount > 0) {
       return matchWithMostMatchedItems;
     }
+    return undefined;
   }
 
   private async findPartlyMatchInStateCreated(
@@ -102,5 +103,6 @@ export class MatchFinderPartlyMatch {
     if (matchedItemsCount > 0) {
       return matchWithMostMatchedItems;
     }
+    return undefined;
   }
 }

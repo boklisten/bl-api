@@ -1,4 +1,4 @@
-import { BlError, Order } from "@boklisten/bl-model";
+import { BlError } from "@boklisten/bl-model";
 import { isNullOrUndefined } from "util";
 export class OrderHookBefore {
   validate(requestJsonBody: any): Promise<boolean> {

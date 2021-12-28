@@ -127,14 +127,8 @@ describe("DbQueryDateFilter", () => {
 
       for (const validQuery of validQueries) {
         it("should resolve with correct date filter", () => {
-          const gtDateString = validQuery.creationTime[0].substr(
-            1,
-            validQuery.creationTime[0].length
-          );
-          const ltDateString = validQuery.creationTime[1].substr(
-            1,
-            validQuery.creationTime[1].length
-          );
+          const gtDateString = validQuery.creationTime[0].slice(1);
+          const ltDateString = validQuery.creationTime[1].slice(1);
 
           const gtIsoDate = moment(
             gtDateString,

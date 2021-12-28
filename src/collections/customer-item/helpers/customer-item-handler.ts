@@ -4,10 +4,8 @@ import { SystemUser } from "../../../auth/permission/permission.service";
 import { branchSchema } from "../../branch/branch.schema";
 import { customerItemSchema } from "../customer-item.schema";
 import { Period } from "@boklisten/bl-model/dist/period/period";
-import { SEDbQuery } from "../../../query/se.db-query";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 import moment = require("moment-timezone");
-import { logger } from "../../../logger/logger";
 
 export class CustomerItemHandler {
   private _customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -57,7 +55,7 @@ export class CustomerItemHandler {
 
       const branch = await this._branchStorage.get(branchId);
 
-      const extendPeriod = this.getExtendPeriod(
+      this.getExtendPeriod(
         branch,
         orderItem.info["periodType"]
       );

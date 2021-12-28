@@ -5,20 +5,30 @@
     "target": "ES2020",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "strict": false,
     "resolveJsonModule": true,
-    "declaration": true /* Generates corresponding '.d.ts' file. */,
-    "sourceMap": true /* Generates corresponding '.map' file. */,
-    "outDir": "./dist" /* Redirect output structure to the directory. */,
-    "removeComments": true /* Do not emit comments to output. */,
-
-    "baseUrl": "./" /* Base directory to resolve non-absolute module names. */,
+    "outDir": "./dist",
+    "removeComments": true,
+    "baseUrl": "./",
     "typeRoots": [
       "./node_modules/@types"
-    ] /* List of folders to include type definitions from. */,
+    ],
 
-    "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
-    "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    /* This should be set to true in the future */
+    "strict": false,
+    /* Stricter type checking, some of these might be redundant when strict is set to true */
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "alwaysStrict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUncheckedIndexedAccess": true,
+    "strictBindCallApply": true,
+
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

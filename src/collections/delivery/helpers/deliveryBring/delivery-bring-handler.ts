@@ -2,13 +2,11 @@ import {
   Delivery,
   Order,
   BlError,
-  DeliveryInfoBring,
 } from "@boklisten/bl-model";
 
 import { isNullOrUndefined } from "util";
 
 export class DeliveryBringHandler {
-  constructor() {}
 
   public validate(delivery: Delivery, order: Order): Promise<boolean> {
     if (isNullOrUndefined(delivery.info)) {
