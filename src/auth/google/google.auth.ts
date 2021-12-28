@@ -1,4 +1,4 @@
-import { Router, } from "express";
+import { Router } from "express";
 
 import { OAuth2Strategy } from "passport-google-oauth";
 import passport from "passport";

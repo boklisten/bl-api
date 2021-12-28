@@ -1,9 +1,6 @@
 import { BlDocument, BlError } from "@boklisten/bl-model";
 import { Router } from "express";
-import {
-  BlCollection,
-  BlEndpoint,
-} from "../collections/bl-collection";
+import { BlCollection, BlEndpoint } from "../collections/bl-collection";
 import { BlDocumentStorage } from "../storage/blDocumentStorage";
 import { PermissionService } from "../auth/permission/permission.service";
 import { ApiPath } from "../config/api-path";

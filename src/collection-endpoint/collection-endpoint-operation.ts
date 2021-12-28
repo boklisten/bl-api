@@ -20,11 +20,7 @@ export class CollectionEndpointOperation {
     private _method: BlEndpointMethod,
     protected _operation: BlEndpointOperation
   ) {
-    this.createUri(
-      this.collectionUri,
-      this._operation.name,
-      _method
-    );
+    this.createUri(this.collectionUri, this._operation.name, _method);
     this._collectionEndpointAuth = new CollectionEndpointAuth();
     this._responseHandler = new SEResponseHandler();
   }

@@ -1,8 +1,4 @@
-import {
-  BlError,
-  Branch,
-  Order,
-} from "@boklisten/bl-model";
+import { BlError, Branch, Order } from "@boklisten/bl-model";
 import { BranchValidator } from "./branch-validator/branch-validator";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { OrderPlacedValidator } from "./order-placed-validator/order-placed-validator";

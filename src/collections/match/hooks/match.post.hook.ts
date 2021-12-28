@@ -1,10 +1,5 @@
 import { Hook } from "../../../hook/hook";
-import {
-  CustomerItem,
-  Match,
-  AccessToken,
-  BlError,
-} from "@boklisten/bl-model";
+import { CustomerItem, Match, AccessToken, BlError } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { matchSchema } from "../match.schema";
 import { customerItemSchema } from "../../customer-item/customer-item.schema";

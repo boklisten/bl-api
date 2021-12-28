@@ -19,7 +19,6 @@ import { TokenHandler } from "./token/token.handler";
 import { FeideAuth } from "./feide/feide.auth";
 
 export class BlAuth {
-
   constructor(router: Router) {
     const userHandler = new UserHandler();
 
@@ -53,12 +52,7 @@ export class BlAuth {
 
     new GoogleAuth(router, resHandler);
     new FacebookAuth(router, resHandler);
-    new LocalAuth(
-      router,
-      resHandler,
-      localLoginValidator,
-      tokenHandler
-    );
+    new LocalAuth(router, resHandler, localLoginValidator, tokenHandler);
     new TokenEndpoint(router, resHandler, tokenHandler);
     new FeideAuth(router, resHandler);
   }

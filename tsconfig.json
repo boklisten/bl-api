@@ -9,9 +9,7 @@
     "outDir": "./dist",
     "removeComments": true,
     "baseUrl": "./",
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
+    "typeRoots": ["./node_modules/@types"],
 
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -27,8 +25,7 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUncheckedIndexedAccess": true,
-    "strictBindCallApply": true,
-
+    "strictBindCallApply": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

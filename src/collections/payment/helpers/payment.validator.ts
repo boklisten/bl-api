@@ -1,9 +1,4 @@
-import {
-  Payment,
-  Order,
-  BlError,
-  Delivery,
-} from "@boklisten/bl-model";
+import { Payment, Order, BlError, Delivery } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { orderSchema } from "../../order/order.schema";
 import { deliverySchema } from "../../delivery/delivery.schema";
@@ -119,5 +114,4 @@ export class PaymentValidator {
   ): Promise<boolean> {
     return Promise.resolve(true);
   }
-
 }

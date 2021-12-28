@@ -20,7 +20,10 @@ export class BranchGetHook extends Hook {
   }
 
   private resolveBranchItems(branch: Branch, accessToken: AccessToken) {
-    if (branch.isBranchItemsLive !== undefined && branch.isBranchItemsLive !== null) {
+    if (
+      branch.isBranchItemsLive !== undefined &&
+      branch.isBranchItemsLive !== null
+    ) {
       if (!accessToken) {
         // no user found must be "online" (bl-web)
         if (!branch.isBranchItemsLive.online) {

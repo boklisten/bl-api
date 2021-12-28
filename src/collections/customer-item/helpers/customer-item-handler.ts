@@ -55,10 +55,7 @@ export class CustomerItemHandler {
 
       const branch = await this._branchStorage.get(branchId);
 
-      this.getExtendPeriod(
-        branch,
-        orderItem.info["periodType"]
-      );
+      this.getExtendPeriod(branch, orderItem.info["periodType"]);
 
       const periodExtends = customerItem.periodExtends
         ? customerItem.periodExtends

@@ -3,7 +3,6 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { isNullOrUndefined } from "util";
 
 export class CustomerItemValidator {
-
   constructor(customerItemStorage?: BlDocumentStorage<CustomerItem>) {}
 
   public validate(customerItem: CustomerItem): Promise<boolean> {

@@ -43,7 +43,6 @@ import { BookingCollection } from "../collections/booking/booking.collection";
 import { UniqueItemCollection } from "../collections/unique-item/unique-item.collection";
 
 export class CollectionEndpointCreator {
-
   constructor(private _router: Router) {
     new SEResponseHandler();
   }

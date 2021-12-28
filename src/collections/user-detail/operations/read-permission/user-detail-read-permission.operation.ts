@@ -10,7 +10,6 @@ import { SEResponseHandler } from "../../../../response/se.response.handler";
 import { Operation } from "../../../../operation/operation";
 
 export class UserDetailReadPermissionOperation implements Operation {
-
   constructor(
     private _userDetailStorage?: BlDocumentStorage<UserDetail>,
     private _userStorage?: BlDocumentStorage<User>,
