@@ -3,6 +3,7 @@ export type SortFilter = {
   direction: 1 | -1;
 };
 export class DbQuerySortFilter {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public getSortFilters(query: any, validSortParams: string[]): SortFilter[] {
     if (
       !query ||
@@ -17,6 +18,7 @@ export class DbQuerySortFilter {
   }
 
   private generateSortFilters(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sort: any,
     validSortParams: string[]
   ): SortFilter[] {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router } from "express";
 
 import { OAuth2Strategy } from "passport-google-oauth";
@@ -46,6 +47,7 @@ export class GoogleAuth {
           const providerId = profile.id;
           let username;
 
+          // eslint-disable-next-line no-useless-catch
           try {
             username = this.retrieveUsername(profile);
           } catch (e) {

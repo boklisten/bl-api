@@ -28,6 +28,7 @@ export class BookingEmailService {
     userId: string,
     booking: Booking,
     subtype: "confirmed" | "canceled",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     user: any
   ): Promise<boolean> {
     let message: Message = {
@@ -40,6 +41,7 @@ export class BookingEmailService {
 
     try {
       message = await this.messageStorage.add(message, user);
+      // eslint-disable-next-line no-empty
     } catch (e) {}
 
     const userDetail = await this.userDetailStorage.get(userId);

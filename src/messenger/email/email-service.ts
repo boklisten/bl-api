@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { EmailHandler } from "@boklisten/bl-email";
 import {
   Recipient,
@@ -73,6 +74,7 @@ export class EmailService implements MessengerService {
     throw `message type "${message.messageType}" not supported`;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public sendMany(messages: Message[], customerDetails: UserDetail[]) {}
 
   public async sendGeneric(
@@ -124,6 +126,7 @@ export class EmailService implements MessengerService {
 
     const messageOptions: MessageOptions = {
       type: "booking",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       subtype: message.messageSubtype as any,
       mediums: { email: true },
     };
@@ -186,6 +189,7 @@ export class EmailService implements MessengerService {
 
     const messageOptions: MessageOptions = {
       type: "reminder",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       subtype: message.messageSubtype as any,
       sequence_number: message.sequenceNumber,
       textBlocks: message.textBlocks,
@@ -250,6 +254,7 @@ export class EmailService implements MessengerService {
   }
 
   public remindMany(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[]
   ) {}
 

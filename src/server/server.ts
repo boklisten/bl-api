@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import dotenv from "dotenv";
 // IMPORTANT TO KEEP THIS ON TOP
 dotenv.config(); //adds the .env file to environment variables

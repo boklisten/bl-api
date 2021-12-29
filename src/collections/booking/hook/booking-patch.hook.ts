@@ -29,6 +29,7 @@ export class BookingPatchHook extends Hook {
   }
 
   public override async before(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any,
     accessToken: AccessToken,
     id: string
@@ -107,6 +108,7 @@ export class BookingPatchHook extends Hook {
     } else {
       if (!this.permissionService.isAdmin(accessToken.permission)) {
         let booking;
+        // eslint-disable-next-line no-useless-catch
         try {
           booking = await this.bookingStorage.get(id);
         } catch (e) {
@@ -164,6 +166,7 @@ export class BookingPatchHook extends Hook {
               subtype,
               { id: accessToken.details, permission: accessToken.permission }
             );
+            // eslint-disable-next-line no-empty
           } catch (e) {}
         }
       }

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { RedisClient } from "redis";
 import { BlError } from "@boklisten/bl-model";
 

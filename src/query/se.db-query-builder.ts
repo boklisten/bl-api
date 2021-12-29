@@ -43,6 +43,7 @@ export class SEDbQueryBuilder {
     this.dbQueryExpandFilter = new DbQueryExpandFilter();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public getDbQuery(query: any, validQueryParams: ValidParam[]): SEDbQuery {
     this.dbQueryValidParams = new DbQueryValidParams(validQueryParams);
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EmailHandler, EmailLog } from "@boklisten/bl-email";
 import { OrderItemType } from "@boklisten/bl-model/dist/order/order-item/order-item-type";
 import {
@@ -422,6 +423,7 @@ export class OrderEmailHandler {
       }
     }
 
+    // eslint-disable-next-line no-useless-catch
     try {
       return await this.isBranchResponsible(branchId);
     } catch (e) {

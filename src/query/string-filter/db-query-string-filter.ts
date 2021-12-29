@@ -4,6 +4,7 @@ export type StringFilter = {
 };
 
 export class DbQueryStringFilter {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getStringFilters(query: any, validStringParams: string[]): StringFilter[] {
     if (
       !query ||

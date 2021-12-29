@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UserPermission } from "../user/user-permission";
 import { BlError } from "@boklisten/bl-model";
 

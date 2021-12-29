@@ -19,8 +19,11 @@ export class PaymentPatchHook extends Hook {
   }
 
   override before(
+    // eslint-disable-next-line
     body: any,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     accessToken: AccessToken,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     id: string
   ): Promise<boolean> {
     return Promise.resolve(true);
@@ -67,6 +70,7 @@ export class PaymentPatchHook extends Hook {
 
   private handlePaymentLater(
     payment: Payment,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     accessToken: AccessToken
   ): Promise<Payment> {
     return Promise.resolve(payment);

@@ -3,6 +3,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { isNullOrUndefined } from "util";
 
 export class CustomerItemValidator {
+  // eslint-disable-next-line
   constructor(customerItemStorage?: BlDocumentStorage<CustomerItem>) {}
 
   public validate(customerItem: CustomerItem): Promise<boolean> {

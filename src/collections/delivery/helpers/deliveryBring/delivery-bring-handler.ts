@@ -3,6 +3,7 @@ import { Delivery, Order, BlError } from "@boklisten/bl-model";
 import { isNullOrUndefined } from "util";
 
 export class DeliveryBringHandler {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public validate(delivery: Delivery, order: Order): Promise<boolean> {
     if (isNullOrUndefined(delivery.info)) {
       return Promise.reject(new BlError("delivery.info not defined"));

@@ -2,8 +2,6 @@ import { Order, OrderItem, BlError } from "@boklisten/bl-model";
 import { isNullOrUndefined, isNumber } from "util";
 
 export class OrderFieldValidator {
-  constructor() {}
-
   validate(order: Order): Promise<boolean> {
     try {
       this.validateOrderFields(order);

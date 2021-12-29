@@ -33,6 +33,7 @@ export class OrderReceiptPdfOperation implements Operation {
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction
   ): Promise<boolean> {
     const order = await this._orderStorage.get(blApiRequest.documentId);

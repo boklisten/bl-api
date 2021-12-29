@@ -108,6 +108,7 @@ export class DibsPaymentService {
     return dibsEasyOrder;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private userDetailToDibsEasyConsumer(userDetail: UserDetail): any {
     return {
       email: userDetail.email,

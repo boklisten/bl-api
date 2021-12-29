@@ -49,6 +49,7 @@ export class PaymentHandler {
       throw new BlError("one or more payments was not found");
     }
 
+    // eslint-disable-next-line no-useless-catch
     try {
       return await this.confirmAllPayments(order, payments, accessToken);
     } catch (e) {
@@ -69,6 +70,7 @@ export class PaymentHandler {
         continue;
       }
 
+      // eslint-disable-next-line no-useless-catch
       try {
         await this.confirmPayment(order, payment, accessToken);
         await this.paymentStorage.update(
@@ -104,6 +106,7 @@ export class PaymentHandler {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private confirmMethodCard(order: Order, payment: Payment): Promise<boolean> {
     if (order.byCustomer) {
       throw new BlError('payment method "card" is not permitted for customer');
@@ -111,6 +114,7 @@ export class PaymentHandler {
     return Promise.resolve(true);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private confirmMethodVipps(order: Order, payment: Payment): Promise<boolean> {
     if (order.byCustomer) {
       throw new BlError('payment method "vipps" is not permitted for customer');
@@ -118,6 +122,7 @@ export class PaymentHandler {
     return Promise.resolve(true);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private confirmMethodCash(order: Order, payment: Payment): Promise<boolean> {
     if (order.byCustomer) {
       throw new BlError('payment method "cash" is not permitted for customer');
@@ -149,6 +154,7 @@ export class PaymentHandler {
     let orderTotal = order.amount;
 
     if (order.delivery) {
+      // eslint-disable-next-line no-useless-catch
       try {
         const delivery = await this._deliveryStorage.get(order.delivery);
         orderTotal += delivery.amount;

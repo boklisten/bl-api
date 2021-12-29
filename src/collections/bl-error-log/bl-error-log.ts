@@ -6,7 +6,9 @@ export class BlErrorLog extends BlDocument {
   methodName: string;
   msg: string;
   errorStack: BlError[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   store: { key: string; value: any }[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
 
   constructor(blError?: BlError) {

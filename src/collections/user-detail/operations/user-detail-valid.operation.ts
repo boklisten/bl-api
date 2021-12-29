@@ -15,6 +15,7 @@ export class UserDetailValidOperation implements Operation {
   constructor(
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     resHandler?: SEResponseHandler,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     userDetailHelper?: UserDetailHelper
   ) {
     this._userDetailStorage = userDetailStorage
@@ -28,6 +29,7 @@ export class UserDetailValidOperation implements Operation {
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction
   ): Promise<boolean> {
     try {

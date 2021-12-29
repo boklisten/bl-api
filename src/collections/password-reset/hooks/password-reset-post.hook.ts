@@ -32,6 +32,7 @@ export class PasswordResetPostHook extends Hook {
 
   override before(
     passwordReset: PasswordReset,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     accessToken?: AccessToken
   ): Promise<PasswordReset> {
     if (!passwordReset) {
@@ -69,6 +70,7 @@ export class PasswordResetPostHook extends Hook {
 
   override after(
     passwordResets: PasswordReset[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     accessToken?: AccessToken
   ): Promise<PasswordReset[]> {
     return new Promise((resolve, reject) => {

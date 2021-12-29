@@ -14,6 +14,7 @@ export class EmailValidationPostHook extends Hook {
 
   public override after(
     emailValidations: EmailValidation[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     accessToken?: AccessToken
   ): Promise<EmailValidation[]> {
     return new Promise((resolve, reject) => {

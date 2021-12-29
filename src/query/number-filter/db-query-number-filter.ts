@@ -16,6 +16,7 @@ export class DbQueryNumberFilter {
   private equalOperation = "$eq";
 
   public getNumberFilters(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
     validNumberParams: string[]
   ): NumberFilter[] {
@@ -76,6 +77,7 @@ export class DbQueryNumberFilter {
 
     if (this.valueHasOperationIdentifier(value)) {
       const opWithValue = this.getOperationWithValue(value);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const op: any = {};
 
       op[opWithValue.operation] = opWithValue.value;
@@ -95,6 +97,7 @@ export class DbQueryNumberFilter {
   ): NumberFilter {
     if (values.length <= 0) throw new RangeError("the supplied array is empty");
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const op: any = {};
 
     for (const value of values) {

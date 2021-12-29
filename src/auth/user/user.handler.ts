@@ -93,7 +93,7 @@ export class UserHandler {
 
       return this.userStorage
         .update(selectedUser, { primary: true }, new SystemUser())
-        .then((primaryUser) => {
+        .then(() => {
           const promiseArr: Promise<User>[] = [];
 
           for (let i = 1; i < users.length; i++) {
@@ -116,7 +116,7 @@ export class UserHandler {
               );
             });
         })
-        .catch((updateUserErr) => {
+        .catch(() => {
           throw new BlError(
             "user with multiple entries could not update one to primary"
           );
@@ -200,6 +200,7 @@ export class UserHandler {
 
     try {
       const blid = await this.blid.createUserBlid(provider, providerId);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const userDetail: any = {
         email: username,
         blid: blid,
@@ -223,6 +224,7 @@ export class UserHandler {
         await this.sendEmailValidationLink(addedUserDetail);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newUser: any = {
         userDetail: addedUserDetail.id,
         permission: "customer",
@@ -303,6 +305,7 @@ export class UserHandler {
     return new Promise((resolve, reject) => {
       this.userStorage
         .getByQuery(dbQuery)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .then((users: User[]) => {
           resolve(true);
         })

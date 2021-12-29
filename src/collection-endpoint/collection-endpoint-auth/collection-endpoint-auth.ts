@@ -18,7 +18,7 @@ export class CollectionEndpointAuth {
         // it is a restriction on this endpoint and authentication is required, also try if there are sent with a auth header
         passport.authenticate(
           this._authStrategy,
-          (err, tokens: { accessToken: AccessToken }, info) => {
+          (err, tokens: { accessToken: AccessToken }) => {
             try {
               this.validateAuth(restriction, tokens.accessToken);
               return resolve(tokens.accessToken);

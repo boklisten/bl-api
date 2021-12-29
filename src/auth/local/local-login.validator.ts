@@ -38,7 +38,7 @@ export class LocalLoginValidator {
               this.localLoginPasswordValidator
                 .validate(password, localLogin.salt, localLogin.hashedPassword)
                 .then(
-                  (validPassword: boolean) => {
+                  () => {
                     resolve({
                       provider: localLogin.provider,
                       providerId: localLogin.providerId,
@@ -90,6 +90,7 @@ export class LocalLoginValidator {
       username = username.toString().toLocaleLowerCase();
 
       this.localLoginHandler.get(username).then(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (localLogin: LocalLogin) => {
           reject(
             blError
@@ -98,6 +99,7 @@ export class LocalLoginValidator {
               .code(903)
           );
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (error: BlError) => {
           this.localLoginCreator.create(username, password).then(
             (localLogin: LocalLogin) => {

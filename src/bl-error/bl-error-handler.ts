@@ -41,7 +41,8 @@ export class BlErrorHandler {
 
     this._errorLogStorage
       .add(new BlErrorLog(blError), { id: "SYSTEM", permission: "super" })
-      .then((addedErrorLog) => {})
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      .then(() => {})
       .catch((blErrorAddError) => {
         logger.warn(
           "blErrorHandler: there was a error saving the BlErrorLog: " +

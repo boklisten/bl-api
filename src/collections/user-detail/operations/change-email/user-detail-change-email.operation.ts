@@ -12,6 +12,7 @@ import { UserSchema } from "../../../user/user.schema";
 import { LocalLogin } from "../../../local-login/local-login";
 import { localLoginSchema } from "../../../local-login/local-login.schema";
 import { UserHandler } from "../../../../auth/user/user.handler";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const emailValidator = require("validator");
 
 export class UserDetailChangeEmailOperation implements Operation {
@@ -42,6 +43,7 @@ export class UserDetailChangeEmailOperation implements Operation {
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction
   ): Promise<boolean> {
     let userDetail: UserDetail;
@@ -50,6 +52,7 @@ export class UserDetailChangeEmailOperation implements Operation {
 
     const emailChange = blApiRequest.data["email"];
 
+    // eslint-disable-next-line no-useless-catch
     try {
       this.validateEmail(emailChange);
       userDetail = await this._userDetailStorage.get(blApiRequest.documentId);
@@ -61,6 +64,7 @@ export class UserDetailChangeEmailOperation implements Operation {
       throw e;
     }
 
+    // eslint-disable-next-line no-useless-catch
     try {
       await this._userDetailStorage.update(
         userDetail["_id"],
@@ -90,6 +94,7 @@ export class UserDetailChangeEmailOperation implements Operation {
 
     try {
       alreadyAddedUser = await this._userHandler.getByUsername(email);
+      // eslint-disable-next-line no-empty
     } catch (e) {}
 
     if (!isNullOrUndefined(alreadyAddedUser)) {
@@ -116,6 +121,7 @@ export class UserDetailChangeEmailOperation implements Operation {
 
   private async getUser(email: string, blid: string): Promise<User> {
     let user;
+    // eslint-disable-next-line no-useless-catch
     try {
       const users = await this._userStorage.aggregate([
         { $match: { username: email, blid: blid } },
@@ -128,7 +134,8 @@ export class UserDetailChangeEmailOperation implements Operation {
   }
 
   private async getLocalLogin(username: string): Promise<LocalLogin> {
-    let localLogin;
+    let localLogin: LocalLogin | PromiseLike<LocalLogin>;
+    // eslint-disable-next-line no-useless-catch
     try {
       const localLogins = await this._localLoginStorage.aggregate([
         { $match: { username: username } },

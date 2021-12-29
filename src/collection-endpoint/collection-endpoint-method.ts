@@ -16,6 +16,7 @@ import { CollectionEndpointDocumentAuth } from "./collection-endpoint-document/c
 import { CollectionEndpointOperation } from "./collection-endpoint-operation";
 import { isBoolean, isNullOrUndefined } from "util";
 
+// eslint-disable-next-line
 declare let onRequest: any;
 
 export class CollectionEndpointMethod<T extends BlDocument> {
@@ -72,6 +73,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
     this.createOperations(this._endpoint);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public onRequest(blApiRequest: BlApiRequest) {
     return Promise.resolve([]);
   }
@@ -105,6 +107,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
           req.query
         );
       })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((hookData?: any) => {
         // this is the endpoint specific request handler
         let data = req.body;

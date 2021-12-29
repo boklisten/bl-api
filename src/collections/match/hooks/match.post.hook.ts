@@ -41,6 +41,7 @@ export class MatchPostHook implements Hook {
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async after(matches: Match[], accessToken: AccessToken): Promise<any> {
     const match = matches[0];
 

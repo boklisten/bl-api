@@ -11,9 +11,8 @@ export type ExpandFilter = {
  * Order document on return
  */
 export class DbQueryExpandFilter {
-  constructor() {}
-
   public getExpandFilters(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
     validExpandParams: string[]
   ): ExpandFilter[] {
@@ -33,6 +32,7 @@ export class DbQueryExpandFilter {
 
   private generateExpandFilter(
     expand: string | string[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     validExpandParams: string[]
   ): ExpandFilter[] {
     let expandFilterArray = [];
@@ -46,8 +46,6 @@ export class DbQueryExpandFilter {
     const expandFilters: ExpandFilter[] = [];
 
     for (const expandFilter of expandFilterArray) {
-      if (validExpandParams.indexOf(expandFilter) <= -1) {
-      }
       expandFilters.push({ fieldName: expandFilter });
     }
 

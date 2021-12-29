@@ -32,10 +32,12 @@ export class UserDetailReadPermissionOperation implements Operation {
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction
   ): Promise<boolean> {
     let userDetail;
 
+    // eslint-disable-next-line no-useless-catch
     try {
       userDetail = await this._userDetailStorage.get(blApiRequest.documentId);
     } catch (e) {
@@ -44,6 +46,7 @@ export class UserDetailReadPermissionOperation implements Operation {
 
     let user: User;
 
+    // eslint-disable-next-line no-useless-catch
     try {
       const users = await this._userStorage.aggregate([
         { $match: { blid: userDetail.blid } },

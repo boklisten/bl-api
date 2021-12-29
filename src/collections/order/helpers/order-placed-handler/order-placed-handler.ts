@@ -83,6 +83,7 @@ export class OrderPlacedHandler {
     order: Order,
     accessToken: AccessToken
   ): Promise<Order> {
+    // eslint-disable-next-line no-useless-catch
     try {
       for (const orderItem of order.orderItems) {
         if (

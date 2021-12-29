@@ -22,7 +22,9 @@ export class DeliveryPostHook extends Hook {
     deliveryHandler?: DeliveryHandler,
     deliveryStorage?: BlDocumentStorage<Delivery>,
     orderStorage?: BlDocumentStorage<Order>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     itemStorage?: BlDocumentStorage<Item>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     bringDeliveryService?: BringDeliveryService
   ) {
     super();

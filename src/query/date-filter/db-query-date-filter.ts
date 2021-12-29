@@ -26,6 +26,7 @@ export class DbQueryDateFilter {
     ];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public getDateFilters(query: any, validDateParams: string[]): DateFilter[] {
     if (
       !query ||

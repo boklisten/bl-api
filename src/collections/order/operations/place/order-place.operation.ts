@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-useless-catch */
 import { NextFunction, Request, Response } from "express";
 import { Operation } from "../../../../operation/operation";
 import { BlApiRequest } from "../../../../request/bl-api-request";
@@ -59,6 +61,7 @@ export class OrderPlaceOperation implements Operation {
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction
   ): Promise<boolean> {
     let order: Order;
@@ -118,6 +121,7 @@ export class OrderPlaceOperation implements Operation {
           order.customer as string,
           blApiRequest.user
         );
+        // eslint-disable-next-line no-empty
       } catch (e) {}
     }
 
@@ -134,6 +138,7 @@ export class OrderPlaceOperation implements Operation {
       try {
         const ci = await this._customerItemStorage.add(customerItem, user);
         addedCustomerItems.push(ci);
+        // eslint-disable-next-line no-empty
       } catch (e) {}
     }
 

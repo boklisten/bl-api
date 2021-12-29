@@ -101,6 +101,7 @@ export class BringDeliveryService {
 
       this.httpHandler
         .getWithQuery(this.bringShipmentUrl, queryString, bringAuthHeaders)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .then((responseData: any) => {
           let deliveryInfoBring: DeliveryInfoBring;
           try {
@@ -170,6 +171,7 @@ export class BringDeliveryService {
   private getDeliveryInfoBringFromBringResponse(
     facilityAddress: FacilityAddress,
     shipmentAddress: ShipmentAddress,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     responseData: any,
     product: string
   ): DeliveryInfoBring {

@@ -103,6 +103,7 @@ export class Messenger implements MessengerService {
       .then((delivery: Delivery) => {
         this._emailService.deliveryInformation(customerDetail, order, delivery);
       })
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       .catch(() => {});
   }
 

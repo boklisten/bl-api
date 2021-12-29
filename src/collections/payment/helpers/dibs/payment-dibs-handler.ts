@@ -48,6 +48,7 @@ export class PaymentDibsHandler {
     payment: Payment,
     accessToken: AccessToken
   ): Promise<Payment> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const order = await this.orderStorage.get(payment.order as string);
       const userDetail = await this.userDetailStorage.get(

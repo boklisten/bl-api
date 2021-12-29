@@ -34,6 +34,7 @@ export class MessagePostHook implements Hook {
   async before(
     message: Message,
     accessToken: AccessToken,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     id?: string
   ): Promise<boolean> {
     if (typeof message.messageType === "undefined" || !message.messageType) {
@@ -80,6 +81,7 @@ export class MessagePostHook implements Hook {
 
   async after(
     messages: Message[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     accessToken: AccessToken
   ): Promise<Message[]> {
     if (isNullOrUndefined(messages) || messages.length <= 0) {
@@ -125,6 +127,7 @@ export class MessagePostHook implements Hook {
   }
 
   private async onRemind(message: Message): Promise<Message[]> {
+    // eslint-disable-next-line no-useless-catch
     try {
       await this.messengerReminder.remindCustomer(message);
       return [message];

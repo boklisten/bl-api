@@ -1,4 +1,5 @@
 import { APP_CONFIG } from "../application-config";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const URL = require("url");
 
 export class ApiPath {

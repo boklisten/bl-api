@@ -49,6 +49,7 @@ export class Matcher {
   // 5 add meetingpoint to be the next opening day, if none is found reject
   // 5 update orderItems with match id
   // 6 notify sender and reciever
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async match(order: Order, userDetail: UserDetail): Promise<any> {
     this.validateBranch(order.branch as string);
     this.validatePayment(order.payments);
@@ -60,6 +61,7 @@ export class Matcher {
     const matchItems: MatchItem[] =
       this.matchHelper.convertOrderItemsToMatchItems(order.orderItems);
 
+    // eslint-disable-next-line no-useless-catch
     try {
       const match = await this.matchFinder.find(matchItems);
       await this.matchUpdater.update(match, matchProfile, matchItems);
@@ -74,6 +76,7 @@ export class Matcher {
     if (!order.delivery) {
       return true;
     }
+    // eslint-disable-next-line no-useless-catch
     try {
       const delivery: Delivery = await this.deliveryStorage.get(
         order.delivery as string
@@ -87,6 +90,7 @@ export class Matcher {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private validatePayment(payments: any[]) {
     if (!payments || payments.length <= 0) {
       throw new BlError("payment is not present on order");

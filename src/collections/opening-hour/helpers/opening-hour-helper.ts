@@ -18,8 +18,9 @@ export class OpeningHourHelper {
       throw new BlError("no opening hours found at branch");
     }
 
-    let firstAvailableOpeningHour;
+    let firstAvailableOpeningHour: OpeningHour | PromiseLike<OpeningHour>;
 
+    // eslint-disable-next-line no-useless-catch
     try {
       const openingHours = await this.openingHourStorage.getMany(
         branch.openingHours as string[]
@@ -31,9 +32,6 @@ export class OpeningHourHelper {
       );
     } catch (e) {
       throw e;
-    }
-
-    if (!firstAvailableOpeningHour) {
     }
 
     return firstAvailableOpeningHour;

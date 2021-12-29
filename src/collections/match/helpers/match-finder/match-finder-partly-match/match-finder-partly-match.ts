@@ -24,6 +24,7 @@ export class MatchFinderPartlyMatch {
       if (matchInTypeCreated) {
         return matchInTypeCreated;
       }
+      // eslint-disable-next-line no-empty
     } catch (e) {}
 
     try {
@@ -33,6 +34,7 @@ export class MatchFinderPartlyMatch {
       if (matchInTypePartlyMatched) {
         return matchInTypePartlyMatched;
       }
+      // eslint-disable-next-line no-empty
     } catch (e) {}
 
     throw new BlError("no match was found");

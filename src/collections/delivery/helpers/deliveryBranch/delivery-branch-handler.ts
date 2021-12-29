@@ -1,8 +1,6 @@
 import { Delivery, BlError } from "@boklisten/bl-model";
 
 export class DeliveryBranchHandler {
-  constructor() {}
-
   validate(delivery: Delivery): Promise<boolean> {
     if (delivery.amount > 0) {
       return Promise.reject(

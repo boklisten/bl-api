@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Hook } from "../../../hook/hook";
 import {
   AccessToken,
@@ -38,7 +39,9 @@ export class CustomerItemPostHook extends Hook {
 
   public override before(
     customerItem: CustomerItem,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     accessToken: AccessToken,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     id?: string
   ): Promise<boolean> {
     if (!customerItem) {

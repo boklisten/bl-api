@@ -7,6 +7,7 @@ export type RegexFilter = {
 };
 
 export class DbQueryRegexFilter {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getRegexFilters(query: any, validRegexParams: string[]): RegexFilter[] {
     if (
       !query ||

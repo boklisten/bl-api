@@ -54,6 +54,7 @@ export class OrderItemRentPeriodValidator {
     const period = orderItem.info.periodType;
 
     if (!isNullOrUndefined(orderItem.movedFromOrder)) {
+      // eslint-disable-next-line no-useless-catch
       try {
         const branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
           period,
@@ -69,6 +70,7 @@ export class OrderItemRentPeriodValidator {
       }
     }
 
+    // eslint-disable-next-line no-useless-catch
     try {
       const branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
         period,

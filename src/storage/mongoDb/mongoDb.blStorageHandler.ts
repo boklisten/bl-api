@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
 import { BlStorageHandler } from "../blStorageHandler";
 import { MongooseModelCreator } from "./mongoose-schema-creator";

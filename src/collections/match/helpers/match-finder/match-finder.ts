@@ -18,6 +18,7 @@ export class MatchFinder {
     this.matchFinderPartlyMatch = new MatchFinderPartlyMatch();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async find(matchItems: MatchItem[]): Promise<any> {
     let matches = await this.matchStorage.getAll();
 
@@ -31,6 +32,7 @@ export class MatchFinder {
 
     try {
       match = this.searchForFullMatch(matchItems, matches);
+      // eslint-disable-next-line no-empty
     } catch (e) {}
 
     if (match) {
@@ -39,6 +41,7 @@ export class MatchFinder {
 
     try {
       match = await this.matchFinderPartlyMatch.find(matchItems, matches);
+      // eslint-disable-next-line no-empty
     } catch (e) {}
 
     if (match) {

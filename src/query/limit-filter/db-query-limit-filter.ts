@@ -3,8 +3,7 @@ export type LimitFilter = {
 };
 
 export class DbQueryLimitFilter {
-  constructor() {}
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public getLimitFilter(query: any): LimitFilter {
     if (
       !query ||
@@ -24,6 +23,7 @@ export class DbQueryLimitFilter {
     return { limit: limitNum };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   validNumber(limit: any) {
     const limitStr = limit.toString();
 

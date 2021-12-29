@@ -27,6 +27,7 @@ export class MessengerReminder {
    *  Tries to remind all customers to return items that have the specified deadline
    *  @param deadline the deadline the reminder is for
    */
+  // eslint-disable-next-line
   public remindAll(deadline: Date) {}
 
   /**
@@ -35,6 +36,7 @@ export class MessengerReminder {
    *  @param deadline the deadline the reminder is for
    *  @param messageId if provided, stores message info in that message object
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async remindCustomer(message: Message): Promise<any> {
     if (message.customerId == null || message.customerId.length <= 0) {
       throw new BlError("customerId is null or undefined");
@@ -44,11 +46,13 @@ export class MessengerReminder {
       throw new BlError("deadline is null or undefined");
     }
 
+    // eslint-disable-next-line no-useless-catch
     try {
       const notReturnedCustomerItems =
         await this.customerItemHandler.getNotReturned(
           message.customerId,
           message.info["deadline"],
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           message.messageSubtype as any
         );
 

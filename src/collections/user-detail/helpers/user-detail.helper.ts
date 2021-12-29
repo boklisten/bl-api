@@ -56,6 +56,7 @@ export class UserDetailHelper {
   private getUserDetailUpdateObject(
     dibsEasyPayment: DibsEasyPayment,
     userDetail: UserDetail
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any {
     const dibsUserDetail = dibsEasyPayment.consumer.privatePerson;
     const dibsShippingAddress = dibsEasyPayment.consumer.shippingAddress;

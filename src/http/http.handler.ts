@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlError } from "@boklisten/bl-model";
 const qs = require("qs");
 const request = require("request");
@@ -5,8 +7,6 @@ const rp = require("request-promise");
 import { logger } from "../logger/logger";
 
 export class HttpHandler {
-  constructor() {}
-
   post(url: string, data: any, authorization?: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const options = {

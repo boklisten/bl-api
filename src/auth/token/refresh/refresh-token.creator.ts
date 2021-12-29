@@ -30,6 +30,7 @@ export class RefreshTokenCreator {
         this.createPayload(username, userid),
         this.refreshTokenSecret.get(),
         { expiresIn: this.tokenConfig.refreshToken.expiresIn },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (error: any, refreshToken: string) => {
           if (error)
             return reject(

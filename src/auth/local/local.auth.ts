@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import passport from "passport";
 import { Strategy } from "passport-local";
 import { Router } from "express";
@@ -26,7 +27,7 @@ export class LocalAuth {
     passport.use(
       new Strategy((username: string, password: string, done: any) => {
         localLoginValidator.validate(username, password).then(
-          (localLoginProvider: { provider: string; providerId: string }) => {
+          () => {
             this.tokenHandler.createTokens(username).then(
               (tokens: { accessToken: string; refreshToken: string }) => {
                 done(null, tokens);
@@ -128,7 +129,7 @@ export class LocalAuth {
       this.apiPath.createPath("auth/local/register"),
       (req: any, res: any) => {
         localLoginValidator.create(req.body.username, req.body.password).then(
-          (localLoginProvider: { provider: string; providerId: string }) => {
+          () => {
             this.tokenHandler.createTokens(req.body.username).then(
               (tokens: { accessToken: string; refreshToken: string }) => {
                 this.respondWithTokens(res, tokens);

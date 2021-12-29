@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NumberFilter } from "./number-filter/db-query-number-filter";
 import { StringFilter } from "./string-filter/db-query-string-filter";
 import { OnlyGetFilter } from "./only-get-filter/db-query-only-get-filter";

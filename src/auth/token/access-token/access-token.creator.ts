@@ -30,11 +30,13 @@ export class AccessTokenCreator {
         );
 
       this.refreshTokenValidator.validate(refreshToken).then(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (valid: boolean) => {
           this.jwt.sign(
             this.createPayload(username, userid, permission, userDetailId),
             this.accessTokenSecret.get(),
             { expiresIn: this.tokenConfig.accessToken.expiresIn },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (error: any, accessToken: any) => {
               if (error)
                 return reject(

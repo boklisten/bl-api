@@ -2,8 +2,6 @@ import { OrderItem, Item, Branch, BlError } from "@boklisten/bl-model";
 import { isNullOrUndefined } from "util";
 
 export class OrderItemPartlyPaymentValidator {
-  constructor() {}
-
   public validate(
     orderItem: OrderItem,
     Item: Item,
@@ -29,11 +27,12 @@ export class OrderItemPartlyPaymentValidator {
       );
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       resolve(true);
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private isPeriodSupported(period: any, branch: Branch) {
     if (branch.paymentInfo && branch.paymentInfo.partlyPaymentPeriods) {
       for (const partlyPaymentPeriod of branch.paymentInfo

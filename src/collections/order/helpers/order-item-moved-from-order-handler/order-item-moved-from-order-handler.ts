@@ -31,6 +31,7 @@ export class OrderItemMovedFromOrderHandler {
       }
     }
 
+    // eslint-disable-next-line no-useless-catch
     try {
       await this.addMovedToOrderOnOrderItems(orderItemsToUpdate);
       return true;
@@ -42,6 +43,7 @@ export class OrderItemMovedFromOrderHandler {
   private async addMovedToOrderOnOrderItems(
     orderItemsToUpdate: OrderItemToUpdate[]
   ): Promise<boolean> {
+    // eslint-disable-next-line no-useless-catch
     try {
       for (const orderItemToUpdate of orderItemsToUpdate) {
         await this.updateOrderItem(orderItemToUpdate);
@@ -56,9 +58,7 @@ export class OrderItemMovedFromOrderHandler {
   private async updateOrderItem(
     orderItemToUpdate: OrderItemToUpdate
   ): Promise<boolean> {
-    let originalOrder: Order;
-
-    originalOrder = await this._orderStorage.get(
+    const originalOrder = await this._orderStorage.get(
       orderItemToUpdate.originalOrderId
     );
 

@@ -29,6 +29,7 @@ export class UserCanDeleteUserDetail {
   ): Promise<boolean> {
     let userDetailToDelete;
 
+    // eslint-disable-next-line no-useless-catch
     try {
       userDetailToDelete = await this.userDetailStorage.get(userIdToDelete);
     } catch (e) {
@@ -50,6 +51,7 @@ export class UserCanDeleteUserDetail {
 
     let userToDelete;
 
+    // eslint-disable-next-line no-useless-catch
     try {
       const users = await this.userStorage.getByQuery(dbQuery);
       userToDelete = users[0];

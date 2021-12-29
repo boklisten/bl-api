@@ -4,9 +4,8 @@ export type BooleanFilter = {
 };
 
 export class DbQueryBooleanFilter {
-  constructor() {}
-
   public getBooleanFilters(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
     validBooleanParams: string[]
   ): BooleanFilter[] {
@@ -20,6 +19,7 @@ export class DbQueryBooleanFilter {
   }
 
   private generateBooleanFilters(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
     validBooleanParams: string[]
   ): BooleanFilter[] {

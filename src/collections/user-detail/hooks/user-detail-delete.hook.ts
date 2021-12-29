@@ -31,6 +31,7 @@ export class UserDetailDeleteHook extends Hook {
   }
 
   public override async before(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any,
     accessToken: AccessToken,
     id: string
@@ -52,6 +53,7 @@ export class UserDetailDeleteHook extends Hook {
     id: string,
     accessToken: AccessToken
   ): Promise<boolean> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const canDelete = await this.userCanDeleteUserDetail.canDelete(
         id,
@@ -70,6 +72,7 @@ export class UserDetailDeleteHook extends Hook {
   }
 
   private async checkActiveInvoices(userId: string): Promise<boolean> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const haveActiveInvoices =
         await this.customerInvoiceActive.haveActiveInvoices(userId);
@@ -83,6 +86,7 @@ export class UserDetailDeleteHook extends Hook {
   }
 
   private async checkActiveCustomerItems(userId: string): Promise<boolean> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const haveActiveCustomerItems =
         await this.customerHaveActiveCustomerItems.haveActiveCustomerItems(
@@ -100,6 +104,7 @@ export class UserDetailDeleteHook extends Hook {
   }
 
   private async checkActiveOrders(userId: string): Promise<boolean> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const haveActiveOrders = await this.orderActive.haveActiveOrders(userId);
       if (haveActiveOrders) {

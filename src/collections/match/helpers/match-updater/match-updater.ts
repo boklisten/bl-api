@@ -54,6 +54,7 @@ export class MatchUpdater {
     return match;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private addMeetingPoint(match: Match): Promise<Match> {
     throw "not implemented";
     //this.openingHourHelper.getNextAvailableOpeningHour();
@@ -88,6 +89,7 @@ export class MatchUpdater {
           !mi.reciever
         ) {
           mi.reciever = recieverId;
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           matchedItemCount += 0;
         }
       }

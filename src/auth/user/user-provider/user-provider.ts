@@ -31,6 +31,7 @@ export class UserProvider {
     let user;
     let tokens;
 
+    // eslint-disable-next-line no-useless-catch
     try {
       user = await this.getUser(username, provider, providerId);
       await this._userHandler.valid(username);
@@ -54,6 +55,7 @@ export class UserProvider {
     try {
       user = await this._userHandler.get(provider, providerId);
     } catch (e) {
+      // eslint-disable-next-line no-useless-catch
       try {
         user = await this._userHandler.create(username, provider, providerId);
       } catch (createUserError) {

@@ -2,11 +2,13 @@ import { Types } from "mongoose";
 
 export type ObjectIdFilter = {
   fieldName: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: Types.ObjectId | string | any[];
 };
 
 export class DbQueryObjectIdFilter {
   getObjectIdFilters(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
     validStringParams: string[]
   ): ObjectIdFilter[] {

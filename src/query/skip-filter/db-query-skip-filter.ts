@@ -3,8 +3,7 @@ export type SkipFilter = {
 };
 
 export class DbQuerySkipFilter {
-  constructor() {}
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public getSkipFilter(query: any): SkipFilter {
     if (
       !query ||
@@ -18,6 +17,7 @@ export class DbQuerySkipFilter {
     return { skip: this.getSkipNumber(query.skip) };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private getSkipNumber(skip: any): number {
     const skipstr = skip.toString();
 

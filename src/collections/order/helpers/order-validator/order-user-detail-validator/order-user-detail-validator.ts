@@ -12,21 +12,24 @@ export class OrderUserDetailValidator {
   }
 
   public validate(order: Order): Promise<boolean> {
-    return this._userDetailStorage
-      .get(order.customer as string)
-      .then((userDetail: UserDetail) => {
-        /*
+    return (
+      this._userDetailStorage
+        .get(order.customer as string)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .then((userDetail: UserDetail) => {
+          /*
         if (!userDetail.emailConfirmed) {
           throw new BlError('userDetail.emailConfirmed is not true');
         }
         */
 
-        return true;
-      })
-      .catch((userDetailValidateError: BlError) => {
-        throw new BlError("userDetail could not be validated").add(
-          userDetailValidateError
-        );
-      });
+          return true;
+        })
+        .catch((userDetailValidateError: BlError) => {
+          throw new BlError("userDetail could not be validated").add(
+            userDetailValidateError
+          );
+        })
+    );
   }
 }

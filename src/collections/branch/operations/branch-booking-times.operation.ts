@@ -28,8 +28,10 @@ export class BranchBookingTimesOperation implements Operation {
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction
   ): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let bookingTimes: any[];
 
     const aggregation = [

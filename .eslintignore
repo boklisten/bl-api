@@ -1,0 +1,15 @@
+# TODO: remove this eslint-disable line
+*.spec.ts
+
+/dist
+/node_modules
+.tscache
+.idea
+.env
+*.log
+src/config/secrets.ts
+
+\.nyc_output/
+
+*.swp
+Session.vim

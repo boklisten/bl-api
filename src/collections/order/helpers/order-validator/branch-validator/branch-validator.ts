@@ -1,8 +1,7 @@
 import { Order } from "@boklisten/bl-model";
 
 export class BranchValidator {
-  constructor() {}
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public validate(order: Order): Promise<boolean> {
     return Promise.resolve(true);
   }

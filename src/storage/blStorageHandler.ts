@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlDocument, UserPermission } from "@boklisten/bl-model";
 import { SEDbQuery } from "../query/se.db-query";
 import { NestedDocument } from "./nested-document";

@@ -1,3 +1,5 @@
+// AUTO IGNORED:
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const program = require("commander");
 
 program

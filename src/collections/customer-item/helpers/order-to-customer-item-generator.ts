@@ -22,6 +22,7 @@ export class OrderToCustomerItemGenerator {
       return [];
     }
 
+    // eslint-disable-next-line no-useless-catch
     try {
       customerDetail = await this._userDetailStorage.get(
         order.customer as string
@@ -142,6 +143,7 @@ export class OrderToCustomerItemGenerator {
 
   private createHandoutInfo(order: Order) {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       handoutBy: "branch" as any,
       handoutById: order.branch as string,
       handoutEmployee: order.employee as string,

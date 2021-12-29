@@ -4,9 +4,8 @@ export type OnlyGetFilter = {
 };
 
 export class DbQueryOnlyGetFilter {
-  constructor() {}
-
   public getOnlyGetFilters(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
     validOnlyGetParams: string[]
   ): OnlyGetFilter[] {
@@ -23,6 +22,7 @@ export class DbQueryOnlyGetFilter {
   }
 
   private generateOnlyGetFilters(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     og: any,
     validOnlyGetParams: string[]
   ): OnlyGetFilter[] {

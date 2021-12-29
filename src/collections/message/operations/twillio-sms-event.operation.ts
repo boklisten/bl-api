@@ -17,8 +17,11 @@ export class TwilioSmsEventOperation implements Operation {
 
   public async run(
     blApiRequest: BlApiRequest,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     req?: Request,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction
   ): Promise<BlapiResponse> {
     //logger.info('message_id::' + blApiRequest.query['bl_message_id']);
@@ -68,6 +71,7 @@ export class TwilioSmsEventOperation implements Operation {
 
   private async updateMessageWithTwilioSmsEvent(
     message: Message,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     smsEvent: any
   ): Promise<boolean> {
     const newSmsEvents =

@@ -17,8 +17,11 @@ export class OrderPostHook extends Hook {
   constructor(
     orderValidator?: OrderValidator,
     orderHookBefore?: OrderHookBefore,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     userDetailStorage?: BlDocumentStorage<UserDetail>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     orderStorage?: BlDocumentStorage<Order>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     deliveryStorage?: BlDocumentStorage<Delivery>
   ) {
     super();
@@ -26,6 +29,7 @@ export class OrderPostHook extends Hook {
     this.orderHookBefore = orderHookBefore ?? new OrderHookBefore();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public override before(requestBody: any): Promise<boolean> {
     return this.orderHookBefore.validate(requestBody);
   }

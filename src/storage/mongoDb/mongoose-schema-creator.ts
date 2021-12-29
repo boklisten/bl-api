@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from "mongoose";
 
 export class MongooseModelCreator {
@@ -11,6 +12,7 @@ export class MongooseModelCreator {
 
     //remove fields that the client shall not see
     mongooseSchema.set("toJSON", {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       transform: function (doc, ret, options) {
         ret.id = ret._id;
         delete ret.user;

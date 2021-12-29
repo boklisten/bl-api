@@ -18,6 +18,7 @@ const customLevels = {
 export const logger = winston.createLogger({
   levels: customLevels,
   format: winston.format.combine(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     winston.format.printf((info: any) => {
       const colorizer = winston.format.colorize();
       if (

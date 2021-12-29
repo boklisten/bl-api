@@ -24,6 +24,7 @@ export class OrderPatchHook extends Hook {
   }
 
   override before(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any,
     accessToken: AccessToken,
     id: string

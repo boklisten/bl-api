@@ -6,6 +6,7 @@ import { NestedDocument } from "../storage/nested-document";
 
 export interface BlCollection {
   collectionName: string; //the name determines the path to the collection like /api/vi/collectionName
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mongooseSchema: any; //the mongooseSchema for this collection
   documentPermission?: BlDocumentPermission;
   endpoints: BlEndpoint[]; //a list of the valid endpoints for this collection;

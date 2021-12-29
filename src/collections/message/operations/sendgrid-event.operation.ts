@@ -22,8 +22,11 @@ export class SendgridEventOperation implements Operation {
 
   public async run(
     blApiRequest: BlApiRequest,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     req?: Request,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction
   ): Promise<BlapiResponse> {
     if (!blApiRequest.data || Object.keys(blApiRequest.data).length === 0) {

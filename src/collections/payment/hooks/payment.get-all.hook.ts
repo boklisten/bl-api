@@ -11,9 +11,11 @@ export class PaymentGetAllHook extends Hook {
   }
 
   public override async before(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any,
     accessToken?: AccessToken,
     id?: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query?: any
   ): Promise<boolean> {
     if (
@@ -34,6 +36,7 @@ export class PaymentGetAllHook extends Hook {
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public override async after(payments: Payment[]): Promise<any> {
     return payments;
   }

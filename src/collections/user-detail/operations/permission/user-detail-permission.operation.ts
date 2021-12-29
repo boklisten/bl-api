@@ -35,6 +35,7 @@ export class UserDetailPermissionOperation implements Operation {
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction
   ): Promise<boolean> {
     if (
@@ -53,6 +54,7 @@ export class UserDetailPermissionOperation implements Operation {
 
     let userDetail: UserDetail;
 
+    // eslint-disable-next-line no-useless-catch
     try {
       userDetail = await this._userDetailStorage.get(blApiRequest.documentId);
     } catch (e) {
@@ -61,6 +63,7 @@ export class UserDetailPermissionOperation implements Operation {
 
     let user: User;
 
+    // eslint-disable-next-line no-useless-catch
     try {
       const users = await this._userStorage.aggregate([
         { $match: { blid: userDetail.blid } },
@@ -84,6 +87,7 @@ export class UserDetailPermissionOperation implements Operation {
       throw new BlError("no access to change permission").code(904);
     }
 
+    // eslint-disable-next-line no-useless-catch
     try {
       await this._userStorage.update(
         user["_id"],
