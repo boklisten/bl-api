@@ -35,10 +35,8 @@ export class ApiPath {
       refererUrl = this.retrieveBasePath(reffererPath);
     }
 
-    if (refererUrl) {
-      if (refererUrl.indexOf(this.baseHost) <= -1) {
-        refererUrl = null;
-      }
+    if (refererUrl && !refererUrl.includes(this.baseHost)) {
+      refererUrl = null;
     }
 
     return refererUrl;
