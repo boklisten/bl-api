@@ -25,4 +25,27 @@ module.exports = [
     comments: [],
     __v: 0,
   },
+  {
+    _id: ObjectId("61d35c6b48bf8900475f88fe"),
+    valid: false,
+    active: true,
+    lastActive: new Date("2021-12-29T18:39:37.536Z"),
+    lastUpdated: new Date("2021-12-29T18:39:37.536Z"),
+    creationTime: new Date("2021-12-29T18:39:37.536Z"),
+    viewableFor: [],
+    editableFor: [],
+    archived: false,
+    userDetail: ObjectId("61d35c6b48bf8900475f88f9"),
+    permission: "admin",
+    blid: "u#a780f3f6113eebf992af700d7b834ed5",
+    username: "admin@adminsen.no",
+    login: {
+      provider: "local",
+      providerId:
+        "d1917aa3db1e325b467495ab37360f37879ec87546e6f3a1cf063c05a486c7b3",
+    },
+    user: { id: "u#a780f3f6113eebf992af700d7b834ed5", permission: "customer" },
+    comments: [],
+    __v: 0,
+  },
 ];
