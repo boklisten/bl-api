@@ -67,9 +67,7 @@ export class PdfService {
       address: customerDetail.address,
     };
 
-    const emailOrder: EmailOrder =
-      await this._orderEmailHandler.orderToEmailOrder(order);
-
+    const emailOrder: EmailOrder = await this._orderEmailHandler.orderToEmailOrder(order);
     return await this._pdfHandler.getRentAgreement(
       emailSetting,
       emailOrder,
