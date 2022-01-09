@@ -1206,7 +1206,7 @@ delayed-stream@~1.0.0:
   resolved "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz"
   integrity sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
 
-denque@^1.4.1, denque@^1.5.0:
+denque@^1.4.1:
   version "1.5.1"
   resolved "https://registry.npmjs.org/denque/-/denque-1.5.1.tgz"
   integrity sha512-XwE+iZ4D6ZUB7mfYRMb5wByE8L74HCn30FBN7sWnXksWc1LO1bPDl67pBR9o/kC4z/xSNAwkMYcGgqDV3BE3Hw==
@@ -3462,24 +3462,19 @@ readdirp@~3.6.0:
   dependencies:
     picomatch "^2.2.1"
 
-redis-commands@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.npmjs.org/redis-commands/-/redis-commands-1.7.0.tgz"
-  integrity sha512-nJWqw3bTFy21hX/CPKHth6sfhZbdiHP6bTawSgQBlKOVRG7EZkfHbbHwQJnrE4vsQf0CMNE+3gJ4Fmm16vdVlQ==
-
-redis-errors@^1.0.0, redis-errors@^1.2.0:
+redis-errors@^1.0.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/redis-errors/-/redis-errors-1.2.0.tgz"
   integrity sha1-62LSrbFeTq9GEMBK/hUpOEJQq60=
 
-redis-parser@3.0.0, redis-parser@^3.0.0:
+redis-parser@3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/redis-parser/-/redis-parser-3.0.0.tgz"
   integrity sha1-tm2CjNyv5rS4pCin3vTGvKwxyLQ=
   dependencies:
     redis-errors "^1.0.0"
 
-redis@*:
+redis@*, redis@^4.0.1:
   version "4.0.1"
   resolved "https://registry.npmjs.org/redis/-/redis-4.0.1.tgz"
   integrity sha512-qfcq1oz2ci7pNdCfTLLEuKhS8jZ17dFiT1exogOr+jd3EVP/h9qpy7K+VajB4BXA0k8q68KFqR6HrliKV6jt1Q==
@@ -3488,16 +3483,6 @@ redis@*:
     "@node-redis/json" "^1.0.1"
     "@node-redis/search" "^1.0.1"
     "@node-redis/time-series" "^1.0.0"
-
-redis@^3.1.2:
-  version "3.1.2"
-  resolved "https://registry.npmjs.org/redis/-/redis-3.1.2.tgz"
-  integrity sha512-grn5KoZLr/qrRQVwoSkmzdbw6pwF+/rwODtrOr6vuBRiR/f3rjSTGupbF90Zpqm2oenix8Do6RV7pYEkGwlKkw==
-  dependencies:
-    denque "^1.5.0"
-    redis-commands "^1.7.0"
-    redis-errors "^1.2.0"
-    redis-parser "^3.0.0"
 
 reflect-metadata@^0.1.13:
   version "0.1.13"
