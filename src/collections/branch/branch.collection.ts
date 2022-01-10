@@ -24,6 +24,18 @@ export class BranchCollection implements BlCollection {
           fieldName: "location.bookable",
           type: "boolean",
         },
+        {
+          fieldName: "active",
+          type: "boolean",
+        },
+        {
+          fieldName: "location.address",
+          type: "string",
+        },
+        {
+          fieldName: "openingHours",
+          type: "expand",
+        },
       ],
     },
     {
