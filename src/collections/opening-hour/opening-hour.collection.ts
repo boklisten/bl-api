@@ -9,6 +9,23 @@ export class OpeningHourCollection implements BlCollection {
       method: "getId",
     },
     {
+      method: "getAll",
+      validQueryParams: [
+        {
+          fieldName: "branch",
+          type: "object-id",
+        },
+        {
+          fieldName: "to",
+          type: "date",
+        },
+        {
+          fieldName: "from",
+          type: "date",
+        },
+      ],
+    },
+    {
       method: "post",
       restriction: {
         permissions: ["admin", "super"],

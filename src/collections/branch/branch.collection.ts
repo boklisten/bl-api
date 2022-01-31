@@ -13,6 +13,10 @@ export class BranchCollection implements BlCollection {
       hook: new BranchGetHook(),
       validQueryParams: [
         {
+          fieldName: "id",
+          type: "string",
+        },
+        {
           fieldName: "name",
           type: "string",
         },
