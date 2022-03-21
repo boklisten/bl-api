@@ -139,7 +139,7 @@ export class BringDeliveryService {
     if (totalWeightInGrams === 0) {
       totalWeightInGrams = APP_CONFIG.delivery.maxWeightLetter + 1;
     }
-    return totalWeightInGrams;
+    return Math.ceil(totalWeightInGrams);
   }
 
   private decideProduct(items: Item[]) {
