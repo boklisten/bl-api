@@ -73,6 +73,12 @@ export class OrderPlacedHandler {
       await this.updateUserDetailWithPlacedOrder(placedOrder, accessToken);
       this.sendOrderConfirmationMail(placedOrder);
 
+      this.userDetailStorage
+        .get(placedOrder.customer as string)
+        .then((result) => {
+          this._matcher.match(placedOrder, result);
+        });
+
       return placedOrder;
     } catch (e) {
       throw new BlError("could not update order: " + e).add(e);

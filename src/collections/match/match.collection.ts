@@ -9,7 +9,7 @@ export class MatchCollection implements BlCollection {
     {
       method: "post",
       restriction: {
-        permissions: ["customer", "admin", "super"],
+        permissions: ["customer", "employee", "admin", "super"],
       },
       hook: new MatchPostHook(),
     },

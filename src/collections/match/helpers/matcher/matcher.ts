@@ -12,6 +12,7 @@ import { dateService } from "../../../../blc/date.service";
 import { MatchHelper } from "../match-helper";
 import { MatchFinder } from "../match-finder/match-finder";
 import { MatchUpdater } from "../match-updater/match-updater";
+import twilio from "twilio";
 
 // branch id in PROD : 5b6442ebd2e733002fae8a31
 // branch id in DEV :
@@ -51,10 +52,10 @@ export class Matcher {
   // 6 notify sender and reciever
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async match(order: Order, userDetail: UserDetail): Promise<any> {
-    this.validateBranch(order.branch as string);
-    this.validatePayment(order.payments);
+    // this.validateBranch(order.branch as string);
+    // this.validatePayment(order.payments);
     await this.validateDelivery(order);
-    this.validateCreationTime(order);
+    // this.validateCreationTime(order);
 
     const matchProfile: MatchProfile =
       this.matchHelper.convertUserDetailToMatchProfile(userDetail);
@@ -64,7 +65,32 @@ export class Matcher {
     // eslint-disable-next-line no-useless-catch
     try {
       const match = await this.matchFinder.find(matchItems);
-      await this.matchUpdater.update(match, matchProfile, matchItems);
+      const updatedMatch = await this.matchUpdater.update(
+        match,
+        matchProfile,
+        matchItems
+      );
+      // Temporary logic to send match sms
+      const accountSid = process.env.TWILIO_SMS_SID;
+      const authToken = process.env.TWILIO_SMS_AUTH_TOKEN;
+      const client = twilio(accountSid, authToken);
+      const sendSms = (phone: string, message: string) => {
+        client.messages
+          .create({
+            body: message,
+            messagingServiceSid: "MG2036d95f2f1f3524ff86dbd7cbfd3bb3",
+            to: "+47" + phone,
+          })
+          .then((message) => console.log(message.sid));
+      };
+      sendSms(
+        match.sender.phone as string,
+        `Hei! Vi har matchet det med en mottaker. Gå inn på https://staging.boklisten.no/match/${match.id}/d for å levere fra deg bøkene dine.`
+      );
+      sendSms(
+        match.recievers[0].phone,
+        `Hei! Du kan nå hente bøkene dine. Gå inn på https://staging.boklisten.no/match/${match.id}/r?r=${match.recievers[0].userId} for å finne ut hvordan.`
+      );
     } catch (e) {
       throw e;
     }

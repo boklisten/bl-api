@@ -1,12 +1,13 @@
 import {
   Match,
-  MatchProfile,
   MatchItem,
+  MatchProfile,
   MatchState,
 } from "@boklisten/bl-model";
 import { matchSchema } from "../../match.schema";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { OpeningHourHelper } from "../../../opening-hour/helpers/opening-hour-helper";
+import { User } from "../../../user/user";
 
 export class MatchUpdater {
   constructor(
@@ -44,14 +45,7 @@ export class MatchUpdater {
     match.state = this.getMatchState(match);
     match.events.push({ type: match.state, time: new Date() });
 
-    /*
-    let updatedMatch = await this.matchStorage.update(match.id, match, {
-      id: 'SYSTEM',
-      permission: 'super',
-    });
-    */
-
-    return match;
+    return await this.matchStorage.update(match.id, match, match.user as User);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
