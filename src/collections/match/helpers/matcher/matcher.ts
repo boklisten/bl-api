@@ -74,22 +74,20 @@ export class Matcher {
       const accountSid = process.env.TWILIO_SMS_SID;
       const authToken = process.env.TWILIO_SMS_AUTH_TOKEN;
       const client = twilio(accountSid, authToken);
-      const sendSms = (phone: string, message: string) => {
-        client.messages
-          .create({
-            body: message,
-            messagingServiceSid: "MG2036d95f2f1f3524ff86dbd7cbfd3bb3",
-            to: "+47" + phone,
-          })
-          .then((message) => console.log(message.sid));
+      const sendSms = async (phone: string, message: string) => {
+        await client.messages.create({
+          body: message,
+          messagingServiceSid: "MG2036d95f2f1f3524ff86dbd7cbfd3bb3",
+          to: "+47" + phone,
+        });
       };
-      sendSms(
+      await sendSms(
         match.sender.phone as string,
-        `Hei! Vi har matchet det med en mottaker. Gå inn på https://staging.boklisten.no/match/${match.id}/d for å levere fra deg bøkene dine.`
+        `Hei! Nå er det på tide å levere inn bøkene dine. Gå inn på https://staging.boklisten.no/match/${match.id}/d for å finne ut hvordan. Mvh. Boklisten.no`
       );
-      sendSms(
+      await sendSms(
         match.recievers[0].phone,
-        `Hei! Du kan nå hente bøkene dine. Gå inn på https://staging.boklisten.no/match/${match.id}/r?r=${match.recievers[0].userId} for å finne ut hvordan.`
+        `Hei! Du kan nå hente bøkene dine. Gå inn på https://staging.boklisten.no/match/${match.id}/r?r=${match.recievers[0].userId} for å finne ut hvordan. Mvh. Boklisten.no`
       );
     } catch (e) {
       throw e;
