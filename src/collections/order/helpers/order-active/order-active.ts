@@ -31,33 +31,17 @@ export class OrderActive {
       throw e;
     }
 
-    for (const order of orders) {
-      if (this.isOrderActive(order)) {
-        return true;
-      }
-    }
-
-    return false;
+    return orders.some((order) => this.isOrderActive(order));
   }
 
   private isOrderActive(order: Order): boolean {
-    if (!order.placed) {
-      return false;
-    }
-
-    for (const orderItem of order.orderItems) {
-      if (this.isOrderItemActive(orderItem)) {
-        return true;
-      }
-    }
-
-    return false;
+    return (
+      order.placed &&
+      order.orderItems.some((orderItem) => this.isOrderItemActive(orderItem))
+    );
   }
 
   private isOrderItemActive(orderItem: OrderItem): boolean {
-    if (orderItem.handout || orderItem.delivered) {
-      return false;
-    }
-    return true;
+    return !(orderItem.handout || orderItem.delivered);
   }
 }

@@ -360,11 +360,10 @@ export class EmailService implements MessengerService {
   }
 
   private getCustomerItemLeftToPayTotal(customerItems: CustomerItem[]): number {
-    let total = 0;
-    customerItems.forEach((cu) => {
-      total += cu.amountLeftToPay;
-    });
-    return total;
+    return customerItems.reduce(
+      (total, next) => total + next.amountLeftToPay,
+      0
+    );
   }
 
   public deliveryInformation(

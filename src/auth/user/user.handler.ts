@@ -94,17 +94,13 @@ export class UserHandler {
       return this.userStorage
         .update(selectedUser, { primary: true }, new SystemUser())
         .then(() => {
-          const promiseArr: Promise<User>[] = [];
-
-          for (let i = 1; i < users.length; i++) {
-            promiseArr.push(
-              this.userStorage.update(
-                users[i].id,
-                { movedToPrimary: selectedUser.id },
-                new SystemUser()
-              )
-            );
-          }
+          const promiseArr = users.map((user) =>
+            this.userStorage.update(
+              user.id,
+              { movedToPrimary: selectedUser.id },
+              new SystemUser()
+            )
+          );
 
           return Promise.all(promiseArr)
             .then(() => {

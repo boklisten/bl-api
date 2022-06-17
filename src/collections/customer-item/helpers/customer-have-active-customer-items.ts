@@ -9,9 +9,9 @@ export class CustomerHaveActiveCustomerItems {
   private customerItemActive: CustomerItemActive;
 
   constructor(private _customerItemStorage?: BlDocumentStorage<CustomerItem>) {
-    this._customerItemStorage = this._customerItemStorage
-      ? this._customerItemStorage
-      : new BlDocumentStorage("customeritems", customerItemSchema);
+    this._customerItemStorage =
+      this._customerItemStorage ??
+      new BlDocumentStorage("customeritems", customerItemSchema);
     this.queryBuilder = new SEDbQueryBuilder();
     this.customerItemActive = new CustomerItemActive();
   }
@@ -33,12 +33,8 @@ export class CustomerHaveActiveCustomerItems {
       throw e;
     }
 
-    for (const customerItem of customerItems) {
-      if (this.customerItemActive.isActive(customerItem)) {
-        return true;
-      }
-    }
-
-    return false;
+    return customerItems.some((customerItem) =>
+      this.customerItemActive.isActive(customerItem)
+    );
   }
 }
