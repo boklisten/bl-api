@@ -9,6 +9,7 @@ import {
   Order,
   CustomerItem,
   UserDetail,
+  BlError,
 } from "@boklisten/bl-model";
 import { OrderToCustomerItemGenerator } from "../../../customer-item/helpers/order-to-customer-item-generator";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
@@ -57,6 +58,30 @@ export class OrderPlaceOperation implements Operation {
       : new BlDocumentStorage("userdetails", userDetailSchema);
   }
 
+  private async orderContainsActiveCustomerItems(order: Order) {
+    for (const orderItem of order.orderItems) {
+      if (orderItem.type !== "rent" && orderItem.type !== "partly-payment") {
+        continue;
+      }
+
+      const customerItemsWithBlid = await this._customerItemStorage.aggregate([
+        {
+          $match: {
+            blid: orderItem.blid,
+            cancel: false,
+            buyout: false,
+            buyback: false,
+            returned: false,
+          },
+        },
+      ]);
+      if (customerItemsWithBlid.length > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public async run(
     blApiRequest: BlApiRequest,
     req?: Request,
@@ -70,6 +95,11 @@ export class OrderPlaceOperation implements Operation {
       order = await this._orderStorage.get(blApiRequest.documentId);
     } catch (e) {
       throw new ReferenceError(`order "${blApiRequest.documentId}" not found`);
+    }
+    const orderContainsActiveCustomerItems =
+      await this.orderContainsActiveCustomerItems(order);
+    if (orderContainsActiveCustomerItems) {
+      throw new BlError("Order contains active customer items").code(500);
     }
 
     let customerItems: CustomerItem[] = [];
