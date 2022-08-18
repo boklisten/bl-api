@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@boklisten/bl-email@^1.5.10":
-  version "1.5.10"
-  resolved "https://registry.yarnpkg.com/@boklisten/bl-email/-/bl-email-1.5.10.tgz#aa4d767e08adcbe05632616b63e7fc894a27b4b4"
-  integrity sha512-Zbox5PXOHQ57yyKkv5WMa08Wzaynn8O95BsTAettgKDk27Yqg22gc5Q92MT08X+a5nv8fQff+1kCZgBC1x/fgw==
+"@boklisten/bl-email@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@boklisten/bl-email/-/bl-email-1.6.0.tgz#7f461b60ba1cd25ae69b6e7d93b09a788d8e6899"
+  integrity sha512-QkLqqyvrWfMQNZOE18XdZ1whEBfXS+PjhbwsNtFCx7LD9/AuAatUNDizeubV5TTmA4G+rf+NJ/OpKgh4eRycxg==
   dependencies:
     "@sendgrid/mail" "^6.1.4"
     bluebird "^3.7.2"

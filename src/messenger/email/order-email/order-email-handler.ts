@@ -398,7 +398,7 @@ export class OrderEmailHandler {
     customerDetail: UserDetail,
     branchId: string
   ): Promise<boolean> {
-    const onlyHandout = order.orderItems.at(0).handout;
+    const onlyHandout = order.orderItems[0].handout;
     const rentFound = order.orderItems.some(
       (orderItem) => orderItem.type === "rent"
     );
