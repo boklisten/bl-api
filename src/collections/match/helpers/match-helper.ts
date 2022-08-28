@@ -4,18 +4,33 @@ import {
   MatchItem,
   UserDetail,
   MatchProfile,
-  BlError,
+  BlError, Item,
 } from "@boklisten/bl-model";
+import {BlDocumentStorage} from "../../../storage/blDocumentStorage";
+import {itemSchema} from "../../item/item.schema";
 
 export class MatchHelper {
-  public convertOrderItemsToMatchItems(orderItems: OrderItem[]): MatchItem[] {
-    return orderItems.map((orderItem) => {
-      return {
+  constructor(
+      private itemStorage?: BlDocumentStorage<Item>,
+  ) {
+    this.itemStorage =
+        itemStorage ?? new BlDocumentStorage("items", itemSchema);
+  }
+
+
+  public async convertOrderItemsToMatchItems(orderItems: OrderItem[]): Promise<MatchItem[]> {
+    const matchItems = [];
+    for (const orderItem of orderItems) {
+      const item = await this.itemStorage.get(orderItem.item as string)
+      matchItems.push({
         item: orderItem.item as string,
+        isbn: item.info.isbn,
         customerItem: orderItem.customerItem as string,
         title: orderItem.title,
-      };
-    });
+      })
+    }
+
+    return matchItems;
   }
 
   public convertUserDetailToMatchProfile(userDetail: UserDetail): MatchProfile {

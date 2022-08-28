@@ -1,18 +1,27 @@
 import {
+  CustomerItem,
   Match,
-  MatchProfile,
   MatchItem,
+  MatchProfile,
   MatchState,
+  UniqueItem,
 } from "@boklisten/bl-model";
 import { matchSchema } from "../../match.schema";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { OpeningHourHelper } from "../../../opening-hour/helpers/opening-hour-helper";
+import { User } from "../../../user/user";
+import { Moment } from "moment";
+import { CustomerItemActiveBlid } from "../../../customer-item/helpers/customer-item-active-blid";
 
 export class MatchUpdater {
   constructor(
     private matchStorage?: BlDocumentStorage<Match>,
-    private openingHourHelper?: OpeningHourHelper
+    private openingHourHelper?: OpeningHourHelper,
+    private customerItemActiveBlid?: CustomerItemActiveBlid
   ) {
+    this.customerItemActiveBlid = customerItemActiveBlid
+      ? customerItemActiveBlid
+      : new CustomerItemActiveBlid();
     this.matchStorage = this.matchStorage
       ? this.matchStorage
       : new BlDocumentStorage<Match>("matches", matchSchema);
@@ -33,25 +42,25 @@ export class MatchUpdater {
   public async update(
     match: Match,
     reciever: MatchProfile,
-    matchedItems: MatchItem[]
+    matchedItems: MatchItem[],
+    matchTime: Moment
   ): Promise<Match> {
     match.recievers = !match.recievers ? [] : match.recievers;
     match.events = !match.events ? [] : match.events;
     match.recievers.push(reciever);
 
     this.updateMatchItems(match, reciever.userId, matchedItems);
-
+    match.meetingPoint = [
+      {
+        location: { name: "Arnes stand", description: "I nærheten av Boklistens stand. Se etter skilt med navnet «Arne Søraas»" },
+        time: matchTime.toDate(),
+        reciever: "",
+      },
+    ];
     match.state = this.getMatchState(match);
     match.events.push({ type: match.state, time: new Date() });
 
-    /*
-    let updatedMatch = await this.matchStorage.update(match.id, match, {
-      id: 'SYSTEM',
-      permission: 'super',
-    });
-    */
-
-    return match;
+    return await this.matchStorage.update(match.id, match, match.user as User);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

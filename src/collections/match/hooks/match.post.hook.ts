@@ -3,11 +3,14 @@ import { CustomerItem, Match, AccessToken, BlError } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { matchSchema } from "../match.schema";
 import { customerItemSchema } from "../../customer-item/customer-item.schema";
+import { MatchUpdater } from "../helpers/match-updater/match-updater";
+import {User} from "../../user/user";
 
 export class MatchPostHook implements Hook {
   constructor(
     private customerItemStorage?: BlDocumentStorage<CustomerItem>,
-    private matchStorage?: BlDocumentStorage<Match>
+    private matchStorage?: BlDocumentStorage<Match>,
+    private matchUpdater?: MatchUpdater
   ) {
     this.customerItemStorage = customerItemStorage
       ? customerItemStorage
@@ -15,12 +18,24 @@ export class MatchPostHook implements Hook {
     this.matchStorage = matchStorage
       ? matchStorage
       : new BlDocumentStorage("matches", matchSchema);
+    this.matchUpdater = this.matchUpdater
+      ? this.matchUpdater
+      : new MatchUpdater();
   }
 
   public async before(
     match: Match,
     accessToken: AccessToken
   ): Promise<boolean> {
+    if (match.events[match.events.length - 1].type === "items-sent") {
+      await this.matchStorage.update(
+          match.id,
+          match,
+          match.user as User
+      );
+      throw new BlError("Do not create duplicates")
+    }
+
     if (!match.sender || match.sender.userId !== accessToken.details) {
       throw new BlError(
         `Match.sender.userId does not match accessToken.details`

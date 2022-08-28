@@ -8,9 +8,6 @@ export class MatchCollection implements BlCollection {
   public endpoints: BlEndpoint[] = [
     {
       method: "post",
-      restriction: {
-        permissions: ["customer", "admin", "super"],
-      },
       hook: new MatchPostHook(),
     },
     {

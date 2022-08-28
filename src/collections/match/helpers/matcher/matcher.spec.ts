@@ -55,7 +55,8 @@ describe("Matcher", () => {
 
       const userDetail = {} as UserDetail;
 
-      return matcher.match(order, userDetail).should.be.rejected;
+      return matcher.match(order, userDetail, startingTime.add("5", "minutes"))
+        .should.be.rejected;
     });
 
     it("should reject if payment is not present", () => {
@@ -67,7 +68,7 @@ describe("Matcher", () => {
       const userDetail = {} as UserDetail;
 
       return matcher
-        .match(order, userDetail)
+        .match(order, userDetail, startingTime.add("5", "minutes"))
         .should.be.rejectedWith(BlError, /payment is not present on order/);
     });
 
@@ -85,7 +86,7 @@ describe("Matcher", () => {
       const userDetail = {} as UserDetail;
 
       return matcher
-        .match(order, userDetail)
+        .match(order, userDetail, startingTime.add("5", "minutes"))
         .should.be.rejectedWith(
           BlError,
           /delivery does not have method "branch"/
@@ -107,7 +108,7 @@ describe("Matcher", () => {
       const userDetail = {} as UserDetail;
 
       return matcher
-        .match(order, userDetail)
+        .match(order, userDetail, startingTime.add("5", "minutes"))
         .should.be.rejectedWith(
           BlError,
           /order.creationTime is not in time for the matching-window/
@@ -149,7 +150,8 @@ describe("Matcher", () => {
       matchUpdaterUpdate.reset();
       matchUpdaterUpdate.onFirstCall().resolves({});
 
-      return matcher.match(order, userDetail).should.eventually.be.true;
+      return matcher.match(order, userDetail, startingTime.add("5", "minutes"))
+        .should.eventually.be.true;
     });
   });
 });

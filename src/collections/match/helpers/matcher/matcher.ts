@@ -4,7 +4,7 @@ import {
   BlError,
   Delivery,
   MatchProfile,
-  MatchItem,
+  MatchItem, Match,
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { deliverySchema } from "../../../delivery/delivery.schema";
@@ -12,6 +12,11 @@ import { dateService } from "../../../../blc/date.service";
 import { MatchHelper } from "../match-helper";
 import { MatchFinder } from "../match-finder/match-finder";
 import { MatchUpdater } from "../match-updater/match-updater";
+import twilio from "twilio";
+import { userDetailSchema } from "../../../user-detail/user-detail.schema";
+import { orderSchema } from "../../../order/order.schema";
+import moment, { Moment } from "moment";
+import {matchSchema} from "../../match.schema";
 
 // branch id in PROD : 5b6442ebd2e733002fae8a31
 // branch id in DEV :
@@ -23,8 +28,21 @@ export class Matcher {
   constructor(
     private deliveryStorage?: BlDocumentStorage<Delivery>,
     private matchFinder?: MatchFinder,
-    private matchUpdater?: MatchUpdater
+    private matchUpdater?: MatchUpdater,
+    private userDetailStorage?: BlDocumentStorage<UserDetail>,
+    private orderStorage?: BlDocumentStorage<Order>,
+    private matchStorage?: BlDocumentStorage<Match>
   ) {
+
+    this.matchStorage = matchStorage
+        ? matchStorage
+        : new BlDocumentStorage("matches", matchSchema);
+    this.userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage("userdetails", userDetailSchema);
+    this.orderStorage = orderStorage
+      ? orderStorage
+      : new BlDocumentStorage("orders", orderSchema);
     this.deliveryStorage = this.deliveryStorage
       ? this.deliveryStorage
       : new BlDocumentStorage<Delivery>("deliveries", deliverySchema);
@@ -42,6 +60,44 @@ export class Matcher {
     this.matchHelper = new MatchHelper();
   }
 
+  public async matchOrders(orderIDs: string[]) {
+    const startingTime = moment("2022-08-26T11:30:00+00:00");
+    let meetingTimeOffset = 0;
+    for (const orderID of orderIDs) {
+      const order = await this.orderStorage.get(orderID);
+      const customerDetails = await this.userDetailStorage.get(
+        order.customer as string
+      );
+      await this.match(
+        order,
+        customerDetails,
+        startingTime.add(meetingTimeOffset, "minutes")
+      );
+      meetingTimeOffset += 1;
+    }
+  }
+
+  // Create matches with a single person
+  private async createFakeMatch(matchItems: MatchItem[]) {
+    const match = {
+      // Update these to Arnes details
+      sender: {
+        userId: "5c366ffb6539d7001ad2bed6",
+        name: "Arne Søraas",
+        email: "arne@boklisten.no",
+        phone: "90652904",
+        meetingOptions: null,
+      },
+      recievers: [],
+      items: matchItems,
+      state: "created",
+      events: [{ type: "created", time: new Date() }],
+      meetingPoint: null,
+      branch: "62ed2447a26632004868e118",
+    } as Match;
+    await this.matchStorage.add(match, {id: "62ed2447a26632004868e118", permission: "super"})
+  }
+
   // 1 check if order is on correct branch
   // 2 check if payment is of type later
   // 3 check if time is inside period
@@ -50,21 +106,51 @@ export class Matcher {
   // 5 update orderItems with match id
   // 6 notify sender and reciever
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async match(order: Order, userDetail: UserDetail): Promise<any> {
-    this.validateBranch(order.branch as string);
-    this.validatePayment(order.payments);
+  public async match(
+    order: Order,
+    userDetail: UserDetail,
+    matchTime: Moment
+  ): Promise<any> {
+    // this.validateBranch(order.branch as string);
+    // this.validatePayment(order.payments);
     await this.validateDelivery(order);
-    this.validateCreationTime(order);
+    // this.validateCreationTime(order);
 
     const matchProfile: MatchProfile =
       this.matchHelper.convertUserDetailToMatchProfile(userDetail);
     const matchItems: MatchItem[] =
-      this.matchHelper.convertOrderItemsToMatchItems(order.orderItems);
+      await this.matchHelper.convertOrderItemsToMatchItems(order.orderItems);
+
+    await this.createFakeMatch(matchItems);
 
     // eslint-disable-next-line no-useless-catch
     try {
       const match = await this.matchFinder.find(matchItems);
-      await this.matchUpdater.update(match, matchProfile, matchItems);
+      const updatedMatch = await this.matchUpdater.update(
+        match,
+        matchProfile,
+        matchItems,
+        matchTime
+      );
+      // Temporary logic to send match sms
+      const accountSid = process.env.TWILIO_SMS_SID;
+      const authToken = process.env.TWILIO_SMS_AUTH_TOKEN;
+      const client = twilio(accountSid, authToken);
+      const sendSms = async (phone: string, message: string) => {
+        await client.messages.create({
+          body: message,
+          messagingServiceSid: "MG2036d95f2f1f3524ff86dbd7cbfd3bb3",
+          to: "+47" + phone,
+        });
+      };
+      await sendSms(
+        match.recievers[0].phone,
+        `Hei! I morgen skal du hente bøkene dine fra Boklisten. Gå inn på lenken i neste melding for å finne ut når og hvordan. Mvh. Boklisten.no`
+      );
+      await sendSms(
+          match.recievers[0].phone,
+          `https://next.boklisten.no/match/r/${match.id}`
+      );
     } catch (e) {
       throw e;
     }
