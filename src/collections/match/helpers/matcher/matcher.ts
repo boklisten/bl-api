@@ -4,7 +4,8 @@ import {
   BlError,
   Delivery,
   MatchProfile,
-  MatchItem, Match,
+  MatchItem,
+  Match,
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { deliverySchema } from "../../../delivery/delivery.schema";
@@ -16,7 +17,7 @@ import twilio from "twilio";
 import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 import { orderSchema } from "../../../order/order.schema";
 import moment, { Moment } from "moment";
-import {matchSchema} from "../../match.schema";
+import { matchSchema } from "../../match.schema";
 
 // branch id in PROD : 5b6442ebd2e733002fae8a31
 // branch id in DEV :
@@ -33,10 +34,9 @@ export class Matcher {
     private orderStorage?: BlDocumentStorage<Order>,
     private matchStorage?: BlDocumentStorage<Match>
   ) {
-
     this.matchStorage = matchStorage
-        ? matchStorage
-        : new BlDocumentStorage("matches", matchSchema);
+      ? matchStorage
+      : new BlDocumentStorage("matches", matchSchema);
     this.userDetailStorage =
       userDetailStorage ??
       new BlDocumentStorage("userdetails", userDetailSchema);
@@ -95,7 +95,10 @@ export class Matcher {
       meetingPoint: null,
       branch: "62ed2447a26632004868e118",
     } as Match;
-    await this.matchStorage.add(match, {id: "62ed2447a26632004868e118", permission: "super"})
+    await this.matchStorage.add(match, {
+      id: "62ed2447a26632004868e118",
+      permission: "super",
+    });
   }
 
   // 1 check if order is on correct branch
@@ -143,14 +146,18 @@ export class Matcher {
           to: "+47" + phone,
         });
       };
-      await sendSms(
-        match.recievers[0].phone,
-        `Hei! I morgen skal du hente bøkene dine fra Boklisten. Gå inn på lenken i neste melding for å finne ut når og hvordan. Mvh. Boklisten.no`
-      );
-      await sendSms(
+      try {
+        await sendSms(
+          match.recievers[0].phone,
+          `Hei! I morgen skal du hente bøkene dine fra Boklisten. Gå inn på lenken i neste melding for å finne ut når og hvordan. Mvh. Boklisten.no`
+        );
+        await sendSms(
           match.recievers[0].phone,
           `https://next.boklisten.no/match/r/${match.id}`
-      );
+        );
+      } catch (error) {
+        console.error("Failed to send sms to match with ID " + match.id);
+      }
     } catch (e) {
       throw e;
     }

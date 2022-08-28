@@ -20,9 +20,6 @@ export class MatchFinder {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async find(matchItems: MatchItem[]): Promise<any> {
-
-
-
     let matches = await this.matchStorage.getAll();
 
     matches = this.filterValidMatches(matches);

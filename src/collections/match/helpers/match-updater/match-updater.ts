@@ -52,7 +52,11 @@ export class MatchUpdater {
     this.updateMatchItems(match, reciever.userId, matchedItems);
     match.meetingPoint = [
       {
-        location: { name: "Arnes stand", description: "I nærheten av Boklistens stand. Se etter skilt med navnet «Arne Søraas»" },
+        location: {
+          name: "Arnes stand",
+          description:
+            "I nærheten av Boklistens stand. Se etter skilt med navnet «Arne Søraas»",
+        },
         time: matchTime.toDate(),
         reciever: "",
       },

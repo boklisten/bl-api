@@ -4,7 +4,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { matchSchema } from "../match.schema";
 import { customerItemSchema } from "../../customer-item/customer-item.schema";
 import { MatchUpdater } from "../helpers/match-updater/match-updater";
-import {User} from "../../user/user";
+import { User } from "../../user/user";
 
 export class MatchPostHook implements Hook {
   constructor(
@@ -28,12 +28,8 @@ export class MatchPostHook implements Hook {
     accessToken: AccessToken
   ): Promise<boolean> {
     if (match.events[match.events.length - 1].type === "items-sent") {
-      await this.matchStorage.update(
-          match.id,
-          match,
-          match.user as User
-      );
-      throw new BlError("Do not create duplicates")
+      await this.matchStorage.update(match.id, match, match.user as User);
+      throw new BlError("Do not create duplicates");
     }
 
     if (!match.sender || match.sender.userId !== accessToken.details) {
