@@ -61,18 +61,17 @@ export class Matcher {
   }
 
   public async matchOrders(orderIDs: string[]) {
-    const startingTime = moment("2022-08-26T11:30:00+00:00");
     let meetingTimeOffset = 0;
     for (const orderID of orderIDs) {
+      const meetingTime = moment("2022-08-26T11:30:00+00:00").add(
+        meetingTimeOffset,
+        "minutes"
+      );
       const order = await this.orderStorage.get(orderID);
       const customerDetails = await this.userDetailStorage.get(
         order.customer as string
       );
-      await this.match(
-        order,
-        customerDetails,
-        startingTime.add(meetingTimeOffset, "minutes")
-      );
+      await this.match(order, customerDetails, meetingTime);
       meetingTimeOffset += 1;
     }
   }
