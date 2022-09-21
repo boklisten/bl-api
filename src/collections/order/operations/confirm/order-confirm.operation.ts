@@ -36,7 +36,38 @@ export class OrderConfirmOperation implements Operation {
     this._queryBuilder = new SEDbQueryBuilder();
   }
 
-  private async hasDuplicateOrder(order: Order) {
+  private filterOrdersByAlreadyOrdered(orders: Order[]) {
+    const customerOrderItems = [];
+
+    for (const order of orders) {
+      if (order.orderItems) {
+        for (const orderItem of order.orderItems) {
+          if (order.handoutByDelivery || !order.byCustomer) {
+            continue;
+          }
+
+          if (orderItem.handout) {
+            continue;
+          }
+
+          if (orderItem.movedToOrder) {
+            continue;
+          }
+
+          if (
+            orderItem.type === "rent" ||
+            orderItem.type === "buy" ||
+            orderItem.type === "partly-payment"
+          ) {
+            customerOrderItems.push(orderItem);
+          }
+        }
+      }
+    }
+    return customerOrderItems;
+  }
+
+  private async hasOpenOrderWithOrderItems(order: Order) {
     const dbQuery = this._queryBuilder.getDbQuery(
       { customer: order.customer, placed: "true" },
       [
@@ -47,20 +78,19 @@ export class OrderConfirmOperation implements Operation {
 
     try {
       const existingOrders = await this._orderStorage.getByQuery(dbQuery);
-      return existingOrders
-        .filter(
-          (existingOrder) => existingOrder.orderItems.length === order.orderItems.length
-        )
-        .some((existingOrder) =>
-          order.orderItems.every((orderItem) =>
-            existingOrder.orderItems.some(
-              (existingOrderItem) =>
-                String(orderItem.item) === String(existingOrderItem.item) &&
-                orderItem.type === existingOrderItem.type &&
-                orderItem.info.to === existingOrderItem.info.to
-            )
-          )
-        );
+      const alreadyOrderedItems =
+        this.filterOrdersByAlreadyOrdered(existingOrders);
+
+      for (const orderItem of order.orderItems) {
+        for (const alreadyOrderedItem of alreadyOrderedItems) {
+          if (
+            String(orderItem.item) === String(alreadyOrderedItem.item) &&
+            orderItem.info.to === alreadyOrderedItem.info.to
+          ) {
+            return true;
+          }
+        }
+      }
     } catch {
       console.log("could not get user orders");
     }
@@ -88,10 +118,14 @@ export class OrderConfirmOperation implements Operation {
       throw new BlError(`order "${blApiRequest.documentId}" not found`);
     }
 
-    const isDuplicateOrder = await this.hasDuplicateOrder(order);
+    const alreadyOrderedSomeItems = await this.hasOpenOrderWithOrderItems(
+      order
+    );
 
-    if (isDuplicateOrder) {
-      throw new BlError("There already exists an order with these orderitems");
+    if (alreadyOrderedSomeItems) {
+      throw new BlError(
+        "There already exists an order with some of these orderitems"
+      );
     }
 
     let placedOrder;
