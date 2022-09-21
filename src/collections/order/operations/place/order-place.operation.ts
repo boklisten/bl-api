@@ -18,8 +18,11 @@ import { customerItemSchema } from "../../../customer-item/customer-item.schema"
 import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
 import { OrderValidator } from "../../helpers/order-validator/order-validator";
 import { userDetailSchema } from "../../../user-detail/user-detail.schema";
+import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
 
 export class OrderPlaceOperation implements Operation {
+  private _queryBuilder: SEDbQueryBuilder;
+
   constructor(
     private _resHandler?: SEResponseHandler,
     private _orderToCustomerItemGenerator?: OrderToCustomerItemGenerator,
@@ -56,29 +59,69 @@ export class OrderPlaceOperation implements Operation {
     this._userDetailStorage = this._userDetailStorage
       ? this._userDetailStorage
       : new BlDocumentStorage("userdetails", userDetailSchema);
+
+    this._queryBuilder = new SEDbQueryBuilder();
   }
 
-  private async orderContainsActiveCustomerItems(order: Order) {
-    for (const orderItem of order.orderItems) {
-      if (orderItem.type !== "rent" && orderItem.type !== "partly-payment") {
-        continue;
-      }
+  private filterOrdersByAlreadyOrdered(orders: Order[]) {
+    const customerOrderItems = [];
 
-      const customerItemsWithBlid = await this._customerItemStorage.aggregate([
-        {
-          $match: {
-            blid: orderItem.blid,
-            cancel: false,
-            buyout: false,
-            buyback: false,
-            returned: false,
-          },
-        },
-      ]);
-      if (customerItemsWithBlid.length > 0) {
-        return true;
+    for (const order of orders) {
+      if (order.orderItems) {
+        for (const orderItem of order.orderItems) {
+          if (order.handoutByDelivery || !order.byCustomer) {
+            continue;
+          }
+
+          if (orderItem.handout) {
+            continue;
+          }
+
+          if (orderItem.movedToOrder) {
+            continue;
+          }
+
+          if (
+            orderItem.type === "rent" ||
+            orderItem.type === "buy" ||
+            orderItem.type === "partly-payment"
+          ) {
+            customerOrderItems.push(orderItem);
+          }
+        }
       }
     }
+    return customerOrderItems;
+  }
+
+  private async hasOpenOrderWithOrderItems(order: Order) {
+    const dbQuery = this._queryBuilder.getDbQuery(
+      { customer: order.customer, placed: "true" },
+      [
+        { fieldName: "customer", type: "object-id" },
+        { fieldName: "placed", type: "boolean" },
+      ]
+    );
+
+    try {
+      const existingOrders = await this._orderStorage.getByQuery(dbQuery);
+      const alreadyOrderedItems =
+        this.filterOrdersByAlreadyOrdered(existingOrders);
+
+      for (const orderItem of order.orderItems) {
+        for (const alreadyOrderedItem of alreadyOrderedItems) {
+          if (
+            String(orderItem.item) === String(alreadyOrderedItem.item) &&
+            orderItem.info.to === alreadyOrderedItem.info.to
+          ) {
+            return true;
+          }
+        }
+      }
+    } catch {
+      console.log("could not get user orders");
+    }
+
     return false;
   }
 
@@ -96,10 +139,12 @@ export class OrderPlaceOperation implements Operation {
     } catch (e) {
       throw new ReferenceError(`order "${blApiRequest.documentId}" not found`);
     }
-    const orderContainsActiveCustomerItems =
-      await this.orderContainsActiveCustomerItems(order);
-    if (orderContainsActiveCustomerItems) {
-      throw new BlError("Order contains active customer items").code(500);
+    if (order.byCustomer) {
+      const orderContainsActiveCustomerItems =
+        await this.hasOpenOrderWithOrderItems(order);
+      if (orderContainsActiveCustomerItems) {
+        throw new BlError("Order contains active customer items").code(500);
+      }
     }
 
     let customerItems: CustomerItem[] = [];
