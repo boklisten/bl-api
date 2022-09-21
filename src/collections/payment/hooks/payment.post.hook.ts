@@ -78,14 +78,16 @@ export class PaymentPostHook extends Hook {
     return new Promise((resolve, reject) => {
       switch (payment.method) {
         case "dibs":
-          return this.paymentDibsHandler
-            .handleDibsPayment(payment, accessToken)
-            .then((updatedPayment: Payment) => {
-              return resolve(updatedPayment);
-            })
-            .catch((blError: BlError) => {
-              reject(blError);
-            });
+          return payment.amount < 0
+            ? resolve(payment)
+            : this.paymentDibsHandler
+                .handleDibsPayment(payment, accessToken)
+                .then((updatedPayment: Payment) => {
+                  return resolve(updatedPayment);
+                })
+                .catch((blError: BlError) => {
+                  reject(blError);
+                });
         default:
           return resolve(payment);
       }

@@ -23,21 +23,23 @@ export class PaymentDibsConfirmer {
     payment: Payment,
     accessToken: AccessToken
   ): Promise<boolean> {
-    this.validatePaymentInfo(payment);
-
     let dibsEasyPaymentDetails;
-    try {
-      dibsEasyPaymentDetails =
-        await this._dibsPaymentService.fetchDibsPaymentData(
-          payment.info["paymentId"]
-        );
-    } catch (getDibsPaymentError) {
-      throw new BlError("could not get dibs payment from dibs api").add(
-        getDibsPaymentError
-      );
-    }
+    if (payment.amount >= 0) {
+      this.validatePaymentInfo(payment);
 
-    this.validateDibsEasyPayment(order, payment, dibsEasyPaymentDetails);
+      try {
+        dibsEasyPaymentDetails =
+          await this._dibsPaymentService.fetchDibsPaymentData(
+            payment.info["paymentId"]
+          );
+      } catch (getDibsPaymentError) {
+        throw new BlError("could not get dibs payment from dibs api").add(
+          getDibsPaymentError
+        );
+      }
+
+      this.validateDibsEasyPayment(order, payment, dibsEasyPaymentDetails);
+    }
 
     try {
       await this._paymentStorage.update(
