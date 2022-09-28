@@ -2,21 +2,18 @@ import { Hook } from "../../../hook/hook";
 
 export class UserDetailUpdateHook extends Hook {
   private cleanUserInput = (dirtyText: string): string => {
-      const withoutSpaces = dirtyText
-      .replace(/\s+/gu, " ")
-      .trim();
+    const withoutSpaces = dirtyText.replace(/\s+/gu, " ").trim();
 
-      // Do not fix capitalization if the string contains Norwegian characters
-      // They are bothersome when it comes to word boundaries...
-      if (withoutSpaces.match(/[øæå]/)) {
-          return withoutSpaces;
-      }
+    // Do not fix capitalization if the string contains Norwegian characters
+    // They are bothersome when it comes to word boundaries...
+    if (withoutSpaces.match(/[øæå]/)) {
+      return withoutSpaces;
+    }
 
     return withoutSpaces
       .toLowerCase()
       .replace(/\b\w/gu, (c) => c.toUpperCase());
-
-  }
+  };
 
   public override async before(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
