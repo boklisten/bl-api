@@ -9,6 +9,7 @@ import { UserDetailDeleteHook } from "./hooks/user-detail-delete.hook";
 import { UserDetailPermissionOperation } from "./operations/permission/user-detail-permission.operation";
 import { UserDetailReadPermissionOperation } from "./operations/read-permission/user-detail-read-permission.operation";
 import { UserDetailChangeEmailOperation } from "./operations/change-email/user-detail-change-email.operation";
+import { UserDetailUpdateHook } from "./hooks/user-detail-update.hook";
 
 export class UserDetailCollection implements BlCollection {
   collectionName = "userdetails";
@@ -43,6 +44,7 @@ export class UserDetailCollection implements BlCollection {
     },
     {
       method: "patch",
+      hook: new UserDetailUpdateHook(),
       restriction: {
         permissions: ["customer", "employee", "manager", "admin", "super"],
         restricted: true,
