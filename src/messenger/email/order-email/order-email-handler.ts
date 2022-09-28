@@ -57,7 +57,7 @@ export class OrderEmailHandler {
     const emailSetting: EmailSetting = {
       toEmail: customerDetail.email,
       fromEmail: EMAIL_SETTINGS.types.receipt.fromEmail,
-      subject: EMAIL_SETTINGS.types.receipt.subject,
+      subject: EMAIL_SETTINGS.types.receipt.subject + ` #${order.id}`,
       userId: customerDetail.id,
     };
 
@@ -131,7 +131,7 @@ export class OrderEmailHandler {
       const emailSetting: EmailSetting = {
         toEmail: customerDetail.guardian.email,
         fromEmail: EMAIL_SETTINGS.types.receipt.fromEmail,
-        subject: EMAIL_SETTINGS.types.receipt.subject,
+        subject: EMAIL_SETTINGS.types.receipt.subject + ` #${emailOrder.id}`,
         userId: customerDetail.id,
         userFullName: customerDetail.guardian.name,
       };

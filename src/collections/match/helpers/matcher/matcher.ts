@@ -112,7 +112,7 @@ export class Matcher {
     order: Order,
     userDetail: UserDetail,
     matchTime: Moment
-  ): Promise<any> {
+  ): Promise<unknown> {
     // this.validateBranch(order.branch as string);
     // this.validatePayment(order.payments);
     await this.validateDelivery(order);
@@ -128,7 +128,7 @@ export class Matcher {
     // eslint-disable-next-line no-useless-catch
     try {
       const match = await this.matchFinder.find(matchItems);
-      const updatedMatch = await this.matchUpdater.update(
+      await this.matchUpdater.update(
         match,
         matchProfile,
         matchItems,

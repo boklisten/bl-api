@@ -1,10 +1,8 @@
 import {
-  CustomerItem,
   Match,
   MatchItem,
   MatchProfile,
   MatchState,
-  UniqueItem,
 } from "@boklisten/bl-model";
 import { matchSchema } from "../../match.schema";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
