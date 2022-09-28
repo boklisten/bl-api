@@ -34,7 +34,7 @@ export class MessageCollection implements BlCollection {
         },
       ],
       restriction: {
-        permissions: ["admin", "super"],
+        permissions: ["employee", "admin", "super"],
       },
     },
     {
