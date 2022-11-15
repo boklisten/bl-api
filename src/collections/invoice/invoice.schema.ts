@@ -21,6 +21,10 @@ export const invoiceSchema = {
     type: Schema.Types.Boolean,
     default: false,
   },
+  toLossNote: {
+    type: Schema.Types.Boolean,
+    default: false,
+  },
   customerItemPayments: {
     type: [
       {
