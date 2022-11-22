@@ -37,6 +37,10 @@ export class ItemCollection implements BlCollection {
           fieldName: "price",
           type: "number",
         },
+        {
+          fieldName: "active",
+          type: "boolean",
+        },
       ],
     },
     {
