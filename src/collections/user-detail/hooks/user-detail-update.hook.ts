@@ -6,7 +6,7 @@ export class UserDetailUpdateHook extends Hook {
 
     // Do not fix capitalization if the string contains Norwegian characters
     // They are bothersome when it comes to word boundaries...
-    if (withoutSpaces.toLowerCase().match(/[øæåä]/)) {
+    if (withoutSpaces.toLowerCase().match(/[øæåäüö]/)) {
       return withoutSpaces;
     }
 
