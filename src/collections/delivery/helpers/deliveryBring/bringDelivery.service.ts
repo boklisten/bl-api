@@ -133,7 +133,10 @@ export class BringDeliveryService {
 
   private calculateTotalWeight(items: Item[]) {
     let totalWeightInGrams = items.reduce((total, nextItem) => {
-      return total + parseFloat(nextItem?.info["weight"] ?? 1) * 1000;
+      const defaultWeight = 1;
+      const weightField = Number(nextItem?.info["weight"] ?? defaultWeight);
+      const weight = isNaN(weightField) ? defaultWeight : weightField;
+      return total + weight * 1000;
     }, 0);
 
     if (totalWeightInGrams === 0) {
