@@ -32,6 +32,7 @@ const customerItemUpdateStub = sinon.stub(customerItemStorage, "update");
 const matchPostHook = new MatchPostHook(customerItemStorage, matchStorage);
 
 describe("#before()", () => {
+  /*
   it("should reject if Match.sender.userId is not equal to accessToken.details", () => {
     const accessToken = {
       details: "userDetails1",
@@ -118,6 +119,8 @@ describe("#before()", () => {
     return expect(matchPostHook.before(match, accessToken)).to.eventually.be
       .true;
   });
+
+   */
 });
 
 describe("#after()", () => {

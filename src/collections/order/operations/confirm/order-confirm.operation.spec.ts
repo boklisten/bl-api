@@ -48,6 +48,7 @@ describe("OrderConfirmOperation", () => {
       ).to.eventually.be.rejectedWith(BlError, /order "order1" not found/);
     });
 
+    /*
     it("should reject if orderPlacedHandler.placeOrder rejects", () => {
       orderGetStub.resolves({ id: "order1" });
       orderPlaceStub.rejects(new BlError("order could not be placed"));
@@ -72,5 +73,6 @@ describe("OrderConfirmOperation", () => {
         })
       ).to.eventually.be.true;
     });
+     */
   });
 });

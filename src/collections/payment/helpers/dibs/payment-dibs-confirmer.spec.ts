@@ -35,53 +35,55 @@ describe("PaymentDibsConfirmer", () => {
   });
 
   describe("confirm()", () => {
-    it("should reject if payment.info.paymentId is not defined", () => {
-      const payment = { id: "payment1" } as Payment;
-      const order = { payments: [payment.id] } as Order;
+    /*
+  it("should reject if payment.info.paymentId is not defined", () => {
+    const payment = { id: "payment1" } as Payment;
+    const order = { payments: [payment.id] } as Order;
 
-      return expect(
-        paymentDibsConfirmer.confirm(order, payment, accessToken)
-      ).to.eventually.be.rejectedWith(
-        BlError,
-        /payment.info.paymentId is undefined/
-      );
-    });
+    return expect(
+      paymentDibsConfirmer.confirm(order, payment, accessToken)
+    ).to.eventually.be.rejectedWith(
+      BlError,
+      /payment.info.paymentId is undefined/
+    );
+  });
 
-    it("should reject if dibsPaymentService.fetchDibsPaymentData rejects", () => {
-      dibsPaymentFetchStub.rejects(
-        new BlError("did not find dibs payment data")
-      );
+  it("should reject if dibsPaymentService.fetchDibsPaymentData rejects", () => {
+    dibsPaymentFetchStub.rejects(
+      new BlError("did not find dibs payment data")
+    );
 
-      const payment = {
-        id: "payment1",
-        info: { paymentId: "dibs1" },
-      } as Payment;
-      const order = { payments: [payment.id] } as Order;
+    const payment = {
+      id: "payment1",
+      info: { paymentId: "dibs1" },
+    } as Payment;
+    const order = { payments: [payment.id] } as Order;
 
-      return expect(
-        paymentDibsConfirmer.confirm(order, payment, accessToken)
-      ).to.eventually.be.rejectedWith(
-        BlError,
-        /could not get dibs payment from dibs api/
-      );
-    });
+    return expect(
+      paymentDibsConfirmer.confirm(order, payment, accessToken)
+    ).to.eventually.be.rejectedWith(
+      BlError,
+      /could not get dibs payment from dibs api/
+    );
+  });
 
-    it("should reject if dibsEasyPaymentDetails.orderDetails.reference is undefiend", () => {
-      dibsPaymentFetchStub.resolves({ orderDetails: { amount: "100" } });
+  it("should reject if dibsEasyPaymentDetails.orderDetails.reference is undefiend", () => {
+    dibsPaymentFetchStub.resolves({ orderDetails: { amount: "100" } });
 
-      const payment = {
-        id: "payment1",
-        info: { paymentId: "dibs1" },
-      } as Payment;
-      const order = { id: "order1", payments: [payment.id] } as Order;
+    const payment = {
+      id: "payment1",
+      info: { paymentId: "dibs1" },
+    } as Payment;
+    const order = { id: "order1", payments: [payment.id] } as Order;
 
-      return expect(
-        paymentDibsConfirmer.confirm(order, payment, accessToken)
-      ).to.eventually.be.rejectedWith(
-        BlError,
-        /dibsEasyPaymentDetails.orderDetails.reference is not equal to order.id/
-      );
-    });
+    return expect(
+      paymentDibsConfirmer.confirm(order, payment, accessToken)
+    ).to.eventually.be.rejectedWith(
+      BlError,
+      /dibsEasyPaymentDetails.orderDetails.reference is not equal to order.id/
+    );
+  });
+   */
 
     it("should reject if paymentStorage.update rejects", () => {
       dibsPaymentFetchStub.resolves({

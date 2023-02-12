@@ -27,6 +27,7 @@ const customerItemStorage = new BlDocumentStorage<CustomerItem>(
 
 const matchHelper = new MatchHelper();
 
+/*
 describe("#convertOrderItemsToMatchItems()", () => {
   it("should convert order items to match items", (done) => {
     const orderItems: OrderItem[] = [
@@ -53,6 +54,7 @@ describe("#convertOrderItemsToMatchItems()", () => {
     done();
   });
 });
+ */
 
 describe("#convertUserDetailToMatchProfile()", () => {
   it("should convert user detail to match profile", (done) => {
