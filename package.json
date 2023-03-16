@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "ts-node-dev ./src/index.ts",
     "build": "tsc -p tsconfig.build.json",
-    "start": "node ./dist/src/index.js",
-    "test": "mocha \"**/*.spec.ts\"",
+    "serve": "node ./dist/src/index.js",
     "prettier": "prettier --write . --ignore-path=.gitignore",
     "prettier:check": "prettier --check . --ignore-path=.gitignore",
     "lint": "eslint .",
+    "test": "mocha \"**/*.spec.ts\"",
     "load_fixtures": "mongodb-fixtures rebuild -u mongodb://localhost:27017/test"
   },
   "license": "ISC",
