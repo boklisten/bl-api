@@ -11,7 +11,7 @@
     "prettier:check": "prettier --check . --ignore-path=.gitignore",
     "lint": "eslint .",
     "test": "mocha \"**/*.spec.ts\"",
-    "load_fixtures": "mongodb-fixtures rebuild -u mongodb://localhost:27017/test"
+    "load_fixtures": "mongodb-fixtures rebuild -u mongodb://127.0.0.1:27017/test"
   },
   "license": "ISC",
   "dependencies": {
