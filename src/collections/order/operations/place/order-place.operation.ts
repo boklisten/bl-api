@@ -143,11 +143,11 @@ export class OrderPlaceOperation implements Operation {
       "rent",
       "partly-payment",
     ]);
-    const blids = order.orderItems
-      .filter((item) => handoutOrderTypes.has(item.type))
-      .map((orderItem) => orderItem.blid)
-      .filter((blid) => blid != null);
-    if (blids.length === 0) {
+    const handoutItems = order.orderItems.filter(
+      (orderItem) =>
+        handoutOrderTypes.has(orderItem.type) && orderItem.blid != null
+    );
+    if (handoutItems.length === 0) {
       return false;
     }
 
@@ -158,7 +158,7 @@ export class OrderPlaceOperation implements Operation {
         {
           $match: {
             blid: {
-              $in: blids,
+              $in: handoutItems.map((handoutItem) => handoutItem.blid),
             },
             returned: false,
           },
