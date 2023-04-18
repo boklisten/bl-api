@@ -19,6 +19,7 @@ import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-pla
 import { OrderValidator } from "../../helpers/order-validator/order-validator";
 import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
+import { OrderItemType } from "@boklisten/bl-model/dist/order/order-item/order-item-type";
 
 export class OrderPlaceOperation implements Operation {
   private _queryBuilder: SEDbQueryBuilder;
@@ -125,6 +126,53 @@ export class OrderPlaceOperation implements Operation {
     return false;
   }
 
+  /**
+   * Check whether a blid in the order is already handed out
+   *
+   * Unable to check against legacy customeritems which have no blid, but there
+   * are very few of those which are not returned. Only checks whether a blid is
+   * already handed out if the handout order type of the item in this order is
+   * "buy", "rent" or "partly-payment".
+   *
+   * @param order The Order which contains items
+   * @private
+   */
+  private async isSomeBlidAlreadyHandedOut(order: Order): Promise<boolean> {
+    const handoutOrderTypes = new Set<OrderItemType>([
+      "buy",
+      "rent",
+      "partly-payment",
+    ]);
+    const handoutItems = order.orderItems.filter(
+      (orderItem) =>
+        handoutOrderTypes.has(orderItem.type) && orderItem.blid != null
+    );
+    if (handoutItems.length === 0) {
+      return false;
+    }
+
+    try {
+      // Use an aggregation because the query builder does not support checking against a list of blids,
+      // and we would otherwise have to send a query for every single order item.
+      const unreturnedItems = await this._customerItemStorage.aggregate([
+        {
+          $match: {
+            blid: {
+              $in: handoutItems.map((handoutItem) => handoutItem.blid),
+            },
+            returned: false,
+          },
+        },
+      ]);
+      return unreturnedItems.length > 0;
+    } catch {
+      console.error(
+        "Could not check whether some items are already handed out"
+      );
+      return false;
+    }
+  }
+
   public async run(
     blApiRequest: BlApiRequest,
     req?: Request,
@@ -145,6 +193,16 @@ export class OrderPlaceOperation implements Operation {
       if (orderContainsActiveCustomerItems) {
         throw new BlError("Order contains active customer items").code(500);
       }
+    }
+
+    const someBlidAlreadyHandedOut = await this.isSomeBlidAlreadyHandedOut(
+      order
+    );
+
+    if (someBlidAlreadyHandedOut) {
+      throw new BlError("Some blid is already handed out to a customer").code(
+        801
+      );
     }
 
     let customerItems: CustomerItem[] = [];

@@ -128,6 +128,10 @@ export class BlErrorHandler {
       case 800:
         blapiErrorResponse.msg = "server error";
         break;
+      case 801:
+        blapiErrorResponse.msg = "blid already handed out";
+        blapiErrorResponse.httpStatus = 409;
+        break;
     }
 
     return blapiErrorResponse;
