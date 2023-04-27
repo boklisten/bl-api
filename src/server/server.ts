@@ -119,7 +119,7 @@ export class Server {
       optionsSuccessStatus: 204,
     };
 
-    this.app.use(process.env.NODE_ENV === "dev" ? cors() : cors(corsConfig));
+    this.app.use(process.env.API_ENV === "staging" ? cors() : cors(corsConfig));
     this.app.use(cookieParser());
     this.app.use(passport.initialize());
     this.app.use(passport.session());
