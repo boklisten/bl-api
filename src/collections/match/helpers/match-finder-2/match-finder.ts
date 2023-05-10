@@ -186,8 +186,6 @@ export class MatchFinder {
   }
 
   private createPartlyMatches() {
-    // possible optimization instead of having Set[], have PriorityQueue[] where each queue
-    // prioritizes the senders which already have the most matches, to reduce fragmentation
     const sortedSenderGroups = this.groupUsersByNumberOfItems(this.senders);
 
     for (const sortedSenderGroup of sortedSenderGroups) {
@@ -203,16 +201,11 @@ export class MatchFinder {
         this.createLargestPartlyMatch(sender);
 
         if (sender.items.size > 0) {
-          const newGroup =
-            sortedSenderGroups[
-              sortedSenderGroups.length - 1 - sender.items.size
-            ];
-          if (newGroup === undefined) {
-            throw new Error(
-              "SortedSenderGroups should have as many entries as the maximum number of sender items"
-            );
-          }
-          newGroup.add(sender);
+          const groupIndex = sortedSenderGroups.length - 1 - sender.items.size;
+          sortedSenderGroups[groupIndex] = new Set([
+            sender,
+            ...sortedSenderGroups[groupIndex],
+          ]);
         }
       }
     }
