@@ -10,12 +10,12 @@ import {
   StandDeliveryMatch,
   StandPickupMatch,
   UserMatch,
-} from "./matchTypes";
+} from "./match-types";
 import { difference, intersect } from "../set-methods";
-import ullern_test_users from "./ullern_test_users.json";
-import otto_treider_test_users_year_0 from "./test_users_year_0.json";
-import otto_treider_test_users_year_1 from "./test_users_year_1.json";
-import otto_treider_test_users_year_2 from "./test_users_year_2.json";
+import ullern_test_users from "./test-data/ullern_test_users.json";
+import otto_treider_test_users_year_0 from "./test-data/test_users_year_0.json";
+import otto_treider_test_users_year_1 from "./test-data/test_users_year_1.json";
+import otto_treider_test_users_year_2 from "./test-data/test_users_year_2.json";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -160,26 +160,23 @@ const mathias = createFakeMatchableUser(
 describe("Full User Match", () => {
   it("should be able to full match with other user", () => {
     const matchFinder = new MatchFinder([andrine], [beate], []);
-    const matches = matchFinder.match();
+    const matches = matchFinder.generateMatches();
     const expectedMatch = createFakeUserMatch(andrine, beate, andrine.items);
-    assert.deepEqual(matches, new Set([expectedMatch]));
+    assert.deepEqual(matches, [expectedMatch]);
   });
 
   it("should not fully match with non overlapping receivers", () => {
     const matchFinder = new MatchFinder([andrine], [monika], []);
-    const matches = matchFinder.match();
-    assert.deepEqual(
-      matches,
-      new Set([
-        createFakeStandDeliveryMatch(andrine, andrine.items),
-        createFakeStandPickupMatch(monika, monika.items),
-      ])
-    );
+    const matches = matchFinder.generateMatches();
+    assert.deepEqual(matches, [
+      createFakeStandDeliveryMatch(andrine, andrine.items),
+      createFakeStandPickupMatch(monika, monika.items),
+    ]);
   });
 
   it("should full match after removing excessive delivery items", () => {
     const matchFinder = new MatchFinder([mathias], [beate], ["book4"]);
-    const matches = matchFinder.match();
+    const matches = matchFinder.generateMatches();
 
     const expectedUserMatch = createFakeUserMatch(
       mathias,
@@ -190,7 +187,7 @@ describe("Full User Match", () => {
       mathias,
       new Set(["book4"])
     );
-    assert.deepEqual(matches, new Set([expectedStandMatch, expectedUserMatch]));
+    assert.deepEqual(matches, [expectedStandMatch, expectedUserMatch]);
   });
 
   it("should create delivery match when all items are set as outdated", () => {
@@ -199,15 +196,12 @@ describe("Full User Match", () => {
       [beate],
       Array.from(andrine.items)
     );
-    const matches = matchFinder.match();
+    const matches = matchFinder.generateMatches();
     // NB: assert.deepEqual cares about the order of items in a set!
-    assert.deepEqual(
-      matches,
-      new Set([
-        createFakeStandDeliveryMatch(andrine, andrine.items),
-        createFakeStandPickupMatch(beate, beate.items),
-      ])
-    );
+    assert.deepEqual(matches, [
+      createFakeStandDeliveryMatch(andrine, andrine.items),
+      createFakeStandPickupMatch(beate, beate.items),
+    ]);
   });
 
   it("should be able to create multiple full matches with overlapping books", () => {
@@ -216,7 +210,7 @@ describe("Full User Match", () => {
       [mathias, monika, mathias],
       []
     );
-    matchFinder.match();
+    matchFinder.generateMatches();
     expect(
       Array.from(matchFinder.senders).filter(
         (sender) => sender.items.size !== 0
@@ -240,7 +234,7 @@ describe("Partly User Match", () => {
       [monika, beate],
       []
     );
-    const matches = matchFinder.match();
+    const matches = matchFinder.generateMatches();
     const andrineXbeate = createFakeUserMatch(andrine, beate, andrine.items);
     const mathiasXmonika = createFakeUserMatch(
       mathias,
@@ -252,10 +246,7 @@ describe("Partly User Match", () => {
       difference(mathias.items, monika.items)
     );
 
-    assert.deepEqual(
-      matches,
-      new Set([andrineXbeate, mathiasXmonika, mathiasXstand])
-    );
+    assert.deepEqual(matches, [andrineXbeate, mathiasXmonika, mathiasXstand]);
   });
 
   it("should be able to fully match and partly match a set of ordered users", () => {
@@ -276,7 +267,7 @@ describe("Partly User Match", () => {
       [...receiverGroupA, ...receiverGroupB, ...receiverGroupC],
       []
     );
-    const matches = matchFinder.match();
+    const matches = matchFinder.generateMatches();
     expect(
       Array.from(matchFinder.senders).filter(
         (sender) => sender.items.size !== 0
@@ -287,7 +278,7 @@ describe("Partly User Match", () => {
         (receiver) => receiver.items.size !== 0
       ).length
     ).to.equal(0);
-    expect(matches.size).to.equal(25);
+    expect(matches.length).to.equal(25);
   });
 
   it("should be able to fully match and partly match a set of shuffled users", () => {
@@ -309,7 +300,7 @@ describe("Partly User Match", () => {
       shuffle([...receiverGroupA, ...receiverGroupB, ...receiverGroupC]),
       []
     );
-    const matches = matchFinder.match();
+    const matches = matchFinder.generateMatches();
     expect(
       Array.from(matchFinder.senders).filter(
         (sender) => sender.items.size !== 0
@@ -320,7 +311,7 @@ describe("Partly User Match", () => {
         (receiver) => receiver.items.size !== 0
       ).length
     ).to.equal(0, "expected number of receivers with remaining items to be 0");
-    expect(matches.size).to.be.lessThan(
+    expect(matches.length).to.be.lessThan(
       30,
       "expected reasonable number of matches"
     );
@@ -338,7 +329,7 @@ describe("Partly User Match", () => {
       receiverGroupA,
       []
     );
-    const matches = matchFinder.match();
+    const matches = matchFinder.generateMatches();
     expect(
       Array.from(matchFinder.senders).every((sender) => sender.items.size === 0)
     ).to.be.true;
@@ -354,7 +345,7 @@ describe("Partly User Match", () => {
     // 3 senderB => receiverA
     // 1 senderB => Stand
     // 2 Stand => receiverA
-    expect(matches.size).to.equal(14);
+    expect(matches.length).to.equal(14);
   });
 
   it("should be able to fully and partly match some shuffled users, leaving some receivers craving for more", () => {
@@ -370,7 +361,7 @@ describe("Partly User Match", () => {
       shuffle(receiverGroupA),
       []
     );
-    const matches = matchFinder.match();
+    const matches = matchFinder.generateMatches();
     expect(
       Array.from(matchFinder.senders).every((sender) => sender.items.size === 0)
     ).to.be.true;
@@ -386,7 +377,7 @@ describe("Partly User Match", () => {
     // 3 senderB => receiverA
     // 1 senderB => Stand
     // 2 Stand => receiverA
-    expect(matches.size).to.equal(14);
+    expect(matches.length).to.equal(14);
   });
 });
 
@@ -412,7 +403,7 @@ describe("Large User Groups", () => {
       ["Z"]
     );
 
-    const matches = Array.from(matchFinder.match());
+    const matches = Array.from(matchFinder.generateMatches());
 
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
@@ -441,7 +432,7 @@ describe("Large User Groups", () => {
       []
     );
 
-    const matches = Array.from(matchFinder.match());
+    const matches = Array.from(matchFinder.generateMatches());
 
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
@@ -470,7 +461,7 @@ describe("Large User Groups", () => {
       []
     );
 
-    const matches = Array.from(matchFinder.match());
+    const matches = Array.from(matchFinder.generateMatches());
 
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
@@ -500,7 +491,7 @@ describe("Large User Groups", () => {
       []
     );
 
-    const matches = Array.from(matchFinder.match());
+    const matches = Array.from(matchFinder.generateMatches());
 
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
@@ -530,7 +521,7 @@ describe("Large User Groups", () => {
       []
     );
 
-    const matches = Array.from(matchFinder.match());
+    const matches = Array.from(matchFinder.generateMatches());
 
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 

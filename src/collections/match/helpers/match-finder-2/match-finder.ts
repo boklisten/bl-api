@@ -1,223 +1,25 @@
-import { difference, hasDifference, intersect, union } from "../set-methods";
+import { difference, intersect, union } from "../set-methods";
 import {
   MatchableUser,
   MatchTypes,
   NewMatch,
-  StandDeliveryMatch,
   StandPickupMatch,
-} from "./matchTypes";
-import { copyUsers } from "./match-utils";
+} from "./match-types";
+import {
+  copyAndSortUsers,
+  groupUsersByNumberOfItems,
+  removeFullyMatchedUsers,
+  tryFindPartialMatch,
+  tryFindOneWayMatch,
+  tryFindTwoWayMatch,
+} from "./match-utils";
 
 export class MatchFinder {
-  public senders: Set<MatchableUser>;
-  public receivers: Set<MatchableUser>;
-  private matches: Set<NewMatch> = new Set();
+  public senders: MatchableUser[];
+  public receivers: MatchableUser[];
   public unmatchableItems: Set<string>;
 
-  private groupUsersByNumberOfItems(
-    users: Set<MatchableUser>
-  ): Set<MatchableUser>[] {
-    let max = 0;
-    for (const user of users) {
-      max = Math.max(max, user.items.size);
-    }
-
-    const sortedUserGroups: Set<MatchableUser>[] = [...Array(max + 1)].map(
-      () => new Set()
-    );
-
-    for (const user of users) {
-      if (user.items.size > 0) {
-        const userGroup = sortedUserGroups[user.items.size];
-        if (userGroup === undefined) {
-          throw new Error(
-            "SortedSenderGroups should have as many entries as the maximum number of sender items"
-          );
-        }
-        userGroup.add(user);
-      }
-    }
-
-    return sortedUserGroups.reverse();
-  }
-
-  private tryFindFullyMatchingReceiver(
-    sender: MatchableUser
-  ): MatchableUser | null {
-    let bestReceiver = null;
-    let bestDiff = null;
-    const matchableSenderItems = difference(
-      sender.items,
-      this.unmatchableItems
-    );
-
-    for (const receiver of this.receivers) {
-      const matchableReceiverItems = difference(
-        receiver.items,
-        this.unmatchableItems
-      );
-
-      if (!hasDifference(matchableSenderItems, matchableReceiverItems)) {
-        // Perfect two-way match, we can return immediately
-        if (!hasDifference(matchableReceiverItems, matchableSenderItems)) {
-          return receiver;
-        }
-
-        if (
-          bestReceiver === null ||
-          bestDiff === null ||
-          difference(matchableReceiverItems, matchableSenderItems).size <
-            bestDiff.size
-        ) {
-          bestReceiver = receiver;
-          bestDiff = difference(matchableReceiverItems, matchableSenderItems);
-        }
-      }
-    }
-    return bestReceiver;
-  }
-
-  private createStandDeliveryMatch(sender: MatchableUser) {
-    const deliveryItems = intersect(sender.items, this.unmatchableItems);
-    if (deliveryItems.size === 0) {
-      return;
-    }
-
-    sender.items = difference(sender.items, deliveryItems);
-    let appendToMatch: StandDeliveryMatch | null = null;
-    for (const match of this.matches.values()) {
-      if (
-        match.type === MatchTypes.StandDeliveryMatch &&
-        match.senderId === sender.id
-      ) {
-        appendToMatch = match;
-        break;
-      }
-    }
-    const match: StandDeliveryMatch = {
-      senderId: sender.id,
-      items: deliveryItems,
-      type: MatchTypes.StandDeliveryMatch,
-    };
-    if (appendToMatch != null) {
-      appendToMatch.items = union(appendToMatch.items, deliveryItems);
-    } else {
-      this.matches.add(match);
-    }
-  }
-
-  private createStandPickupMatch(receiver: MatchableUser) {
-    const items = receiver.items;
-    receiver.items = new Set();
-    const match: StandPickupMatch = {
-      receiverId: receiver.id,
-      items,
-      type: MatchTypes.StandPickupMatch,
-    };
-    this.matches.add(match);
-  }
-
-  private createFullMatches() {
-    const fullyMatchedSenders: Set<MatchableUser> = new Set();
-    for (const sender of this.senders) {
-      // Match unmatchable items with stand
-      this.createStandDeliveryMatch(sender);
-      // If all items are unmatchable, the sender is fully matched
-      if (sender.items.size === 0) {
-        fullyMatchedSenders.add(sender);
-        continue;
-      }
-
-      const matchedReceiver = this.tryFindFullyMatchingReceiver(sender);
-      if (matchedReceiver === null) {
-        continue;
-      }
-
-      this.matches.add({
-        senderId: sender.id,
-        receiverId: matchedReceiver.id,
-        items: sender.items,
-        type: MatchTypes.UserMatch,
-      });
-      fullyMatchedSenders.add(sender);
-
-      matchedReceiver.items = difference(matchedReceiver.items, sender.items);
-    }
-
-    this.senders = difference(this.senders, fullyMatchedSenders);
-  }
-
-  private createLargestPartlyMatch(sender: MatchableUser) {
-    // TODO: perf optimization: remove receivers which only have unmatchable items
-    let bestMatchPair: { match: NewMatch; receiver: MatchableUser } | null =
-      null;
-    for (const receiver of this.receivers) {
-      const matchableReceiverItems = intersect(sender.items, receiver.items);
-      if (
-        matchableReceiverItems.size > (bestMatchPair?.match.items.size ?? 0)
-      ) {
-        bestMatchPair = {
-          match: {
-            senderId: sender.id,
-            receiverId: receiver.id,
-            items: matchableReceiverItems,
-            type: MatchTypes.UserMatch,
-          },
-          receiver,
-        };
-        if (bestMatchPair.match.items.size >= sender.items.size - 1) {
-          break;
-        }
-      }
-    }
-
-    if (bestMatchPair === null) {
-      // No receiver wants ANY of sender's items; those are unmatchable. Refer to stand
-      this.unmatchableItems = union(this.unmatchableItems, sender.items);
-      this.createStandDeliveryMatch(sender);
-    } else {
-      bestMatchPair.receiver.items = difference(
-        bestMatchPair.receiver.items,
-        bestMatchPair.match.items
-      );
-      sender.items = difference(sender.items, bestMatchPair.match.items);
-      this.matches.add(bestMatchPair.match);
-    }
-  }
-
-  private createPartlyMatches() {
-    const sortedSenderGroups = this.groupUsersByNumberOfItems(this.senders);
-
-    for (const sortedSenderGroup of sortedSenderGroups) {
-      for (const sender of sortedSenderGroup) {
-        // Match unmatchable items with stand
-        this.createStandDeliveryMatch(sender);
-
-        // If all items are unmatchable, the sender is fully matched
-        if (sender.items.size === 0) {
-          continue;
-        }
-
-        this.createLargestPartlyMatch(sender);
-
-        if (sender.items.size > 0) {
-          const groupIndex = sortedSenderGroups.length - 1 - sender.items.size;
-          sortedSenderGroups[groupIndex] = new Set([
-            sender,
-            ...sortedSenderGroups[groupIndex],
-          ]);
-        }
-      }
-    }
-  }
-
-  private satisfyReceivers() {
-    for (const receiver of this.receivers) {
-      if (receiver.items.size > 0) {
-        this.createStandPickupMatch(receiver);
-      }
-    }
-  }
+  private matches: NewMatch[] = [];
 
   constructor(
     _senders: MatchableUser[],
@@ -225,17 +27,156 @@ export class MatchFinder {
     outdatedItems: string[]
   ) {
     this.unmatchableItems = new Set(outdatedItems);
-    this.receivers = copyUsers(_receivers);
-    this.senders = copyUsers(_senders);
+    this.receivers = copyAndSortUsers(_receivers);
+    this.senders = copyAndSortUsers(_senders);
   }
 
-  public match() {
-    this.createFullMatches();
+  /**
+   * Trigger generation of matches
+   * @returns an optimal matching of the given senders and receivers
+   */
+  public generateMatches() {
+    this.createMatches(tryFindTwoWayMatch, this.senders);
+    this.createMatches(tryFindOneWayMatch, this.senders);
 
-    this.createPartlyMatches();
+    const sortedSenderGroups = groupUsersByNumberOfItems(this.senders);
 
-    this.satisfyReceivers();
+    for (const sortedSenderGroup of sortedSenderGroups) {
+      this.createMatches(
+        tryFindPartialMatch,
+        sortedSenderGroup,
+        sortedSenderGroups
+      );
+    }
+
+    for (const receiver of this.receivers) {
+      this.createStandPickupMatch(receiver);
+    }
 
     return this.matches;
+  }
+
+  /**
+   * Find full matches for all eligible senders with a given matchMethod.
+   * Append the created matches to the list of matches, and remove the matched items and users.
+   * and if so with whom
+   * @param matchFinder a function that finds a match for a given sender
+   * @param senders the senders to be matched
+   * @param sortedSenderGroups sender groups required for partial matching
+   * @private
+   */
+  private createMatches(
+    matchFinder: (
+      sender: MatchableUser,
+      receivers: MatchableUser[]
+    ) => MatchableUser,
+    senders: MatchableUser[],
+    sortedSenderGroups?: MatchableUser[][]
+  ) {
+    for (const sender of senders) {
+      // Match unmatchable items with stand
+      this.createStandDeliveryMatch(sender);
+
+      // If all items are unmatchable, the sender is fully matched
+      if (sender.items.size === 0) {
+        continue;
+      }
+
+      const receiver = matchFinder(sender, this.receivers);
+
+      if (receiver === null) {
+        if (matchFinder === tryFindPartialMatch) {
+          // If there is no partial receiver, no one wants any of these items.
+          // Thus, the items should be delivered to a stand and marked unmatchable
+          this.unmatchableItems = union(this.unmatchableItems, sender.items);
+          this.createStandDeliveryMatch(sender);
+        }
+        continue;
+      }
+
+      this.createUserMatch(sender, receiver);
+
+      // Add the partially matched sender to a new group, so that the remainder of the items can get matched later
+      if (matchFinder === tryFindPartialMatch && sender.items.size > 0) {
+        // Needs to be placed in front of the set, so that it is prioritized when matching that group
+        const groupIndex = sortedSenderGroups.length - 1 - sender.items.size;
+        sortedSenderGroups[groupIndex] = [
+          sender,
+          ...sortedSenderGroups[groupIndex],
+        ];
+      }
+    }
+
+    // Cleanup senders and receivers
+    this.senders = removeFullyMatchedUsers(this.senders);
+    this.receivers = removeFullyMatchedUsers(this.receivers);
+  }
+
+  /**
+   * Create a stand delivery match for all items unmatchable items that the sender has.
+   * If the sender already has a stand match, append the items to that match instead
+   * @param sender
+   * @private
+   */
+  private createStandDeliveryMatch(sender: MatchableUser) {
+    const deliveryItems = intersect(sender.items, this.unmatchableItems);
+
+    if (deliveryItems.size === 0) {
+      return;
+    }
+
+    const existingMatch = [...this.matches].find(
+      (match) =>
+        match.type === MatchTypes.StandDeliveryMatch &&
+        match.senderId === sender.id
+    );
+
+    if (existingMatch !== undefined) {
+      existingMatch.items = union(existingMatch.items, deliveryItems);
+    } else {
+      this.matches.push({
+        senderId: sender.id,
+        items: deliveryItems,
+        type: MatchTypes.StandDeliveryMatch,
+      });
+    }
+
+    sender.items = difference(sender.items, deliveryItems);
+  }
+
+  /**
+   * Match all overlapping items between a sender and a receiver,
+   * and remove their matched items
+   * @param sender
+   * @param receiver
+   * @private
+   */
+  private createUserMatch(sender: MatchableUser, receiver: MatchableUser) {
+    const matchableItems = intersect(sender.items, receiver.items);
+    this.matches.push({
+      senderId: sender.id,
+      receiverId: receiver.id,
+      items: matchableItems,
+      type: MatchTypes.UserMatch,
+    });
+
+    receiver.items = difference(receiver.items, matchableItems);
+    sender.items = difference(sender.items, matchableItems);
+  }
+
+  /**
+   * Match all missing receiver items with the stand,
+   * and append the match to the list of matches
+   * @param receiver
+   * @private
+   */
+  private createStandPickupMatch(receiver: MatchableUser) {
+    const match: StandPickupMatch = {
+      receiverId: receiver.id,
+      items: receiver.items,
+      type: MatchTypes.StandPickupMatch,
+    };
+    receiver.items = new Set();
+    this.matches.push(match);
   }
 }
