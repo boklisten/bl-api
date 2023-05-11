@@ -13,10 +13,13 @@ import { BlApiRequest } from "../../../../request/bl-api-request";
 chai.use(chaiAsPromised);
 import { UserDetailPermissionOperation } from "./user-detail-permission.operation";
 import { User } from "../../../user/user";
+import { BlCollectionName } from "../../../bl-collection";
 
 describe("UserDetailPermissionOperation", () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
-  const userStorage = new BlDocumentStorage<User>("users");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
+  const userStorage = new BlDocumentStorage<User>(BlCollectionName.Users);
   const resHandler = new SEResponseHandler();
   const userDetailPermissionOperation = new UserDetailPermissionOperation(
     userDetailStorage,

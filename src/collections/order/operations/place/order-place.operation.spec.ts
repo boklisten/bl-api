@@ -15,10 +15,11 @@ import { OrderPlaceOperation } from "./order-place.operation";
 import { Order, BlError, CustomerItem } from "@boklisten/bl-model";
 import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
 import { OrderValidator } from "../../helpers/order-validator/order-validator";
+import { BlCollectionName } from "../../../bl-collection";
 
 describe("OrderPlaceOperation", () => {
   const resHandler = new SEResponseHandler();
-  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const orderToCustomerItemGenerator = new OrderToCustomerItemGenerator();
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
     "customerItem"

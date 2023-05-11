@@ -10,11 +10,14 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import sinonChai from "sinon-chai";
 import { OpeningHourHelper } from "./opening-hour-helper";
 import moment from "moment-timezone";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-const openingHourStorage = new BlDocumentStorage<OpeningHour>("openinghours");
+const openingHourStorage = new BlDocumentStorage<OpeningHour>(
+  BlCollectionName.OpeningHours
+);
 const openingHourHelper = new OpeningHourHelper(openingHourStorage);
 const openingHourStorageGetMany = sinon.stub(openingHourStorage, "getMany");
 

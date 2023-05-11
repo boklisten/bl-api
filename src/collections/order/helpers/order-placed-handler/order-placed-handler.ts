@@ -13,6 +13,7 @@ import { Messenger } from "../../../../messenger/messenger";
 import { CustomerItemHandler } from "../../../customer-item/helpers/customer-item-handler";
 import { OrderItemMovedFromOrderHandler } from "../order-item-moved-from-order-handler/order-item-moved-from-order-handler";
 import { Matcher } from "../../../match/helpers/matcher/matcher";
+import { BlCollectionName } from "../../../bl-collection";
 
 export class OrderPlacedHandler {
   private orderStorage: BlDocumentStorage<Order>;
@@ -33,11 +34,12 @@ export class OrderPlacedHandler {
     private _matcher?: Matcher
   ) {
     this.orderStorage =
-      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
+      orderStorage ??
+      new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
     this.paymentHandler = paymentHandler ?? new PaymentHandler();
     this.userDetailStorage =
       userDetailStorage ??
-      new BlDocumentStorage("userdetails", userDetailSchema);
+      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
     this._messenger = messenger ?? new Messenger();
     this._customerItemHandler =
       customerItemHandler ?? new CustomerItemHandler();

@@ -5,6 +5,7 @@ import { userDetailSchema } from "../user-detail.schema";
 import { User } from "../../user/user";
 import { UserSchema } from "../../user/user.schema";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlCollectionName } from "../../bl-collection";
 
 export class UserCanDeleteUserDetail {
   private queryBuilder: SEDbQueryBuilder;
@@ -15,10 +16,10 @@ export class UserCanDeleteUserDetail {
   ) {
     this.userDetailStorage = this.userDetailStorage
       ? this.userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
     this.userStorage = this.userStorage
       ? this.userStorage
-      : new BlDocumentStorage("users", UserSchema);
+      : new BlDocumentStorage(BlCollectionName.Users, UserSchema);
     this.queryBuilder = new SEDbQueryBuilder();
     this.permissionService = new PermissionService();
   }

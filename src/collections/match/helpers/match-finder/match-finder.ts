@@ -2,6 +2,7 @@ import { Match, MatchItem, BlError } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { matchSchema } from "../../match.schema";
 import { MatchFinderPartlyMatch } from "./match-finder-partly-match/match-finder-partly-match";
+import { BlCollectionName } from "../../../bl-collection";
 
 // priority list
 // 1: full matches with 'created' orders
@@ -14,7 +15,7 @@ export class MatchFinder {
   constructor(private matchStorage?: BlDocumentStorage<Match>) {
     this.matchStorage = this.matchStorage
       ? this.matchStorage
-      : new BlDocumentStorage<Match>("matches", matchSchema);
+      : new BlDocumentStorage<Match>(BlCollectionName.Matches, matchSchema);
     this.matchFinderPartlyMatch = new MatchFinderPartlyMatch();
   }
 

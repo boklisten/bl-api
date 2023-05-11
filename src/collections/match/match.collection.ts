@@ -1,9 +1,9 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { matchSchema } from "./match.schema";
 import { MatchPostHook } from "./hooks/match.post.hook";
 
 export class MatchCollection implements BlCollection {
-  public collectionName = "matches";
+  public collectionName = BlCollectionName.Matches;
   public mongooseSchema = matchSchema;
   public endpoints: BlEndpoint[] = [
     {

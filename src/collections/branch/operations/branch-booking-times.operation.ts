@@ -7,6 +7,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { SEResponseHandler } from "../../../response/se.response.handler";
 import { DateService } from "../../../blc/date.service";
 import mongoose from "mongoose";
+import { BlCollectionName } from "../../bl-collection";
 
 export class BranchBookingTimesOperation implements Operation {
   private dateService: DateService;
@@ -16,7 +17,10 @@ export class BranchBookingTimesOperation implements Operation {
   ) {
     this.bookingStorage = this.bookingStorage
       ? this.bookingStorage
-      : new BlDocumentStorage<Booking>("bookings", bookingSchema);
+      : new BlDocumentStorage<Booking>(
+          BlCollectionName.Bookings,
+          bookingSchema
+        );
     this.resHandler = this.resHandler
       ? this.resHandler
       : new SEResponseHandler();

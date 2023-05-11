@@ -9,10 +9,11 @@ import { BlError, CustomerItem } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 chai.use(chaiAsPromised);
 import { CustomerHaveActiveCustomerItems } from "./customer-have-active-customer-items";
+import { BlCollectionName } from "../../bl-collection";
 
 describe("CustomerHaveActiveCustomerItems", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    "customeritems"
+    BlCollectionName.CustomerItems
   );
 
   const customerItemByQueryStub = sinon.stub(customerItemStorage, "getByQuery");

@@ -20,6 +20,7 @@ import {
   Recipient,
   MessageOptions,
 } from "@boklisten/bl-post-office";
+import { BlCollectionName } from "../../collections/bl-collection";
 
 class MockPostOffice extends PostOffice {
   constructor() {
@@ -40,7 +41,7 @@ chai.use(chaiAsPromised);
 
 describe("EmailService", () => {
   const emailHandler = new EmailHandler({ sendgrid: { apiKey: "someKey" } });
-  const itemStorage = new BlDocumentStorage<Item>("items");
+  const itemStorage = new BlDocumentStorage<Item>(BlCollectionName.Items);
   const mockPostOffice = new MockPostOffice();
   const emailService = new EmailService(
     emailHandler,

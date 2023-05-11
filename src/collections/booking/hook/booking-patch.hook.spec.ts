@@ -15,8 +15,11 @@ import {
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import sinonChai from "sinon-chai";
 import { BookingPatchHook } from "./booking-patch.hook";
+import { BlCollectionName } from "../../bl-collection";
 
-const bookingStorage = new BlDocumentStorage<Booking>("bookings");
+const bookingStorage = new BlDocumentStorage<Booking>(
+  BlCollectionName.Bookings
+);
 
 const testId = "5ea6a45dc39947205e3ecdd8";
 const testId2 = "5ea6a45dc39947205e3ecdd1";
@@ -192,7 +195,9 @@ describe("BookingPatchHook", () => {
   });
 
   describe("#after", () => {
-    const bookingStorage = new BlDocumentStorage<Booking>("bookings");
+    const bookingStorage = new BlDocumentStorage<Booking>(
+      BlCollectionName.Bookings
+    );
     const bookingPatchHook = new BookingPatchHook(bookingStorage);
     const testId3 = "5ea6a45dc39947205e3ecdd3";
 

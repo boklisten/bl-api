@@ -25,7 +25,7 @@ import { OpeningHourHelper } from "../../../opening-hour/helpers/opening-hour-he
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-const matchStorage = new BlDocumentStorage<Match>("matches");
+const matchStorage = new BlDocumentStorage<Match>(BlCollectionName.Matches);
 const matchUpdater = new MatchUpdater(matchStorage);
 const openingHourHelper = new OpeningHourHelper();
 const matchStorageUpdate = sinon.stub(matchStorage, "update");

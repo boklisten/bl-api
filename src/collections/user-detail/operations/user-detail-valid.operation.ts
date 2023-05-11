@@ -6,6 +6,7 @@ import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { userDetailSchema } from "../user-detail.schema";
 import { SEResponseHandler } from "../../../response/se.response.handler";
 import { UserDetailHelper } from "../helpers/user-detail.helper";
+import { BlCollectionName } from "../../bl-collection";
 
 export class UserDetailValidOperation implements Operation {
   private _userDetailStorage: BlDocumentStorage<UserDetail>;
@@ -20,7 +21,7 @@ export class UserDetailValidOperation implements Operation {
   ) {
     this._userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
     this._resHandler = resHandler ? resHandler : new SEResponseHandler();
     this._userDetailHelper = new UserDetailHelper();
   }

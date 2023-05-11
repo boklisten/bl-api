@@ -4,8 +4,31 @@ import { ValidParam } from "../query/valid-param/db-query-valid-params";
 import { Operation } from "../operation/operation";
 import { NestedDocument } from "../storage/nested-document";
 
+export enum BlCollectionName {
+  BlErrorLogs = "blerrorlogs",
+  Bookings = "bookings",
+  BranchItems = "branchitems",
+  Branches = "branches",
+  Companies = "companies",
+  CustomerItems = "customeritems",
+  Deliveries = "deliveries",
+  EmailValidations = "email_validations",
+  Invoices = "invoices",
+  Items = "items",
+  LocalLogins = "locallogins",
+  Matches = "matches",
+  Messages = "messages",
+  OpeningHours = "openinghours",
+  Orders = "orders",
+  PasswordResets = "passwordresets",
+  Payments = "payments",
+  UniqueItems = "uniqueitems",
+  UserDetails = "userdetails",
+  Users = "users",
+}
+
 export interface BlCollection {
-  collectionName: string; //the name determines the path to the collection like /api/vi/collectionName
+  collectionName: BlCollectionName; //the name determines the path to the collection like /api/vi/collectionName
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mongooseSchema: any; //the mongooseSchema for this collection
   documentPermission?: BlDocumentPermission;

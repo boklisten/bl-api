@@ -13,6 +13,7 @@ import { itemSchema } from "../../../item/item.schema";
 import { BringDeliveryService } from "../deliveryBring/bringDelivery.service";
 import { deliverySchema } from "../../delivery.schema";
 import { branchSchema } from "../../../branch/branch.schema";
+import { BlCollectionName } from "../../../bl-collection";
 
 export class DeliveryHandler {
   private orderStorage: BlDocumentStorage<Order>;
@@ -29,15 +30,18 @@ export class DeliveryHandler {
     bringDeliveryService?: BringDeliveryService
   ) {
     this.orderStorage =
-      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
+      orderStorage ??
+      new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
     this.itemStorage =
-      itemStorage ?? new BlDocumentStorage("items", itemSchema);
+      itemStorage ?? new BlDocumentStorage(BlCollectionName.Items, itemSchema);
     this.bringDeliveryService =
       bringDeliveryService ?? new BringDeliveryService();
     this.deliveryStorage =
-      deliveryStorage ?? new BlDocumentStorage("deliveries", deliverySchema);
+      deliveryStorage ??
+      new BlDocumentStorage(BlCollectionName.Deliveries, deliverySchema);
     this.branchStorage =
-      branchStorage ?? new BlDocumentStorage("branches", branchSchema);
+      branchStorage ??
+      new BlDocumentStorage(BlCollectionName.Branches, branchSchema);
   }
 
   public updateOrderBasedOnMethod(

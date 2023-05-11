@@ -21,10 +21,10 @@ chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-  "customeritems"
+  BlCollectionName.CustomerItems
 );
 
-const matchStorage = new BlDocumentStorage<Match>("matches");
+const matchStorage = new BlDocumentStorage<Match>(BlCollectionName.Matches);
 
 const customerItemGetStub = sinon.stub(customerItemStorage, "get");
 const customerItemUpdateStub = sinon.stub(customerItemStorage, "update");

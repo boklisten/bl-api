@@ -13,6 +13,7 @@ import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import { SEDbQuery } from "../../query/se.db-query";
 import { EmailValidationHelper } from "../../collections/email-validation/helpers/email-validation.helper";
 import { LocalLoginHandler } from "../local/local-login.handler";
+import { BlCollectionName } from "../../collections/bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -32,13 +33,13 @@ const testUser = {
 
 describe("UserHandler", () => {
   const userStorage: BlDocumentStorage<User> = new BlDocumentStorage(
-    "users",
+    BlCollectionName.Users,
     UserSchema
   );
   const emailValidationHelper: EmailValidationHelper =
     new EmailValidationHelper();
   const userDetailStorage: BlDocumentStorage<UserDetail> =
-    new BlDocumentStorage("userdetails", UserDetail);
+    new BlDocumentStorage(BlCollectionName.UserDetails, UserDetail);
   const localLoginHandler: LocalLoginHandler = new LocalLoginHandler();
   const userHandler = new UserHandler(
     userDetailStorage,

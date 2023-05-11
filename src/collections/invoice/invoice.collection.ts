@@ -1,8 +1,8 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { invoiceSchema } from "./invoice.schema";
 
 export class InvoiceCollection implements BlCollection {
-  collectionName = "invoices";
+  collectionName = BlCollectionName.Invoices;
   mongooseSchema = invoiceSchema;
   endpoints: BlEndpoint[] = [
     {

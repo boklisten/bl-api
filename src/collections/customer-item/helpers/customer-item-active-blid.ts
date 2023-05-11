@@ -3,6 +3,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { customerItemSchema } from "../customer-item.schema";
 import { CustomerItemActive } from "./customer-item-active";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlCollectionName } from "../../bl-collection";
 
 export class CustomerItemActiveBlid {
   private customerItemActive: CustomerItemActive;
@@ -12,7 +13,7 @@ export class CustomerItemActiveBlid {
     this.customerItemStorage = customerItemStorage
       ? customerItemStorage
       : new BlDocumentStorage<CustomerItem>(
-          "customeritems",
+          BlCollectionName.CustomerItems,
           customerItemSchema
         );
     this.customerItemActive = new CustomerItemActive();

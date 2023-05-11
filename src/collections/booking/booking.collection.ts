@@ -1,9 +1,9 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { bookingSchema } from "./booking.schema";
 import { BookingPatchHook } from "./hook/booking-patch.hook";
 
 export class BookingCollection implements BlCollection {
-  collectionName = "bookings";
+  collectionName = BlCollectionName.Bookings;
   mongooseSchema = bookingSchema;
   endpoints: BlEndpoint[] = [
     {

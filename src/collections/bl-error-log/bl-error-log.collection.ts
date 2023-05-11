@@ -1,8 +1,8 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlEndpoint, BlCollectionName } from "../bl-collection";
 import { blErrorLogSchema } from "./bl-error-log.schema";
 
 export class BlErrorLogCollection implements BlCollection {
-  collectionName = "blerrorlogs";
+  collectionName = BlCollectionName.BlErrorLogs;
   mongooseSchema = blErrorLogSchema;
   endpoints: BlEndpoint[] = [
     {

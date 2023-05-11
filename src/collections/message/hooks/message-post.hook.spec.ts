@@ -18,14 +18,19 @@ import { MessagePostHook } from "./message-post.hook";
 import { MessengerReminder } from "../../../messenger/reminder/messenger-reminder";
 import { MessageHelper } from "../helper/message-helper";
 import { Messenger } from "../../../messenger/messenger";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 describe("MessagePostHook", () => {
   const messengerReminder = new MessengerReminder();
-  const messageStorage = new BlDocumentStorage<Message>("messages");
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
+  const messageStorage = new BlDocumentStorage<Message>(
+    BlCollectionName.Messages
+  );
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
   const messageHelper = new MessageHelper(messageStorage);
   const messenger = new Messenger();
   const messagePostHook = new MessagePostHook(

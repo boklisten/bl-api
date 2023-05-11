@@ -8,12 +8,13 @@ import sinon from "sinon";
 import { BlError, CustomerItem } from "@boklisten/bl-model";
 import { CustomerItemValidator } from "./customer-item-validator";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("CustomerItemValidator", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    "customeritems"
+    BlCollectionName.CustomerItems
   );
   const customerItemValidator = new CustomerItemValidator(customerItemStorage);
 

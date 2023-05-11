@@ -12,6 +12,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { orderSchema } from "../../order/order.schema";
 import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
+import { BlCollectionName } from "../../bl-collection";
 
 export class CustomerItemPostHook extends Hook {
   private _customerItemValidator: CustomerItemValidator;
@@ -31,9 +32,10 @@ export class CustomerItemPostHook extends Hook {
       customerItemValidator ?? new CustomerItemValidator();
     this._userDetailStorage =
       userDetailStorage ??
-      new BlDocumentStorage("userdetails", userDetailSchema);
+      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
     this._orderStorage =
-      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
+      orderStorage ??
+      new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
     this._userDetailHelper = userDetailHelper ?? new UserDetailHelper();
   }
 

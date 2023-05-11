@@ -1,9 +1,9 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 
 import { companySchema } from "./company.schema";
 
 export class CompanyCollection implements BlCollection {
-  collectionName = "companies";
+  collectionName = BlCollectionName.Companies;
   mongooseSchema = companySchema;
   endpoints: BlEndpoint[] = [
     {

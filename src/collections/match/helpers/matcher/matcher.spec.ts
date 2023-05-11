@@ -37,7 +37,9 @@ chai.use(sinonChai);
 //const matchStorage = new BlDocumentStorage<Match>('matches');
 //const customerItemGetStub = sinon.stub(customerItemStorage, 'get');
 //
-const deliveryStorage = new BlDocumentStorage<Delivery>("deliveries");
+const deliveryStorage = new BlDocumentStorage<Delivery>(
+  BlCollectionName.Deliveries
+);
 const matchFinder = new MatchFinder();
 const matchUpdater = new MatchUpdater();
 const matcher = new Matcher(deliveryStorage, matchFinder, matchUpdater);

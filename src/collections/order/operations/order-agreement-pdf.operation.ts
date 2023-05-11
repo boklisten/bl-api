@@ -7,6 +7,7 @@ import { BlApiRequest } from "../../../request/bl-api-request";
 import { NextFunction, Request, Response } from "express";
 import { Operation } from "../../../operation/operation";
 import { orderSchema } from "../order.schema";
+import { BlCollectionName } from "../../bl-collection";
 
 export class OrderAgreementPdfOperation implements Operation {
   private _messenger: Messenger;
@@ -22,10 +23,10 @@ export class OrderAgreementPdfOperation implements Operation {
     this._messenger = new Messenger();
     this._userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
     this._orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
+      : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
     this._resHandler = resHandler ? resHandler : new SEResponseHandler();
   }
 

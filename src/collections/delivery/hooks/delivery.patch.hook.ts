@@ -5,6 +5,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { orderSchema } from "../../order/order.schema";
 import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
 import { deliverySchema } from "../delivery.schema";
+import { BlCollectionName } from "../../bl-collection";
 
 export class DeliveryPatchHook extends Hook {
   private deliveryValidator?: DeliveryValidator;
@@ -22,9 +23,13 @@ export class DeliveryPatchHook extends Hook {
     this.deliveryValidator = deliveryValidator ?? new DeliveryValidator();
     this.deliveryStorage =
       deliveryStorage ??
-      new BlDocumentStorage<Delivery>("deliveries", deliverySchema);
+      new BlDocumentStorage<Delivery>(
+        BlCollectionName.Deliveries,
+        deliverySchema
+      );
     this.orderStorage =
-      orderStorage ?? new BlDocumentStorage<Order>("orders", orderSchema);
+      orderStorage ??
+      new BlDocumentStorage<Order>(BlCollectionName.Orders, orderSchema);
     this.deliveryHandler = deliveryHandler ?? new DeliveryHandler();
   }
 

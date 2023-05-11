@@ -2,12 +2,16 @@ import { openingHourSchema } from "../opening-hour.schema";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { OpeningHour, Branch, BlError } from "@boklisten/bl-model";
 import moment from "moment-timezone";
+import { BlCollectionName } from "../../bl-collection";
 
 export class OpeningHourHelper {
   constructor(private openingHourStorage?: BlDocumentStorage<OpeningHour>) {
     this.openingHourStorage = this.openingHourStorage
       ? this.openingHourStorage
-      : new BlDocumentStorage<OpeningHour>("openinghours", openingHourSchema);
+      : new BlDocumentStorage<OpeningHour>(
+          BlCollectionName.OpeningHours,
+          openingHourSchema
+        );
   }
 
   public async getNextAvailableOpeningHour(

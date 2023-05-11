@@ -14,9 +14,12 @@ import { CustomerHaveActiveCustomerItems } from "../../customer-item/helpers/cus
 import { CustomerInvoiceActive } from "../../invoice/helpers/customer-invoice-active";
 import { UserCanDeleteUserDetail } from "../helpers/user-can-delete-user-detail";
 import { UserDeleteAllInfo } from "../helpers/user-delete-all-info";
+import { BlCollectionName } from "../../bl-collection";
 
 describe("UserDetailDeleteHook", () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
   const customerHaveActiveCustomerItems = new CustomerHaveActiveCustomerItems();
   const haveActiveCustomerItemsStub = sinon.stub(
     customerHaveActiveCustomerItems,

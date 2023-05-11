@@ -8,6 +8,7 @@ import { BlapiResponse, BlError } from "@boklisten/bl-model";
 import { isNullOrUndefined } from "util";
 import { LocalLoginHandler } from "../../../auth/local/local-login.handler";
 import { SEResponseHandler } from "../../../response/se.response.handler";
+import { BlCollectionName } from "../../bl-collection";
 
 export class PasswordResetNewOperation implements Operation {
   private _passwordResetStorage: BlDocumentStorage<PasswordReset>;
@@ -21,7 +22,10 @@ export class PasswordResetNewOperation implements Operation {
   ) {
     this._passwordResetStorage = passwordResetStorage
       ? passwordResetStorage
-      : new BlDocumentStorage("passwordresets", passwordResetSchema);
+      : new BlDocumentStorage(
+          BlCollectionName.PasswordResets,
+          passwordResetSchema
+        );
     this._localLoginHandler = localLoginHandler
       ? localLoginHandler
       : new LocalLoginHandler();

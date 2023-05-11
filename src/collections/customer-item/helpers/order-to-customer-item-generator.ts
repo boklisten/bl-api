@@ -6,12 +6,13 @@ import {
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { BlCollectionName } from "../../bl-collection";
 
 export class OrderToCustomerItemGenerator {
   constructor(private _userDetailStorage?: BlDocumentStorage<UserDetail>) {
     this._userDetailStorage = this._userDetailStorage
       ? this._userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
   }
 
   public async generate(order: Order): Promise<CustomerItem[]> {

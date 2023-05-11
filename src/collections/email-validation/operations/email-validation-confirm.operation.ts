@@ -9,6 +9,7 @@ import { SEResponseHandler } from "../../../response/se.response.handler";
 import { isNullOrUndefined } from "util";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { SystemUser } from "../../../auth/permission/permission.service";
+import { BlCollectionName } from "../../bl-collection";
 
 export class EmailValidationConfirmOperation implements Operation {
   private _emailValidationStorage: BlDocumentStorage<EmailValidation>;
@@ -22,11 +23,14 @@ export class EmailValidationConfirmOperation implements Operation {
   ) {
     this._emailValidationStorage = emailValidationStorage
       ? emailValidationStorage
-      : new BlDocumentStorage("email_validations", emailValidationSchema);
+      : new BlDocumentStorage(
+          BlCollectionName.EmailValidations,
+          emailValidationSchema
+        );
     this._resHandler = resHandler ? resHandler : new SEResponseHandler();
     this._userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
   }
 
   run(

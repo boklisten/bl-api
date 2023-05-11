@@ -7,6 +7,7 @@ import { OrderItemRentValidator } from "./order-item-rent-validator/order-item-r
 import { OrderFieldValidator } from "../order-field-validator/order-field-validator";
 import { PriceService } from "../../../../../price/price.service";
 import { OrderItemPartlyPaymentValidator } from "./order-item-partly-payment-validator/order-item-partly-payment-validator";
+import { BlCollectionName } from "../../../../bl-collection";
 
 export class OrderItemValidator {
   private orderItemFieldValidator: OrderFieldValidator;
@@ -27,7 +28,7 @@ export class OrderItemValidator {
     orderItemPartlyPaymentValidator?: OrderItemPartlyPaymentValidator
   ) {
     this.itemStorage =
-      itemStorage ?? new BlDocumentStorage("items", itemSchema);
+      itemStorage ?? new BlDocumentStorage(BlCollectionName.Items, itemSchema);
 
     this.orderItemFieldValidator =
       orderItemFieldValidator ?? new OrderFieldValidator();

@@ -1,11 +1,11 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { passwordResetSchema } from "./password-reset.schema";
 import { PasswordResetPostHook } from "./hooks/password-reset-post.hook";
 import { PasswordResetOperation } from "./operations/password-reset.operation";
 import { PasswordResetNewOperation } from "./operations/password-reset-new.operation";
 
 export class PasswordResetCollection implements BlCollection {
-  public collectionName = "passwordresets";
+  public collectionName = BlCollectionName.PasswordResets;
   public mongooseSchema = passwordResetSchema;
   public endpoints: BlEndpoint[] = [
     {

@@ -19,16 +19,23 @@ import { itemSchema } from "../../item/item.schema";
 import { DeliveryPostHook } from "./delivery.post.hook";
 import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
 import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("DeliveryPostHook", () => {
   const deliveryStorage = new BlDocumentStorage<Delivery>(
-    "deliveries",
+    BlCollectionName.Deliveries,
     deliverySchema
   );
-  const orderStorage = new BlDocumentStorage<Order>("orders", orderSchema);
-  const itemStorage = new BlDocumentStorage<Item>("items", itemSchema);
+  const orderStorage = new BlDocumentStorage<Order>(
+    BlCollectionName.Orders,
+    orderSchema
+  );
+  const itemStorage = new BlDocumentStorage<Item>(
+    BlCollectionName.Items,
+    itemSchema
+  );
   const deliveryValidator = new DeliveryValidator();
   const deliveryHandler = new DeliveryHandler();
   const deliveryPostHook = new DeliveryPostHook(

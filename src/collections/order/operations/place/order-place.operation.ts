@@ -20,6 +20,7 @@ import { OrderValidator } from "../../helpers/order-validator/order-validator";
 import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
 import { OrderItemType } from "@boklisten/bl-model/dist/order/order-item/order-item-type";
+import { BlCollectionName } from "../../../bl-collection";
 
 export class OrderPlaceOperation implements Operation {
   private _queryBuilder: SEDbQueryBuilder;
@@ -43,11 +44,14 @@ export class OrderPlaceOperation implements Operation {
 
     this._orderStorage = this._orderStorage
       ? this._orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
+      : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
 
     this._customerItemStorage = this._customerItemStorage
       ? this._customerItemStorage
-      : new BlDocumentStorage("customeritems", customerItemSchema);
+      : new BlDocumentStorage(
+          BlCollectionName.CustomerItems,
+          customerItemSchema
+        );
 
     this._orderPlacedHandler = this._orderPlacedHandler
       ? this._orderPlacedHandler
@@ -59,7 +63,7 @@ export class OrderPlaceOperation implements Operation {
 
     this._userDetailStorage = this._userDetailStorage
       ? this._userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
 
     this._queryBuilder = new SEDbQueryBuilder();
   }

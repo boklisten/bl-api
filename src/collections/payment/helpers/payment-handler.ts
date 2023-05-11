@@ -11,6 +11,7 @@ import { DibsPaymentService } from "../../../payment/dibs/dibs-payment.service";
 import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
 import { PaymentDibsConfirmer } from "./dibs/payment-dibs-confirmer";
 import { deliverySchema } from "../../delivery/delivery.schema";
+import { BlCollectionName } from "../../bl-collection";
 
 export class PaymentHandler {
   private paymentStorage: BlDocumentStorage<Payment>;
@@ -24,13 +25,13 @@ export class PaymentHandler {
   ) {
     this.paymentStorage = paymentStorage
       ? paymentStorage
-      : new BlDocumentStorage("payments", paymentSchema);
+      : new BlDocumentStorage(BlCollectionName.Payments, paymentSchema);
     this._paymentDibsConfirmer = _paymentDibsConfirmer
       ? _paymentDibsConfirmer
       : new PaymentDibsConfirmer();
     this._deliveryStorage = _deliveryStorage
       ? _deliveryStorage
-      : new BlDocumentStorage("deliveries", deliverySchema);
+      : new BlDocumentStorage(BlCollectionName.Deliveries, deliverySchema);
   }
 
   public async confirmPayments(

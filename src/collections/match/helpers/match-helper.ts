@@ -9,11 +9,12 @@ import {
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { itemSchema } from "../../item/item.schema";
+import { BlCollectionName } from "../../bl-collection";
 
 export class MatchHelper {
   constructor(private itemStorage?: BlDocumentStorage<Item>) {
     this.itemStorage =
-      itemStorage ?? new BlDocumentStorage("items", itemSchema);
+      itemStorage ?? new BlDocumentStorage(BlCollectionName.Items, itemSchema);
   }
 
   public async convertOrderItemsToMatchItems(

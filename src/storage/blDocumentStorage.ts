@@ -5,13 +5,17 @@ import { BlStorageHandler } from "./blStorageHandler";
 import { MongoDbBlStorageHandler } from "./mongoDb/mongoDb.blStorageHandler";
 import { SEDbQuery } from "../query/se.db-query";
 import { NestedDocument } from "./nested-document";
+import { BlCollectionName } from "../collections/bl-collection";
 
 export class BlDocumentStorage<T extends BlDocument>
   implements BlStorageHandler<T>
 {
   private mongoDbHandler: MongoDbBlStorageHandler<T>;
 
-  constructor(private collectionName: string, private mongooseSchema?: any) {
+  constructor(
+    private collectionName: BlCollectionName,
+    private mongooseSchema?: any
+  ) {
     if (mongooseSchema) {
       this.mongoDbHandler = new MongoDbBlStorageHandler(
         collectionName,

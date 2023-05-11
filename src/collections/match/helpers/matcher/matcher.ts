@@ -18,6 +18,7 @@ import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 import { orderSchema } from "../../../order/order.schema";
 import moment, { Moment } from "moment";
 import { matchSchema } from "../../match.schema";
+import { BlCollectionName } from "../../../bl-collection";
 
 // branch id in PROD : 5b6442ebd2e733002fae8a31
 // branch id in DEV :
@@ -36,16 +37,19 @@ export class Matcher {
   ) {
     this.matchStorage = matchStorage
       ? matchStorage
-      : new BlDocumentStorage("matches", matchSchema);
+      : new BlDocumentStorage(BlCollectionName.Matches, matchSchema);
     this.userDetailStorage =
       userDetailStorage ??
-      new BlDocumentStorage("userdetails", userDetailSchema);
+      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
     this.orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
+      : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
     this.deliveryStorage = this.deliveryStorage
       ? this.deliveryStorage
-      : new BlDocumentStorage<Delivery>("deliveries", deliverySchema);
+      : new BlDocumentStorage<Delivery>(
+          BlCollectionName.Deliveries,
+          deliverySchema
+        );
 
     this.matchUpdater = this.matchUpdater
       ? this.matchUpdater

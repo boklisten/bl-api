@@ -15,7 +15,7 @@ import { MatchFinder } from "./match-finder";
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-const matchStorage = new BlDocumentStorage<Match>("matches");
+const matchStorage = new BlDocumentStorage<Match>(BlCollectionName.Matches);
 const matchGetAllStub = sinon.stub(matchStorage, "getAll");
 const matchFinder = new MatchFinder(matchStorage);
 

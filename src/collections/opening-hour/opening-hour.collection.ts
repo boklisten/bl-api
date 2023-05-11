@@ -1,8 +1,8 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { openingHourSchema } from "./opening-hour.schema";
 
 export class OpeningHourCollection implements BlCollection {
-  collectionName = "openinghours";
+  collectionName = BlCollectionName.OpeningHours;
   mongooseSchema = openingHourSchema;
   endpoints: BlEndpoint[] = [
     {

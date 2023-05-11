@@ -10,6 +10,7 @@ import { SaltGenerator } from "./salt/salt-generator";
 import { SeCrypto } from "../../crypto/se.crypto";
 import { SystemUser } from "../permission/permission.service";
 import { LocalLoginCreator } from "./local-login-creator/local-login-creator";
+import { BlCollectionName } from "../../collections/bl-collection";
 
 export class LocalLoginHandler {
   private localLoginStorage: BlDocumentStorage<LocalLogin>;
@@ -25,7 +26,7 @@ export class LocalLoginHandler {
     this._seCrypto = new SeCrypto();
     this.localLoginStorage = localLoginStorage
       ? localLoginStorage
-      : new BlDocumentStorage("locallogins", localLoginSchema);
+      : new BlDocumentStorage(BlCollectionName.LocalLogins, localLoginSchema);
     this._hashedPasswordGenerator = hashedPasswordGenerator
       ? hashedPasswordGenerator
       : new HashedPasswordGenerator(new SaltGenerator(), this._seCrypto);

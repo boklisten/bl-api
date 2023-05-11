@@ -11,14 +11,17 @@ import { CustomerItemHandler } from "./customer-item-handler";
 import { SystemUser } from "../../../auth/permission/permission.service";
 import { SEDbQuery } from "../../../query/se.db-query";
 import mongoose from "mongoose";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("CustomerItemHandler", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    "customeritems"
+    BlCollectionName.CustomerItems
   );
-  const branchStorage = new BlDocumentStorage<Branch>("branches");
+  const branchStorage = new BlDocumentStorage<Branch>(
+    BlCollectionName.Branches
+  );
   const customerItemHandler = new CustomerItemHandler(
     customerItemStorage,
     branchStorage

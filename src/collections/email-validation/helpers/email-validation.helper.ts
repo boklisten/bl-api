@@ -5,6 +5,7 @@ import { EmailValidation } from "../email-validation";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { emailValidationSchema } from "../email-validation.schema";
 import { SystemUser } from "../../../auth/permission/permission.service";
+import { BlCollectionName } from "../../bl-collection";
 
 export class EmailValidationHelper {
   private _messenger: Messenger;
@@ -19,10 +20,13 @@ export class EmailValidationHelper {
     this._messenger = messenger ? messenger : new Messenger();
     this._userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
     this._emailValidationStorage = emailValidationStorage
       ? emailValidationStorage
-      : new BlDocumentStorage("email_validations", emailValidationSchema);
+      : new BlDocumentStorage(
+          BlCollectionName.EmailValidations,
+          emailValidationSchema
+        );
   }
 
   public createAndSendEmailValidationLink(

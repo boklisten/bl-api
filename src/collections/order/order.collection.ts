@@ -1,5 +1,6 @@
 import {
   BlCollection,
+  BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
 } from "../bl-collection";
@@ -13,7 +14,7 @@ import { OrderPlaceOperation } from "./operations/place/order-place.operation";
 import { OrderConfirmOperation } from "./operations/confirm/order-confirm.operation";
 
 export class OrderCollection implements BlCollection {
-  collectionName = "orders";
+  collectionName = BlCollectionName.Orders;
   mongooseSchema = orderSchema;
   documentPermission: BlDocumentPermission = {
     viewableForPermission: "employee",
@@ -65,7 +66,7 @@ export class OrderCollection implements BlCollection {
         {
           field: "customer",
           mongooseSchema: userDetailSchema,
-          collection: "userDetails",
+          collection: BlCollectionName.UserDetails,
         },
       ],
       restriction: {
@@ -99,7 +100,7 @@ export class OrderCollection implements BlCollection {
       nestedDocuments: [
         {
           field: "customer",
-          collection: "userdetails",
+          collection: BlCollectionName.UserDetails,
           mongooseSchema: userDetailSchema,
         },
       ],

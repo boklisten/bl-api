@@ -18,6 +18,7 @@ import { DibsPaymentService } from "../../../payment/dibs/dibs-payment.service";
 import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
 import { PaymentDibsConfirmer } from "./dibs/payment-dibs-confirmer";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -28,11 +29,15 @@ describe("PaymentHandler", () => {
   let testOrder: Order;
   let testAccessToken: AccessToken;
   let userDetailHelperDibsPaymentUpdateSuccess: boolean;
-  const paymentStorage = new BlDocumentStorage<Payment>("payments");
+  const paymentStorage = new BlDocumentStorage<Payment>(
+    BlCollectionName.Payments
+  );
   const dibsPaymentService = new DibsPaymentService();
   const userDetailHelper = new UserDetailHelper();
   const paymentDibsConfirmer = new PaymentDibsConfirmer(dibsPaymentService);
-  const deliveryStorage = new BlDocumentStorage<Delivery>("deliveries");
+  const deliveryStorage = new BlDocumentStorage<Delivery>(
+    BlCollectionName.Deliveries
+  );
   const paymentHandler = new PaymentHandler(
     paymentStorage,
     dibsPaymentService,

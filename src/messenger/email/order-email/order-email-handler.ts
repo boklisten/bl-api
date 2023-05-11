@@ -21,6 +21,7 @@ import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-ea
 import moment = require("moment-timezone");
 import { branchSchema } from "../../../collections/branch/branch.schema";
 import { dateService } from "../../../blc/date.service";
+import { BlCollectionName } from "../../../collections/bl-collection";
 
 export class OrderEmailHandler {
   private defaultCurrency = "NOK";
@@ -41,13 +42,13 @@ export class OrderEmailHandler {
   ) {
     this._deliveryStorage = _deliveryStorage
       ? _deliveryStorage
-      : new BlDocumentStorage("deliveries", deliverySchema);
+      : new BlDocumentStorage(BlCollectionName.Deliveries, deliverySchema);
     this._paymentStorage = _paymentStorage
       ? _paymentStorage
-      : new BlDocumentStorage("payments", paymentSchema);
+      : new BlDocumentStorage(BlCollectionName.Payments, paymentSchema);
     this._branchStorage = _branchStorage
       ? _branchStorage
-      : new BlDocumentStorage("branches", branchSchema);
+      : new BlDocumentStorage(BlCollectionName.Branches, branchSchema);
   }
 
   public async sendOrderReceipt(

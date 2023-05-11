@@ -14,11 +14,14 @@ import { UniqueItemActiveOperation } from "./unique-item-active.operation";
 import { SEResponseHandler } from "../../../response/se.response.handler";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { UniqueItem } from "@boklisten/bl-model";
+import { BlCollectionName } from "../../bl-collection";
 
 describe("UniqueItemActiveOperation", () => {
   describe("run()", () => {
     const customerItemActiveBlid = new CustomerItemActiveBlid();
-    const uniqueItemStorage = new BlDocumentStorage<UniqueItem>("uniqueitems");
+    const uniqueItemStorage = new BlDocumentStorage<UniqueItem>(
+      BlCollectionName.UniqueItems
+    );
 
     const getActiveCustomerItemsStub = sinon.stub(
       customerItemActiveBlid,

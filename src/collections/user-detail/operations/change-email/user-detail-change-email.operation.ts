@@ -12,6 +12,7 @@ import { UserSchema } from "../../../user/user.schema";
 import { LocalLogin } from "../../../local-login/local-login";
 import { localLoginSchema } from "../../../local-login/local-login.schema";
 import { UserHandler } from "../../../../auth/user/user.handler";
+import { BlCollectionName } from "../../../bl-collection";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const emailValidator = require("validator");
 
@@ -27,13 +28,13 @@ export class UserDetailChangeEmailOperation implements Operation {
   ) {
     this._userDetailStorage = _userDetailStorage
       ? _userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
     this._userStorage = _userStorage
       ? _userStorage
-      : new BlDocumentStorage("users", UserSchema);
+      : new BlDocumentStorage(BlCollectionName.Users, UserSchema);
     this._localLoginStorage = _localLoginStorage
       ? _localLoginStorage
-      : new BlDocumentStorage("locallogins", localLoginSchema);
+      : new BlDocumentStorage(BlCollectionName.LocalLogins, localLoginSchema);
     this._userHandler = _userHandler ? _userHandler : new UserHandler();
     this._resHandler = _resHandler ? _resHandler : new SEResponseHandler();
     this._permissionService = new PermissionService();

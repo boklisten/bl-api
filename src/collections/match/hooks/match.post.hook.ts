@@ -5,6 +5,7 @@ import { matchSchema } from "../match.schema";
 import { customerItemSchema } from "../../customer-item/customer-item.schema";
 import { MatchUpdater } from "../helpers/match-updater/match-updater";
 import { User } from "../../user/user";
+import { BlCollectionName } from "../../bl-collection";
 
 export class MatchPostHook implements Hook {
   constructor(
@@ -14,10 +15,13 @@ export class MatchPostHook implements Hook {
   ) {
     this.customerItemStorage = customerItemStorage
       ? customerItemStorage
-      : new BlDocumentStorage("customeritems", customerItemSchema);
+      : new BlDocumentStorage(
+          BlCollectionName.CustomerItems,
+          customerItemSchema
+        );
     this.matchStorage = matchStorage
       ? matchStorage
-      : new BlDocumentStorage("matches", matchSchema);
+      : new BlDocumentStorage(BlCollectionName.Matches, matchSchema);
     this.matchUpdater = this.matchUpdater
       ? this.matchUpdater
       : new MatchUpdater();

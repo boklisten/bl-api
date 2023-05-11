@@ -14,11 +14,14 @@ import { User } from "../../user/user";
 import { isNullOrUndefined } from "util";
 import { SeCrypto } from "../../../crypto/se.crypto";
 import { Messenger } from "../../../messenger/messenger";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("PasswordResetPostHook", () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
   const userHandler = new UserHandler();
   const seCrypto = new SeCrypto();
   const messenger = new Messenger();

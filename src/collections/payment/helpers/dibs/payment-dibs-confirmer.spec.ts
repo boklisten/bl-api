@@ -11,6 +11,7 @@ import { PaymentDibsConfirmer } from "./payment-dibs-confirmer";
 import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.service";
 import { DibsEasyPayment } from "../../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { UserDetailHelper } from "../../../user-detail/helpers/user-detail.helper";
+import { BlCollectionName } from "../../../bl-collection";
 chai.use(chaiAsPromised);
 
 describe("PaymentDibsConfirmer", () => {
@@ -19,7 +20,9 @@ describe("PaymentDibsConfirmer", () => {
     dibsPaymentService,
     "fetchDibsPaymentData"
   );
-  const paymentStorage = new BlDocumentStorage<Payment>("payments");
+  const paymentStorage = new BlDocumentStorage<Payment>(
+    BlCollectionName.Payments
+  );
   const paymentDibsConfirmer = new PaymentDibsConfirmer(
     dibsPaymentService,
     paymentStorage

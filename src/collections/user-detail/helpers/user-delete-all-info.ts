@@ -5,6 +5,7 @@ import { LocalLogin } from "../../local-login/local-login";
 import { localLoginSchema } from "../../local-login/local-login.schema";
 import { AccessToken, BlError } from "@boklisten/bl-model";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlCollectionName } from "../../bl-collection";
 
 export class UserDeleteAllInfo {
   private queryBuilder: SEDbQueryBuilder;
@@ -14,10 +15,10 @@ export class UserDeleteAllInfo {
   ) {
     this.userStorage = this.userStorage
       ? this.userStorage
-      : new BlDocumentStorage("users", UserSchema);
+      : new BlDocumentStorage(BlCollectionName.Users, UserSchema);
     this.localLoginStorage = this.localLoginStorage
       ? this.localLoginStorage
-      : new BlDocumentStorage("locallogins", localLoginSchema);
+      : new BlDocumentStorage(BlCollectionName.LocalLogins, localLoginSchema);
     this.queryBuilder = new SEDbQueryBuilder();
   }
 

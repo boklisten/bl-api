@@ -9,11 +9,14 @@ import { AccessToken, BlError, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { UserDetailHelper } from "./user-detail.helper";
 import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("UserDetailHelper", () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
   const userDetailHelper = new UserDetailHelper(userDetailStorage);
 
   let testUserDetail: UserDetail;

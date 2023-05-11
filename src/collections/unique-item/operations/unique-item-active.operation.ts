@@ -6,6 +6,7 @@ import { SEResponseHandler } from "../../../response/se.response.handler";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { UniqueItem, BlapiResponse, BlError } from "@boklisten/bl-model";
 import { uniqueItemSchema } from "../unique-item.schema";
+import { BlCollectionName } from "../../bl-collection";
 
 export class UniqueItemActiveOperation implements Operation {
   constructor(
@@ -18,7 +19,7 @@ export class UniqueItemActiveOperation implements Operation {
       : new CustomerItemActiveBlid();
     this.uniqueItemStorage = uniqueItemStorage
       ? uniqueItemStorage
-      : new BlDocumentStorage("uniqueitems", uniqueItemSchema);
+      : new BlDocumentStorage(BlCollectionName.UniqueItems, uniqueItemSchema);
     this.resHandler = resHandler ? resHandler : new SEResponseHandler();
   }
 

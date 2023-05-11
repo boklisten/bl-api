@@ -10,6 +10,7 @@ import { OpeningHourHelper } from "../../../opening-hour/helpers/opening-hour-he
 import { User } from "../../../user/user";
 import { Moment } from "moment";
 import { CustomerItemActiveBlid } from "../../../customer-item/helpers/customer-item-active-blid";
+import { BlCollectionName } from "../../../bl-collection";
 
 export class MatchUpdater {
   constructor(
@@ -22,7 +23,7 @@ export class MatchUpdater {
       : new CustomerItemActiveBlid();
     this.matchStorage = this.matchStorage
       ? this.matchStorage
-      : new BlDocumentStorage<Match>("matches", matchSchema);
+      : new BlDocumentStorage<Match>(BlCollectionName.Matches, matchSchema);
 
     this.openingHourHelper = this.openingHourHelper
       ? this.openingHourHelper

@@ -22,7 +22,7 @@ chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-  "customeritems"
+  BlCollectionName.CustomerItems
 );
 
 const matchHelper = new MatchHelper();

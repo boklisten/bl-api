@@ -1,5 +1,6 @@
 import {
   BlCollection,
+  BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
 } from "../bl-collection";
@@ -9,7 +10,7 @@ import { PaymentPatchHook } from "./hooks/payment.patch.hook";
 import { PaymentGetAllHook } from "./hooks/payment.get-all.hook";
 
 export class PaymentCollection implements BlCollection {
-  public collectionName = "payments";
+  public collectionName = BlCollectionName.Payments;
   public mongooseSchema = paymentSchema;
   documentPermission: BlDocumentPermission = {
     viewableForPermission: "employee",

@@ -3,6 +3,7 @@ import { isNullOrUndefined } from "util";
 import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
 import { orderSchema } from "../../../../order.schema";
 import { OrderItemRentPeriodValidator } from "./order-item-rent-period-validator/order-item-rent-period-validator";
+import { BlCollectionName } from "../../../../../bl-collection";
 
 export class OrderItemRentValidator {
   private orderItemRentPeriodValidator: OrderItemRentPeriodValidator;
@@ -10,7 +11,7 @@ export class OrderItemRentValidator {
   constructor(private _orderStorage?: BlDocumentStorage<Order>) {
     this._orderStorage = _orderStorage
       ? _orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
+      : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
     this.orderItemRentPeriodValidator = new OrderItemRentPeriodValidator();
   }
 

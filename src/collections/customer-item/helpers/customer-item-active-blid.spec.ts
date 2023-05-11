@@ -18,11 +18,12 @@ import {
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { CustomerItemActiveBlid } from "./customer-item-active-blid";
+import { BlCollectionName } from "../../bl-collection";
 chai.use(chaiAsPromised);
 
 describe("CustomerItemActiveBlid", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    "customeritems"
+    BlCollectionName.CustomerItems
   );
 
   const getByQueryCustomerItemStub = sinon.stub(

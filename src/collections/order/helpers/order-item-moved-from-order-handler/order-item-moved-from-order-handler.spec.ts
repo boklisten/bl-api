@@ -8,11 +8,12 @@ import sinon from "sinon";
 import { BlError, Order } from "@boklisten/bl-model";
 import { OrderItemMovedFromOrderHandler } from "./order-item-moved-from-order-handler";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("OrderItemMovedFromOrderHandler", () => {
-  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const oiMovedFromOrderHandler = new OrderItemMovedFromOrderHandler(
     orderStorage
   );

@@ -1,6 +1,7 @@
 import { OrderItem, CustomerItem, BlError, Branch } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
 import { customerItemSchema } from "../../../../../customer-item/customer-item.schema";
+import { BlCollectionName } from "../../../../../bl-collection";
 
 export class OrderItemExtendValidator {
   private customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -8,7 +9,10 @@ export class OrderItemExtendValidator {
   constructor(customerItemStorage?: BlDocumentStorage<CustomerItem>) {
     this.customerItemStorage = customerItemStorage
       ? customerItemStorage
-      : new BlDocumentStorage("customeritems", customerItemSchema);
+      : new BlDocumentStorage(
+          BlCollectionName.CustomerItems,
+          customerItemSchema
+        );
   }
 
   public async validate(

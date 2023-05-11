@@ -5,6 +5,7 @@ import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import { branchSchema } from "../../collections/branch/branch.schema";
 import { DateService } from "../../blc/date.service";
 import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
+import { BlCollectionName } from "../../collections/bl-collection";
 
 export class BookingEmailService {
   private emailService: EmailService;
@@ -15,12 +16,18 @@ export class BookingEmailService {
 
   constructor() {
     this.emailService = new EmailService();
-    this.messageStorage = new BlDocumentStorage("messages", messageSchema);
+    this.messageStorage = new BlDocumentStorage(
+      BlCollectionName.Messages,
+      messageSchema
+    );
     this.userDetailStorage = new BlDocumentStorage(
-      "userDetails",
+      BlCollectionName.UserDetails,
       userDetailSchema
     );
-    this.branchStorage = new BlDocumentStorage("branches", branchSchema);
+    this.branchStorage = new BlDocumentStorage(
+      BlCollectionName.Branches,
+      branchSchema
+    );
     this.dateService = new DateService();
   }
 

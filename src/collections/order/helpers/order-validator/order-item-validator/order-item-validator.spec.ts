@@ -12,13 +12,16 @@ import { OrderItemRentValidator } from "./order-item-rent-validator/order-item-r
 import { OrderItemBuyValidator } from "./order-item-buy-validator/order-item-buy-validator";
 import { OrderItemExtendValidator } from "./order-item-extend-validator/order-item-extend-validator";
 import { OrderFieldValidator } from "../order-field-validator/order-field-validator";
+import { BlCollectionName } from "../../../../bl-collection";
 chai.use(chaiAsPromised);
 
 describe("OrderItemValidator", () => {
   const branchStorage: BlDocumentStorage<Branch> = new BlDocumentStorage(
-    "branches"
+    BlCollectionName.Branches
   );
-  const itemStorage: BlDocumentStorage<Item> = new BlDocumentStorage("items");
+  const itemStorage: BlDocumentStorage<Item> = new BlDocumentStorage(
+    BlCollectionName.Items
+  );
   const orderItemFieldValidator = new OrderFieldValidator();
   const orderItemRentValidator = new OrderItemRentValidator();
   const orderItemBuyValidator = new OrderItemBuyValidator();
