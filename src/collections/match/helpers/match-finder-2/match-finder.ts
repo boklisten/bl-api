@@ -124,7 +124,7 @@ export class MatchFinder {
       return;
     }
 
-    const existingMatch = [...this.matches].find(
+    const existingMatch = this.matches.find(
       (match) =>
         match.type === MatchTypes.StandDeliveryMatch &&
         match.senderId === sender.id
