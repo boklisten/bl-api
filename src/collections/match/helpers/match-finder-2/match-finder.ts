@@ -57,9 +57,8 @@ export class MatchFinder {
   }
 
   /**
-   * Find full matches for all eligible senders with a given matchMethod.
-   * Append the created matches to the list of matches, and remove the matched items and users.
-   * and if so with whom
+   * Create matches for senders fround from a given matchFinder function
+   * Create delivery matches for unmatchable items
    * @param matchFinder a function that finds a match for a given sender
    * @param senders the senders to be matched
    * @param sortedSenderGroups sender groups required for partial matching
