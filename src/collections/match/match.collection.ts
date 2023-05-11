@@ -1,6 +1,6 @@
 import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { matchSchema } from "./match.schema";
-import { MatchPostHook } from "./hooks/match.post.hook";
+import { MatchGenerateHook } from "./hooks/match.post.generate.hook";
 
 export class MatchCollection implements BlCollection {
   public collectionName = BlCollectionName.Matches;
@@ -8,7 +8,16 @@ export class MatchCollection implements BlCollection {
   public endpoints: BlEndpoint[] = [
     {
       method: "post",
-      hook: new MatchPostHook(),
+      operations: [
+        {
+          name: "generate",
+          operation: new MatchGenerateHook(),
+          restriction: {permissions: ["admin"]},
+        }
+      ],
+      restriction: {
+        permissions: ["super"],
+      },
     },
     {
       method: "patch",
@@ -18,7 +27,12 @@ export class MatchCollection implements BlCollection {
       restriction: {
         permissions: ["customer", "employee", "admin", "super"],
       },
-      validQueryParams: [{ fieldName: "sender.customerId", type: "object-id" }],
+      validQueryParams: [
+        { fieldName: "_variant", type: "string" },
+        { fieldName: "sender", type: "object-id" },
+        { fieldName: "receiver", type: "object-id" },
+        { fieldName: "customer", type: "object-id" },
+      ],
     },
     {
       method: "getId",

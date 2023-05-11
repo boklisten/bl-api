@@ -12,7 +12,6 @@ import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 import { Messenger } from "../../../../messenger/messenger";
 import { CustomerItemHandler } from "../../../customer-item/helpers/customer-item-handler";
 import { OrderItemMovedFromOrderHandler } from "../order-item-moved-from-order-handler/order-item-moved-from-order-handler";
-import { Matcher } from "../../../match/helpers/matcher/matcher";
 import { BlCollectionName } from "../../../bl-collection";
 
 export class OrderPlacedHandler {
@@ -30,8 +29,7 @@ export class OrderPlacedHandler {
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     messenger?: Messenger,
     customerItemHandler?: CustomerItemHandler,
-    orderItemMovedFromOrderHandler?: OrderItemMovedFromOrderHandler,
-    private _matcher?: Matcher
+    orderItemMovedFromOrderHandler?: OrderItemMovedFromOrderHandler
   ) {
     this.orderStorage =
       orderStorage ??
@@ -45,8 +43,6 @@ export class OrderPlacedHandler {
       customerItemHandler ?? new CustomerItemHandler();
     this._orderItemMovedFromOrderHandler =
       orderItemMovedFromOrderHandler ?? new OrderItemMovedFromOrderHandler();
-
-    this._matcher = this._matcher ?? new Matcher();
   }
 
   public async placeOrder(

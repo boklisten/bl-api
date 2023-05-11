@@ -200,9 +200,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   }
 
   public addMany(docs: T[]): Promise<T[]> {
-    return new Promise((resolve, reject) => {
-      reject(new BlError("not implemented"));
-    });
+    return this.mongooseModel.insertMany(docs)
   }
 
   public update(
