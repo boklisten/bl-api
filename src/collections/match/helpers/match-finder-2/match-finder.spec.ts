@@ -317,7 +317,7 @@ describe("Partly User Match", () => {
     );
   });
 
-  it("should be able to fully and partly match some ordered users, leaving some receivers craving for more", () => {
+  it("should be able to fully and partly match some ordered users, leaving some receivers to match with stand", () => {
     const senderGroupA = createUserGroup("sender-A", 3, "A");
     const senderGroupB = createUserGroup("sender-B", 4, "B");
     const senderGroupC = createUserGroup("sender-C", 5, "A", "B");
@@ -348,7 +348,7 @@ describe("Partly User Match", () => {
     expect(matches.length).to.equal(14);
   });
 
-  it("should be able to fully and partly match some shuffled users, leaving some receivers craving for more", () => {
+  it("should be able to fully and partly match some shuffled users, leaving some receivers to match with stand", () => {
     const shuffle = shuffler(seededRandom(12345));
     const senderGroupA = createUserGroup("sender-A", 3, "A");
     const senderGroupB = createUserGroup("sender-B", 4, "B");
@@ -540,9 +540,7 @@ describe("Large User Groups", () => {
 
     const groupedUsers = groupMatchesByUser(matches);
 
-    if (groupedUsers.length > 0) {
-      expect(groupedUsers[0]?.matches.length).to.be.lessThanOrEqual(3);
-    }
+    expect(groupedUsers[0]?.matches.length).to.be.lessThanOrEqual(3);
 
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
       testUsersYear0.length * 1.1
