@@ -97,8 +97,8 @@ export class MatchFinder {
   /**
    * Identifies items that cannot be matched
    * (no one wants them, or no one has them) and creates stand matches for them.
-   * For each sender, a StandDeliveryMatch is created for the unmatchable items.
-   * For each receiver, a StandPickupMatch is created for the intersection of their items and the unmatchable receiver items.
+   * For each sender, a StandDeliveryMatch is created for the unmatchable sender items.
+   * For each receiver, a StandPickupMatch is created for the unmatchable receiver items.
    * @private
    */
   private standMatchUnmatchableItems() {
@@ -117,7 +117,7 @@ export class MatchFinder {
     for (const receiver of this.receivers) {
       this.createStandMatch(
         receiver,
-        intersect(receiver.items, unmatchableReceiverItems),
+        unmatchableReceiverItems,
         MatchTypes.StandPickupMatch
       );
     }
