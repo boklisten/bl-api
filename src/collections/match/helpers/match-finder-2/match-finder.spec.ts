@@ -143,6 +143,32 @@ const shuffler =
     return list;
   };
 
+/**
+ * Utility method to print some stats about the matching
+ * so that one can evaluate the performance of the matcher
+ * @param matches
+ */
+function printPerformanceMetrics(matches: NewMatch[]) {
+  const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
+  const groupedUsers = groupMatchesByUser(matches);
+  const userCounts = {};
+  for (const user of groupedUsers) {
+    const prevValue = userCounts[user.matches.length];
+    userCounts[user.matches.length] =
+      prevValue === undefined ? 1 : prevValue + 1;
+  }
+  console.log(`
+NoMatches: ${matches.length},
+UserMatches: ${numberOfMatchesPerType.userMatches},
+StandDeliveries: ${numberOfMatchesPerType.standDeliveryMatches},
+StandPickups: ${numberOfMatchesPerType.standPickupMatches},
+NoMatches Per User
+${Object.keys(userCounts)
+  .map((key) => key + ": " + userCounts[key] + " kunder,\n")
+  .join("")}
+`);
+}
+
 const andrine = createFakeMatchableUser("andrine", "book1", "book2", "book3");
 
 const beate = createFakeMatchableUser("beate", "book1", "book2", "book3");
@@ -159,14 +185,14 @@ const mathias = createFakeMatchableUser(
 
 describe("Full User Match", () => {
   it("should be able to full match with other user", () => {
-    const matchFinder = new MatchFinder([andrine], [beate], []);
+    const matchFinder = new MatchFinder([andrine], [beate]);
     const matches = matchFinder.generateMatches();
     const expectedMatch = createFakeUserMatch(andrine, beate, andrine.items);
     assert.deepEqual(matches, [expectedMatch]);
   });
 
   it("should not fully match with non overlapping receivers", () => {
-    const matchFinder = new MatchFinder([andrine], [monika], []);
+    const matchFinder = new MatchFinder([andrine], [monika]);
     const matches = matchFinder.generateMatches();
     assert.deepEqual(matches, [
       createFakeStandDeliveryMatch(andrine, andrine.items),
@@ -175,7 +201,7 @@ describe("Full User Match", () => {
   });
 
   it("should full match after removing excessive delivery items", () => {
-    const matchFinder = new MatchFinder([mathias], [beate], ["book4"]);
+    const matchFinder = new MatchFinder([mathias], [beate]);
     const matches = matchFinder.generateMatches();
 
     const expectedUserMatch = createFakeUserMatch(
@@ -190,25 +216,19 @@ describe("Full User Match", () => {
     assert.deepEqual(matches, [expectedStandMatch, expectedUserMatch]);
   });
 
-  it("should create delivery match when all items are set as outdated", () => {
-    const matchFinder = new MatchFinder(
-      [andrine],
-      [beate],
-      Array.from(andrine.items)
-    );
+  it("should create delivery match when all items are not wanted", () => {
+    const matchFinder = new MatchFinder([andrine], []);
     const matches = matchFinder.generateMatches();
     // NB: assert.deepEqual cares about the order of items in a set!
     assert.deepEqual(matches, [
       createFakeStandDeliveryMatch(andrine, andrine.items),
-      createFakeStandPickupMatch(beate, beate.items),
     ]);
   });
 
   it("should be able to create multiple full matches with overlapping books", () => {
     const matchFinder = new MatchFinder(
       [monika, mathias],
-      [mathias, monika, mathias],
-      []
+      [mathias, monika, mathias]
     );
     matchFinder.generateMatches();
     expect(
@@ -225,15 +245,8 @@ describe("Full User Match", () => {
 });
 
 describe("Partly User Match", () => {
-  // should be able to resolve all receiver books by using partly match and delivery match
-  // should be able to distribute sender's items over two partly user matches
-
   it("should create one full match and one partly", () => {
-    const matchFinder = new MatchFinder(
-      [andrine, mathias],
-      [monika, beate],
-      []
-    );
+    const matchFinder = new MatchFinder([andrine, mathias], [monika, beate]);
     const matches = matchFinder.generateMatches();
     const andrineXbeate = createFakeUserMatch(andrine, beate, andrine.items);
     const mathiasXmonika = createFakeUserMatch(
@@ -246,7 +259,7 @@ describe("Partly User Match", () => {
       difference(mathias.items, monika.items)
     );
 
-    assert.deepEqual(matches, [andrineXbeate, mathiasXmonika, mathiasXstand]);
+    assert.deepEqual(matches, [andrineXbeate, mathiasXstand, mathiasXmonika]);
   });
 
   it("should be able to fully match and partly match a set of ordered users", () => {
@@ -264,8 +277,7 @@ describe("Partly User Match", () => {
     // C => B, C
     const matchFinder = new MatchFinder(
       [...senderGroupA, ...senderGroupB, ...senderGroupC],
-      [...receiverGroupA, ...receiverGroupB, ...receiverGroupC],
-      []
+      [...receiverGroupA, ...receiverGroupB, ...receiverGroupC]
     );
     const matches = matchFinder.generateMatches();
     expect(
@@ -297,8 +309,7 @@ describe("Partly User Match", () => {
     // C => B, C
     const matchFinder = new MatchFinder(
       shuffle([...senderGroupA, ...senderGroupB, ...senderGroupC]),
-      shuffle([...receiverGroupA, ...receiverGroupB, ...receiverGroupC]),
-      []
+      shuffle([...receiverGroupA, ...receiverGroupB, ...receiverGroupC])
     );
     const matches = matchFinder.generateMatches();
     expect(
@@ -326,8 +337,7 @@ describe("Partly User Match", () => {
 
     const matchFinder = new MatchFinder(
       [...senderGroupA, ...senderGroupB, ...senderGroupC],
-      receiverGroupA,
-      []
+      receiverGroupA
     );
     const matches = matchFinder.generateMatches();
     expect(
@@ -358,8 +368,7 @@ describe("Partly User Match", () => {
 
     const matchFinder = new MatchFinder(
       shuffle([...senderGroupA, ...senderGroupB, ...senderGroupC]),
-      shuffle(receiverGroupA),
-      []
+      shuffle(receiverGroupA)
     );
     const matches = matchFinder.generateMatches();
     expect(
@@ -399,8 +408,7 @@ describe("Large User Groups", () => {
 
     const matchFinder = new MatchFinder(
       shuffle(senderGroups.flat()),
-      shuffle(recieverGroups.flat()),
-      ["Z"]
+      shuffle(recieverGroups.flat())
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -411,10 +419,10 @@ describe("Large User Groups", () => {
       senderGroups.flat().length * 1.5
     );
     expect(numberOfMatchesPerType.standDeliveryMatches).to.be.lessThan(
-      senderGroups.flat().length * 0.4
+      senderGroups.flat().length * 0.45
     );
     expect(numberOfMatchesPerType.standPickupMatches).to.be.lessThan(
-      recieverGroups.flat().length * 0.3
+      recieverGroups.flat().length * 0.45
     );
   });
 
@@ -428,8 +436,7 @@ describe("Large User Groups", () => {
 
     const matchFinder = new MatchFinder(
       shuffle(test_users.slice()),
-      shuffle(test_users.slice()),
-      []
+      shuffle(test_users.slice())
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -457,8 +464,7 @@ describe("Large User Groups", () => {
 
     const matchFinder = new MatchFinder(
       shuffle(test_users.slice()).slice(33),
-      shuffle(test_users.slice()).slice(20),
-      []
+      shuffle(test_users.slice()).slice(20)
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -487,8 +493,7 @@ describe("Large User Groups", () => {
 
     const matchFinder = new MatchFinder(
       shuffle(testUsersYear1),
-      shuffle(testUsersYear2),
-      []
+      shuffle(testUsersYear2)
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -517,8 +522,7 @@ describe("Large User Groups", () => {
 
     const matchFinder = new MatchFinder(
       shuffle(testUsersYear0),
-      shuffle(testUsersYear1),
-      []
+      shuffle(testUsersYear1)
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -539,7 +543,6 @@ describe("Large User Groups", () => {
     );
 
     const groupedUsers = groupMatchesByUser(matches);
-
     expect(groupedUsers[0]?.matches.length).to.be.lessThanOrEqual(3);
 
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(

@@ -1,17 +1,56 @@
-import { MatchableUser } from "./match-types";
-import { hasDifference, intersect } from "../set-methods";
+import { MatchableUser, MatchTypes, NewMatch } from "./match-types";
+import { difference, hasDifference, intersect } from "../set-methods";
 
 /**
- * Create a sorted deep copy of the input users. Sorted by number of items descending
+ * Create a sorted deep copy of the input users
  * @param users
  */
-export function copyAndSortUsers(users: MatchableUser[]): MatchableUser[] {
-  return users
-    .map((user) => ({
-      id: user.id,
-      items: new Set(user.items),
-    }))
-    .sort((a, b) => (a.items.size > b.items.size ? -1 : 1));
+export function copyUsers(users: MatchableUser[]): MatchableUser[] {
+  return users.map((user) => ({
+    id: user.id,
+    items: new Set(user.items),
+  }));
+}
+
+/**
+ * Sort users in place, by descending number of items
+ * @param users
+ */
+export function sortUsersNoItemsDescending(users: MatchableUser[]) {
+  users.sort((a, b) => (a.items.size > b.items.size ? -1 : 1));
+}
+
+/**
+ * Sort users by ascending number of items, and prioritize those that already have a standMatch
+ * @param users
+ * @param matches
+ */
+export function sortUsersNoItemsAscendingAndMatchesDescending(
+  users: MatchableUser[],
+  matches: NewMatch[]
+) {
+  const hasStandMatch = (user: MatchableUser) =>
+    matches.some(
+      (match) =>
+        (match.type === MatchTypes.StandDeliveryMatch &&
+          match.senderId === user.id) ||
+        (match.type === MatchTypes.StandPickupMatch &&
+          match.receiverId === user.id)
+    );
+
+  users.sort((a, b) => {
+    const aHasStandMatch = hasStandMatch(a);
+    const bHasStandMatch = hasStandMatch(b);
+    if (aHasStandMatch && !bHasStandMatch) {
+      return -1;
+    }
+
+    if (!aHasStandMatch && !bHasStandMatch) {
+      return 1;
+    }
+
+    return a.items.size > b.items.size ? 1 : -1;
+  });
 }
 
 /**
@@ -126,4 +165,119 @@ export function tryFindPartialMatch(
   }
 
   return bestReceiver;
+}
+
+/**
+ * Create an overview of many of each item a list of users has or want
+ * @param users
+ */
+export function groupItemsByCount(users: MatchableUser[]): {
+  [key: string]: number;
+} {
+  return users.reduce((acc, next) => {
+    for (const item of next.items) {
+      acc[item] = item in acc ? acc[item] + 1 : 1;
+    }
+    return acc;
+  }, {});
+}
+
+/**
+ * Calculates the difference in count for each item between senders and receivers.
+ * @param groupedSenderItems - The grouped items of the senders.
+ * @param groupedReceiverItems - The grouped items of the receivers.
+ * @returns An object where the keys are the items and the values are the differences in counts.
+ * @throws If there is a missing key in the grouped items.
+ * @private
+ */
+export function calculateItemDifferences(
+  groupedSenderItems: { [key: string]: number },
+  groupedReceiverItems: { [key: string]: number }
+) {
+  return Object.keys(groupedReceiverItems).reduce((diff, item) => {
+    const senderItemCount = groupedSenderItems[item];
+    const receiverItemCount = groupedReceiverItems[item];
+
+    if (senderItemCount === undefined || receiverItemCount === undefined) {
+      throw new Error(
+        "Missing key in grouped items. Forgot to match unmatchable sender and receiver items?"
+      );
+    }
+
+    return {
+      ...diff,
+      [item]: senderItemCount - receiverItemCount,
+    };
+  }, {});
+}
+
+/**
+ * Checks if a full stand match can be made for a user
+ * @param user - The user to check
+ * @param itemDifferences - The differences in item counts
+ * @param matchType - The type of match to check
+ * @returns True if a full stand match can be made, false otherwise
+ * @private
+ *
+ **/
+export function canFullStandMatch(
+  user: MatchableUser,
+  itemDifferences: { [key: string]: number },
+  matchType: MatchTypes.StandDeliveryMatch | MatchTypes.StandPickupMatch
+) {
+  return Array.from(user.items).every((item) => {
+    return matchType === MatchTypes.StandDeliveryMatch
+      ? (itemDifferences[item] ?? 0) > 0
+      : (itemDifferences[item] ?? 0) < 0;
+  });
+}
+
+/**
+ * Updates the difference count for each item of a user
+ * @param items - The items to update the difference for
+ * @param itemDifferences - The differences in item counts
+ * @param matchType - The type of match that has been made
+ * @private
+ */
+export function updateItemDifferences(
+  items: Set<string>,
+  itemDifferences: { [key: string]: number },
+  matchType: MatchTypes.StandDeliveryMatch | MatchTypes.StandPickupMatch
+) {
+  const modifier = matchType === MatchTypes.StandDeliveryMatch ? -1 : 1;
+
+  for (const item of items) {
+    itemDifferences[item] = (itemDifferences[item] ?? 0) + modifier;
+  }
+}
+
+/**
+ * Calculate which items have no overlap between sender and receivers.
+ * Aka. either no one wants the items, or no one has the items
+ * @param senders
+ * @param receivers
+ */
+export function calculateUnmatchableItems(
+  senders: MatchableUser[],
+  receivers: MatchableUser[]
+): {
+  unmatchableSenderItems: Set<string>;
+  unmatchableReceiverItems: Set<string>;
+} {
+  const requiredSenderItems = new Set(
+    senders.flatMap((user) => [...user.items])
+  );
+  const requiredReceiverItems = new Set(
+    receivers.flatMap((user) => [...user.items])
+  );
+  const unmatchableSenderItems = difference(
+    requiredSenderItems,
+    requiredReceiverItems
+  );
+  const unmatchableReceiverItems = difference(
+    requiredReceiverItems,
+    requiredSenderItems
+  );
+
+  return { unmatchableSenderItems, unmatchableReceiverItems };
 }
