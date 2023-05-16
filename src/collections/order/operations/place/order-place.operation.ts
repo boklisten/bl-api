@@ -161,6 +161,10 @@ export class OrderPlaceOperation implements Operation {
               $in: handoutItems.map((handoutItem) => handoutItem.blid),
             },
             returned: false,
+            // In some cases, books that have previously been bought out get returned
+            // to Boklistens possesion without being registered as a buyback
+            // Therefore, it should be possible to hand out books that have been bought out
+            buyout: false,
           },
         },
       ]);
