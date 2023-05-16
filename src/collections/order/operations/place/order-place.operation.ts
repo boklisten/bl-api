@@ -161,6 +161,7 @@ export class OrderPlaceOperation implements Operation {
               $in: handoutItems.map((handoutItem) => handoutItem.blid),
             },
             returned: false,
+            buyout: false,
           },
         },
       ]);
