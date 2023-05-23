@@ -14,7 +14,7 @@ import {
   groupItemsByCount,
   groupUsersByNumberOfItems,
   removeFullyMatchedUsers,
-  sortUsersNoItemsAscendingAndMatchesDescending,
+  sortUsersForPartialMatching,
   sortUsersNumberOfItemsDescending,
   tryFindOneWayMatch,
   tryFindPartialMatch,
@@ -62,8 +62,8 @@ export class MatchFinder {
 
     // In testing with large datasets, doing this sorting
     // provided much better results for partial matching
-    sortUsersNoItemsAscendingAndMatchesDescending(this.senders, this.matches);
-    sortUsersNoItemsAscendingAndMatchesDescending(this.receivers, this.matches);
+    sortUsersForPartialMatching(this.senders, this.matches);
+    sortUsersForPartialMatching(this.receivers, this.matches);
     const sortedSenderGroups = groupUsersByNumberOfItems(this.senders);
 
     for (const sortedSenderGroup of sortedSenderGroups) {

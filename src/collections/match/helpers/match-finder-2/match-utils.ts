@@ -25,7 +25,7 @@ export function sortUsersNumberOfItemsDescending(users: MatchableUser[]) {
  * @param users
  * @param matches
  */
-export function sortUsersNoItemsAscendingAndMatchesDescending(
+export function sortUsersForPartialMatching(
   users: MatchableUser[],
   matches: NewMatch[]
 ) {
