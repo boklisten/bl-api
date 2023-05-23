@@ -23,10 +23,10 @@
   dependencies:
     typescript "^4.5.2"
 
-"@boklisten/bl-post-office@^0.5.43":
-  version "0.5.43"
-  resolved "https://registry.yarnpkg.com/@boklisten/bl-post-office/-/bl-post-office-0.5.43.tgz#9fb1c9e4868e20dc970f3169a8a3fe8eef655cf6"
-  integrity sha512-YAg5y0+WoNC7E3+IW9EWQdiEnqEGuxZzewWA3FxMaAVU8CBgaHkq5yVj7cPh4Eh1Qik/qHA2KkvpbSR7cxeT1g==
+"@boklisten/bl-post-office@^0.5.44":
+  version "0.5.44"
+  resolved "https://registry.yarnpkg.com/@boklisten/bl-post-office/-/bl-post-office-0.5.44.tgz#71af6e561b81449bf2e5b5230ddd68311f1a176f"
+  integrity sha512-omwmWl6VJYvDJcKaImVocQPogK5M0Hs1HGNH3zAzo6FA5/6L6xnkjxXI3uImehLnKUc+u1SwBkKBIKykTY+7hw==
   dependencies:
     "@sendgrid/mail" "^6.3.1"
     "@types/mustache" "^0.8.32"
