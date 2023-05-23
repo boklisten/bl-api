@@ -16,7 +16,7 @@ export function copyUsers(users: MatchableUser[]): MatchableUser[] {
  * Sort users in place, by descending number of items
  * @param users
  */
-export function sortUsersNoItemsDescending(users: MatchableUser[]) {
+export function sortUsersNumberOfItemsDescending(users: MatchableUser[]) {
   users.sort((a, b) => (a.items.size > b.items.size ? -1 : 1));
 }
 

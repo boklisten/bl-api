@@ -15,7 +15,7 @@ import {
   groupUsersByNumberOfItems,
   removeFullyMatchedUsers,
   sortUsersNoItemsAscendingAndMatchesDescending,
-  sortUsersNoItemsDescending,
+  sortUsersNumberOfItemsDescending,
   tryFindOneWayMatch,
   tryFindPartialMatch,
   tryFindTwoWayMatch,
@@ -44,8 +44,8 @@ export class MatchFinder {
     this.createMatches(tryFindTwoWayMatch, this.senders);
 
     // Fulfill the largest possible senders with the best receivers
-    sortUsersNoItemsDescending(this.senders);
-    sortUsersNoItemsDescending(this.receivers);
+    sortUsersNumberOfItemsDescending(this.senders);
+    sortUsersNumberOfItemsDescending(this.receivers);
     this.createMatches(tryFindOneWayMatch, this.senders);
 
     // Remove all unmatchable items
@@ -56,8 +56,8 @@ export class MatchFinder {
     this.standMatchUnmatchableItems();
 
     // Fully match the largest possible senders and receivers with the stand
-    sortUsersNoItemsDescending(this.senders);
-    sortUsersNoItemsDescending(this.receivers);
+    sortUsersNumberOfItemsDescending(this.senders);
+    sortUsersNumberOfItemsDescending(this.receivers);
     this.createFullStandMatches();
 
     // In testing with large datasets, doing this sorting
