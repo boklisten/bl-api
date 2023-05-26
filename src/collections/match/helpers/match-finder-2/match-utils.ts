@@ -32,10 +32,7 @@ export function sortUsersForPartialMatching(
   const hasStandMatch = (user: MatchableUser) =>
     matches.some(
       (match) =>
-        (match.type === MatchTypes.StandDeliveryMatch &&
-          match.senderId === user.id) ||
-        (match.type === MatchTypes.StandPickupMatch &&
-          match.receiverId === user.id)
+        match.type === MatchTypes.StandMatch && match.userId === user.id
     );
 
   users.sort((a, b) => {
@@ -220,7 +217,7 @@ export function calculateItemImbalances(
  * so that they are fulfilled
  * @param user - The user to check
  * @param itemImbalances - The imbalances in item counts
- * @param matchType - The type of match to check
+ * @param userIsSender - Whether the user is a sender or receiver
  * @returns True if a full stand match can be made, false otherwise
  * @private
  *
@@ -228,10 +225,10 @@ export function calculateItemImbalances(
 export function canMatchPerfectlyWithStand(
   user: MatchableUser,
   itemImbalances: { [key: string]: number },
-  matchType: MatchTypes.StandDeliveryMatch | MatchTypes.StandPickupMatch
+  userIsSender: boolean
 ): boolean {
   return Array.from(user.items).every((item) => {
-    return matchType === MatchTypes.StandDeliveryMatch
+    return userIsSender
       ? (itemImbalances[item] ?? 0) > 0
       : (itemImbalances[item] ?? 0) < 0;
   });
@@ -241,15 +238,15 @@ export function canMatchPerfectlyWithStand(
  * Updates the imbalance count for each item of a user after the given match
  * @param items - The items to update the difference for
  * @param itemImbalances - The imbalances in item counts
- * @param matchType - The type of match that has been made
+ * @param userIsSender - Whether the user is a sender or receiver
  * @private
  */
 export function updateItemImbalances(
   items: Set<string>,
   itemImbalances: { [key: string]: number },
-  matchType: MatchTypes.StandDeliveryMatch | MatchTypes.StandPickupMatch
+  userIsSender: boolean
 ): void {
-  const modifier = matchType === MatchTypes.StandDeliveryMatch ? -1 : 1;
+  const modifier = userIsSender ? -1 : 1;
 
   for (const item of items) {
     itemImbalances[item] = (itemImbalances[item] ?? 0) + modifier;

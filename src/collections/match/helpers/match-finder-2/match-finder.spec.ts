@@ -7,8 +7,7 @@ import {
   MatchableUser,
   MatchTypes,
   NewMatch,
-  StandDeliveryMatch,
-  StandPickupMatch,
+  StandMatch,
   UserMatch,
 } from "./match-types";
 import { difference, intersect } from "../set-methods";
@@ -33,16 +32,12 @@ function seededRandom(seed: number) {
 function calculateNumberOfMatchesPerType(matches: NewMatch[]) {
   return matches.reduce(
     (acc, match) => ({
-      standDeliveryMatches:
-        acc.standDeliveryMatches +
-        (match.type === MatchTypes.StandDeliveryMatch ? 1 : 0),
-      standPickupMatches:
-        acc.standPickupMatches +
-        (match.type === MatchTypes.StandPickupMatch ? 1 : 0),
+      standMatches:
+        acc.standMatches + (match.type === MatchTypes.StandMatch ? 1 : 0),
       userMatches:
         acc.userMatches + (match.type === MatchTypes.UserMatch ? 1 : 0),
     }),
-    { standDeliveryMatches: 0, standPickupMatches: 0, userMatches: 0 }
+    { standMatches: 0, userMatches: 0 }
   );
 }
 
@@ -62,22 +57,24 @@ function createFakeUserMatch(
 function createFakeStandPickupMatch(
   receiver: MatchableUser,
   items: Set<string>
-): StandPickupMatch {
+): StandMatch {
   return {
-    type: MatchTypes.StandPickupMatch,
-    receiverId: receiver.id,
-    items,
+    type: MatchTypes.StandMatch,
+    userId: receiver.id,
+    pickupItems: items,
+    handoffItems: new Set(),
   };
 }
 
 function createFakeStandDeliveryMatch(
   sender: MatchableUser,
   items: Set<string>
-): StandDeliveryMatch {
+): StandMatch {
   return {
-    type: MatchTypes.StandDeliveryMatch,
-    senderId: sender.id,
-    items,
+    type: MatchTypes.StandMatch,
+    userId: sender.id,
+    pickupItems: new Set(),
+    handoffItems: items,
   };
 }
 
@@ -160,8 +157,7 @@ function printPerformanceMetrics(matches: NewMatch[]) {
   console.log(`
 NoMatches: ${matches.length},
 UserMatches: ${numberOfMatchesPerType.userMatches},
-StandDeliveries: ${numberOfMatchesPerType.standDeliveryMatches},
-StandPickups: ${numberOfMatchesPerType.standPickupMatches},
+StandMatches: ${numberOfMatchesPerType.standMatches},
 NoMatches Per User
 ${Object.keys(userCounts)
   .map((key) => key + ": " + userCounts[key] + " kunder,\n")
@@ -418,11 +414,8 @@ describe("Large User Groups", () => {
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
       senderGroups.flat().length * 1.5
     );
-    expect(numberOfMatchesPerType.standDeliveryMatches).to.be.lessThan(
-      senderGroups.flat().length * 0.45
-    );
-    expect(numberOfMatchesPerType.standPickupMatches).to.be.lessThan(
-      recieverGroups.flat().length * 0.45
+    expect(numberOfMatchesPerType.standMatches).to.be.lessThan(
+      recieverGroups.flat().length * 0.6
     );
   });
 
@@ -446,10 +439,7 @@ describe("Large User Groups", () => {
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
       test_users.length * 1.4
     );
-    expect(numberOfMatchesPerType.standDeliveryMatches).to.be.lessThanOrEqual(
-      test_users.length * 0.1
-    );
-    expect(numberOfMatchesPerType.standPickupMatches).to.be.lessThanOrEqual(
+    expect(numberOfMatchesPerType.standMatches).to.be.lessThanOrEqual(
       test_users.length * 0.1
     );
   });
@@ -474,10 +464,7 @@ describe("Large User Groups", () => {
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
       test_users.flat().length * 1.4
     );
-    expect(numberOfMatchesPerType.standDeliveryMatches).to.be.lessThanOrEqual(
-      test_users.flat().length * 0.2
-    );
-    expect(numberOfMatchesPerType.standPickupMatches).to.be.lessThanOrEqual(
+    expect(numberOfMatchesPerType.standMatches).to.be.lessThanOrEqual(
       test_users.flat().length * 0.2
     );
   });
@@ -503,10 +490,7 @@ describe("Large User Groups", () => {
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
       testUsersYear1.flat().length * 1.1
     );
-    expect(numberOfMatchesPerType.standDeliveryMatches).to.be.greaterThan(
-      testUsersYear1.length * 0.9
-    );
-    expect(numberOfMatchesPerType.standPickupMatches).to.be.greaterThan(
+    expect(numberOfMatchesPerType.standMatches).to.be.greaterThan(
       testUsersYear2.length * 0.9
     );
   });
@@ -530,11 +514,11 @@ describe("Large User Groups", () => {
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
     const standDeliveryItems = matches
-      .filter((match) => match.type === MatchTypes.StandDeliveryMatch)
-      .flatMap((match) => Array.from(match.items));
+      .filter((match) => match.type === MatchTypes.StandMatch)
+      .flatMap((match) => Array.from((match as StandMatch).handoffItems));
     const standPickupItems = matches
-      .filter((match) => match.type === MatchTypes.StandPickupMatch)
-      .flatMap((match) => Array.from(match.items));
+      .filter((match) => match.type === MatchTypes.StandMatch)
+      .flatMap((match) => Array.from((match as StandMatch).pickupItems));
 
     expect(
       standDeliveryItems.every(
@@ -548,11 +532,8 @@ describe("Large User Groups", () => {
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
       testUsersYear0.length * 1.1
     );
-    expect(numberOfMatchesPerType.standDeliveryMatches).to.be.lessThan(
-      testUsersYear0.length * 0.4
-    );
-    expect(numberOfMatchesPerType.standPickupMatches).to.be.lessThan(
-      testUsersYear1.length * 0.4
+    expect(numberOfMatchesPerType.standMatches).to.be.lessThan(
+      testUsersYear0.length * 0.65
     );
   });
 });
