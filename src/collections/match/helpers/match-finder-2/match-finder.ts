@@ -1,4 +1,4 @@
-import { difference, intersect, union } from "../set-methods";
+import { difference, hasDifference, intersect, union } from "../set-methods";
 import {
   MatchableUser,
   MatchTypes,
@@ -90,7 +90,9 @@ export class MatchFinder {
     return this.matches;
   }
 
-  // Verify that all senders and receivers have matches for all their items.
+  /**
+   * Verify that all senders and receivers have matches for all their items.
+   */
   private verifyMatches() {
     this.senders = removeFullyMatchedUsers(this.senders);
     this.receivers = removeFullyMatchedUsers(this.receivers);
@@ -107,6 +109,9 @@ export class MatchFinder {
         const sender: MatchableUser = originalSenders.find(
           (sender) => sender.id === match.senderId
         );
+        if (hasDifference(intersect(match.items, sender.items), match.items)) {
+          throw "Sender cannot give away more books than they have!";
+        }
         sender.items = difference(sender.items, match.items);
         originalSenders = removeFullyMatchedUsers(originalSenders);
       }
@@ -114,6 +119,11 @@ export class MatchFinder {
         const receiver: MatchableUser = originalReceivers.find(
           (receiver) => receiver.id === match.receiverId
         );
+        if (
+          hasDifference(intersect(match.items, receiver.items), match.items)
+        ) {
+          throw "Receiver cannot receive more books than they want!";
+        }
         receiver.items = difference(receiver.items, match.items);
         originalReceivers = removeFullyMatchedUsers(originalReceivers);
       }
@@ -155,7 +165,7 @@ export class MatchFinder {
 
   /**
    * Creates initial stand matches for senders and receivers
-   * This method groups sender and receiver items by count and calculates the difference between them
+   * This method groups sender and receiver items by count and calculates the imbalance between them
    * After that, it checks if a full stand match can be made for each sender and receiver
    * If a full stand match can be made, it updates the difference and creates a stand match
    * @private
@@ -165,12 +175,12 @@ export class MatchFinder {
     const receiverItems = countItemOccurrences(this.receivers);
     const itemImbalances = calculateItemImbalances(senderItems, receiverItems);
 
-    this.createDifferenceMinimizingMatches(
+    this.createImbalanceMinimizingMatches(
       this.senders,
       itemImbalances,
       MatchTypes.StandDeliveryMatch
     );
-    this.createDifferenceMinimizingMatches(
+    this.createImbalanceMinimizingMatches(
       this.receivers,
       itemImbalances,
       MatchTypes.StandPickupMatch
@@ -182,18 +192,19 @@ export class MatchFinder {
    * This method checks if a full stand match can be made for each user
    * If a full stand match can be made, it updates the difference in counts and creates a stand match
    * @param users - The users for whom to create matches
-   * @param itemDifferences - The differences in item counts
+   * @param itemImbalances - An object where the keys are the items and the values are the differences between number of that item given
+   * * by senders and wanted by receivers.
    * @param matchType - The type of match to create
    * @private
    */
-  private createDifferenceMinimizingMatches(
+  private createImbalanceMinimizingMatches(
     users: MatchableUser[],
-    itemDifferences: { [item: string]: number },
+    itemImbalances: { [item: string]: number },
     matchType: MatchTypes.StandDeliveryMatch | MatchTypes.StandPickupMatch
   ) {
     for (const user of users) {
-      if (canMatchPerfectlyWithStand(user, itemDifferences, matchType)) {
-        updateItemImbalances(user.items, itemDifferences, matchType);
+      if (canMatchPerfectlyWithStand(user, itemImbalances, matchType)) {
+        updateItemImbalances(user.items, itemImbalances, matchType);
         this.createStandMatch(user, user.items, matchType);
       }
     }
