@@ -7,11 +7,11 @@ import {
   StandPickupMatch,
 } from "./match-types";
 import {
-  calculateItemDifferences,
+  calculateItemImbalances,
   calculateUnmatchableItems,
-  canFullStandMatch,
+  canMatchPerfectlyWithStand,
   copyUsers,
-  groupItemsByCount,
+  countItemOccurrences,
   groupUsersByNumberOfItems,
   removeFullyMatchedUsers,
   sortUsersForPartialMatching,
@@ -19,7 +19,7 @@ import {
   tryFindOneWayMatch,
   tryFindPartialMatch,
   tryFindTwoWayMatch,
-  updateItemDifferences,
+  updateItemImbalances,
 } from "./match-utils";
 
 export class MatchFinder {
@@ -30,7 +30,10 @@ export class MatchFinder {
   private matches: NewMatch[] = [];
   private readonly MAX_USER_MATCH_COUNT = 2;
 
-  constructor(_senders: MatchableUser[], _receivers: MatchableUser[]) {
+  constructor(
+    private _senders: MatchableUser[],
+    private _receivers: MatchableUser[]
+  ) {
     this.receivers = copyUsers(_receivers);
     this.senders = copyUsers(_senders);
   }
@@ -82,16 +85,43 @@ export class MatchFinder {
         MatchTypes.StandPickupMatch
       );
     }
+    this.verifyMatches();
 
+    return this.matches;
+  }
+
+  // Verify that all senders and receivers have matches for all their items.
+  private verifyMatches() {
     this.senders = removeFullyMatchedUsers(this.senders);
     this.receivers = removeFullyMatchedUsers(this.receivers);
 
-    // Verify that all senders and receivers have been fulfilled
     if (this.senders.length > 0 || this.receivers.length > 0) {
       throw new Error("Some senders or receivers did not receive a match!");
     }
 
-    return this.matches;
+    let originalSenders = copyUsers(this._senders);
+    let originalReceivers = copyUsers(this._receivers);
+
+    for (const match of this.matches) {
+      if ("senderId" in match) {
+        const sender: MatchableUser = originalSenders.find(
+          (sender) => sender.id === match.senderId
+        );
+        sender.items = difference(sender.items, match.items);
+        originalSenders = removeFullyMatchedUsers(originalSenders);
+      }
+      if ("receiverId" in match) {
+        const receiver: MatchableUser = originalReceivers.find(
+          (receiver) => receiver.id === match.receiverId
+        );
+        receiver.items = difference(receiver.items, match.items);
+        originalReceivers = removeFullyMatchedUsers(originalReceivers);
+      }
+    }
+
+    if (originalSenders.length > 0 || originalReceivers.length > 0) {
+      throw new Error("Some senders or receivers did not get fulfilled");
+    }
   }
 
   /**
@@ -131,21 +161,18 @@ export class MatchFinder {
    * @private
    */
   private createFullStandMatches() {
-    const senderItems = groupItemsByCount(this.senders);
-    const receiverItems = groupItemsByCount(this.receivers);
-    const itemDifferences = calculateItemDifferences(
-      senderItems,
-      receiverItems
-    );
+    const senderItems = countItemOccurrences(this.senders);
+    const receiverItems = countItemOccurrences(this.receivers);
+    const itemImbalances = calculateItemImbalances(senderItems, receiverItems);
 
     this.createDifferenceMinimizingMatches(
       this.senders,
-      itemDifferences,
+      itemImbalances,
       MatchTypes.StandDeliveryMatch
     );
     this.createDifferenceMinimizingMatches(
       this.receivers,
-      itemDifferences,
+      itemImbalances,
       MatchTypes.StandPickupMatch
     );
   }
@@ -161,12 +188,12 @@ export class MatchFinder {
    */
   private createDifferenceMinimizingMatches(
     users: MatchableUser[],
-    itemDifferences: { [key: string]: number },
+    itemDifferences: { [item: string]: number },
     matchType: MatchTypes.StandDeliveryMatch | MatchTypes.StandPickupMatch
   ) {
     for (const user of users) {
-      if (canFullStandMatch(user, itemDifferences, matchType)) {
-        updateItemDifferences(user.items, itemDifferences, matchType);
+      if (canMatchPerfectlyWithStand(user, itemDifferences, matchType)) {
+        updateItemImbalances(user.items, itemDifferences, matchType);
         this.createStandMatch(user, user.items, matchType);
       }
     }

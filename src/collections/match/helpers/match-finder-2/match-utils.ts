@@ -21,7 +21,7 @@ export function sortUsersNumberOfItemsDescending(users: MatchableUser[]) {
 }
 
 /**
- * Sort users by ascending number of items, and prioritize those that already have a standMatch
+ * Some guuuuud sorting. This works. Trust me. No idea why.
  * @param users
  * @param matches
  */
@@ -46,7 +46,7 @@ export function sortUsersForPartialMatching(
     }
 
     if (!aHasStandMatch && !bHasStandMatch) {
-      return 1;
+      return 0;
     }
 
     return a.items.size > b.items.size ? 1 : -1;
@@ -54,9 +54,11 @@ export function sortUsersForPartialMatching(
 }
 
 /**
- * Create a list of Sets, where each set has users with x items.
- * For instance, list[1] has users with only one item, list[2] has users with two items.
- * Finally, the list is reversed, so that list[0] contains the users with the highest number of items
+ * Groups users by their number of items, descending.
+ * For instance, if the highest number of items any users has is N, the outer list contains N+1 lists, where outer[0] is
+ * the list of users with N items, outer[1] is the list of users with N-1 items, etc. all the way to outer[N], the list
+ * of users with zero items.
+ * The order of users within the inner lists is arbitrary.
  * @param users
  */
 export function groupUsersByNumberOfItems(
@@ -89,8 +91,8 @@ export function groupUsersByNumberOfItems(
 /**
  * Removes fully matched users, aka. users that have no items
  *
- * @param users the set of dirty users
- * @returns a copy of the users without the fully matched users
+ * @param users the set of users to be cleaned
+ * @returns a shallow copy of the users list without the fully matched users
  */
 export function removeFullyMatchedUsers(
   users: MatchableUser[]
@@ -118,7 +120,7 @@ export function tryFindOneWayMatch(
 }
 
 /**
- * Try to find a receiver that have the exact same items
+ * Try to find a receiver that has the exact same items
  * as the sender. These two are "perfect matches", as they
  * only have to interact with one person when matching.
  * @param sender The sender to be matched
@@ -141,6 +143,7 @@ export function tryFindTwoWayMatch(
  * Try to find a receiver that wants as many items as possible from the sender
  * @param sender The sender to be matched
  * @param receivers The receivers to match against
+ * @returns the receiver with maximum number of matching items, or null if none match
  */
 export function tryFindPartialMatch(
   sender: MatchableUser,
@@ -168,86 +171,88 @@ export function tryFindPartialMatch(
 }
 
 /**
- * Create an overview of many of each item a list of users has or want
+ * Count occurrences of each item in users list
  * @param users
  */
-export function groupItemsByCount(users: MatchableUser[]): {
-  [key: string]: number;
+export function countItemOccurrences(users: MatchableUser[]): {
+  [item: string]: number;
 } {
-  return users.reduce((acc, next) => {
-    for (const item of next.items) {
-      acc[item] = item in acc ? acc[item] + 1 : 1;
-    }
-    return acc;
-  }, {});
+  return users
+    .flatMap((user) => Array.from(user.items))
+    .reduce(
+      (acc, next) => ({
+        ...acc,
+        [next]: next in acc ? acc[next] + 1 : 1,
+      }),
+      {}
+    );
 }
 
 /**
- * Calculates the difference in count for each item between senders and receivers.
+ *
+ * For each item, calculate the number to be sent minus number to be received.
  * @param groupedSenderItems - The grouped items of the senders.
  * @param groupedReceiverItems - The grouped items of the receivers.
- * @returns An object where the keys are the items and the values are the differences in counts.
- * @throws If there is a missing key in the grouped items.
+ * @returns An object where the keys are the items and the values are the differences between number of that item given
+ * by senders and wanted by receivers.
  * @private
  */
-export function calculateItemDifferences(
-  groupedSenderItems: { [key: string]: number },
-  groupedReceiverItems: { [key: string]: number }
-) {
-  return Object.keys(groupedReceiverItems).reduce((diff, item) => {
-    const senderItemCount = groupedSenderItems[item];
-    const receiverItemCount = groupedReceiverItems[item];
+export function calculateItemImbalances(
+  groupedSenderItems: { [item: string]: number },
+  groupedReceiverItems: { [item: string]: number }
+): { [item: string]: number } {
+  return Object.keys({ ...groupedReceiverItems, ...groupedSenderItems }).reduce(
+    (diffs, item) => {
+      const senderItemCount = groupedSenderItems[item] ?? 0;
+      const receiverItemCount = groupedReceiverItems[item] ?? 0;
 
-    if (senderItemCount === undefined || receiverItemCount === undefined) {
-      throw new Error(
-        "Missing key in grouped items. Forgot to match unmatchable sender and receiver items?"
-      );
-    }
-
-    return {
-      ...diff,
-      [item]: senderItemCount - receiverItemCount,
-    };
-  }, {});
+      return {
+        ...diffs,
+        [item]: senderItemCount - receiverItemCount,
+      };
+    },
+    {}
+  );
 }
 
 /**
  * Checks if a full stand match can be made for a user
+ * so that they are fulfilled
  * @param user - The user to check
- * @param itemDifferences - The differences in item counts
+ * @param itemImbalances - The imbalances in item counts
  * @param matchType - The type of match to check
  * @returns True if a full stand match can be made, false otherwise
  * @private
  *
  **/
-export function canFullStandMatch(
+export function canMatchPerfectlyWithStand(
   user: MatchableUser,
-  itemDifferences: { [key: string]: number },
+  itemImbalances: { [key: string]: number },
   matchType: MatchTypes.StandDeliveryMatch | MatchTypes.StandPickupMatch
-) {
+): boolean {
   return Array.from(user.items).every((item) => {
     return matchType === MatchTypes.StandDeliveryMatch
-      ? (itemDifferences[item] ?? 0) > 0
-      : (itemDifferences[item] ?? 0) < 0;
+      ? (itemImbalances[item] ?? 0) > 0
+      : (itemImbalances[item] ?? 0) < 0;
   });
 }
 
 /**
- * Updates the difference count for each item of a user
+ * Updates the imbalance count for each item of a user after the given match
  * @param items - The items to update the difference for
- * @param itemDifferences - The differences in item counts
+ * @param itemImbalances - The imbalances in item counts
  * @param matchType - The type of match that has been made
  * @private
  */
-export function updateItemDifferences(
+export function updateItemImbalances(
   items: Set<string>,
-  itemDifferences: { [key: string]: number },
+  itemImbalances: { [key: string]: number },
   matchType: MatchTypes.StandDeliveryMatch | MatchTypes.StandPickupMatch
-) {
+): void {
   const modifier = matchType === MatchTypes.StandDeliveryMatch ? -1 : 1;
 
   for (const item of items) {
-    itemDifferences[item] = (itemDifferences[item] ?? 0) + modifier;
+    itemImbalances[item] = (itemImbalances[item] ?? 0) + modifier;
   }
 }
 
