@@ -4,11 +4,10 @@ import chaiAsPromised from "chai-as-promised";
 import sinonChai from "sinon-chai";
 import { MatchFinder } from "./match-finder";
 import {
-  MatchableUser,
-  MatchTypes,
-  NewMatch,
-  StandMatch,
-  UserMatch,
+  CandidateMatch,
+  CandidateMatchVariant,
+  CandidateStandMatch, CandidateUserMatch,
+  MatchableUser
 } from "./match-types";
 import { difference, intersect } from "../set-methods";
 import ullern_test_users from "./test-data/ullern_test_users.json";
@@ -29,13 +28,13 @@ function seededRandom(seed: number) {
   };
 }
 
-function calculateNumberOfMatchesPerType(matches: NewMatch[]) {
+function calculateNumberOfMatchesPerType(matches: CandidateMatch[]) {
   return matches.reduce(
     (acc, match) => ({
       standMatches:
-        acc.standMatches + (match.type === MatchTypes.StandMatch ? 1 : 0),
+        acc.standMatches + (match.variant === CandidateMatchVariant.StandMatch ? 1 : 0),
       userMatches:
-        acc.userMatches + (match.type === MatchTypes.UserMatch ? 1 : 0),
+        acc.userMatches + (match.variant === CandidateMatchVariant.UserMatch ? 1 : 0),
     }),
     { standMatches: 0, userMatches: 0 }
   );
@@ -45,9 +44,9 @@ function createFakeUserMatch(
   sender: MatchableUser,
   receiver: MatchableUser,
   items: Set<string>
-): UserMatch {
+): CandidateUserMatch {
   return {
-    type: MatchTypes.UserMatch,
+    variant: CandidateMatchVariant.UserMatch,
     senderId: sender.id,
     receiverId: receiver.id,
     items,
@@ -58,9 +57,9 @@ function createFakeStandMatch(
   user: MatchableUser,
   pickupItems: Set<string>,
   handoffItems: Set<string>
-): StandMatch {
+): CandidateStandMatch {
   return {
-    type: MatchTypes.StandMatch,
+    variant: CandidateMatchVariant.StandMatch,
     userId: user.id,
     pickupItems,
     handoffItems,
@@ -87,9 +86,9 @@ function createUserGroup(
   );
 }
 
-function groupMatchesByUser(matches: NewMatch[]) {
-  const matchesPerUser: { id: string; matches: NewMatch[] }[] = [];
-  const appendMatchToUser = (match: NewMatch, userId: string) => {
+function groupMatchesByUser(matches: CandidateMatch[]) {
+  const matchesPerUser: { id: string; matches: CandidateMatch[] }[] = [];
+  const appendMatchToUser = (match: CandidateMatch, userId: string) => {
     const foundSender = matchesPerUser.find((user) => user.id === userId);
     if (foundSender) {
       foundSender.matches.push(match);
@@ -99,10 +98,10 @@ function groupMatchesByUser(matches: NewMatch[]) {
   };
 
   for (const match of matches) {
-    if (match.type === MatchTypes.UserMatch) {
+    if (match.variant === CandidateMatchVariant.UserMatch) {
       appendMatchToUser(match, match.senderId);
       appendMatchToUser(match, match.receiverId);
-    } else if (match.type === MatchTypes.StandMatch) {
+    } else if (match.variant === CandidateMatchVariant.StandMatch) {
       appendMatchToUser(match, match.userId);
     }
   }
@@ -129,7 +128,7 @@ const shuffler =
  * so that one can evaluate the performance of the matcher
  * @param matches
  */
-function printPerformanceMetrics(matches: NewMatch[]) {
+function printPerformanceMetrics(matches: CandidateMatch[]) {
   const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
   const groupedUsers = groupMatchesByUser(matches);
   const userCounts = {};
@@ -500,11 +499,11 @@ describe("Large User Groups", () => {
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
     const standDeliveryItems = matches
-      .filter((match) => match.type === MatchTypes.StandMatch)
-      .flatMap((match) => Array.from((match as StandMatch).handoffItems));
+      .filter((match) => match.variant === CandidateMatchVariant.StandMatch)
+      .flatMap((match) => Array.from((match as CandidateStandMatch).handoffItems));
     const standPickupItems = matches
-      .filter((match) => match.type === MatchTypes.StandMatch)
-      .flatMap((match) => Array.from((match as StandMatch).pickupItems));
+      .filter((match) => match.variant === CandidateMatchVariant.StandMatch)
+      .flatMap((match) => Array.from((match as CandidateStandMatch).pickupItems));
 
     expect(
       standDeliveryItems.every(

@@ -3,23 +3,23 @@ export interface MatchableUser {
   items: Set<string>;
 }
 
-export enum MatchTypes {
+export enum CandidateMatchVariant {
   UserMatch = "UserMatch",
   StandMatch = "StandMatch",
 }
 
-export interface UserMatch {
+export interface CandidateUserMatch {
   senderId: string;
   receiverId: string;
   items: Set<string>;
-  type: MatchTypes.UserMatch;
+  variant: CandidateMatchVariant.UserMatch;
 }
 
-export interface StandMatch {
+export interface CandidateStandMatch {
   userId: string;
   handoffItems: Set<string>;
   pickupItems: Set<string>;
-  type: MatchTypes.StandMatch;
+  variant: CandidateMatchVariant.StandMatch;
 }
 
-export type NewMatch = StandMatch | UserMatch;
+export type CandidateMatch = CandidateStandMatch | CandidateUserMatch;
