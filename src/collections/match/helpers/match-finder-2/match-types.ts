@@ -5,8 +5,7 @@ export interface MatchableUser {
 
 export enum MatchTypes {
   UserMatch = "UserMatch",
-  StandDeliveryMatch = "StandDeliveryMatch",
-  StandPickupMatch = "StandPickupMatch",
+  StandMatch = "StandMatch",
 }
 
 export interface UserMatch {
@@ -16,16 +15,11 @@ export interface UserMatch {
   type: MatchTypes.UserMatch;
 }
 
-export interface StandDeliveryMatch {
-  senderId: string;
-  items: Set<string>;
-  type: MatchTypes.StandDeliveryMatch;
+export interface StandMatch {
+  userId: string;
+  handoffItems: Set<string>;
+  pickupItems: Set<string>;
+  type: MatchTypes.StandMatch;
 }
 
-export interface StandPickupMatch {
-  receiverId: string;
-  items: Set<string>;
-  type: MatchTypes.StandPickupMatch;
-}
-
-export type NewMatch = StandDeliveryMatch | StandPickupMatch | UserMatch;
+export type NewMatch = StandMatch | UserMatch;

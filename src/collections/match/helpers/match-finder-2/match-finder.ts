@@ -1,11 +1,5 @@
 import { difference, hasDifference, intersect, union } from "../set-methods";
-import {
-  MatchableUser,
-  MatchTypes,
-  NewMatch,
-  StandDeliveryMatch,
-  StandPickupMatch,
-} from "./match-types";
+import { MatchableUser, MatchTypes, NewMatch, StandMatch } from "./match-types";
 import {
   calculateItemImbalances,
   calculateUnmatchableItems,
@@ -79,11 +73,7 @@ export class MatchFinder {
 
     // Create stand pickups for the remainder of the items
     for (const receiver of this.receivers) {
-      this.createStandMatch(
-        receiver,
-        receiver.items,
-        MatchTypes.StandPickupMatch
-      );
+      this.createStandMatch(receiver, receiver.items, false);
     }
     this.verifyMatches();
 
@@ -105,26 +95,35 @@ export class MatchFinder {
     let originalReceivers = copyUsers(this._receivers);
 
     for (const match of this.matches) {
-      if ("senderId" in match) {
-        const sender: MatchableUser = originalSenders.find(
-          (sender) => sender.id === match.senderId
-        );
-        if (hasDifference(intersect(match.items, sender.items), match.items)) {
+      const senderId =
+        match.type === MatchTypes.StandMatch ? match.userId : match.senderId;
+      const sentItems =
+        match.type === MatchTypes.StandMatch ? match.handoffItems : match.items;
+      const sender: MatchableUser = originalSenders.find(
+        (sender) => sender.id === senderId
+      );
+      if (sender) {
+        if (hasDifference(intersect(sentItems, sender.items), sentItems)) {
           throw "Sender cannot give away more books than they have!";
         }
-        sender.items = difference(sender.items, match.items);
+        sender.items = difference(sender.items, sentItems);
         originalSenders = removeFullyMatchedUsers(originalSenders);
       }
-      if ("receiverId" in match) {
-        const receiver: MatchableUser = originalReceivers.find(
-          (receiver) => receiver.id === match.receiverId
-        );
+
+      const receiverId =
+        match.type === MatchTypes.StandMatch ? match.userId : match.receiverId;
+      const receivedItems =
+        match.type === MatchTypes.StandMatch ? match.pickupItems : match.items;
+      const receiver: MatchableUser = originalReceivers.find(
+        (receiver) => receiver.id === receiverId
+      );
+      if (receiver) {
         if (
-          hasDifference(intersect(match.items, receiver.items), match.items)
+          hasDifference(intersect(receivedItems, receiver.items), receivedItems)
         ) {
           throw "Receiver cannot receive more books than they want!";
         }
-        receiver.items = difference(receiver.items, match.items);
+        receiver.items = difference(receiver.items, receivedItems);
         originalReceivers = removeFullyMatchedUsers(originalReceivers);
       }
     }
@@ -147,19 +146,11 @@ export class MatchFinder {
     this.unmatchableItems = unmatchableSenderItems;
 
     for (const sender of this.senders) {
-      this.createStandMatch(
-        sender,
-        this.unmatchableItems,
-        MatchTypes.StandDeliveryMatch
-      );
+      this.createStandMatch(sender, this.unmatchableItems, true);
     }
 
     for (const receiver of this.receivers) {
-      this.createStandMatch(
-        receiver,
-        unmatchableReceiverItems,
-        MatchTypes.StandPickupMatch
-      );
+      this.createStandMatch(receiver, unmatchableReceiverItems, false);
     }
   }
 
@@ -175,15 +166,11 @@ export class MatchFinder {
     const receiverItems = countItemOccurrences(this.receivers);
     const itemImbalances = calculateItemImbalances(senderItems, receiverItems);
 
-    this.createImbalanceMinimizingMatches(
-      this.senders,
-      itemImbalances,
-      MatchTypes.StandDeliveryMatch
-    );
+    this.createImbalanceMinimizingMatches(this.senders, itemImbalances, true);
     this.createImbalanceMinimizingMatches(
       this.receivers,
       itemImbalances,
-      MatchTypes.StandPickupMatch
+      false
     );
   }
 
@@ -194,18 +181,18 @@ export class MatchFinder {
    * @param users - The users for whom to create matches
    * @param itemImbalances - An object where the keys are the items and the values are the differences between number of that item given
    * * by senders and wanted by receivers.
-   * @param matchType - The type of match to create
+   * @param userIsSender - Whether the user is a sender or receiver
    * @private
    */
   private createImbalanceMinimizingMatches(
     users: MatchableUser[],
     itemImbalances: { [item: string]: number },
-    matchType: MatchTypes.StandDeliveryMatch | MatchTypes.StandPickupMatch
+    userIsSender: boolean
   ) {
     for (const user of users) {
-      if (canMatchPerfectlyWithStand(user, itemImbalances, matchType)) {
-        updateItemImbalances(user.items, itemImbalances, matchType);
-        this.createStandMatch(user, user.items, matchType);
+      if (canMatchPerfectlyWithStand(user, itemImbalances, userIsSender)) {
+        updateItemImbalances(user.items, itemImbalances, userIsSender);
+        this.createStandMatch(user, user.items, userIsSender);
       }
     }
   }
@@ -217,19 +204,15 @@ export class MatchFinder {
    *
    * @param user - The user (either a sender or receiver) for whom the stand match may be created.
    *
-   * @param standMatchType - The type of the stand match to create. This also determines whether the method checks
-   *                         the user's senderId or receiverId when looking for matches.
+   * @param userIsSender - Whether the user is a sender or receiver
    *
    * @private
    */
   private createStandMatchIfReachedMatchLimit(
     user: MatchableUser,
-    standMatchType: MatchTypes.StandPickupMatch | MatchTypes.StandDeliveryMatch
+    userIsSender: boolean
   ) {
-    const matchTypeId =
-      standMatchType === MatchTypes.StandDeliveryMatch
-        ? "senderId"
-        : "receiverId";
+    const matchTypeId = userIsSender ? "senderId" : "receiverId";
     let count = 0;
 
     const isLimited = this.matches.some((match) => {
@@ -243,7 +226,7 @@ export class MatchFinder {
     });
 
     if (isLimited) {
-      this.createStandMatch(user, user.items, standMatchType);
+      this.createStandMatch(user, user.items, userIsSender);
     }
   }
 
@@ -265,11 +248,7 @@ export class MatchFinder {
   ) {
     for (const sender of senders) {
       // Match unmatchable items with stand
-      this.createStandMatch(
-        sender,
-        this.unmatchableItems,
-        MatchTypes.StandDeliveryMatch
-      );
+      this.createStandMatch(sender, this.unmatchableItems, true);
 
       // If all items are unmatchable, the sender is fully matched
       if (sender.items.size === 0) {
@@ -283,25 +262,15 @@ export class MatchFinder {
           // If there is no partial receiver, no one wants any of these items.
           // Thus, the items should be delivered to a stand and marked unmatchable
           this.unmatchableItems = union(this.unmatchableItems, sender.items);
-          this.createStandMatch(
-            sender,
-            this.unmatchableItems,
-            MatchTypes.StandDeliveryMatch
-          );
+          this.createStandMatch(sender, this.unmatchableItems, true);
         }
         continue;
       }
 
       this.createUserMatch(sender, receiver);
 
-      this.createStandMatchIfReachedMatchLimit(
-        sender,
-        MatchTypes.StandDeliveryMatch
-      );
-      this.createStandMatchIfReachedMatchLimit(
-        receiver,
-        MatchTypes.StandPickupMatch
-      );
+      this.createStandMatchIfReachedMatchLimit(sender, true);
+      this.createStandMatchIfReachedMatchLimit(receiver, false);
 
       // Add the partially matched sender to a new group, so that the remainder of the items can get matched later
       if (matchFinder === tryFindPartialMatch && sender.items.size > 0) {
@@ -345,46 +314,49 @@ export class MatchFinder {
    * and append the match to the list of matches
    * @param user
    * @param items the items to be picked up
-   * @param matchType either pickup or delivery
+   * @param userIsSender - Whether the user is a sender or receiver
    * @private
    */
   private createStandMatch(
     user: MatchableUser,
     items: Set<string>,
-    matchType: MatchTypes.StandDeliveryMatch | MatchTypes.StandPickupMatch
+    userIsSender: boolean
   ) {
-    const deliveryItems = intersect(user.items, items);
-    if (deliveryItems.size === 0) {
+    const remainingItems = intersect(user.items, items);
+    if (remainingItems.size === 0) {
       return;
     }
 
     const existingMatch = this.matches.find(
       (match) =>
-        match.type === matchType &&
-        (("receiverId" in match && match.receiverId === user.id) ||
-          ("senderId" in match && match.senderId === user.id))
-    );
+        match.type === MatchTypes.StandMatch && match.userId === user.id
+    ) as StandMatch | undefined;
 
     if (existingMatch) {
-      existingMatch.items = union(existingMatch.items, deliveryItems);
-      user.items = difference(user.items, deliveryItems);
+      if (userIsSender) {
+        existingMatch.handoffItems = union(
+          existingMatch.handoffItems,
+          remainingItems
+        );
+      } else {
+        existingMatch.pickupItems = union(
+          existingMatch.pickupItems,
+          remainingItems
+        );
+      }
+      user.items = difference(user.items, remainingItems);
       return;
     }
 
-    const match: { [key: string]: unknown } = {
-      items: deliveryItems,
-      type: matchType,
+    const match: StandMatch = {
+      handoffItems: userIsSender ? remainingItems : new Set(),
+      pickupItems: userIsSender ? new Set() : remainingItems,
+      userId: user.id,
+      type: MatchTypes.StandMatch,
     };
 
-    if (matchType === MatchTypes.StandDeliveryMatch) {
-      match.senderId = user.id;
-    } else {
-      match.receiverId = user.id;
-    }
+    this.matches.push(match);
 
-    // Typescript is fun
-    this.matches.push(<StandDeliveryMatch | StandPickupMatch>(<unknown>match));
-
-    user.items = difference(user.items, deliveryItems);
+    user.items = difference(user.items, remainingItems);
   }
 }
