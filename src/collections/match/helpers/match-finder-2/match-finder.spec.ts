@@ -54,27 +54,16 @@ function createFakeUserMatch(
   };
 }
 
-function createFakeStandPickupMatch(
-  receiver: MatchableUser,
-  items: Set<string>
+function createFakeStandMatch(
+  user: MatchableUser,
+  pickupItems: Set<string>,
+  handoffItems: Set<string>
 ): StandMatch {
   return {
     type: MatchTypes.StandMatch,
-    userId: receiver.id,
-    pickupItems: items,
-    handoffItems: new Set(),
-  };
-}
-
-function createFakeStandDeliveryMatch(
-  sender: MatchableUser,
-  items: Set<string>
-): StandMatch {
-  return {
-    type: MatchTypes.StandMatch,
-    userId: sender.id,
-    pickupItems: new Set(),
-    handoffItems: items,
+    userId: user.id,
+    pickupItems,
+    handoffItems,
   };
 }
 
@@ -100,26 +89,21 @@ function createUserGroup(
 
 function groupMatchesByUser(matches: NewMatch[]) {
   const matchesPerUser: { id: string; matches: NewMatch[] }[] = [];
-  for (const match of matches) {
-    if ("senderId" in match) {
-      const foundSender = matchesPerUser.find(
-        (user) => user.id === match.senderId
-      );
-      if (foundSender) {
-        foundSender.matches.push(match);
-      } else {
-        matchesPerUser.push({ id: match.senderId, matches: [match] });
-      }
+  const appendMatchToUser = (match: NewMatch, userId: string) => {
+    const foundSender = matchesPerUser.find((user) => user.id === userId);
+    if (foundSender) {
+      foundSender.matches.push(match);
+    } else {
+      matchesPerUser.push({ id: userId, matches: [match] });
     }
-    if ("receiverId" in match) {
-      const foundReceiver = matchesPerUser.find(
-        (user) => user.id === match.receiverId
-      );
-      if (foundReceiver) {
-        foundReceiver.matches.push(match);
-      } else {
-        matchesPerUser.push({ id: match.receiverId, matches: [match] });
-      }
+  };
+
+  for (const match of matches) {
+    if (match.type === MatchTypes.UserMatch) {
+      appendMatchToUser(match, match.senderId);
+      appendMatchToUser(match, match.receiverId);
+    } else if (match.type === MatchTypes.StandMatch) {
+      appendMatchToUser(match, match.userId);
     }
   }
   return matchesPerUser.sort((a, b) =>
@@ -191,8 +175,8 @@ describe("Full User Match", () => {
     const matchFinder = new MatchFinder([andrine], [monika]);
     const matches = matchFinder.generateMatches();
     assert.deepEqual(matches, [
-      createFakeStandDeliveryMatch(andrine, andrine.items),
-      createFakeStandPickupMatch(monika, monika.items),
+      createFakeStandMatch(andrine, new Set(), andrine.items),
+      createFakeStandMatch(monika, monika.items, new Set()),
     ]);
   });
 
@@ -205,8 +189,9 @@ describe("Full User Match", () => {
       beate,
       new Set(["book1", "book2", "book3"])
     );
-    const expectedStandMatch = createFakeStandDeliveryMatch(
+    const expectedStandMatch = createFakeStandMatch(
       mathias,
+      new Set(),
       new Set(["book4"])
     );
     assert.deepEqual(matches, [expectedStandMatch, expectedUserMatch]);
@@ -217,7 +202,7 @@ describe("Full User Match", () => {
     const matches = matchFinder.generateMatches();
     // NB: assert.deepEqual cares about the order of items in a set!
     assert.deepEqual(matches, [
-      createFakeStandDeliveryMatch(andrine, andrine.items),
+      createFakeStandMatch(andrine, new Set(), andrine.items),
     ]);
   });
 
@@ -250,8 +235,9 @@ describe("Partly User Match", () => {
       monika,
       intersect(mathias.items, monika.items)
     );
-    const mathiasXstand = createFakeStandDeliveryMatch(
+    const mathiasXstand = createFakeStandMatch(
       mathias,
+      new Set(),
       difference(mathias.items, monika.items)
     );
 
