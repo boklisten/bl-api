@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-useless-catch */
-import { BlError, Branch, CustomerItem, OrderItem } from "@boklisten/bl-model";
+import {
+  BlError,
+  Branch,
+  CustomerItem,
+  OrderItem,
+  Period,
+} from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { SystemUser } from "../../../auth/permission/permission.service";
 import { branchSchema } from "../../branch/branch.schema";
 import { customerItemSchema } from "../customer-item.schema";
-import { Period } from "@boklisten/bl-model/dist/period/period";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 import moment = require("moment-timezone");
 import { BlCollectionName } from "../../bl-collection";

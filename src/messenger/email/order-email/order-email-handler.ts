@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EmailHandler, EmailLog } from "@boklisten/bl-email";
-import { OrderItemType } from "@boklisten/bl-model/dist/order/order-item/order-item-type";
 import {
+  OrderItemType,
   Delivery,
   Order,
   OrderItem,

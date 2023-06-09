@@ -10,6 +10,7 @@ import {
   CustomerItem,
   UserDetail,
   BlError,
+  OrderItemType,
 } from "@boklisten/bl-model";
 import { OrderToCustomerItemGenerator } from "../../../customer-item/helpers/order-to-customer-item-generator";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
@@ -19,7 +20,6 @@ import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-pla
 import { OrderValidator } from "../../helpers/order-validator/order-validator";
 import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
-import { OrderItemType } from "@boklisten/bl-model/dist/order/order-item/order-item-type";
 import { BlCollectionName } from "../../../bl-collection";
 
 export class OrderPlaceOperation implements Operation {
