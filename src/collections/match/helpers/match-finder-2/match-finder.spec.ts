@@ -6,8 +6,9 @@ import { MatchFinder } from "./match-finder";
 import {
   CandidateMatch,
   CandidateMatchVariant,
-  CandidateStandMatch, CandidateUserMatch,
-  MatchableUser
+  CandidateStandMatch,
+  CandidateUserMatch,
+  MatchableUser,
 } from "./match-types";
 import { difference, intersect } from "../set-methods";
 import ullern_test_users from "./test-data/ullern_test_users.json";
@@ -32,9 +33,11 @@ function calculateNumberOfMatchesPerType(matches: CandidateMatch[]) {
   return matches.reduce(
     (acc, match) => ({
       standMatches:
-        acc.standMatches + (match.variant === CandidateMatchVariant.StandMatch ? 1 : 0),
+        acc.standMatches +
+        (match.variant === CandidateMatchVariant.StandMatch ? 1 : 0),
       userMatches:
-        acc.userMatches + (match.variant === CandidateMatchVariant.UserMatch ? 1 : 0),
+        acc.userMatches +
+        (match.variant === CandidateMatchVariant.UserMatch ? 1 : 0),
     }),
     { standMatches: 0, userMatches: 0 }
   );
@@ -500,10 +503,14 @@ describe("Large User Groups", () => {
 
     const standDeliveryItems = matches
       .filter((match) => match.variant === CandidateMatchVariant.StandMatch)
-      .flatMap((match) => Array.from((match as CandidateStandMatch).handoffItems));
+      .flatMap((match) =>
+        Array.from((match as CandidateStandMatch).handoffItems)
+      );
     const standPickupItems = matches
       .filter((match) => match.variant === CandidateMatchVariant.StandMatch)
-      .flatMap((match) => Array.from((match as CandidateStandMatch).pickupItems));
+      .flatMap((match) =>
+        Array.from((match as CandidateStandMatch).pickupItems)
+      );
 
     expect(
       standDeliveryItems.every(

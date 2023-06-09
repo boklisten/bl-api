@@ -200,7 +200,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   }
 
   public addMany(docs: T[]): Promise<T[]> {
-    return this.mongooseModel.insertMany(docs)
+    return this.mongooseModel.insertMany(docs);
   }
 
   public update(

@@ -12,8 +12,8 @@ export class MatchCollection implements BlCollection {
         {
           name: "generate",
           operation: new MatchGenerateHook(),
-          restriction: {permissions: ["admin"]},
-        }
+          restriction: { permissions: ["admin"] },
+        },
       ],
       restriction: {
         permissions: ["super"],
