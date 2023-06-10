@@ -12,15 +12,15 @@ import { BlCollectionName } from "../../bl-collection";
 import { MatchFinder } from "../helpers/match-finder-2/match-finder";
 import {
   candidateMatchToMatch,
-  getReceivers,
-  getSenders,
+  getMatchableReceivers,
+  getMatchableSenders,
   verifyMatcherSpec,
-} from "./match-hook-utils";
+} from "./match-operation-utils";
 import { orderSchema } from "../../order/order.schema";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
 
-export class MatchGenerateHook implements Operation {
+export class MatchGenerateOperation implements Operation {
   constructor(
     private customerItemStorage?: BlDocumentStorage<CustomerItem>,
     private matchStorage?: BlDocumentStorage<Match>,
@@ -43,14 +43,11 @@ export class MatchGenerateHook implements Operation {
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
     const matcherSpec = blApiRequest.data;
     if (!verifyMatcherSpec(matcherSpec)) {
-      throw new BlError(
-        // `Malformed MatcherSpec ${JSON.stringify(matcherSpec)}`
-        `Malformed MatcherSpec ${matcherSpec}`
-      ).code(907); // TODO: wrong code
+      throw new BlError(`Malformed MatcherSpec ${matcherSpec}`).code(701);
     }
     const [senders, receivers] = await Promise.all([
-      getSenders(matcherSpec.senderBranches, this.customerItemStorage),
-      getReceivers(matcherSpec.receiverBranches, this.orderStorage),
+      getMatchableSenders(matcherSpec.senderBranches, this.customerItemStorage),
+      getMatchableReceivers(matcherSpec.receiverBranches, this.orderStorage),
     ]);
     if (senders.length === 0 && receivers.length === 0) {
       throw new BlError("No senders or receivers");

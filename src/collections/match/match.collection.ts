@@ -1,6 +1,6 @@
 import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { matchSchema } from "./match.schema";
-import { MatchGenerateHook } from "./hooks/match.post.generate.hook";
+import { MatchGenerateOperation } from "./operations/match-generate.operation";
 
 export class MatchCollection implements BlCollection {
   public collectionName = BlCollectionName.Matches;
@@ -11,8 +11,8 @@ export class MatchCollection implements BlCollection {
       operations: [
         {
           name: "generate",
-          operation: new MatchGenerateHook(),
-          restriction: { permissions: ["admin"] },
+          operation: new MatchGenerateOperation(),
+          restriction: { permissions: ["admin", "super"] },
         },
       ],
       restriction: {
