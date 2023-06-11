@@ -1,14 +1,23 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { matchSchema } from "./match.schema";
-import { MatchPostHook } from "./hooks/match.post.hook";
+import { MatchGenerateOperation } from "./operations/match-generate.operation";
 
 export class MatchCollection implements BlCollection {
-  public collectionName = "matches";
+  public collectionName = BlCollectionName.Matches;
   public mongooseSchema = matchSchema;
   public endpoints: BlEndpoint[] = [
     {
       method: "post",
-      hook: new MatchPostHook(),
+      operations: [
+        {
+          name: "generate",
+          operation: new MatchGenerateOperation(),
+          restriction: { permissions: ["admin", "super"] },
+        },
+      ],
+      restriction: {
+        permissions: ["super"],
+      },
     },
     {
       method: "patch",
@@ -18,7 +27,12 @@ export class MatchCollection implements BlCollection {
       restriction: {
         permissions: ["customer", "employee", "admin", "super"],
       },
-      validQueryParams: [{ fieldName: "sender.customerId", type: "object-id" }],
+      validQueryParams: [
+        { fieldName: "_variant", type: "string" },
+        { fieldName: "sender", type: "object-id" },
+        { fieldName: "receiver", type: "object-id" },
+        { fieldName: "customer", type: "object-id" },
+      ],
     },
     {
       method: "getId",

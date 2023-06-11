@@ -4,6 +4,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { orderSchema } from "../../order/order.schema";
 import { PaymentValidator } from "../helpers/payment.validator";
 import { PaymentDibsHandler } from "../helpers/dibs/payment-dibs-handler";
+import { BlCollectionName } from "../../bl-collection";
 
 export class PaymentPostHook extends Hook {
   private orderStorage: BlDocumentStorage<Order>;
@@ -19,7 +20,8 @@ export class PaymentPostHook extends Hook {
     super();
     this.paymentValidator = paymentValidator ?? new PaymentValidator();
     this.orderStorage =
-      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
+      orderStorage ??
+      new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
     this.paymentDibsHandler = paymentDibsHandler ?? new PaymentDibsHandler();
   }
 

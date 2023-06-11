@@ -14,10 +14,11 @@ import { OrderToCustomerItemGenerator } from "../../../customer-item/helpers/ord
 import { Order, BlError } from "@boklisten/bl-model";
 import { OrderConfirmOperation } from "./order-confirm.operation";
 import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
+import { BlCollectionName } from "../../../bl-collection";
 
 describe("OrderConfirmOperation", () => {
   const resHandler = new SEResponseHandler();
-  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const orderPlacedHandler = new OrderPlacedHandler();
 
   const orderGetStub = sinon.stub(orderStorage, "get");

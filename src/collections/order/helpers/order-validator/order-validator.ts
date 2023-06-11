@@ -6,6 +6,7 @@ import { OrderItemValidator } from "./order-item-validator/order-item-validator"
 import { branchSchema } from "../../../branch/branch.schema";
 import { OrderFieldValidator } from "./order-field-validator/order-field-validator";
 import { OrderUserDetailValidator } from "./order-user-detail-validator/order-user-detail-validator";
+import { BlCollectionName } from "../../../bl-collection";
 
 export class OrderValidator {
   private orderPlacedValidator: OrderPlacedValidator;
@@ -34,7 +35,7 @@ export class OrderValidator {
       : new BranchValidator();
     this.branchStorage = branchStorage
       ? branchStorage
-      : new BlDocumentStorage<Branch>("branches", branchSchema);
+      : new BlDocumentStorage<Branch>(BlCollectionName.Branches, branchSchema);
     this.orderFieldValidator = orderFieldValidator
       ? orderFieldValidator
       : new OrderFieldValidator();

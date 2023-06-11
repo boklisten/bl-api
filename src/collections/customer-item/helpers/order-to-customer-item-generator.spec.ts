@@ -15,11 +15,14 @@ import {
 } from "@boklisten/bl-model";
 import { OrderToCustomerItemGenerator } from "./order-to-customer-item-generator";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("OrderToCustomerItemGenerator", () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
 
   const userDetail = {
     id: "customer1",

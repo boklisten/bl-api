@@ -6,6 +6,7 @@ import { PermissionService } from "../../../auth/permission/permission.service";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 import { DateService } from "../../../blc/date.service";
 import { BookingEmailService } from "../../../messenger/email/booking-email-service";
+import { BlCollectionName } from "../../bl-collection";
 
 export class BookingPatchHook extends Hook {
   private bookingStorage: BlDocumentStorage<Booking>;
@@ -21,7 +22,7 @@ export class BookingPatchHook extends Hook {
     super();
     this.bookingStorage =
       bookingStorage ??
-      new BlDocumentStorage<Booking>("bookings", bookingSchema);
+      new BlDocumentStorage<Booking>(BlCollectionName.Bookings, bookingSchema);
     this.permissionService = new PermissionService();
     this.dbQueryBuilder = new SEDbQueryBuilder();
     this.dateService = new DateService();

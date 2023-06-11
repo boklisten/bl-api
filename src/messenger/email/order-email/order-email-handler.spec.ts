@@ -20,6 +20,7 @@ import { dateService } from "../../../blc/date.service";
 import { EmailHandler } from "@boklisten/bl-email";
 import { isNullOrUndefined } from "util";
 import moment from "moment-timezone";
+import { BlCollectionName } from "../../../collections/bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -31,9 +32,15 @@ describe("OrderEmailHandler", () => {
   let emailSendSuccessful: boolean;
   const standardTimeFormat = "DD.MM.YYYY HH.mm.ss";
   const standardDayFormat = "DD.MM.YY";
-  const branchStorage = new BlDocumentStorage<Branch>("branches");
-  const deliveryStorage = new BlDocumentStorage<Delivery>("deliveries");
-  const paymentStorage = new BlDocumentStorage<Payment>("payments");
+  const branchStorage = new BlDocumentStorage<Branch>(
+    BlCollectionName.Branches
+  );
+  const deliveryStorage = new BlDocumentStorage<Delivery>(
+    BlCollectionName.Deliveries
+  );
+  const paymentStorage = new BlDocumentStorage<Payment>(
+    BlCollectionName.Payments
+  );
   const emailHandler = new EmailHandler({ sendgrid: { apiKey: "someKey" } });
   const orderEmailHandler = new OrderEmailHandler(
     emailHandler,

@@ -3,6 +3,7 @@ import { BlDocumentStorage } from "../storage/blDocumentStorage";
 import { BlErrorLog } from "../collections/bl-error-log/bl-error-log";
 import { blErrorLogSchema } from "../collections/bl-error-log/bl-error-log.schema";
 import { logger } from "../logger/logger";
+import { BlCollectionName } from "../collections/bl-collection";
 
 export class BlErrorHandler {
   private _errorLogStorage: BlDocumentStorage<BlErrorLog>;
@@ -10,7 +11,10 @@ export class BlErrorHandler {
   constructor(errorLogStorage?: BlDocumentStorage<BlErrorLog>) {
     this._errorLogStorage = errorLogStorage
       ? errorLogStorage
-      : new BlDocumentStorage<BlErrorLog>("blerrorlogs", blErrorLogSchema);
+      : new BlDocumentStorage<BlErrorLog>(
+          BlCollectionName.BlErrorLogs,
+          blErrorLogSchema
+        );
   }
 
   public createBlapiErrorResponse(err): BlapiErrorResponse {

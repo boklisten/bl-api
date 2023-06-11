@@ -28,6 +28,7 @@ import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
 import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
 import { logger } from "../../logger/logger";
 import { itemSchema } from "../../collections/item/item.schema";
+import { BlCollectionName } from "../../collections/bl-collection";
 
 export class EmailService implements MessengerService {
   private _emailHandler: EmailHandler;
@@ -51,7 +52,7 @@ export class EmailService implements MessengerService {
 
     this._itemStorage = itemStorage
       ? itemStorage
-      : new BlDocumentStorage<Item>("items", itemSchema);
+      : new BlDocumentStorage<Item>(BlCollectionName.Items, itemSchema);
     this._orderEmailHandler = new OrderEmailHandler(this._emailHandler);
     this._postOffice = inputPostOffice ? inputPostOffice : postOffice;
     this._postOffice.overrideLogger(logger);

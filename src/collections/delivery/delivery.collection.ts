@@ -1,10 +1,10 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { deliverySchema } from "./delivery.schema";
 import { DeliveryPostHook } from "./hooks/delivery.post.hook";
 import { DeliveryPatchHook } from "./hooks/delivery.patch.hook";
 
 export class DeliveryCollection implements BlCollection {
-  public collectionName = "deliveries";
+  public collectionName = BlCollectionName.Deliveries;
   public mongooseSchema = deliverySchema;
   public endpoints: BlEndpoint[] = [
     {

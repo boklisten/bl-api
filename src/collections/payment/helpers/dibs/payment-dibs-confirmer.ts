@@ -4,6 +4,7 @@ import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.servic
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { DibsEasyPayment } from "../../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { paymentSchema } from "../../payment.schema";
+import { BlCollectionName } from "../../../bl-collection";
 
 export class PaymentDibsConfirmer {
   constructor(
@@ -15,7 +16,7 @@ export class PaymentDibsConfirmer {
       : new DibsPaymentService();
     this._paymentStorage = _paymentStorage
       ? _paymentStorage
-      : new BlDocumentStorage("payments", paymentSchema);
+      : new BlDocumentStorage(BlCollectionName.Payments, paymentSchema);
   }
 
   public async confirm(

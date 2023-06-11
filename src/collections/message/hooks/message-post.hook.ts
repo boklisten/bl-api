@@ -7,6 +7,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { MessageHelper } from "../helper/message-helper";
 import { Messenger } from "../../../messenger/messenger";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { BlCollectionName } from "../../bl-collection";
 
 export class MessagePostHook implements Hook {
   private messengerReminder: MessengerReminder;
@@ -28,7 +29,7 @@ export class MessagePostHook implements Hook {
     this.messenger = messenger ? messenger : new Messenger();
     this.userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
   }
 
   async before(

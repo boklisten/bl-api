@@ -9,6 +9,7 @@ import { userDetailSchema } from "../../user-detail.schema";
 import { PermissionService } from "../../../../auth/permission/permission.service";
 import { isNullOrUndefined } from "util";
 import { SEResponseHandler } from "../../../../response/se.response.handler";
+import { BlCollectionName } from "../../../bl-collection";
 
 export class UserDetailPermissionOperation implements Operation {
   private _permissionService: PermissionService;
@@ -20,11 +21,11 @@ export class UserDetailPermissionOperation implements Operation {
   ) {
     this._userDetailStorage = _userDetailStorage
       ? _userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
 
     this._userStorage = _userStorage
       ? _userStorage
-      : new BlDocumentStorage("users", UserSchema);
+      : new BlDocumentStorage(BlCollectionName.Users, UserSchema);
 
     this._resHandler = _resHandler ? _resHandler : new SEResponseHandler();
 

@@ -10,12 +10,17 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { User } from "../../user/user";
 import { UserDeleteAllInfo } from "./user-delete-all-info";
 import { LocalLogin } from "../../local-login/local-login";
+import { BlCollectionName } from "../../bl-collection";
 chai.use(chaiAsPromised);
 
 describe("UserDeleteAllInfo", () => {
-  const localLoginStorage = new BlDocumentStorage<LocalLogin>("locallogins");
-  const userStorage = new BlDocumentStorage<User>("users");
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
+  const localLoginStorage = new BlDocumentStorage<LocalLogin>(
+    BlCollectionName.LocalLogins
+  );
+  const userStorage = new BlDocumentStorage<User>(BlCollectionName.Users);
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
 
   const localLoginRemoveStub = sinon.stub(localLoginStorage, "remove");
   const localLoginGetByQueryStub = sinon.stub(localLoginStorage, "getByQuery");

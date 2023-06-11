@@ -15,11 +15,16 @@ import { User } from "../../../user/user";
 import { UserDetailChangeEmailOperation } from "./user-detail-change-email.operation";
 import { LocalLogin } from "../../../local-login/local-login";
 import { UserHandler } from "../../../../auth/user/user.handler";
+import { BlCollectionName } from "../../../bl-collection";
 
 describe("UserDetailChangeEmailOperation", () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
-  const userStorage = new BlDocumentStorage<User>("users");
-  const localLoginStorage = new BlDocumentStorage<LocalLogin>("locallogins");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
+  const userStorage = new BlDocumentStorage<User>(BlCollectionName.Users);
+  const localLoginStorage = new BlDocumentStorage<LocalLogin>(
+    BlCollectionName.LocalLogins
+  );
   const userHandler = new UserHandler();
   const resHandler = new SEResponseHandler();
 

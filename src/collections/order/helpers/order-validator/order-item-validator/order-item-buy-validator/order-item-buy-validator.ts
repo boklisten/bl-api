@@ -2,6 +2,7 @@ import { BlError, Item, OrderItem, Branch, Order } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
 import { PriceService } from "../../../../../../price/price.service";
 import { orderSchema } from "../../../../order.schema";
+import { BlCollectionName } from "../../../../../bl-collection";
 
 export class OrderItemBuyValidator {
   private priceService: PriceService;
@@ -13,7 +14,8 @@ export class OrderItemBuyValidator {
   ) {
     this.priceService = priceService ?? new PriceService({ roundDown: true });
     this.orderStorage =
-      orderStorage ?? new BlDocumentStorage<Order>("orders", orderSchema);
+      orderStorage ??
+      new BlDocumentStorage<Order>(BlCollectionName.Orders, orderSchema);
   }
 
   public async validate(

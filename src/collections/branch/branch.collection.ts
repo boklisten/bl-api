@@ -1,11 +1,11 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { branchSchema } from "./branch.schema";
 import { BranchPostHook } from "./hook/branch-post.hook";
 import { BranchGetHook } from "./hook/branch-get.hook";
 import { BranchBookingTimesOperation } from "./operations/branch-booking-times.operation";
 
 export class BranchCollection implements BlCollection {
-  collectionName = "branches";
+  collectionName = BlCollectionName.Branches;
   mongooseSchema = branchSchema;
   endpoints: BlEndpoint[] = [
     {

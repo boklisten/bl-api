@@ -10,12 +10,15 @@ import { DibsPaymentService } from "./dibs-payment.service";
 import { DibsEasyOrder } from "./dibs-easy-order/dibs-easy-order";
 import { HttpHandler } from "../../http/http.handler";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../collections/bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("DibsPaymentService", () => {
   const httpHandler = new HttpHandler();
-  const deliveryStorage = new BlDocumentStorage<Delivery>("deliveries");
+  const deliveryStorage = new BlDocumentStorage<Delivery>(
+    BlCollectionName.Deliveries
+  );
   const dibsPaymentService: DibsPaymentService = new DibsPaymentService(
     deliveryStorage,
     httpHandler

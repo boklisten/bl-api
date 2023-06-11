@@ -8,6 +8,7 @@ import { User } from "../../user/user";
 import { SeCrypto } from "../../../crypto/se.crypto";
 import { Messenger } from "../../../messenger/messenger";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { BlCollectionName } from "../../bl-collection";
 
 export class PasswordResetPostHook extends Hook {
   private _userDetailStorage: BlDocumentStorage<UserDetail>;
@@ -24,7 +25,7 @@ export class PasswordResetPostHook extends Hook {
     super();
     this._userDetailStorage =
       userDetailStorage ??
-      new BlDocumentStorage("userdetails", userDetailSchema);
+      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
     this._userHandler = userHandler ?? new UserHandler();
     this._seCrypto = seCrypto ?? new SeCrypto();
     this._messenger = messenger ?? new Messenger();

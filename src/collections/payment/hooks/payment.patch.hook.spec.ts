@@ -10,12 +10,15 @@ import { PaymentPatchHook } from "./payment.patch.hook";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { PaymentDibsHandler } from "../helpers/dibs/payment-dibs-handler";
 import { PaymentValidator } from "../helpers/payment.validator";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("PaymentPatchHook", () => {
   const paymentDibsHandler = new PaymentDibsHandler();
-  const paymentStorage = new BlDocumentStorage<Payment>("payments");
+  const paymentStorage = new BlDocumentStorage<Payment>(
+    BlCollectionName.Payments
+  );
   const paymentValidator = new PaymentValidator();
   const paymentPatchHook = new PaymentPatchHook(
     paymentStorage,

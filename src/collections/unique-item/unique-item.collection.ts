@@ -1,5 +1,6 @@
 import {
   BlCollection,
+  BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
 } from "../bl-collection";
@@ -7,7 +8,7 @@ import { uniqueItemSchema } from "./unique-item.schema";
 import { UniqueItemActiveOperation } from "./operations/unique-item-active.operation";
 
 export class UniqueItemCollection implements BlCollection {
-  public collectionName = "uniqueitems";
+  public collectionName = BlCollectionName.UniqueItems;
   public mongooseSchema = uniqueItemSchema;
   documentPermission: BlDocumentPermission = {
     viewableForPermission: "employee",

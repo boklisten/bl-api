@@ -3,6 +3,7 @@ import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import { CustomerItemHandler } from "../../collections/customer-item/helpers/customer-item-handler";
 import { EmailService } from "../email/email-service";
 import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
+import { BlCollectionName } from "../../collections/bl-collection";
 
 export class MessengerReminder {
   private customerItemHandler: CustomerItemHandler;
@@ -19,7 +20,10 @@ export class MessengerReminder {
       : new CustomerItemHandler();
     this.userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage<UserDetail>("userdetails", userDetailSchema);
+      : new BlDocumentStorage<UserDetail>(
+          BlCollectionName.UserDetails,
+          userDetailSchema
+        );
     this.emailService = emailService ? emailService : new EmailService();
   }
 

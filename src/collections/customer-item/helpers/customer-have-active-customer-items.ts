@@ -3,6 +3,7 @@ import { BlError, CustomerItem } from "@boklisten/bl-model";
 import { customerItemSchema } from "../customer-item.schema";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 import { CustomerItemActive } from "./customer-item-active";
+import { BlCollectionName } from "../../bl-collection";
 
 export class CustomerHaveActiveCustomerItems {
   private queryBuilder: SEDbQueryBuilder;
@@ -11,7 +12,7 @@ export class CustomerHaveActiveCustomerItems {
   constructor(private _customerItemStorage?: BlDocumentStorage<CustomerItem>) {
     this._customerItemStorage =
       this._customerItemStorage ??
-      new BlDocumentStorage("customeritems", customerItemSchema);
+      new BlDocumentStorage(BlCollectionName.CustomerItems, customerItemSchema);
     this.queryBuilder = new SEDbQueryBuilder();
     this.customerItemActive = new CustomerItemActive();
   }

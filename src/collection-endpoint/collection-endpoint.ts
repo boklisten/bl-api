@@ -52,7 +52,7 @@ export class CollectionEndpoint<T extends BlDocument> {
   public printEndpoints() {
     for (const endpoint of this._collection.endpoints) {
       let method: string = endpoint.method;
-      let uri = this._collection.collectionName;
+      let uri = this._collection.collectionName.toString();
 
       if (method === "getAll" || method === "getId") {
         method = "get";

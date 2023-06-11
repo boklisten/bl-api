@@ -12,12 +12,13 @@ import { CustomerItem } from "@boklisten/bl-model";
 import { SEDbQuery } from "../../query/se.db-query";
 import { CustomerItemHandler } from "../../collections/customer-item/helpers/customer-item-handler";
 import { EmailService } from "../email/email-service";
+import { BlCollectionName } from "../../collections/bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("MessengerReminder", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    "customerItems"
+    BlCollectionName.CustomerItems
   );
   const customerItemHandler = new CustomerItemHandler();
   const customerItemStorageGetAllStub = sinon.stub(
@@ -31,7 +32,9 @@ describe("MessengerReminder", () => {
   const emailService = new EmailService();
   const emailServiceRemindStub = sinon.stub(emailService, "remind");
   const getNotReturnedStub = sinon.stub(customerItemHandler, "getNotReturned");
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
   const userDetailStorageGetStub = sinon.stub(userDetailStorage, "get");
 
   const messengerReminder = new MessengerReminder(

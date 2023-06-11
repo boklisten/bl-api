@@ -12,6 +12,7 @@ import {
 } from "@boklisten/bl-model";
 import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
+import { BlCollectionName } from "../../../bl-collection";
 
 export class OrderConfirmOperation implements Operation {
   private _queryBuilder: SEDbQueryBuilder;
@@ -27,7 +28,7 @@ export class OrderConfirmOperation implements Operation {
 
     this._orderStorage = this._orderStorage
       ? this._orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
+      : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
 
     this._orderPlacedHandler = this._orderPlacedHandler
       ? this._orderPlacedHandler

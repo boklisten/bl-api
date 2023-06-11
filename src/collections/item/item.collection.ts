@@ -1,10 +1,10 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { itemSchema } from "./item.schema";
 import { ItemPostHook } from "./hook/item-post.hook";
 import { ItemPatchHook } from "./hook/item-patch.hook";
 
 export class ItemCollection implements BlCollection {
-  collectionName = "items";
+  collectionName = BlCollectionName.Items;
   mongooseSchema = itemSchema;
   endpoints: BlEndpoint[] = [
     {

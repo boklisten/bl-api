@@ -11,6 +11,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { PasswordReset } from "../password-reset";
 import { PasswordResetOperation } from "./password-reset.operation";
 import { Response } from "express";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -19,7 +20,7 @@ describe("PasswordResetOperation", () => {
   let testPasswordReset: PasswordReset;
   let testRedirectPath: string;
   const passwordResetStorage = new BlDocumentStorage<PasswordReset>(
-    "passwordresets"
+    BlCollectionName.PasswordResets
   );
   const passwordResetOperation = new PasswordResetOperation(
     passwordResetStorage

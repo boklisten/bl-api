@@ -8,6 +8,7 @@ import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
 import { Payment, Delivery, Order, BlError } from "@boklisten/bl-model";
 import { OrderPlacedValidator } from "./order-placed-validator";
 import sinon from "sinon";
+import { BlCollectionName } from "../../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -15,11 +16,11 @@ describe("OrderPlacedValidator", () => {
   describe("#validate()", () => {
     let testOrder: Order;
     const paymentStorage: BlDocumentStorage<Payment> = new BlDocumentStorage(
-      "payments"
+      BlCollectionName.Payments
     );
 
     const deliveryStorage: BlDocumentStorage<Delivery> = new BlDocumentStorage(
-      "deliveries"
+      BlCollectionName.Deliveries
     );
     const orderPlacedValidator = new OrderPlacedValidator(
       deliveryStorage,

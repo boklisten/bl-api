@@ -5,6 +5,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { messageSchema } from "../message.schema";
 import { Request, Response, NextFunction } from "express";
 import { logger } from "../../../logger/logger";
+import { BlCollectionName } from "../../bl-collection";
 
 export class TwilioSmsEventOperation implements Operation {
   private _messageStorage: BlDocumentStorage<Message>;
@@ -12,7 +13,10 @@ export class TwilioSmsEventOperation implements Operation {
   constructor(messageStorage?: BlDocumentStorage<Message>) {
     this._messageStorage = messageStorage
       ? messageStorage
-      : new BlDocumentStorage<Message>("messages", messageSchema);
+      : new BlDocumentStorage<Message>(
+          BlCollectionName.Messages,
+          messageSchema
+        );
   }
 
   public async run(

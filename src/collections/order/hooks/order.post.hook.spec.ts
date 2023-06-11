@@ -18,17 +18,18 @@ import { orderSchema } from "../order.schema";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { OrderHookBefore } from "./order-hook-before";
 import { OrderPostHook } from "./order.post.hook";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("OrderPostHook", () => {
   const orderValidator: OrderValidator = new OrderValidator();
   const orderStorage: BlDocumentStorage<Order> = new BlDocumentStorage(
-    "orders",
+    BlCollectionName.Orders,
     orderSchema
   );
   const userDetailStorage: BlDocumentStorage<UserDetail> =
-    new BlDocumentStorage("userdetails", userDetailSchema);
+    new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
   const orderHookBefore: OrderHookBefore = new OrderHookBefore();
   const orderPostHook: OrderPostHook = new OrderPostHook(
     orderValidator,

@@ -15,12 +15,15 @@ import {
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import sinonChai from "sinon-chai";
 import { MessageHelper } from "./message-helper";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 describe("MessageHelper", () => {
-  const messageStorage = new BlDocumentStorage<Message>("messages");
+  const messageStorage = new BlDocumentStorage<Message>(
+    BlCollectionName.Messages
+  );
   const messageHelper = new MessageHelper(messageStorage);
 
   const messageStorageGetByQueryStub = sinon.stub(messageStorage, "getByQuery");

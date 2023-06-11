@@ -1,4 +1,8 @@
-import { MatchableUser, MatchTypes, NewMatch } from "./match-types";
+import {
+  MatchableUser,
+  CandidateMatch,
+  CandidateMatchVariant,
+} from "./match-types";
 import { difference, hasDifference, intersect } from "../set-methods";
 
 /**
@@ -27,12 +31,13 @@ export function sortUsersNumberOfItemsDescending(users: MatchableUser[]) {
  */
 export function sortUsersForPartialMatching(
   users: MatchableUser[],
-  matches: NewMatch[]
+  matches: CandidateMatch[]
 ) {
   const hasStandMatch = (user: MatchableUser) =>
     matches.some(
       (match) =>
-        match.type === MatchTypes.StandMatch && match.userId === user.id
+        match.variant === CandidateMatchVariant.StandMatch &&
+        match.userId === user.id
     );
 
   users.sort((a, b) => {

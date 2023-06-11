@@ -12,11 +12,14 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { SEResponseHandler } from "../../../response/se.response.handler";
 import { TwilioSmsEventOperation } from "./twillio-sms-event.operation";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("TwilioSmsEventOperation", () => {
-  const messageStorage = new BlDocumentStorage<Message>("messages");
+  const messageStorage = new BlDocumentStorage<Message>(
+    BlCollectionName.Messages
+  );
 
   const twilioSmsEventOperation = new TwilioSmsEventOperation(messageStorage);
 

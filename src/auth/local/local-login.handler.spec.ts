@@ -12,6 +12,7 @@ import { SEDbQuery } from "../../query/se.db-query";
 import { BlError } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import local from "commander";
+import { BlCollectionName } from "../../collections/bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -26,7 +27,7 @@ const dummyLocalLogin = {
 
 describe("LocalLoginHandler", () => {
   const localLoginStorage = new BlDocumentStorage<LocalLogin>(
-    "locallogins",
+    BlCollectionName.LocalLogins,
     localLoginSchema
   );
   const baseLocalLogin = {

@@ -9,11 +9,12 @@ import { BlError, Item, Branch, Order } from "@boklisten/bl-model";
 import { PriceService } from "../../../../../../price/price.service";
 import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
 import { OrderItemRentValidator } from "./order-item-rent-validator";
+import { BlCollectionName } from "../../../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("OrderItemRentValidator", () => {
-  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const orderItemRentValidator = new OrderItemRentValidator(orderStorage);
   const priceService = new PriceService({ roundDown: true });
 

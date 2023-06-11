@@ -10,14 +10,15 @@ import { Payment, Order, BlError, AccessToken } from "@boklisten/bl-model";
 import { PaymentPostHook } from "./payment.post.hook";
 import { PaymentValidator } from "../helpers/payment.validator";
 import { PaymentDibsHandler } from "../helpers/dibs/payment-dibs-handler";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("PaymentPostHook", () => {
   const paymentValidator = new PaymentValidator();
-  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const paymentStorage: BlDocumentStorage<Payment> = new BlDocumentStorage(
-    "payments"
+    BlCollectionName.Payments
   );
   const paymentDibsHandler = new PaymentDibsHandler();
   const paymentPostHook = new PaymentPostHook(

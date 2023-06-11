@@ -9,14 +9,17 @@ import { BlError, AccessToken, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { UserCanDeleteUserDetail } from "./user-can-delete-user-detail";
 import { User } from "../../user/user";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("UserCanDeleteUserDetail", () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
   const userDetailGetIdStub = sinon.stub(userDetailStorage, "get");
 
-  const userStorage = new BlDocumentStorage<User>("users");
+  const userStorage = new BlDocumentStorage<User>(BlCollectionName.Users);
   const userGetByQueryStub = sinon.stub(userStorage, "getByQuery");
 
   const userCanDeleteUserDetail = new UserCanDeleteUserDetail(

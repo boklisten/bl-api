@@ -10,6 +10,7 @@ import { DeliveryValidator } from "./delivery-validator";
 import { DeliveryBranchHandler } from "../deliveryBranch/delivery-branch-handler";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { DeliveryBringHandler } from "../deliveryBring/delivery-bring-handler";
+import { BlCollectionName } from "../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -18,7 +19,7 @@ describe("DeliveryValidator", () => {
   let testOrder: Order;
   const deliveryBranchHandler = new DeliveryBranchHandler();
   const deliveryBringHandler = new DeliveryBringHandler();
-  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const deliveryValidator = new DeliveryValidator(
     orderStorage,
     deliveryBranchHandler,

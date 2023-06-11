@@ -3,6 +3,7 @@ import { Payment, Order, BlError, Delivery } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { orderSchema } from "../../order/order.schema";
 import { deliverySchema } from "../../delivery/delivery.schema";
+import { BlCollectionName } from "../../bl-collection";
 
 export class PaymentValidator {
   private orderStorage?: BlDocumentStorage<Order>;
@@ -15,10 +16,13 @@ export class PaymentValidator {
   ) {
     this.orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
+      : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
     this.deliveryStorage = deliveryStorage
       ? deliveryStorage
-      : new BlDocumentStorage<Delivery>("deliveries", deliverySchema);
+      : new BlDocumentStorage<Delivery>(
+          BlCollectionName.Deliveries,
+          deliverySchema
+        );
   }
 
   public validate(payment: Payment): Promise<boolean> {

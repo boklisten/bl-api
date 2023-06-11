@@ -12,12 +12,13 @@ import { PasswordReset } from "../password-reset";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { LocalLoginHandler } from "../../../auth/local/local-login.handler";
 import { SEResponseHandler } from "../../../response/se.response.handler";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("PasswordResetNewOperation", () => {
   const passwordResetStorage = new BlDocumentStorage<PasswordReset>(
-    "passwordresets"
+    BlCollectionName.PasswordResets
   );
   const localLoginHandler = new LocalLoginHandler();
   const resHandler = new SEResponseHandler();

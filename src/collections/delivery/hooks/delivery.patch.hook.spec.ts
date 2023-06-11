@@ -10,13 +10,19 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
 import { DeliveryPatchHook } from "./delivery.patch.hook";
 import { orderSchema } from "../../order/order.schema";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("DeliveryPatchHook", () => {
-  const deliveryStorage = new BlDocumentStorage<Delivery>("deliveries");
+  const deliveryStorage = new BlDocumentStorage<Delivery>(
+    BlCollectionName.Deliveries
+  );
   const deliveryValidator = new DeliveryValidator();
-  const orderStorage = new BlDocumentStorage<Order>("orders", orderSchema);
+  const orderStorage = new BlDocumentStorage<Order>(
+    BlCollectionName.Orders,
+    orderSchema
+  );
   const deliveryPatchHook = new DeliveryPatchHook(
     deliveryValidator,
     deliveryStorage,

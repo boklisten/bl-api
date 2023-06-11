@@ -17,15 +17,22 @@ import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.service";
 import { DibsEasyOrder } from "../../../../payment/dibs/dibs-easy-order/dibs-easy-order";
 import { PaymentDibsHandler } from "./payment-dibs-handler";
+import { BlCollectionName } from "../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("PaymentDibsHandler", () => {
-  const orderStorage = new BlDocumentStorage<Order>("orders");
-  const paymentStorage = new BlDocumentStorage<Payment>("payments");
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
+  const paymentStorage = new BlDocumentStorage<Payment>(
+    BlCollectionName.Payments
+  );
   const dibsPaymentService = new DibsPaymentService();
-  const deliveryStorage = new BlDocumentStorage<Delivery>("deliveries");
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userDetails");
+  const deliveryStorage = new BlDocumentStorage<Delivery>(
+    BlCollectionName.Deliveries
+  );
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
 
   const paymentDibsHandler = new PaymentDibsHandler(
     paymentStorage,

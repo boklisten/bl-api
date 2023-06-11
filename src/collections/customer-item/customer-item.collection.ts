@@ -1,5 +1,6 @@
 import {
   BlCollection,
+  BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
 } from "../bl-collection";
@@ -9,7 +10,7 @@ import { userDetailSchema } from "../../collections/user-detail/user-detail.sche
 import { itemSchema } from "../../collections/item/item.schema";
 
 export class CustomerItemCollection implements BlCollection {
-  collectionName = "customeritems";
+  collectionName = BlCollectionName.CustomerItems;
   mongooseSchema = customerItemSchema;
   documentPermission: BlDocumentPermission = {
     viewableForPermission: "employee",
@@ -44,12 +45,12 @@ export class CustomerItemCollection implements BlCollection {
       nestedDocuments: [
         {
           field: "customer",
-          collection: "userdetails",
+          collection: BlCollectionName.UserDetails,
           mongooseSchema: userDetailSchema,
         },
         {
           field: "item",
-          collection: "items",
+          collection: BlCollectionName.Items,
           mongooseSchema: itemSchema,
         },
       ],

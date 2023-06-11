@@ -3,6 +3,7 @@ import { Invoice, BlError } from "@boklisten/bl-model";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 import { invoiceSchema } from "../invoice.schema";
 import { InvoiceActive } from "./invoice-active";
+import { BlCollectionName } from "../../bl-collection";
 
 export class CustomerInvoiceActive {
   private queryBuilder: SEDbQueryBuilder;
@@ -10,7 +11,8 @@ export class CustomerInvoiceActive {
 
   constructor(private invoiceStorage?: BlDocumentStorage<Invoice>) {
     this.invoiceStorage =
-      this.invoiceStorage ?? new BlDocumentStorage("invoices", invoiceSchema);
+      this.invoiceStorage ??
+      new BlDocumentStorage(BlCollectionName.Invoices, invoiceSchema);
     this.queryBuilder = new SEDbQueryBuilder();
     this.invoiceActive = new InvoiceActive();
   }

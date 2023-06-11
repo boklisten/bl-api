@@ -4,6 +4,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { OrderValidator } from "../helpers/order-validator/order-validator";
 import { orderSchema } from "../order.schema";
 import { OrderPlacedHandler } from "../helpers/order-placed-handler/order-placed-handler";
+import { BlCollectionName } from "../../bl-collection";
 
 export class OrderPatchHook extends Hook {
   private orderValidator: OrderValidator;
@@ -18,7 +19,8 @@ export class OrderPatchHook extends Hook {
   ) {
     super();
     this.orderStorage =
-      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
+      orderStorage ??
+      new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
     this.orderValidator = orderValidator ?? new OrderValidator();
     this.orderPlacedHandler = orderPlacedHandler ?? new OrderPlacedHandler();
   }

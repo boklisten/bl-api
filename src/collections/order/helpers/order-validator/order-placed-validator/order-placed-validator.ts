@@ -3,6 +3,7 @@ import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
 import { deliverySchema } from "../../../../delivery/delivery.schema";
 import { paymentSchema } from "../../../../payment/payment.schema";
 import { isNullOrUndefined } from "util";
+import { BlCollectionName } from "../../../../bl-collection";
 
 export class OrderPlacedValidator {
   private deliveryStorage: BlDocumentStorage<Delivery>;
@@ -14,10 +15,10 @@ export class OrderPlacedValidator {
   ) {
     this.deliveryStorage = deliveryStorage
       ? deliveryStorage
-      : new BlDocumentStorage("deliveries", deliverySchema);
+      : new BlDocumentStorage(BlCollectionName.Deliveries, deliverySchema);
     this.paymentStorage = paymentStorage
       ? paymentStorage
-      : new BlDocumentStorage("payments", paymentSchema);
+      : new BlDocumentStorage(BlCollectionName.Payments, paymentSchema);
   }
 
   public validate(order: Order): Promise<boolean> {

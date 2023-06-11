@@ -3,6 +3,7 @@ import { AccessToken, BlError, UserDetail } from "@boklisten/bl-model";
 import { userDetailSchema } from "../user-detail.schema";
 import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { isNullOrUndefined } from "util";
+import { BlCollectionName } from "../../bl-collection";
 
 export class UserDetailHelper {
   private _userDetailStorage: BlDocumentStorage<UserDetail>;
@@ -10,7 +11,7 @@ export class UserDetailHelper {
   constructor(userDetailStorage?: BlDocumentStorage<UserDetail>) {
     this._userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
   }
 
   public updateUserDetailBasedOnDibsEasyPayment(

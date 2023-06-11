@@ -10,6 +10,7 @@ import { Messenger } from "../../../messenger/messenger";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { EmailValidationHelper } from "./email-validation.helper";
 import { EmailValidation } from "../email-validation";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -17,7 +18,7 @@ describe("EmailValidationHelper", () => {
   const messenger = new Messenger();
   const userDetailStorage = new BlDocumentStorage<UserDetail>("user_details");
   const emailValidationStorage = new BlDocumentStorage<EmailValidation>(
-    "email_validations"
+    BlCollectionName.EmailValidations
   );
   const emailValidationHelper = new EmailValidationHelper(
     messenger,

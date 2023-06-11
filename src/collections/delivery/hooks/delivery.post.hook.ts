@@ -11,6 +11,7 @@ import { orderSchema } from "../../order/order.schema";
 import { BringDeliveryService } from "../helpers/deliveryBring/bringDelivery.service";
 import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
 import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
+import { BlCollectionName } from "../../bl-collection";
 
 export class DeliveryPostHook extends Hook {
   private orderStorage: BlDocumentStorage<Order>;
@@ -31,7 +32,8 @@ export class DeliveryPostHook extends Hook {
     this.deliveryValidator = deliveryValidator ?? new DeliveryValidator();
     this.deliveryHandler = deliveryHandler ?? new DeliveryHandler();
     this.orderStorage =
-      orderStorage ?? new BlDocumentStorage("orders", orderSchema);
+      orderStorage ??
+      new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
   }
 
   public override after(

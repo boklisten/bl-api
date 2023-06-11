@@ -21,6 +21,7 @@ import { OrderPlacedValidator } from "./order-placed-validator/order-placed-vali
 import { BranchValidator } from "./branch-validator/branch-validator";
 import { OrderUserDetailValidator } from "./order-user-detail-validator/order-user-detail-validator";
 import { OrderFieldValidator } from "./order-field-validator/order-field-validator";
+import { BlCollectionName } from "../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -29,7 +30,7 @@ describe("OrderValidator", () => {
   let testBranch: Branch;
 
   const branchStorage: BlDocumentStorage<Branch> = new BlDocumentStorage(
-    "branches"
+    BlCollectionName.Branches
   );
   const orderUserDetailValidator = new OrderUserDetailValidator();
 

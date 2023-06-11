@@ -12,11 +12,14 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { SEResponseHandler } from "../../../response/se.response.handler";
 import { SendgridEventOperation } from "./sendgrid-event.operation";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("SendgridEventOperation", () => {
-  const messageStorage = new BlDocumentStorage<Message>("messages");
+  const messageStorage = new BlDocumentStorage<Message>(
+    BlCollectionName.Messages
+  );
 
   const sendgridEventOperation = new SendgridEventOperation(messageStorage);
 

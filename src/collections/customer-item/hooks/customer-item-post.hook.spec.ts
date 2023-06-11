@@ -17,6 +17,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { CustomerItemValidator } from "../validators/customer-item-validator";
 import { CustomerItemPostHook } from "./customer-item-post.hook";
 import sinonChai from "sinon-chai";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -28,10 +29,12 @@ describe("CustomerItemPostHook", () => {
   let validateCustomerItem: boolean;
   let testUserDetail: UserDetail;
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    "customeritems"
+    BlCollectionName.CustomerItems
   );
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
-  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const customerItemValidator = new CustomerItemValidator(customerItemStorage);
   const customerItemPostHook = new CustomerItemPostHook(
     customerItemValidator,

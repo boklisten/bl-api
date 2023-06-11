@@ -11,14 +11,17 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { EmailValidation } from "../email-validation";
 import { SEResponseHandler } from "../../../response/se.response.handler";
 import { Request, Response } from "express";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("EmailValidationConfirmOperation", () => {
   const emailValidationStorage = new BlDocumentStorage<EmailValidation>(
-    "email_validations"
+    BlCollectionName.EmailValidations
   );
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("user_details");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
   const resHandler = new SEResponseHandler();
   const emailValidationConfirmOperation = new EmailValidationConfirmOperation(
     emailValidationStorage,

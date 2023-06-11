@@ -15,12 +15,13 @@ import {
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
 import { OrderItemExtendValidator } from "./order-item-extend-validator";
+import { BlCollectionName } from "../../../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("OrderItemExtendValidator", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    "customeritems"
+    BlCollectionName.CustomerItems
   );
   const orderItemExtendValidator = new OrderItemExtendValidator(
     customerItemStorage

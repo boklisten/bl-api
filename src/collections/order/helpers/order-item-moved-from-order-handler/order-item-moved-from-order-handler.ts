@@ -2,6 +2,7 @@ import { BlError, Order } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { SystemUser } from "../../../../auth/permission/permission.service";
 import { orderSchema } from "../../order.schema";
+import { BlCollectionName } from "../../../bl-collection";
 
 type OrderItemToUpdate = {
   itemId: string;
@@ -15,7 +16,7 @@ export class OrderItemMovedFromOrderHandler {
   constructor(orderStorage?: BlDocumentStorage<Order>) {
     this._orderStorage = orderStorage
       ? orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
+      : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
   }
 
   public async updateOrderItems(order: Order): Promise<boolean> {

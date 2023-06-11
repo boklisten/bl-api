@@ -15,20 +15,18 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { Matcher } from "../collections/match/helpers/matcher/matcher";
 
 export class Server {
   public app: Application;
   private router: Router;
 
-  constructor(private _matcher?: Matcher) {
+  constructor() {
     this.printServerStartMessage();
     this.initialServerConfig();
     this.initialPassportConfig();
     new BlAuth(this.router);
     this.generateEndpoints();
     this.connectToDbAndStartServer();
-    this._matcher = this._matcher ?? new Matcher();
   }
 
   private connectToDbAndStartServer() {
@@ -144,13 +142,6 @@ export class Server {
       }
       next();
     };
-
-    // Temporary to genererate matches for a set of orders
-    this.app.post("/matchOrders", (req, res) => {
-      const orders = req.body.orders;
-      this._matcher.matchOrders(orders);
-      res.send({ matched: orders });
-    });
 
     this.app.get("*", (req, res, next) => {
       if (

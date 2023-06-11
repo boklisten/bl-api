@@ -8,11 +8,12 @@ import sinon from "sinon";
 import { BlError, Order } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { OrderActive } from "./order-active";
+import { BlCollectionName } from "../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("OrderActive", () => {
-  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const getOrderByQueryStub = sinon.stub(orderStorage, "getByQuery");
   const orderActive = new OrderActive(orderStorage);
   const testUserId = "5d765db5fc8c47001c408d8d";

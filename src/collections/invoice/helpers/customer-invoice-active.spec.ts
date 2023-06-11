@@ -8,10 +8,13 @@ import sinon from "sinon";
 import { BlError, Invoice } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { CustomerInvoiceActive } from "./customer-invoice-active";
+import { BlCollectionName } from "../../bl-collection";
 chai.use(chaiAsPromised);
 
 describe("CustomerInvoiceActive", () => {
-  const invoiceStorage = new BlDocumentStorage<Invoice>("invoices");
+  const invoiceStorage = new BlDocumentStorage<Invoice>(
+    BlCollectionName.Invoices
+  );
   const getInvoicesByQueryStub = sinon.stub(invoiceStorage, "getByQuery");
   const customerInvoiceActive = new CustomerInvoiceActive(invoiceStorage);
   const testUserId = "5f2aa6e8d39045001c444842";

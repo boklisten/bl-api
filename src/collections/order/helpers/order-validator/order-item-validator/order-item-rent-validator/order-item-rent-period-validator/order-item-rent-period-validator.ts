@@ -1,11 +1,11 @@
-import { Period } from "@boklisten/bl-model/dist/period/period";
-import { BlError, Order, OrderItem } from "@boklisten/bl-model";
-import { BranchPaymentInfo } from "@boklisten/bl-model/dist/branch/branch-payment-info";
+import { BlError, Order, OrderItem, Period } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../../../../storage/blDocumentStorage";
 import { orderSchema } from "../../../../../order.schema";
 import { PriceService } from "../../../../../../../price/price.service";
 import { APP_CONFIG } from "../../../../../../../application-config";
 import { isNullOrUndefined } from "util";
+import { BlCollectionName } from "../../../../../../bl-collection";
+import { BranchPaymentInfo } from "@boklisten/bl-model/branch/branch-payment-info";
 
 type BranchPaymentPeriod = {
   type: Period;
@@ -20,7 +20,7 @@ export class OrderItemRentPeriodValidator {
   constructor(private _orderStorage?: BlDocumentStorage<Order>) {
     this._orderStorage = _orderStorage
       ? _orderStorage
-      : new BlDocumentStorage("orders", orderSchema);
+      : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
     this._priceService = new PriceService(
       APP_CONFIG.payment.paymentServiceConfig
     );

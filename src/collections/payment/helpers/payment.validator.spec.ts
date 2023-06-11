@@ -9,11 +9,16 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 chai.use(chaiAsPromised);
 import { expect } from "chai";
 import { Payment, Order, BlError, Branch, Delivery } from "@boklisten/bl-model";
+import { BlCollectionName } from "../../bl-collection";
 
 describe("PaymentValidator", () => {
-  const orderStorage = new BlDocumentStorage<Order>("orders");
-  const paymentStorage = new BlDocumentStorage<Payment>("payments");
-  const deliveryStorage = new BlDocumentStorage<Delivery>("deliveries");
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
+  const paymentStorage = new BlDocumentStorage<Payment>(
+    BlCollectionName.Payments
+  );
+  const deliveryStorage = new BlDocumentStorage<Delivery>(
+    BlCollectionName.Deliveries
+  );
   const paymentValidator = new PaymentValidator(
     orderStorage,
     paymentStorage,

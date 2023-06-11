@@ -1,11 +1,11 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { MessagePostHook } from "./hooks/message-post.hook";
 import { messageSchema } from "./message.schema";
 import { SendgridEventOperation } from "./operations/sendgrid-event.operation";
 import { TwilioSmsEventOperation } from "./operations/twillio-sms-event.operation";
 
 export class MessageCollection implements BlCollection {
-  public collectionName = "messages";
+  public collectionName = BlCollectionName.Messages;
   public mongooseSchema = messageSchema;
   public endpoints: BlEndpoint[] = [
     {

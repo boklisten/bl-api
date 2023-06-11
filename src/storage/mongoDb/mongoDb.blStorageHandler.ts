@@ -9,6 +9,7 @@ import { NestedDocument } from "../nested-document";
 import { ExpandFilter } from "../../query/expand-filter/db-query-expand-filter";
 import mongoose from "mongoose";
 import { logger } from "../../logger/logger";
+import { BlCollectionName } from "../../collections/bl-collection";
 
 export class MongoDbBlStorageHandler<T extends BlDocument>
   implements BlStorageHandler<T>
@@ -16,7 +17,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   private mongooseModel: any;
   private permissionService: PermissionService;
 
-  constructor(collectionName: string, schema: any) {
+  constructor(collectionName: BlCollectionName, schema: any) {
     mongoose.Promise = require("bluebird");
     const mongooseModelCreator = new MongooseModelCreator(
       collectionName,
@@ -199,9 +200,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   }
 
   public addMany(docs: T[]): Promise<T[]> {
-    return new Promise((resolve, reject) => {
-      reject(new BlError("not implemented"));
-    });
+    return this.mongooseModel.insertMany(docs);
   }
 
   public update(

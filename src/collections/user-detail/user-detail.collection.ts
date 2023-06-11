@@ -1,5 +1,6 @@
 import {
   BlCollection,
+  BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
 } from "../bl-collection";
@@ -12,7 +13,7 @@ import { UserDetailChangeEmailOperation } from "./operations/change-email/user-d
 import { UserDetailUpdateHook } from "./hooks/user-detail-update.hook";
 
 export class UserDetailCollection implements BlCollection {
-  collectionName = "userdetails";
+  collectionName = BlCollectionName.UserDetails;
   mongooseSchema = userDetailSchema;
   documentPermission: BlDocumentPermission = {
     viewableForPermission: "employee",

@@ -1,5 +1,10 @@
 import { difference, hasDifference, intersect, union } from "../set-methods";
-import { MatchableUser, MatchTypes, NewMatch, StandMatch } from "./match-types";
+import {
+  MatchableUser,
+  CandidateMatch,
+  CandidateStandMatch,
+  CandidateMatchVariant,
+} from "./match-types";
 import {
   calculateItemImbalances,
   calculateUnmatchableItems,
@@ -21,7 +26,7 @@ export class MatchFinder {
   public receivers: MatchableUser[];
   public unmatchableItems: Set<string> = new Set();
 
-  private matches: NewMatch[] = [];
+  private matches: CandidateMatch[] = [];
   private readonly MAX_USER_MATCH_COUNT = 2;
 
   constructor(
@@ -96,9 +101,13 @@ export class MatchFinder {
 
     for (const match of this.matches) {
       const senderId =
-        match.type === MatchTypes.StandMatch ? match.userId : match.senderId;
+        match.variant === CandidateMatchVariant.StandMatch
+          ? match.userId
+          : match.senderId;
       const sentItems =
-        match.type === MatchTypes.StandMatch ? match.handoffItems : match.items;
+        match.variant === CandidateMatchVariant.StandMatch
+          ? match.handoffItems
+          : match.items;
       const sender: MatchableUser = originalSenders.find(
         (sender) => sender.id === senderId
       );
@@ -111,9 +120,13 @@ export class MatchFinder {
       }
 
       const receiverId =
-        match.type === MatchTypes.StandMatch ? match.userId : match.receiverId;
+        match.variant === CandidateMatchVariant.StandMatch
+          ? match.userId
+          : match.receiverId;
       const receivedItems =
-        match.type === MatchTypes.StandMatch ? match.pickupItems : match.items;
+        match.variant === CandidateMatchVariant.StandMatch
+          ? match.pickupItems
+          : match.items;
       const receiver: MatchableUser = originalReceivers.find(
         (receiver) => receiver.id === receiverId
       );
@@ -217,7 +230,7 @@ export class MatchFinder {
 
     const isLimited = this.matches.some((match) => {
       if (
-        match.type === MatchTypes.UserMatch &&
+        match.variant === CandidateMatchVariant.UserMatch &&
         match[matchTypeId] === user.id
       ) {
         count++;
@@ -301,7 +314,7 @@ export class MatchFinder {
       senderId: sender.id,
       receiverId: receiver.id,
       items: matchableItems,
-      type: MatchTypes.UserMatch,
+      variant: CandidateMatchVariant.UserMatch,
     });
 
     receiver.items = difference(receiver.items, matchableItems);
@@ -329,8 +342,9 @@ export class MatchFinder {
 
     const existingMatch = this.matches.find(
       (match) =>
-        match.type === MatchTypes.StandMatch && match.userId === user.id
-    ) as StandMatch | undefined;
+        match.variant === CandidateMatchVariant.StandMatch &&
+        (match as CandidateStandMatch).userId === user.id
+    ) as CandidateStandMatch | undefined;
 
     if (existingMatch) {
       if (userIsSender) {
@@ -348,11 +362,11 @@ export class MatchFinder {
       return;
     }
 
-    const match: StandMatch = {
+    const match: CandidateStandMatch = {
       handoffItems: userIsSender ? remainingItems : new Set(),
       pickupItems: userIsSender ? new Set() : remainingItems,
       userId: user.id,
-      type: MatchTypes.StandMatch,
+      variant: CandidateMatchVariant.StandMatch,
     };
 
     this.matches.push(match);

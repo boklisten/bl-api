@@ -9,13 +9,14 @@ import sinon from "sinon";
 import { BlError, Order, Delivery, AccessToken } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { DeliveryHandler } from "./delivery-handler";
+import { BlCollectionName } from "../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 let testOrder: Order;
 let testDelivery: Delivery;
 let testAccessToken: AccessToken;
-const orderStorage = new BlDocumentStorage<Order>("orders");
+const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
 let canUpdateOrder = true;
 
 const deliveryHandler = new DeliveryHandler(orderStorage);

@@ -5,13 +5,17 @@ import { BlStorageHandler } from "./blStorageHandler";
 import { MongoDbBlStorageHandler } from "./mongoDb/mongoDb.blStorageHandler";
 import { SEDbQuery } from "../query/se.db-query";
 import { NestedDocument } from "./nested-document";
+import { BlCollectionName } from "../collections/bl-collection";
 
 export class BlDocumentStorage<T extends BlDocument>
   implements BlStorageHandler<T>
 {
   private mongoDbHandler: MongoDbBlStorageHandler<T>;
 
-  constructor(private collectionName: string, private mongooseSchema?: any) {
+  constructor(
+    private collectionName: BlCollectionName,
+    private mongooseSchema?: any
+  ) {
     if (mongooseSchema) {
       this.mongoDbHandler = new MongoDbBlStorageHandler(
         collectionName,
@@ -96,9 +100,7 @@ export class BlDocumentStorage<T extends BlDocument>
   }
 
   addMany(docs: T[]): Promise<T[]> {
-    return new Promise((resolve, reject) => {
-      reject(new BlError("not implemented"));
-    });
+    return this.mongoDbHandler.addMany(docs);
   }
 
   update(

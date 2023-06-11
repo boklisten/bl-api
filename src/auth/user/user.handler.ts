@@ -9,6 +9,7 @@ import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import { EmailValidationHelper } from "../../collections/email-validation/helpers/email-validation.helper";
 import { SystemUser } from "../permission/permission.service";
 import { LocalLoginHandler } from "../local/local-login.handler";
+import { BlCollectionName } from "../../collections/bl-collection";
 
 export class UserHandler {
   private blid: Blid;
@@ -26,13 +27,13 @@ export class UserHandler {
     this.blid = new Blid();
     this.userDetailStorage = userDetailStorage
       ? userDetailStorage
-      : new BlDocumentStorage("userdetails", userDetailSchema);
+      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
     this._emailValidationHelper = emailValidationHelper
       ? emailValidationHelper
       : new EmailValidationHelper();
     this.userStorage = userStorage
       ? userStorage
-      : new BlDocumentStorage("users", UserSchema);
+      : new BlDocumentStorage(BlCollectionName.Users, UserSchema);
     this._localLoginHandler = localLoginHandler
       ? localLoginHandler
       : new LocalLoginHandler();

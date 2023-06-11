@@ -20,6 +20,7 @@ import { PaymentHandler } from "../../../payment/helpers/payment-handler";
 import { Messenger } from "../../../../messenger/messenger";
 import { OrderItemMovedFromOrderHandler } from "../order-item-moved-from-order-handler/order-item-moved-from-order-handler";
 import { CustomerItemHandler } from "../../../customer-item/helpers/customer-item-handler";
+import { BlCollectionName } from "../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
@@ -33,11 +34,13 @@ describe("OrderPlacedHandler", () => {
   let userDeatilUpdate: boolean;
 
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    "customeritems"
+    BlCollectionName.CustomerItems
   );
-  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const paymentHandler = new PaymentHandler();
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
   const messenger = new Messenger();
   const orderItemMovedFromOrderHandler = new OrderItemMovedFromOrderHandler();
   const customerItemHandler = new CustomerItemHandler();

@@ -5,6 +5,7 @@ import { PasswordReset } from "../password-reset";
 import { passwordResetSchema } from "../password-reset.schema";
 import { BlError } from "@boklisten/bl-model";
 import { Request, NextFunction, Response } from "express";
+import { BlCollectionName } from "../../bl-collection";
 
 export class PasswordResetOperation implements Operation {
   private _passwordResetStorage: BlDocumentStorage<PasswordReset>;
@@ -12,7 +13,10 @@ export class PasswordResetOperation implements Operation {
   constructor(passwordResetStorage?: BlDocumentStorage<PasswordReset>) {
     this._passwordResetStorage = passwordResetStorage
       ? passwordResetStorage
-      : new BlDocumentStorage("passwordresets", passwordResetSchema);
+      : new BlDocumentStorage(
+          BlCollectionName.PasswordResets,
+          passwordResetSchema
+        );
   }
 
   run(

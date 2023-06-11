@@ -8,11 +8,12 @@ import sinon from "sinon";
 import { BlError, Order } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../../../../storage/blDocumentStorage";
 import { OrderItemRentPeriodValidator } from "./order-item-rent-period-validator";
+import { BlCollectionName } from "../../../../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("OrderItemRentPeriodValidator", () => {
-  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const orderItemRentPeriodValidator = new OrderItemRentPeriodValidator(
     orderStorage
   );

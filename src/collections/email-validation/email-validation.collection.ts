@@ -1,10 +1,10 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { emailValidationSchema } from "./email-validation.schema";
 import { EmailValidationConfirmOperation } from "./operations/email-validation-confirm.operation";
 import { EmailValidationPostHook } from "./hooks/email-validation-post.hook";
 
 export class EmailValidationCollection implements BlCollection {
-  public collectionName = "email_validations";
+  public collectionName = BlCollectionName.EmailValidations;
   public mongooseSchema = emailValidationSchema;
   public endpoints: BlEndpoint[] = [
     {

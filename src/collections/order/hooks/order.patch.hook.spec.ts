@@ -10,12 +10,15 @@ import { OrderPatchHook } from "./order.patch.hook";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { OrderValidator } from "../helpers/order-validator/order-validator";
 import { OrderPlacedHandler } from "../helpers/order-placed-handler/order-placed-handler";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("OrderPatchHook", () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("userdetails");
-  const orderStorage = new BlDocumentStorage<Order>("orders");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails
+  );
+  const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const orderValidator = new OrderValidator();
   const orderPlacedHandler = new OrderPlacedHandler();
   const orderPatchHook = new OrderPatchHook(

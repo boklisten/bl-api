@@ -1,8 +1,8 @@
-import { BlCollection, BlEndpoint } from "../bl-collection";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { branchItemSchema } from "./branch-item.schema";
 
 export class BranchItemCollection implements BlCollection {
-  collectionName = "branchitems";
+  collectionName = BlCollectionName.BranchItems;
   mongooseSchema = branchItemSchema;
   endpoints: BlEndpoint[] = [
     {
