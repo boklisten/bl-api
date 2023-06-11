@@ -32,19 +32,19 @@ const elRi = createFakeMatchableUser("elRi", "Spirituell Spire");
  */
 function printLocationMetrics(matches: MatchWithMeetingInfo[]) {
   const aggregatedLocationInfo = matches
-    .sort((a, b) => (a.meetingInfo.time > b.meetingInfo.time ? 1 : -1))
+    .sort((a, b) => (a.meetingInfo.date > b.meetingInfo.date ? 1 : -1))
     .reduce((acc, match) => {
-      const { location, time } = match.meetingInfo;
+      const { location, date } = match.meetingInfo;
       return {
         ...acc,
         [location]: {
           ...acc[location],
           count:
             acc[location]?.count === undefined ? 1 : acc[location].count + 1,
-          [String(time)]:
-            acc[location]?.[String(time)] === undefined
+          [String(date)]:
+            acc[location]?.[String(date)] === undefined
               ? 1
-              : acc[location][String(time)] + 1,
+              : acc[location][String(date)] + 1,
         },
       };
     }, {});
@@ -81,7 +81,7 @@ describe("Simple Matches", () => {
     );
     const meetingTimes = updatedMatches
       .filter((match) => match.meetingInfo.location === "Sal 1")
-      .map((match) => match.meetingInfo.time);
+      .map((match) => match.meetingInfo.date);
 
     const distinctMeetingTimes = meetingTimes.reduce(
       (acc, date) =>

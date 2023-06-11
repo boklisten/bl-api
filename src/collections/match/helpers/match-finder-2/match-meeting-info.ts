@@ -102,7 +102,7 @@ function verifyStandMatches(
   if (
     standMatches.some(
       (match) =>
-        match.meetingInfo.time !== null ||
+        match.meetingInfo.date !== null ||
         match.meetingInfo.location !== standLocation
     )
   ) {
@@ -143,7 +143,7 @@ function verifyUserMatches(
         userMatchLocations
           .map((location) => location.name)
           .includes(createdMeetingInfoMatch.meetingInfo.location) &&
-        createdMeetingInfoMatch.meetingInfo.time >= startTime
+        createdMeetingInfoMatch.meetingInfo.date >= startTime
       );
     })
   ) {
@@ -157,8 +157,8 @@ function verifyUserMatches(
       (match) =>
         match.senderId === userMatchWithMeetingInfo.senderId &&
         match.receiverId !== userMatchWithMeetingInfo.receiverId &&
-        match.meetingInfo.time.getTime() ===
-          userMatchWithMeetingInfo.meetingInfo.time.getTime() &&
+        match.meetingInfo.date.getTime() ===
+          userMatchWithMeetingInfo.meetingInfo.date.getTime() &&
         match.meetingInfo.location !==
           userMatchWithMeetingInfo.meetingInfo.location
     );
@@ -166,8 +166,8 @@ function verifyUserMatches(
       (match) =>
         match.receiverId === userMatchWithMeetingInfo.receiverId &&
         match.senderId !== userMatchWithMeetingInfo.senderId &&
-        match.meetingInfo.time.getTime() ===
-          userMatchWithMeetingInfo.meetingInfo.time.getTime() &&
+        match.meetingInfo.date.getTime() ===
+          userMatchWithMeetingInfo.meetingInfo.date.getTime() &&
         match.meetingInfo.location !==
           userMatchWithMeetingInfo.meetingInfo.location
     );
@@ -202,7 +202,7 @@ function assignMeetingInfoToMatches(
       ...match,
       meetingInfo: {
         location: standLocation,
-        time: null,
+        date: null,
       },
     }));
 
@@ -261,7 +261,7 @@ function assignMeetingInfoToMatches(
         ...match,
         meetingInfo: {
           location: location.name,
-          time: earliestPossibleTime,
+          date: earliestPossibleTime,
         },
       });
     }
