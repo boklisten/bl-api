@@ -83,15 +83,7 @@ describe("Simple Matches", () => {
       .filter((match) => match.meetingInfo.location === "Sal 1")
       .map((match) => match.meetingInfo.date);
 
-    const distinctMeetingTimes = meetingTimes.reduce(
-      (acc, date) =>
-        acc.some((existingDate) => existingDate.getTime() === date.getTime())
-          ? acc
-          : [...acc, date],
-      [] as Date[]
-    );
-
-    for (const distinctMeetingTime of distinctMeetingTimes) {
+    for (const distinctMeetingTime of new Set(meetingTimes)) {
       const simultaneousMatches = meetingTimes.filter(
         (meetingTime) => meetingTime.getTime() === distinctMeetingTime.getTime()
       ).length;
