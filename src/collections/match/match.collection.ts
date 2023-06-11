@@ -1,6 +1,7 @@
 import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { matchSchema } from "./match.schema";
 import { MatchGenerateOperation } from "./operations/match-generate.operation";
+import { GetMyMatchesOperation } from "./operations/match-getall-me.operation";
 import { MatchNotifyOperation } from "./operations/match-notify.operation";
 
 export class MatchCollection implements BlCollection {
@@ -30,8 +31,17 @@ export class MatchCollection implements BlCollection {
     },
     {
       method: "getAll",
+      operations: [
+        {
+          name: "me",
+          operation: new GetMyMatchesOperation(),
+          restriction: {
+            permissions: ["customer", "employee", "admin", "super"],
+          },
+        },
+      ],
       restriction: {
-        permissions: ["customer", "employee", "admin", "super"],
+        permissions: ["employee", "admin", "super"],
       },
       validQueryParams: [
         { fieldName: "_variant", type: "string" },
@@ -42,6 +52,9 @@ export class MatchCollection implements BlCollection {
     },
     {
       method: "getId",
+      restriction: {
+        permissions: ["employee", "admin", "super"],
+      },
     },
   ];
 }
