@@ -1,7 +1,8 @@
 import {
-  CandidateMatch,
   CandidateMatchVariant,
   MatchableUser,
+  MatchLocation,
+  MatchWithMeetingInfo,
 } from "../helpers/match-finder-2/match-types";
 import {
   CustomerItem,
@@ -19,27 +20,26 @@ import { ObjectId } from "mongodb";
 export interface MatcherSpec {
   senderBranches: string[];
   receiverBranches: string[];
+  standLocation: string;
+  userMatchLocations: MatchLocation[];
+  startTime: string;
 }
 
-export function candidateMatchToMatch(candidate: CandidateMatch): Match {
-  const meetingInfo: Match["meetingInfo"] = {
-    location: "Pingala",
-    date: new Date(2025, 12),
-  };
+export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
   switch (candidate.variant) {
     case CandidateMatchVariant.StandMatch:
       return new StandMatch(
         candidate.userId,
         Array.from(candidate.handoffItems),
         Array.from(candidate.pickupItems),
-        meetingInfo
+        candidate.meetingInfo
       );
     case CandidateMatchVariant.UserMatch:
       return new UserMatch(
         candidate.senderId,
         candidate.receiverId,
         Array.from(candidate.items),
-        meetingInfo
+        candidate.meetingInfo
       );
   }
 }
@@ -109,12 +109,25 @@ export function verifyMatcherSpec(
     m &&
     Array.isArray(m.senderBranches) &&
     Array.isArray(m.receiverBranches) &&
+    Array.isArray(m.userMatchLocations) &&
     m.senderBranches.every(
       (branchId) => typeof branchId === "string" && branchId.length === 24
     ) &&
     m.receiverBranches.every(
       (branchId) => typeof branchId === "string" && branchId.length === 24
-    )
+    ) &&
+    typeof m.standLocation === "string" &&
+    m.standLocation.length > 0 &&
+    m.userMatchLocations.every(
+      (location) =>
+        typeof location.name === "string" &&
+        location.name.length > 0 &&
+        (location.simultaneousMatchLimit === undefined ||
+          (Number.isInteger(location.simultaneousMatchLimit) &&
+            location.simultaneousMatchLimit > 0))
+    ) &&
+    typeof m.startTime === "string" &&
+    !isNaN(new Date(m.startTime).getTime())
   );
 }
 

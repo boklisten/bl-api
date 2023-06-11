@@ -19,6 +19,7 @@ import {
 import { orderSchema } from "../../order/order.schema";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
+import assignMeetingInfoToMatches from "../helpers/match-finder-2/match-meeting-info";
 
 export class MatchGenerateOperation implements Operation {
   constructor(
@@ -52,9 +53,12 @@ export class MatchGenerateOperation implements Operation {
     if (senders.length === 0 && receivers.length === 0) {
       throw new BlError("No senders or receivers");
     }
-    const matches = new MatchFinder(senders, receivers)
-      .generateMatches()
-      .map((candidate) => candidateMatchToMatch(candidate));
+    const matches = assignMeetingInfoToMatches(
+      new MatchFinder(senders, receivers).generateMatches(),
+      matcherSpec.standLocation,
+      matcherSpec.userMatchLocations,
+      new Date(matcherSpec.startTime)
+    ).map((candidate) => candidateMatchToMatch(candidate));
     if (matches.length === 0) {
       throw new BlError("No matches generated");
     }

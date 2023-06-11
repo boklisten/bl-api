@@ -23,3 +23,21 @@ export interface CandidateStandMatch {
 }
 
 export type CandidateMatch = CandidateStandMatch | CandidateUserMatch;
+
+interface MatchMeetingInfo {
+  meetingInfo: {
+    location: string;
+    date: Date | null;
+  };
+}
+
+export interface MatchLocation {
+  name: string;
+  simultaneousMatchLimit?: number;
+}
+
+export type UserMatchWithMeetingInfo = CandidateUserMatch & MatchMeetingInfo;
+export type StandMatchWithMeetingInfo = CandidateStandMatch & MatchMeetingInfo;
+export type MatchWithMeetingInfo =
+  | UserMatchWithMeetingInfo
+  | StandMatchWithMeetingInfo;
