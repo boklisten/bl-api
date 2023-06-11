@@ -40,23 +40,22 @@ function groupMatchesBySender(
 
 /**
  * @param location a location with a corresponding limit towards how many matches can be assigned to that location at a given time
- * @param locationMeetingTimes a list of previous meeting times for each location
+ * @param existingMeetingTimes an ascending list of previous meeting times for the location
  * @param startTime the earliest possible timeslot
  */
 function findEarliestLocationTime(
   location: MatchLocation,
-  locationMeetingTimes: { [locationName: string]: Date[] },
+  existingMeetingTimes: Date[],
   startTime: Date
 ): Date {
-  const meetingTimes = locationMeetingTimes[location.name];
   if (
     !location.simultaneousMatchLimit ||
-    meetingTimes.length < location.simultaneousMatchLimit
+    existingMeetingTimes.length < location.simultaneousMatchLimit
   ) {
     return startTime;
   }
-  const prevMeetingTime = meetingTimes?.at(-1);
-  const simultaneousMatches = meetingTimes.filter(
+  const prevMeetingTime = existingMeetingTimes?.at(-1);
+  const simultaneousMatches = existingMeetingTimes.filter(
     (meetingTime) => meetingTime.getTime() === prevMeetingTime.getTime()
   );
 
@@ -68,10 +67,10 @@ function findEarliestLocationTime(
 }
 
 /**
- * Find the first possible time ofter the startTime where all the users are available
+ * Find the first possible time after the startTime where all the users are available
  * @param users the users to find a timeslot for
  * @param startTime the earliest possible timeslot
- * @param userMeetingTimes a list of previous meeting times for each user
+ * @param userMeetingTimes an ascending list of previous meeting times for each user
  */
 function findEarliestPossibleMeetingTime(
   users: string[],
@@ -129,6 +128,7 @@ function verifyUserMatches(
   userMatchLocations: MatchLocation[]
 ) {
   if (
+    userMatches.length !== userMatchesWithMeetingInfo.length ||
     !userMatches.every((userMatch) => {
       const createdMeetingInfoMatch = userMatchesWithMeetingInfo.find(
         (userMatchWithInfo) =>
@@ -182,7 +182,7 @@ function verifyUserMatches(
 
 /**
  *
- * @param matches matches genereated from matchFinder
+ * @param matches matches generated from matchFinder
  * @param standLocation the location of the stand
  * @param userMatchLocations the allowed locations for user matches, optionally with a limit on how many simultaneous matches can fit there
  * @param startTime the first allowed meeting time
@@ -239,7 +239,7 @@ function assignMeetingInfoToMatches(
 
     const earliestLocationTime = findEarliestLocationTime(
       location,
-      locationMeetingTimes,
+      locationMeetingTimes[location.name],
       startTime
     );
 

@@ -92,12 +92,11 @@ describe("Simple Matches", () => {
     );
 
     for (const distinctMeetingTime of distinctMeetingTimes) {
-      const simultaneousMatches = meetingTimes.reduce(
-        (acc, next) =>
-          acc + (next.getTime() === distinctMeetingTime.getTime() ? 1 : 0),
-        0
-      );
-      expect(simultaneousMatches <= simultaneousMatchLimit).to.be.true;
+      const simultaneousMatches = meetingTimes.filter(
+        (meetingTime) => meetingTime.getTime() === distinctMeetingTime.getTime()
+      ).length;
+
+      expect(simultaneousMatches).to.be.lessThanOrEqual(simultaneousMatchLimit);
     }
   });
 });

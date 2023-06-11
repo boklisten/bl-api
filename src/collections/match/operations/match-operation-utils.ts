@@ -22,7 +22,7 @@ export interface MatcherSpec {
   receiverBranches: string[];
   standLocation: string;
   userMatchLocations: MatchLocation[];
-  startTime: Date;
+  startTime: string;
 }
 
 export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
@@ -120,7 +120,11 @@ export function verifyMatcherSpec(
     m.standLocation.length > 0 &&
     m.userMatchLocations.every(
       (location) =>
-        typeof location.name === "string" && location.name.length > 0
+        typeof location.name === "string" &&
+        location.name.length > 0 &&
+        (location.simultaneousMatchLimit === undefined ||
+          (Number.isInteger(location.simultaneousMatchLimit) &&
+            location.simultaneousMatchLimit > 0))
     ) &&
     typeof m.startTime === "string" &&
     !isNaN(new Date(m.startTime).getTime())
