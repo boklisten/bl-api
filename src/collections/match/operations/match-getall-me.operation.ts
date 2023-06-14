@@ -23,15 +23,14 @@ export class GetMyMatchesOperation implements Operation {
     private userDetailStorage?: BlDocumentStorage<UserDetail>,
     private matchStorage?: BlDocumentStorage<Match>
   ) {
-    this.userStorage = userStorage
-      ? userStorage
-      : new BlDocumentStorage(BlCollectionName.Users, UserSchema);
-    this.userDetailStorage = userDetailStorage
-      ? userDetailStorage
-      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
-    this.matchStorage = matchStorage
-      ? matchStorage
-      : new BlDocumentStorage(BlCollectionName.Matches, matchSchema);
+    this.userStorage =
+      userStorage ?? new BlDocumentStorage(BlCollectionName.Users, UserSchema);
+    this.userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+    this.matchStorage =
+      matchStorage ??
+      new BlDocumentStorage(BlCollectionName.Matches, matchSchema);
   }
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
@@ -67,10 +66,10 @@ export class GetMyMatchesOperation implements Operation {
 
     const userIds = Array.from(
       matches.reduce(
-        (n, x) =>
-          x._variant === MatchVariant.UserMatch
-            ? new Set([...n, x.sender, x.receiver])
-            : new Set([...n, x.customer]),
+        (userIds, match) =>
+          match._variant === MatchVariant.UserMatch
+            ? new Set([...userIds, match.sender, match.receiver])
+            : new Set([...userIds, match.customer]),
         new Set<string>()
       )
     );
