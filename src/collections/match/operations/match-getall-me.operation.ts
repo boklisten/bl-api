@@ -3,9 +3,8 @@ import {
   BlError,
   Match,
   MatchVariant,
-  StandMatch,
+  MatchWithDetails,
   UserDetail,
-  UserMatch,
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { matchSchema } from "../match.schema";
@@ -17,17 +16,6 @@ import { SEDbQuery } from "../../../query/se.db-query";
 import { ObjectId } from "mongodb";
 import { User } from "../../user/user";
 import { UserSchema } from "../../user/user.schema";
-
-// TODO: Move these two to bl-model
-interface RelevantDetails {
-  name: string;
-}
-type MatchWithDetails =
-  | StandMatch
-  | (UserMatch & {
-      senderDetails: RelevantDetails;
-      receiverDetails: RelevantDetails;
-    });
 
 export class GetMyMatchesOperation implements Operation {
   constructor(
@@ -104,8 +92,9 @@ export class GetMyMatchesOperation implements Operation {
       }
       const senderDetails = detailsMap.get(match.sender);
       const receiverDetails = detailsMap.get(match.receiver);
-      const selectRelevantDetails = ({ name }: UserDetail) => ({
+      const selectRelevantDetails = ({ name, phone }: UserDetail) => ({
         name,
+        phone,
       });
       return {
         // Required to copy properly without Mongoose interfering
