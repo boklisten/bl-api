@@ -1,9 +1,9 @@
 import {
   BlapiResponse,
   BlError,
+  CustomerItem,
+  Item,
   Match,
-  MatchVariant,
-  MatchWithDetails,
   UserDetail,
 } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
@@ -15,21 +15,38 @@ import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { SEDbQuery } from "../../../query/se.db-query";
 import { User } from "../../user/user";
 import { UserSchema } from "../../user/user.schema";
+import { customerItemSchema } from "../../customer-item/customer-item.schema";
+import { itemSchema } from "../../item/item.schema";
+import { addDetailsToAllMatches } from "./match-getall-me-operation-helper";
 
 export class GetMyMatchesOperation implements Operation {
   constructor(
     private userStorage?: BlDocumentStorage<User>,
     private userDetailStorage?: BlDocumentStorage<UserDetail>,
-    private matchStorage?: BlDocumentStorage<Match>
+    private matchStorage?: BlDocumentStorage<Match>,
+    private customerItemStorage?: BlDocumentStorage<CustomerItem>,
+    private itemStorage?: BlDocumentStorage<Item>
   ) {
-    this.userStorage =
-      userStorage ?? new BlDocumentStorage(BlCollectionName.Users, UserSchema);
-    this.userDetailStorage =
-      userDetailStorage ??
-      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
-    this.matchStorage =
-      matchStorage ??
-      new BlDocumentStorage(BlCollectionName.Matches, matchSchema);
+    this.userStorage ??= new BlDocumentStorage(
+      BlCollectionName.Users,
+      UserSchema
+    );
+    this.userDetailStorage ??= new BlDocumentStorage(
+      BlCollectionName.UserDetails,
+      userDetailSchema
+    );
+    this.matchStorage ??= new BlDocumentStorage(
+      BlCollectionName.Matches,
+      matchSchema
+    );
+    this.customerItemStorage ??= new BlDocumentStorage(
+      BlCollectionName.CustomerItems,
+      customerItemSchema
+    );
+    this.itemStorage ??= new BlDocumentStorage(
+      BlCollectionName.Items,
+      itemSchema
+    );
   }
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
@@ -53,48 +70,13 @@ export class GetMyMatchesOperation implements Operation {
       throw e;
     }
 
-    const userIds = Array.from(
-      matches.reduce(
-        (userIds, match) =>
-          match._variant === MatchVariant.UserMatch
-            ? new Set([...userIds, match.sender, match.receiver])
-            : new Set([...userIds, match.customer]),
-        new Set<string>()
-      )
-    );
-    const detailsMap = new Map(
-      await Promise.all(
-        userIds.map((id) =>
-          this.userDetailStorage
-            .get(id)
-            .then((detail): [string, UserDetail] => [id, detail])
-        )
-      )
-    );
-    const addDetails = (
-      match: Match,
-      detailsMap: Map<string, UserDetail>
-    ): MatchWithDetails => {
-      if (match._variant === MatchVariant.StandMatch) {
-        return match;
-      }
-      const senderDetails = detailsMap.get(match.sender);
-      const receiverDetails = detailsMap.get(match.receiver);
-      const selectRelevantDetails = ({ name, phone }: UserDetail) => ({
-        name,
-        phone,
-      });
-      return {
-        // Required to copy properly without Mongoose interfering
-        ...JSON.parse(JSON.stringify(match)),
-        senderDetails: selectRelevantDetails(senderDetails),
-        receiverDetails: selectRelevantDetails(receiverDetails),
-      };
-    };
-    const matchesWithUserNames = matches.map((match) =>
-      addDetails(match, detailsMap)
+    const matchesWithDetails = await addDetailsToAllMatches(
+      matches,
+      this.userDetailStorage,
+      this.itemStorage,
+      this.customerItemStorage
     );
 
-    return new BlapiResponse(matchesWithUserNames);
+    return new BlapiResponse(matchesWithDetails);
   }
 }

@@ -15,7 +15,7 @@ import {
   getMatchableReceivers,
   getMatchableSenders,
   verifyMatcherSpec,
-} from "./match-operation-utils";
+} from "./match-generate-operation-helper";
 import { orderSchema } from "../../order/order.schema";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";

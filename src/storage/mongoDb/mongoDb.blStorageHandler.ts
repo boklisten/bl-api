@@ -104,6 +104,10 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public getMany(ids: string[], userPermission?: UserPermission): Promise<T[]> {
     return new Promise((resolve, reject) => {
+      if (ids.length === 0) {
+        resolve([]);
+      }
+
       const idArr = [];
 
       for (const id of ids) {
