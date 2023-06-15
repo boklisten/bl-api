@@ -58,7 +58,10 @@ export async function getMatchableSenders(
     {
       $match: {
         // TODO: Check that the book is going to be returned this match session/semester
-        active: true,
+        returned: false,
+        buyout: false,
+        cancel: false,
+        buyback: false,
         "handoutInfo.handoutBy": "branch",
         "handoutInfo.handoutById": {
           $in: branchIds.map((branchId) => new ObjectId(branchId)),
@@ -87,9 +90,37 @@ export async function getMatchableReceivers(
   const branchOrders = await orderStorage.aggregate([
     {
       $match: {
-        active: true,
+        placed: true,
+        byCustomer: true,
+        handoutByDelivery: { $ne: true },
         branch: {
           $in: branchIds.map((branchId) => new ObjectId(branchId)),
+        },
+      },
+    },
+    {
+      $addFields: {
+        orderItems: {
+          $filter: {
+            input: "$orderItems",
+            as: "orderItem",
+            cond: {
+              $and: [
+                { $not: "$$orderItem.handout" },
+                { $not: "$$orderItem.movedToOrder" },
+                {
+                  $in: ["$$orderItem.type", ["rent", "partly-payment"]],
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+    {
+      $match: {
+        $expr: {
+          $gt: [{ $size: "$orderItems" }, 0],
         },
       },
     },

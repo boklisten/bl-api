@@ -6,11 +6,15 @@ import { BlApiRequest } from "../../../../request/bl-api-request";
 import { SEResponseHandler } from "../../../../response/se.response.handler";
 import {
   BlapiResponse,
-  Order,
-  CustomerItem,
-  UserDetail,
   BlError,
+  CustomerItem,
+  Match,
+  MatchVariant,
+  Order,
   OrderItemType,
+  StandMatch,
+  UserDetail,
+  UserMatch,
 } from "@boklisten/bl-model";
 import { OrderToCustomerItemGenerator } from "../../../customer-item/helpers/order-to-customer-item-generator";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
@@ -21,6 +25,8 @@ import { OrderValidator } from "../../helpers/order-validator/order-validator";
 import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
 import { BlCollectionName } from "../../../bl-collection";
+import { matchSchema } from "../../../match/match.schema";
+import { SystemUser } from "../../../../auth/permission/permission.service";
 
 export class OrderPlaceOperation implements Operation {
   private _queryBuilder: SEDbQueryBuilder;
@@ -32,7 +38,8 @@ export class OrderPlaceOperation implements Operation {
     private _customerItemStorage?: BlDocumentStorage<CustomerItem>,
     private _orderPlacedHandler?: OrderPlacedHandler,
     private _orderValidator?: OrderValidator,
-    private _userDetailStorage?: BlDocumentStorage<UserDetail>
+    private _userDetailStorage?: BlDocumentStorage<UserDetail>,
+    private _matchStorage?: BlDocumentStorage<Match>
   ) {
     this._resHandler = this._resHandler
       ? this._resHandler
@@ -64,6 +71,11 @@ export class OrderPlaceOperation implements Operation {
     this._userDetailStorage = this._userDetailStorage
       ? this._userDetailStorage
       : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+
+    this._matchStorage ??= new BlDocumentStorage(
+      BlCollectionName.Matches,
+      matchSchema
+    );
 
     this._queryBuilder = new SEDbQueryBuilder();
   }
@@ -181,6 +193,90 @@ export class OrderPlaceOperation implements Operation {
     }
   }
 
+  /**
+   * For each customerItem, check that the customer who owns it does not have a UserMatch with the same item
+   * @param customerItems the customer items to be verified
+   * @param userMatches the user matches to check against
+   * @private
+   */
+  private verifyCustomerItemsNotInUserMatches(
+    customerItems: CustomerItem[],
+    userMatches: UserMatch[]
+  ) {
+    for (const customerItem of customerItems) {
+      const customerId = String(customerItem.customer);
+      if (
+        userMatches.some(
+          (userMatch) =>
+            // We need String(obj) because typeof sender/receiver === object
+            (String(userMatch.sender) === customerId ||
+              String(userMatch.receiver) === customerId) &&
+            userMatch.expectedItems.includes(String(customerItem.item))
+        )
+      ) {
+        throw new BlError(
+          "Order contains customerItems that belong to a UserMatch!"
+        ).code(802);
+      }
+    }
+  }
+
+  /**
+   * Go through the orderItems and update matches if any of the customerItems belong to a match
+   * @throws if someone tries to return/buyback a customerItem that belongs to match
+   * @param order the order to be processed
+   * @private
+   */
+  private async updateMatchesIfPresent(order: Order) {
+    if (order.byCustomer) {
+      return;
+    }
+
+    const returnOrderItems = order.orderItems.filter(
+      (orderItem) => orderItem.type === "return" || orderItem.type === "buyback"
+    );
+
+    if (returnOrderItems.length === 0) {
+      return;
+    }
+
+    const customerItems = await this._customerItemStorage.getMany(
+      returnOrderItems.map((orderItem) => String(orderItem.customerItem))
+    );
+
+    const allMatches = await this._matchStorage.getAll();
+
+    const userMatches: UserMatch[] = allMatches.filter(
+      (match) => match._variant === MatchVariant.UserMatch
+    ) as UserMatch[];
+
+    this.verifyCustomerItemsNotInUserMatches(customerItems, userMatches);
+
+    const standMatches: StandMatch[] = allMatches.filter(
+      (match) => match._variant === MatchVariant.StandMatch
+    ) as StandMatch[];
+
+    for (const customerItem of customerItems) {
+      const foundStandMatch = standMatches.find(
+        (standMatch) =>
+          standMatch.expectedHandoffItems.includes(String(customerItem.item)) &&
+          !standMatch.deliveredItems.includes(String(customerItem.item))
+      );
+      if (foundStandMatch) {
+        await this._matchStorage.update(
+          foundStandMatch.id,
+          {
+            deliveredItems: [
+              ...foundStandMatch.deliveredItems,
+              customerItem.item,
+            ],
+          },
+          new SystemUser()
+        );
+      }
+    }
+  }
+
   public async run(
     blApiRequest: BlApiRequest,
     req?: Request,
@@ -220,6 +316,8 @@ export class OrderPlaceOperation implements Operation {
     } catch (e) {
       throw e;
     }
+
+    await this.updateMatchesIfPresent(order);
 
     if (customerItems && customerItems.length > 0) {
       try {
