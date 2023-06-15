@@ -35,6 +35,9 @@ export class CollectionEndpointOperation {
       case "getId":
         this._router.get(uri, this.handleRequest.bind(this));
         break;
+      case "getAll":
+        this._router.get(uri, this.handleRequest.bind(this));
+        break;
       case "patch":
         this._router.patch(uri, this.handleRequest.bind(this));
         break;
@@ -77,6 +80,7 @@ export class CollectionEndpointOperation {
           data: req.body,
           user: {
             id: accessToken.sub,
+            details: accessToken.details,
             permission: accessToken.permission,
           },
         };

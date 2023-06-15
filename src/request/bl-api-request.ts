@@ -8,6 +8,7 @@ export class BlApiRequest {
   data?: any;
   user?: {
     id: string;
+    details: string;
     permission: UserPermission;
   };
 }
