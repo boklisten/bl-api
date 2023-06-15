@@ -13,7 +13,6 @@ import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { SEDbQuery } from "../../../query/se.db-query";
-import { ObjectId } from "mongodb";
 import { User } from "../../user/user";
 import { UserSchema } from "../../user/user.schema";
 
@@ -34,22 +33,12 @@ export class GetMyMatchesOperation implements Operation {
   }
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
-    const meQuery = new SEDbQuery();
-    meQuery.stringFilters = [
-      {
-        fieldName: "blid",
-        value: blApiRequest.user.id,
-      },
-    ];
-    const userId = new ObjectId(
-      (await this.userDetailStorage.getByQuery(meQuery))[0].id
-    );
     const query = new SEDbQuery();
     query.objectIdFilters = [
       // By putting each value in an array, the filters are OR'd instead of AND'd
-      { fieldName: "customer", value: [userId] },
-      { fieldName: "sender", value: [userId] },
-      { fieldName: "receiver", value: [userId] },
+      { fieldName: "customer", value: [blApiRequest.user.details] },
+      { fieldName: "sender", value: [blApiRequest.user.details] },
+      { fieldName: "receiver", value: [blApiRequest.user.details] },
     ];
 
     let matches: Match[];
