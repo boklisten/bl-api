@@ -122,6 +122,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
           data: data,
           user: {
             id: userAccessToken.sub,
+            details: userAccessToken.details,
             permission: userAccessToken.permission,
           },
         };

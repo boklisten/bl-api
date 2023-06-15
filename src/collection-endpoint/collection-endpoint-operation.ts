@@ -80,6 +80,7 @@ export class CollectionEndpointOperation {
           data: req.body,
           user: {
             id: accessToken.sub,
+            details: accessToken.details,
             permission: accessToken.permission,
           },
         };
