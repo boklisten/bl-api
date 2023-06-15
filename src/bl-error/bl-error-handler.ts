@@ -136,6 +136,11 @@ export class BlErrorHandler {
         blapiErrorResponse.msg = "blid already handed out";
         blapiErrorResponse.httpStatus = 409;
         break;
+      case 802:
+        blapiErrorResponse.msg =
+          "some customerItems in this order belong to a UserMatch";
+        blapiErrorResponse.httpStatus = 409;
+        break;
     }
 
     return blapiErrorResponse;
