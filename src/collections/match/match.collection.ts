@@ -3,6 +3,7 @@ import { matchSchema } from "./match.schema";
 import { MatchGenerateOperation } from "./operations/match-generate.operation";
 import { GetMyMatchesOperation } from "./operations/match-getall-me.operation";
 import { MatchNotifyOperation } from "./operations/match-notify.operation";
+import { MatchTransferItemOperation } from "./operations/match-transfer-item.operation";
 
 export class MatchCollection implements BlCollection {
   public collectionName = BlCollectionName.Matches;
@@ -21,13 +22,17 @@ export class MatchCollection implements BlCollection {
           operation: new MatchNotifyOperation(),
           restriction: { permissions: ["admin", "super"] },
         },
+        {
+          name: "transfer-item",
+          operation: new MatchTransferItemOperation(),
+          restriction: {
+            permissions: ["customer", "employee", "admin", "super"],
+          },
+        },
       ],
       restriction: {
         permissions: ["super"],
       },
-    },
-    {
-      method: "patch",
     },
     {
       method: "getAll",

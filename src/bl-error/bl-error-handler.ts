@@ -141,6 +141,23 @@ export class BlErrorHandler {
           "some customerItems in this order belong to a UserMatch";
         blapiErrorResponse.httpStatus = 409;
         break;
+      case 803:
+        blapiErrorResponse.msg = "invalid blid";
+        blapiErrorResponse.httpStatus = 400;
+        break;
+      case 804:
+        blapiErrorResponse.msg =
+          "Boken du har scannet er ikke aktiv. Ta kontakt med stand for hjelp";
+        blapiErrorResponse.httpStatus = 404;
+        break;
+      case 805:
+        blapiErrorResponse.msg = "Boken du har scannet er ikke i din bokliste";
+        blapiErrorResponse.httpStatus = 409;
+        break;
+      case 806:
+        blapiErrorResponse.msg = "Du har allerede mottatt denne boka";
+        blapiErrorResponse.httpStatus = 409;
+        break;
     }
 
     return blapiErrorResponse;

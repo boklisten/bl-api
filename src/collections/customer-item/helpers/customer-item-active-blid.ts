@@ -23,23 +23,26 @@ export class CustomerItemActiveBlid {
   /**
    * Checks if a blid is used by an active customerItem
    */
-  async getActiveCustomerItems(blid: string): Promise<string[]> {
+  async getActiveCustomerItemIds(blid: string): Promise<string[]> {
+    const activeCustomerItems = await this.getActiveCustomerItems(blid);
+    return activeCustomerItems.map((customerItem) => customerItem.id);
+  }
+
+  async getActiveCustomerItems(blid: string): Promise<CustomerItem[]> {
     const dbQuery = this.dbQueryBuilder.getDbQuery({ blid: blid }, [
       { fieldName: "blid", type: "string" },
     ]);
 
     const customerItems = await this.customerItemStorage.getByQuery(dbQuery);
 
-    const activeCustomerItemIds = customerItems
-      .filter((ci) => {
-        return this.customerItemActive.isActive(ci);
-      })
-      .map((ci) => ci.id);
+    const activeCustomerItems = customerItems.filter((customerItem) =>
+      this.customerItemActive.isActive(customerItem)
+    );
 
-    if (!activeCustomerItemIds || activeCustomerItemIds.length <= 0) {
+    if (!activeCustomerItems || activeCustomerItems.length <= 0) {
       return [];
     }
 
-    return activeCustomerItemIds;
+    return activeCustomerItems;
   }
 }

@@ -40,7 +40,7 @@ export class UniqueItemActiveOperation implements Operation {
     let activeCustomerItemIds;
     try {
       activeCustomerItemIds =
-        await this.customerItemActiveBlid.getActiveCustomerItems(
+        await this.customerItemActiveBlid.getActiveCustomerItemIds(
           uniqueItem.blid
         );
     } catch (e) {
