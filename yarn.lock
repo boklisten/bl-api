@@ -16,10 +16,10 @@
     puppeteer "^9.1.1"
     typescript "^2.6.2"
 
-"@boklisten/bl-model@^0.25.15":
-  version "0.25.15"
-  resolved "https://registry.yarnpkg.com/@boklisten/bl-model/-/bl-model-0.25.15.tgz#8ca4764cafd7047a2460e977f2750c1d8e532ca5"
-  integrity sha512-/IJBdSvdCBpPwuneqdJ4BM1jWopgRxd77ZCzbp0212dv0sBbHqAcYWd99TV82FpKtPRXVfb+BJTlJ0ZPZ+n7CQ==
+"@boklisten/bl-model@^0.25.16":
+  version "0.25.16"
+  resolved "https://registry.yarnpkg.com/@boklisten/bl-model/-/bl-model-0.25.16.tgz#e2d6f82dccbd5de2e48daf4dbec8ffac73d86223"
+  integrity sha512-MJ3rIJz1ozxkaVlqFvngOPG2iO8SnIpBGCDRxTiHK8zEuNnphRQVj0i0k1bmz5bcKuXztkgvw0a/HcSbPUwR2w==
   dependencies:
     typescript "^4.5.2"
 
