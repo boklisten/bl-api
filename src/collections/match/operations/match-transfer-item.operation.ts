@@ -24,6 +24,7 @@ import { orderSchema } from "../../order/order.schema";
 import { OrderValidator } from "../../order/helpers/order-validator/order-validator";
 import { customerItemSchema } from "../../customer-item/customer-item.schema";
 import { OrderToCustomerItemGenerator } from "../../customer-item/helpers/order-to-customer-item-generator";
+import { OrderItemMovedFromOrderHandler } from "../../order/helpers/order-item-moved-from-order-handler/order-item-moved-from-order-handler";
 
 export class MatchTransferItemOperation implements Operation {
   constructor(
@@ -129,80 +130,76 @@ export class MatchTransferItemOperation implements Operation {
 
     const orderValidator = new OrderValidator();
 
-    const dryRun = false;
-    if (!dryRun) {
+    await matchStorage.update(
+      receiverUserMatch.id,
+      {
+        receivedCustomerItems: [
+          ...receiverUserMatch.receivedCustomerItems,
+          customerItem.id,
+        ],
+      },
+      new SystemUser()
+    );
+
+    const receiverOrder = await createMatchOrder(
+      customerItem,
+      receiverUserDetailId,
+      false
+    );
+
+    const placedReceiverOrder = await orderStorage.add(
+      receiverOrder,
+      new SystemUser()
+    );
+    await orderValidator.validate(placedReceiverOrder);
+
+    const orderMovedToHandler = new OrderItemMovedFromOrderHandler();
+    await orderMovedToHandler.updateOrderItems(placedReceiverOrder);
+
+    if (senderUserMatch !== undefined) {
       await matchStorage.update(
-        receiverUserMatch.id,
+        senderUserMatch.id,
         {
-          receivedCustomerItems: [
-            ...receiverUserMatch.receivedCustomerItems,
+          deliveredCustomerItems: [
+            ...senderUserMatch.deliveredCustomerItems,
             customerItem.id,
           ],
         },
         new SystemUser()
       );
 
-      const receiverOrder = await createMatchOrder(
+      const senderOrder = await createMatchOrder(
         customerItem,
-        receiverUserDetailId,
-        false
+        customerItem.customer,
+        true
       );
 
-      const placedReceiverOrder = await orderStorage.add(
-        receiverOrder,
+      const placedSenderOrder = await orderStorage.add(
+        senderOrder,
         new SystemUser()
       );
-      await orderValidator.validate(placedReceiverOrder);
-
-      if (senderUserMatch !== undefined) {
-        await matchStorage.update(
-          senderUserMatch.id,
-          {
-            deliveredCustomerItems: [
-              ...senderUserMatch.deliveredCustomerItems,
-              customerItem.id,
-            ],
-          },
-          new SystemUser()
-        );
-
-        const senderOrder = await createMatchOrder(
-          customerItem,
-          customerItem.customer,
-          true
-        );
-
-        const placedSenderOrder = await orderStorage.add(
-          senderOrder,
-          new SystemUser()
-        );
-        await orderValidator.validate(placedSenderOrder);
-      }
-
-      await customerItemStorage.update(
-        customerItem.id,
-        {
-          returned: true,
-        },
-        new SystemUser()
-      );
-
-      const customerItemGenerator = new OrderToCustomerItemGenerator();
-
-      // TODO before merge: this needs to include the original blid. Maybe include in the orders above?
-      const generatedCustomerItems = await customerItemGenerator.generate(
-        placedReceiverOrder
-      );
-
-      if (!generatedCustomerItems || generatedCustomerItems.length === 0) {
-        throw new BlError("Failed to create new customer item");
-      }
-
-      await customerItemStorage.add(
-        generatedCustomerItems[0],
-        new SystemUser()
-      );
+      await orderValidator.validate(placedSenderOrder);
     }
+
+    await customerItemStorage.update(
+      customerItem.id,
+      {
+        returned: true,
+      },
+      new SystemUser()
+    );
+
+    const customerItemGenerator = new OrderToCustomerItemGenerator();
+
+    const generatedCustomerItems = await customerItemGenerator.generate(
+      placedReceiverOrder
+    );
+
+    if (!generatedCustomerItems || generatedCustomerItems.length === 0) {
+      throw new BlError("Failed to create new customer item");
+    }
+
+    await customerItemStorage.add(generatedCustomerItems[0], new SystemUser());
 
     return new BlapiResponse([{ feedback: userFeedback }]);
   }

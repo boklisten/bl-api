@@ -6,6 +6,7 @@ import { BlCollectionName } from "../../bl-collection";
 import { matchSchema } from "../match.schema";
 import { itemSchema } from "../../item/item.schema";
 import { branchSchema } from "../../branch/branch.schema";
+import { OrderActive } from "../../order/helpers/order-active/order-active";
 
 export async function createMatchOrder(
   customerItem: CustomerItem,
@@ -40,6 +41,34 @@ export async function createMatchOrder(
     throw new BlError("Branch rent period is same is customer item deadline");
   }
 
+  let movedFromOrder = undefined;
+
+  if (!isSender) {
+    const orderActive = new OrderActive();
+    const activeReceiverOrders = await orderActive.getActiveOrders(
+      userDetailId
+    );
+    console.log(
+      activeReceiverOrders.map((order) =>
+        order.orderItems.filter((orderItem) =>
+          orderActive.isOrderItemActive(orderItem)
+        )
+      )
+    );
+    const originalReceiverOrder = activeReceiverOrders.find((order) =>
+      order.orderItems
+        .filter((orderItem) => orderActive.isOrderItemActive(orderItem))
+        .some(
+          (orderItem) => String(orderItem.item) === String(customerItem.item)
+        )
+    );
+    if (!originalReceiverOrder) {
+      throw new BlError("Could not find original receiver order");
+    }
+
+    movedFromOrder = originalReceiverOrder.id;
+  }
+
   return {
     placed: true,
     payments: [],
@@ -49,8 +78,11 @@ export async function createMatchOrder(
     byCustomer: true,
     orderItems: [
       {
+        // TODO
+        movedFromOrder,
         item: item.id,
         title: item.title,
+        blid: customerItem.blid,
         // TODO before merge: Update when @Lars publishes new version of bl-model
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore

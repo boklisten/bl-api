@@ -14,7 +14,7 @@ export class OrderActive {
     this._queryBuilder = new SEDbQueryBuilder();
   }
 
-  public async haveActiveOrders(userId: string): Promise<boolean> {
+  public async getActiveOrders(userId: string): Promise<Order[]> {
     const dbQuery = this._queryBuilder.getDbQuery({ customer: userId }, [
       { fieldName: "customer", type: "object-id" },
     ]);
@@ -26,13 +26,18 @@ export class OrderActive {
     } catch (e) {
       if (e instanceof BlError) {
         if (e.getCode() === 702) {
-          return false;
+          return [];
         }
       }
       throw e;
     }
 
-    return orders.some((order) => this.isOrderActive(order));
+    return orders.filter((order) => this.isOrderActive(order));
+  }
+
+  public async haveActiveOrders(userId: string): Promise<boolean> {
+    const activeOrders = await this.getActiveOrders(userId);
+    return activeOrders.length > 0;
   }
 
   private isOrderActive(order: Order): boolean {
@@ -42,7 +47,11 @@ export class OrderActive {
     );
   }
 
-  private isOrderItemActive(orderItem: OrderItem): boolean {
-    return !(orderItem.handout || orderItem.delivered);
+  public isOrderItemActive(orderItem: OrderItem): boolean {
+    return !(
+      orderItem.handout ||
+      orderItem.delivered ||
+      orderItem.movedToOrder
+    );
   }
 }
