@@ -64,7 +64,7 @@ describe("CustomerItemActiveBlid", () => {
       getByQueryCustomerItemStub.resolves([customerItem1, customerItem2]);
 
       return expect(
-        customerItemActiveBlid.getActiveCustomerItems("blid1")
+        customerItemActiveBlid.getActiveCustomerItemIds("blid1")
       ).eventually.be.eql(["customerItem1"]);
     });
 
@@ -82,7 +82,7 @@ describe("CustomerItemActiveBlid", () => {
       getByQueryCustomerItemStub.resolves([customerItem]);
 
       return expect(
-        customerItemActiveBlid.getActiveCustomerItems("blid1")
+        customerItemActiveBlid.getActiveCustomerItemIds("blid1")
       ).eventually.be.eql([]);
     });
   });

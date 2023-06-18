@@ -209,8 +209,7 @@ export class OrderPlaceOperation implements Operation {
         userMatches.some(
           (userMatch) =>
             // We need String(obj) because typeof sender/receiver === object
-            (String(userMatch.sender) === customerId ||
-              String(userMatch.receiver) === customerId) &&
+            String(userMatch.sender) === customerId &&
             userMatch.expectedItems.includes(String(customerItem.item))
         )
       ) {
@@ -236,12 +235,20 @@ export class OrderPlaceOperation implements Operation {
       (orderItem) => orderItem.type === "return" || orderItem.type === "buyback"
     );
 
-    if (returnOrderItems.length === 0) {
+    const handoutOrderItems = order.orderItems.filter(
+      (orderItem) => orderItem.type === "rent"
+    );
+
+    if (returnOrderItems.length === 0 && handoutOrderItems.length === 0) {
       return;
     }
 
-    const customerItems = await this._customerItemStorage.getMany(
+    const returnCustomerItems = await this._customerItemStorage.getMany(
       returnOrderItems.map((orderItem) => String(orderItem.customerItem))
+    );
+
+    const handoutCustomerItems = await this._customerItemStorage.getMany(
+      handoutOrderItems.map((orderItem) => String(orderItem.customerItem))
     );
 
     const allMatches = await this._matchStorage.getAll();
@@ -250,13 +257,14 @@ export class OrderPlaceOperation implements Operation {
       (match) => match._variant === MatchVariant.UserMatch
     ) as UserMatch[];
 
-    this.verifyCustomerItemsNotInUserMatches(customerItems, userMatches);
+    this.verifyCustomerItemsNotInUserMatches(returnCustomerItems, userMatches);
 
     const standMatches: StandMatch[] = allMatches.filter(
       (match) => match._variant === MatchVariant.StandMatch
     ) as StandMatch[];
 
-    for (const customerItem of customerItems) {
+    // Register items as delivered
+    for (const customerItem of returnCustomerItems) {
       const foundStandMatch = standMatches.find(
         (standMatch) =>
           standMatch.expectedHandoffItems.includes(String(customerItem.item)) &&
@@ -268,6 +276,27 @@ export class OrderPlaceOperation implements Operation {
           {
             deliveredItems: [
               ...foundStandMatch.deliveredItems,
+              customerItem.item,
+            ],
+          },
+          new SystemUser()
+        );
+      }
+    }
+
+    // Register items as received
+    for (const customerItem of handoutCustomerItems) {
+      const foundStandMatch = standMatches.find(
+        (standMatch) =>
+          standMatch.expectedPickupItems.includes(String(customerItem.item)) &&
+          !standMatch.receivedItems.includes(String(customerItem.item))
+      );
+      if (foundStandMatch) {
+        await this._matchStorage.update(
+          foundStandMatch.id,
+          {
+            receivedItems: [
+              ...foundStandMatch.receivedItems,
               customerItem.item,
             ],
           },
@@ -317,8 +346,6 @@ export class OrderPlaceOperation implements Operation {
       throw e;
     }
 
-    await this.updateMatchesIfPresent(order);
-
     if (customerItems && customerItems.length > 0) {
       try {
         customerItems = await this.addCustomerItems(
@@ -336,6 +363,8 @@ export class OrderPlaceOperation implements Operation {
         throw e;
       }
     }
+
+    await this.updateMatchesIfPresent(order);
 
     try {
       await this._orderPlacedHandler.placeOrder(order, {

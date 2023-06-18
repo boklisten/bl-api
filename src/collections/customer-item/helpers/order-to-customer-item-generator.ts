@@ -51,7 +51,10 @@ export class OrderToCustomerItemGenerator {
     return (
       orderItem.type === "partly-payment" ||
       orderItem.type === "rent" ||
-      orderItem.type === "loan"
+      orderItem.type === "loan" ||
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore TODO before merge
+      orderItem.type === "match-receive"
     );
   }
 
@@ -66,7 +69,12 @@ export class OrderToCustomerItemGenerator {
         order,
         orderItem
       );
-    } else if (orderItem.type === "rent") {
+    } else if (
+      orderItem.type === "rent" ||
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore TODO before merge
+      orderItem.type === "match-receive"
+    ) {
       return this.createRentCustomerItem(customerDetail, order, orderItem);
     } else if (orderItem.type === "loan") {
       return this.createLoanCustomerItem(customerDetail, order, orderItem);

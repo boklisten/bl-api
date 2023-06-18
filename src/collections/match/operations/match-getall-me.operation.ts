@@ -1,6 +1,5 @@
 import {
   BlapiResponse,
-  BlError,
   CustomerItem,
   Item,
   Match,
@@ -12,12 +11,12 @@ import { BlCollectionName } from "../../bl-collection";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { SEDbQuery } from "../../../query/se.db-query";
 import { User } from "../../user/user";
 import { UserSchema } from "../../user/user.schema";
 import { customerItemSchema } from "../../customer-item/customer-item.schema";
 import { itemSchema } from "../../item/item.schema";
 import { addDetailsToAllMatches } from "./match-getall-me-operation-helper";
+import { getAllMatchesForUser } from "./match-operation-utils";
 
 export class GetMyMatchesOperation implements Operation {
   constructor(
@@ -50,24 +49,10 @@ export class GetMyMatchesOperation implements Operation {
   }
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
-    const query = new SEDbQuery();
-    query.objectIdFilters = [
-      // By putting each value in an array, the filters are OR'd instead of AND'd
-      { fieldName: "customer", value: [blApiRequest.user.details] },
-      { fieldName: "sender", value: [blApiRequest.user.details] },
-      { fieldName: "receiver", value: [blApiRequest.user.details] },
-    ];
+    const matches = await getAllMatchesForUser(blApiRequest.user.details);
 
-    let matches: Match[];
-    try {
-      matches = await this.matchStorage.getByQuery(query);
-    } catch (e) {
-      if (e instanceof BlError) {
-        if (e.getCode() === 702) {
-          return new BlapiResponse([]);
-        }
-      }
-      throw e;
+    if (matches.length === 0) {
+      return new BlapiResponse(matches);
     }
 
     const matchesWithDetails = await addDetailsToAllMatches(
