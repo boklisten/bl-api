@@ -31,14 +31,18 @@ export async function createMatchOrder(
     String(customerItem.handoutInfo.handoutById)
   );
 
-  const newRentPeriod = branch?.paymentInfo?.rentPeriods?.[0];
+  if (!branch) {
+    throw new BlError("Failed to fetch handoutBranch");
+  }
+
+  const newRentPeriod = branch.paymentInfo?.rentPeriods?.[0];
 
   if (!newRentPeriod?.date) {
     throw new BlError("Rent period not set for branch");
   }
 
   if (newRentPeriod.date === customerItem.deadline) {
-    throw new BlError("Branch rent period is same is customer item deadline");
+    throw new BlError("Branch rent period is same as customer item deadline");
   }
 
   let movedFromOrder = undefined;
@@ -47,13 +51,6 @@ export async function createMatchOrder(
     const orderActive = new OrderActive();
     const activeReceiverOrders = await orderActive.getActiveOrders(
       userDetailId
-    );
-    console.log(
-      activeReceiverOrders.map((order) =>
-        order.orderItems.filter((orderItem) =>
-          orderActive.isOrderItemActive(orderItem)
-        )
-      )
     );
     const originalReceiverOrder = activeReceiverOrders.find((order) =>
       order.orderItems
@@ -125,4 +122,15 @@ export async function getAllMatchesForUser(
     }
     throw e;
   }
+}
+
+export function isValidBlid(scannedText: string): boolean {
+  if (Number.isNaN(Number(scannedText))) {
+    if (scannedText.length === 12) {
+      return true;
+    }
+  } else if (scannedText.length === 8) {
+    return true;
+  }
+  return false;
 }

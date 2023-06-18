@@ -17,6 +17,7 @@ import { BlApiRequest } from "../../../request/bl-api-request";
 import {
   createMatchOrder,
   getAllMatchesForUser,
+  isValidBlid,
 } from "./match-operation-utils";
 import { CustomerItemActiveBlid } from "../../customer-item/helpers/customer-item-active-blid";
 import { SystemUser } from "../../../auth/permission/permission.service";
@@ -31,33 +32,20 @@ export class MatchTransferItemOperation implements Operation {
     private matchStorage?: BlDocumentStorage<Match>,
     private userDetailStorage?: BlDocumentStorage<UserDetail>
   ) {
-    this.matchStorage =
-      matchStorage ??
-      new BlDocumentStorage(BlCollectionName.Matches, matchSchema);
-    this.userDetailStorage =
-      userDetailStorage ??
-      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
-  }
-
-  private isValidBlid(scannedText: string): boolean {
-    if (Number.isNaN(Number(scannedText))) {
-      if (scannedText.length === 12) {
-        return true;
-      }
-    } else if (scannedText.length === 8) {
-      return true;
-    }
-    return false;
+    this.matchStorage ??= new BlDocumentStorage(
+      BlCollectionName.Matches,
+      matchSchema
+    );
+    this.userDetailStorage ??= new BlDocumentStorage(
+      BlCollectionName.UserDetails,
+      userDetailSchema
+    );
   }
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
     let userFeedback;
     const blid = blApiRequest?.data?.blid;
-    if (!blid || typeof blid !== "string" || blid.length === 0) {
-      throw new BlError(
-        "blid must be a string with length greater than 0"
-      ).code(803);
-    } else if (!this.isValidBlid(blid)) {
+    if (!isValidBlid(blid)) {
       throw new BlError("blid is not a valid blid").code(803);
     }
 
@@ -110,7 +98,7 @@ export class MatchTransferItemOperation implements Operation {
       senderUserMatch === undefined ||
       receiverUserMatch.id !== senderUserMatch.id
     ) {
-      userFeedback = `Boken du har scannet tilhørte opprinnelig en annen kunde. Boken er nå registrert på deg, men avsender må fortsatt levere sin opprinnelig bok. Ta kontakt med stand for spørsmål.`;
+      userFeedback = `Boken du har scannet tilhørte noen andre enn den du skulle motta fra. Det kan bety at hen har byttet bok med noen andre. Boken er nå registrert på deg, men hen er fortsatt ansvarlig for at den opprinnelige boken blir levert. Ta kontakt med stand for spørsmål.`;
     }
 
     const matchStorage = new BlDocumentStorage<Match>(
