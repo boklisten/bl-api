@@ -50,9 +50,8 @@ export class MatchNotifyOperation implements Operation {
     const customerPhoneNumbers = (
       await this.userDetailStorage.getMany(matchedCustomerIds)
     )
-      .flatMap((customer) => [customer.guardian?.phone, customer.phone])
-      .filter((phoneNumber) => phoneNumber.length > 0);
-
+      .flatMap((customer) => [customer?.guardian?.phone, customer?.phone])
+      .filter((phoneNumber) => phoneNumber?.length > 0);
     const status = await massSendSMS(customerPhoneNumbers, message);
     return new BlapiResponse(status);
   }
