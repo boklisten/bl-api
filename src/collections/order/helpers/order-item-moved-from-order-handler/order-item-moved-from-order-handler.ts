@@ -67,7 +67,9 @@ export class OrderItemMovedFromOrderHandler {
       if (orderItem.item.toString() === orderItemToUpdate.itemId.toString()) {
         if (!orderItem.movedToOrder) {
           orderItem.movedToOrder = orderItemToUpdate.newOrderId;
-        } else if (orderItem.movedToOrder !== orderItemToUpdate.newOrderId) {
+        } else if (
+          String(orderItem.movedToOrder) !== orderItemToUpdate.newOrderId
+        ) {
           throw new BlError(`orderItem has "movedToOrder" already set`);
         }
       }
