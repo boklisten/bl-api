@@ -18,7 +18,6 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   private permissionService: PermissionService;
 
   constructor(collectionName: BlCollectionName, schema: any) {
-    mongoose.Promise = require("bluebird");
     const mongooseModelCreator = new MongooseModelCreator(
       collectionName,
       schema

@@ -12,7 +12,6 @@ import path from "path";
 import { logger } from "../logger/logger";
 import * as packageJson from "../../package.json";
 import mongoose from "mongoose";
-import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -56,8 +55,6 @@ export class Server {
 
   private connectToMongoDb(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      mongoose.Promise = require("bluebird");
-
       logger.verbose(
         `trying to connect to mongodb: ${process.env.MONGODB_URI}`
       );
@@ -95,7 +92,7 @@ export class Server {
 
   private initialServerConfig() {
     this.app = express();
-    this.app.use(bodyParser.json());
+    this.app.use(express.json());
 
     process.on("unhandledRejection", (reason, p) => {
       logger.error(`unhandeled rejection at: ${p}, reason: ${reason}`);
