@@ -31,7 +31,7 @@ export class OrderPatchHook extends Hook {
     accessToken: AccessToken,
     id: string
   ): Promise<boolean> {
-    if (body === {} || typeof body == "undefined" || !body) {
+    if (typeof body == "undefined" || !body) {
       return Promise.reject(new BlError("body not defined"));
     }
 
