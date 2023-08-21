@@ -23,6 +23,7 @@ export interface MatcherSpec {
   standLocation: string;
   userMatchLocations: MatchLocation[];
   startTime: string;
+  deadlineBefore: string;
 }
 
 export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
@@ -48,10 +49,12 @@ export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
  * Get the branches' items which users need to return, grouped by user.
  *
  * @param branchIds The IDs of branches to search for users and items
+ * @param deadlineBefore Select customer items that have a deadlineBefore between now() and this deadlineBefore
  * @param customerItemStorage
  */
 export async function getMatchableSenders(
   branchIds: string[],
+  deadlineBefore: string,
   customerItemStorage: BlDocumentStorage<CustomerItem>
 ): Promise<MatchableUser[]> {
   const branchCustomerItems = await customerItemStorage.aggregate([
@@ -66,6 +69,7 @@ export async function getMatchableSenders(
         "handoutInfo.handoutById": {
           $in: branchIds.map((branchId) => new ObjectId(branchId)),
         },
+        deadline: { $gt: new Date(), $lte: new Date(deadlineBefore) },
       },
     },
   ]);
@@ -158,7 +162,10 @@ export function verifyMatcherSpec(
             location.simultaneousMatchLimit > 0))
     ) &&
     typeof m.startTime === "string" &&
-    !isNaN(new Date(m.startTime).getTime())
+    !isNaN(new Date(m.startTime).getTime()) &&
+    typeof m.deadlineBefore === "string" &&
+    !isNaN(new Date(m.deadlineBefore).getTime()) &&
+    new Date(m.deadlineBefore).getTime() > new Date().getTime()
   );
 }
 

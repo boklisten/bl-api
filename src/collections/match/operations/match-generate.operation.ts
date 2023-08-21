@@ -47,7 +47,11 @@ export class MatchGenerateOperation implements Operation {
       throw new BlError(`Malformed MatcherSpec ${matcherSpec}`).code(701);
     }
     const [senders, receivers] = await Promise.all([
-      getMatchableSenders(matcherSpec.senderBranches, this.customerItemStorage),
+      getMatchableSenders(
+        matcherSpec.senderBranches,
+        matcherSpec.deadlineBefore,
+        this.customerItemStorage
+      ),
       getMatchableReceivers(matcherSpec.receiverBranches, this.orderStorage),
     ]);
     if (senders.length === 0 && receivers.length === 0) {
