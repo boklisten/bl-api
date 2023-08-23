@@ -3,27 +3,28 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-chai.use(chaiAsPromised);
 import sinon from "sinon";
 import { SEResponseHandler } from "../../../../response/se.response.handler";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { OrderToCustomerItemGenerator } from "../../../customer-item/helpers/order-to-customer-item-generator";
 import { OrderPlaceOperation } from "./order-place.operation";
-import { Order, BlError, CustomerItem } from "@boklisten/bl-model";
+import { BlError, CustomerItem, Match, Order } from "@boklisten/bl-model";
 import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
 import { OrderValidator } from "../../helpers/order-validator/order-validator";
 import { BlCollectionName } from "../../../bl-collection";
+
+chai.use(chaiAsPromised);
 
 describe("OrderPlaceOperation", () => {
   const resHandler = new SEResponseHandler();
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const orderToCustomerItemGenerator = new OrderToCustomerItemGenerator();
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    "customerItem"
+    BlCollectionName.CustomerItems
   );
+  const matchesStorage = new BlDocumentStorage<Match>(BlCollectionName.Matches);
   const orderPlacedHandler = new OrderPlacedHandler();
   const orderValidator = new OrderValidator();
 
@@ -33,18 +34,22 @@ describe("OrderPlaceOperation", () => {
     orderStorage,
     customerItemStorage,
     orderPlacedHandler,
-    orderValidator
+    orderValidator,
+    undefined,
+    matchesStorage
   );
 
   const placeOrderStub = sinon.stub(orderPlacedHandler, "placeOrder");
   const sendResponseStub = sinon.stub(resHandler, "sendResponse");
   const getOrderStub = sinon.stub(orderStorage, "get");
   const getCustomerItemStub = sinon.stub(customerItemStorage, "get");
+  const getManyCustomerItemsStub = sinon.stub(customerItemStorage, "getMany");
   const generateCustomerItemStub = sinon.stub(
     orderToCustomerItemGenerator,
     "generate"
   );
   const validateOrderStub = sinon.stub(orderValidator, "validate");
+  const getAllMatchesStub = sinon.stub(matchesStorage, "getAll");
 
   describe("run()", () => {
     beforeEach(() => {
@@ -52,8 +57,10 @@ describe("OrderPlaceOperation", () => {
       sendResponseStub.reset();
       getOrderStub.reset();
       getCustomerItemStub.reset();
+      getManyCustomerItemsStub.reset();
       generateCustomerItemStub.reset();
       validateOrderStub.reset();
+      getAllMatchesStub.reset();
     });
 
     const validOrder = {
@@ -97,6 +104,8 @@ describe("OrderPlaceOperation", () => {
     it("should reject if orderPlacedHandler.placeOrder rejects", () => {
       getOrderStub.resolves(validOrder);
       placeOrderStub.rejects(new BlError("order could not be placed"));
+      getAllMatchesStub.resolves([]);
+      getManyCustomerItemsStub.resolves([]);
 
       return expect(
         orderPlaceOperation.run({
@@ -110,6 +119,8 @@ describe("OrderPlaceOperation", () => {
       getOrderStub.resolves(validOrder);
       placeOrderStub.resolves(true);
       validateOrderStub.rejects(new BlError("order not valid!"));
+      getAllMatchesStub.resolves([]);
+      getManyCustomerItemsStub.resolves([]);
 
       return expect(
         orderPlaceOperation.run({
@@ -120,6 +131,8 @@ describe("OrderPlaceOperation", () => {
     });
 
     it("should resolve if order is valid", async () => {
+      getAllMatchesStub.resolves([]);
+      getManyCustomerItemsStub.resolves([]);
       const order = {
         id: "validOrder1",
         customer: "customer1",
