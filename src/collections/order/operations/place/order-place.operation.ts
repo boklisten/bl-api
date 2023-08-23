@@ -338,48 +338,30 @@ export class OrderPlaceOperation implements Operation {
       );
     }
 
-    let customerItems: CustomerItem[] = [];
-
-    try {
-      customerItems = await this._orderToCustomerItemGenerator.generate(order);
-    } catch (e) {
-      throw e;
-    }
+    let customerItems = await this._orderToCustomerItemGenerator.generate(order);
 
     if (customerItems && customerItems.length > 0) {
-      try {
-        customerItems = await this.addCustomerItems(
-          customerItems,
-          blApiRequest.user
-        );
-        order = this.addCustomerItemIdToOrderItems(order, customerItems);
+      customerItems = await this.addCustomerItems(
+        customerItems,
+        blApiRequest.user
+      );
+      order = this.addCustomerItemIdToOrderItems(order, customerItems);
 
-        await this._orderStorage.update(
-          order.id,
-          { orderItems: order.orderItems },
-          blApiRequest.user
-        );
-      } catch (e) {
-        throw e;
-      }
+      await this._orderStorage.update(
+        order.id,
+        { orderItems: order.orderItems },
+        blApiRequest.user
+      );
     }
 
     await this.updateMatchesIfPresent(order);
 
-    try {
-      await this._orderPlacedHandler.placeOrder(order, {
-        sub: blApiRequest.user,
-        permission: blApiRequest.user.permission,
-      } as any);
-    } catch (e) {
-      throw e;
-    }
+    await this._orderPlacedHandler.placeOrder(order, {
+      sub: blApiRequest.user,
+      permission: blApiRequest.user.permission,
+    } as any);
 
-    try {
-      await this._orderValidator.validate(order);
-    } catch (e) {
-      throw e;
-    }
+    await this._orderValidator.validate(order);
 
     if (customerItems && customerItems.length > 0) {
       try {
@@ -422,13 +404,7 @@ export class OrderPlaceOperation implements Operation {
       return ci.id.toString();
     });
 
-    let userDetail: UserDetail;
-
-    try {
-      userDetail = await this._userDetailStorage.get(customerId);
-    } catch (e) {
-      throw e;
-    }
+    const userDetail = await this._userDetailStorage.get(customerId);
 
     let userDetailCustomerItemsIds = userDetail.customerItems
       ? (userDetail.customerItems as string[])
@@ -437,15 +413,11 @@ export class OrderPlaceOperation implements Operation {
     userDetailCustomerItemsIds =
       userDetailCustomerItemsIds.concat(customerItemIds);
 
-    try {
-      await this._userDetailStorage.update(
-        customerId,
-        { customerItems: userDetailCustomerItemsIds },
-        user as any
-      );
-    } catch (e) {
-      throw e;
-    }
+    await this._userDetailStorage.update(
+      customerId,
+      { customerItems: userDetailCustomerItemsIds },
+      user
+    );
 
     return true;
   }
