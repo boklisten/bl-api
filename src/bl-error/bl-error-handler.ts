@@ -138,8 +138,7 @@ export class BlErrorHandler {
         break;
       case 802:
         blapiErrorResponse.msg =
-          "Ordren inneholder bøker som er låst til en UserMatch; kunden må overlevere de låste bøkene til en annen" +
-          " elev";
+          "Ordren inneholder bøker som er låst til en UserMatch; kunden må overlevere de låste bøkene til en annen elev";
         blapiErrorResponse.httpStatus = 409;
         break;
       case 803:
