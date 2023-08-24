@@ -138,7 +138,7 @@ export class BlErrorHandler {
         break;
       case 802:
         blapiErrorResponse.msg =
-          "some customerItems in this order belong to a UserMatch";
+          "Ordren inneholder bøker som er låst til en UserMatch; kunden må overlevere de låste bøkene til en annen elev";
         blapiErrorResponse.httpStatus = 409;
         break;
       case 803:
@@ -156,6 +156,11 @@ export class BlErrorHandler {
         break;
       case 806:
         blapiErrorResponse.msg = "Du har allerede mottatt denne boka";
+        blapiErrorResponse.httpStatus = 409;
+        break;
+      case 807:
+        blapiErrorResponse.msg =
+          "Ordren inneholder bøker som er låst til en UserMatch; kunden må motta de låste bøkene fra en annen elev";
         blapiErrorResponse.httpStatus = 409;
         break;
     }

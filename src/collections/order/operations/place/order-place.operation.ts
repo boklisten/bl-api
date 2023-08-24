@@ -11,6 +11,7 @@ import {
   Match,
   MatchVariant,
   Order,
+  OrderItem,
   OrderItemType,
   StandMatch,
   UserDetail,
@@ -194,12 +195,13 @@ export class OrderPlaceOperation implements Operation {
   }
 
   /**
-   * For each customerItem, check that the customer who owns it does not have a UserMatch with the same item
+   * For each customerItem, check that the customer who owns it does not have a locked UserMatch with the same item
    * @param customerItems the customer items to be verified
    * @param userMatches the user matches to check against
+   * @throws if someone tries to return/buyback a customerItem that's locked to a UserMatch
    * @private
    */
-  private verifyCustomerItemsNotInUserMatches(
+  private verifyCustomerItemsNotInLockedUserMatch(
     customerItems: CustomerItem[],
     userMatches: UserMatch[]
   ) {
@@ -208,37 +210,63 @@ export class OrderPlaceOperation implements Operation {
       if (
         userMatches.some(
           (userMatch) =>
+            userMatch.itemsLockedToMatch &&
             // We need String(obj) because typeof sender/receiver === object
-            String(userMatch.sender) === customerId &&
+            (String(userMatch.sender) === customerId ||
+              String(userMatch.receiver) === customerId) &&
             userMatch.expectedItems.includes(String(customerItem.item))
         )
       ) {
         throw new BlError(
-          "Order contains customerItems that belong to a UserMatch!"
+          "Ordren inneholder bøker som er låst til en UserMatch; kunden må overlevere de låste bøkene til en annen elev"
         ).code(802);
       }
     }
   }
 
   /**
-   * Go through the orderItems and update matches if any of the customerItems belong to a match
-   * @throws if someone tries to return/buyback a customerItem that belongs to match
-   * @param order the order to be processed
+   * For each item, check that the customer does not have a locked UserMatch with the same item
+   * @param itemIds the IDs of the items to be verified
+   * @param userMatches the user matches to check against
+   * @param customerId the ID of the customer
+   * @throws if someone tries to receive an item that's locked to a UserMatch
    * @private
    */
-  private async updateMatchesIfPresent(order: Order) {
-    if (order.byCustomer) {
-      return;
+  private verifyItemsNotInLockedUserMatch(
+    itemIds: string[],
+    userMatches: UserMatch[],
+    customerId: string
+  ) {
+    for (const itemId of itemIds) {
+      if (
+        userMatches.some(
+          (userMatch) =>
+            userMatch.itemsLockedToMatch &&
+            // We need String(obj) because typeof sender/receiver === object
+            (String(userMatch.sender) === customerId ||
+              String(userMatch.receiver) === customerId) &&
+            userMatch.expectedItems.includes(itemId)
+        )
+      ) {
+        throw new BlError(
+          "Ordren inneholder bøker som er låst til en UserMatch; kunden må motta de låste bøkene fra en annen elev"
+        ).code(807);
+      }
     }
+  }
 
-    const returnOrderItems = order.orderItems.filter(
-      (orderItem) => orderItem.type === "return" || orderItem.type === "buyback"
-    );
-
-    const handoutOrderItems = order.orderItems.filter(
-      (orderItem) => orderItem.type === "rent"
-    );
-
+  /**
+   * Go through the orderItems and update matches if any of the customerItems belong to a match
+   * @param allMatches all the matches
+   * @param returnOrderItems the orderItems for items that are handed in
+   * @param handoutOrderItems the orderItems for items that are handed out
+   * @private
+   */
+  private async updateMatchesIfPresent(
+    allMatches: Match[],
+    returnOrderItems: OrderItem[],
+    handoutOrderItems: OrderItem[]
+  ) {
     if (returnOrderItems.length === 0 && handoutOrderItems.length === 0) {
       return;
     }
@@ -250,14 +278,6 @@ export class OrderPlaceOperation implements Operation {
     const handoutCustomerItems = await this._customerItemStorage.getMany(
       handoutOrderItems.map((orderItem) => String(orderItem.customerItem))
     );
-
-    const allMatches = await this._matchStorage.getAll();
-
-    const userMatches: UserMatch[] = allMatches.filter(
-      (match) => match._variant === MatchVariant.UserMatch
-    ) as UserMatch[];
-
-    this.verifyCustomerItemsNotInUserMatches(returnCustomerItems, userMatches);
 
     const standMatches: StandMatch[] = allMatches.filter(
       (match) => match._variant === MatchVariant.StandMatch
@@ -338,48 +358,56 @@ export class OrderPlaceOperation implements Operation {
       );
     }
 
-    let customerItems: CustomerItem[] = [];
+    const returnOrderItems = order.orderItems.filter(
+      (orderItem) => orderItem.type === "return" || orderItem.type === "buyback"
+    );
+    const handoutOrderItems = order.orderItems.filter(
+      (orderItem) => orderItem.type === "rent"
+    );
 
-    try {
-      customerItems = await this._orderToCustomerItemGenerator.generate(order);
-    } catch (e) {
-      throw e;
+    const allMatches = await this._matchStorage.getAll();
+
+    if (!order.byCustomer) {
+      await this.verifyCompatibilityWithMatches(
+        returnOrderItems,
+        handoutOrderItems,
+        allMatches,
+        String(order.customer)
+      );
     }
+
+    let customerItems = await this._orderToCustomerItemGenerator.generate(
+      order
+    );
 
     if (customerItems && customerItems.length > 0) {
-      try {
-        customerItems = await this.addCustomerItems(
-          customerItems,
-          blApiRequest.user
-        );
-        order = this.addCustomerItemIdToOrderItems(order, customerItems);
+      customerItems = await this.addCustomerItems(
+        customerItems,
+        blApiRequest.user
+      );
+      order = this.addCustomerItemIdToOrderItems(order, customerItems);
 
-        await this._orderStorage.update(
-          order.id,
-          { orderItems: order.orderItems },
-          blApiRequest.user
-        );
-      } catch (e) {
-        throw e;
-      }
+      await this._orderStorage.update(
+        order.id,
+        { orderItems: order.orderItems },
+        blApiRequest.user
+      );
     }
 
-    await this.updateMatchesIfPresent(order);
-
-    try {
-      await this._orderPlacedHandler.placeOrder(order, {
-        sub: blApiRequest.user,
-        permission: blApiRequest.user.permission,
-      } as any);
-    } catch (e) {
-      throw e;
+    if (!order.byCustomer) {
+      await this.updateMatchesIfPresent(
+        allMatches,
+        returnOrderItems,
+        handoutOrderItems
+      );
     }
 
-    try {
-      await this._orderValidator.validate(order);
-    } catch (e) {
-      throw e;
-    }
+    await this._orderPlacedHandler.placeOrder(order, {
+      sub: blApiRequest.user,
+      permission: blApiRequest.user.permission,
+    } as any);
+
+    await this._orderValidator.validate(order);
 
     if (customerItems && customerItems.length > 0) {
       try {
@@ -395,6 +423,37 @@ export class OrderPlaceOperation implements Operation {
 
     this._resHandler.sendResponse(res, new BlapiResponse([order]));
     return true;
+  }
+
+  /**
+   * Verify that the order does not try to hand out or in an item locked to one of the customer's UserMatches
+   * @param returnOrderItems the orderItems that will be handed in
+   * @param handoutOrderItems the orderItems that will be handed out
+   * @param allMatches all the matches
+   * @param customerId the customer the order belongs to
+   * @throws if the order tries to hand out or in a (customer)Item locked to a UserMatch
+   * @private
+   */
+  private async verifyCompatibilityWithMatches(
+    returnOrderItems: OrderItem[],
+    handoutOrderItems: OrderItem[],
+    allMatches: Match[],
+    customerId: string
+  ) {
+    const userMatches: UserMatch[] = allMatches.filter(
+      (match) => match._variant === MatchVariant.UserMatch
+    ) as UserMatch[];
+    const returnCustomerItems = await this._customerItemStorage.getMany(
+      returnOrderItems.map((orderItem) => String(orderItem.customerItem))
+    );
+    const handoutItems = handoutOrderItems.map((orderItem) =>
+      String(orderItem.item)
+    );
+    this.verifyCustomerItemsNotInLockedUserMatch(
+      returnCustomerItems,
+      userMatches
+    );
+    this.verifyItemsNotInLockedUserMatch(handoutItems, userMatches, customerId);
   }
 
   private async addCustomerItems(
@@ -422,13 +481,7 @@ export class OrderPlaceOperation implements Operation {
       return ci.id.toString();
     });
 
-    let userDetail: UserDetail;
-
-    try {
-      userDetail = await this._userDetailStorage.get(customerId);
-    } catch (e) {
-      throw e;
-    }
+    const userDetail = await this._userDetailStorage.get(customerId);
 
     let userDetailCustomerItemsIds = userDetail.customerItems
       ? (userDetail.customerItems as string[])
@@ -437,15 +490,11 @@ export class OrderPlaceOperation implements Operation {
     userDetailCustomerItemsIds =
       userDetailCustomerItemsIds.concat(customerItemIds);
 
-    try {
-      await this._userDetailStorage.update(
-        customerId,
-        { customerItems: userDetailCustomerItemsIds },
-        user as any
-      );
-    } catch (e) {
-      throw e;
-    }
+    await this._userDetailStorage.update(
+      customerId,
+      { customerItems: userDetailCustomerItemsIds },
+      user
+    );
 
     return true;
   }

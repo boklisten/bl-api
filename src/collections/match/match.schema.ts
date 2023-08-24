@@ -18,7 +18,7 @@ import {
   MatchVariant,
 } from "@boklisten/bl-model";
 
-const { ObjectId, String, Date } = Schema.Types;
+const { ObjectId, String, Date, Boolean } = Schema.Types;
 
 /** @see MatchBase */
 const matchBaseSchema = {
@@ -63,6 +63,11 @@ const userMatchSchema = {
   receivedCustomerItems: {
     type: [ObjectId],
     ref: BlCollectionName.CustomerItems,
+    default: undefined,
+  },
+  // if true, disallow handing the items out or in at a stand, only allow match exchange
+  itemsLockedToMatch: {
+    type: Boolean,
     default: undefined,
   },
 };

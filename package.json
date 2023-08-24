@@ -16,7 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@boklisten/bl-email": "^1.7.2",
-    "@boklisten/bl-model": "^0.25.16",
+    "@boklisten/bl-model": "^0.25.19",
     "@boklisten/bl-post-office": "^0.5.48",
     "@sendgrid/mail": "^7.7.0",
     "@types/validator": "^13.7.3",
