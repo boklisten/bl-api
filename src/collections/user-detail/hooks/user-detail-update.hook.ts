@@ -2,17 +2,12 @@ import { Hook } from "../../../hook/hook";
 
 export class UserDetailUpdateHook extends Hook {
   private cleanUserInput = (dirtyText: string): string => {
-    const withoutSpaces = dirtyText.replace(/\s+/gu, " ").trim();
-
-    // Do not fix capitalization if the string contains Norwegian characters
-    // They are bothersome when it comes to word boundaries...
-    if (withoutSpaces.toLowerCase().match(/[øæåäüö]/)) {
-      return withoutSpaces;
-    }
-
-    return withoutSpaces
-      .toLowerCase()
-      .replace(/\b\w/gu, (c) => c.toUpperCase());
+    return dirtyText
+      .replace(/\s+/gu, " ")
+      .trim()
+      .split(" ")
+      .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
   };
 
   public override async before(
