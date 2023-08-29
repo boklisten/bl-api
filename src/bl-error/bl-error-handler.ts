@@ -133,7 +133,8 @@ export class BlErrorHandler {
         blapiErrorResponse.msg = "server error";
         break;
       case 801:
-        blapiErrorResponse.msg = "blid already handed out";
+        blapiErrorResponse.msg =
+          "En eller flere av bøkene du prøver å dele ut er allerede aktiv på en annen kunde. Prøv å dele ut én og én bok for å finne synderen.";
         blapiErrorResponse.httpStatus = 409;
         break;
       case 802:
