@@ -134,7 +134,7 @@ export class BlErrorHandler {
         break;
       case 801:
         blapiErrorResponse.msg =
-          "En eller flere av bøkene du prøver å dele ut er allerede aktiv på en annen kunde. Prøv å dele ut én og én bok for å finne synderen.";
+          "En eller flere av bøkene du prøver å dele ut er allerede aktiv på en annen kunde. Prøv å dele ut én og én bok for å finne ut hvilke bøker dette gjelder.";
         blapiErrorResponse.httpStatus = 409;
         break;
       case 802:
