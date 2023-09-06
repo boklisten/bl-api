@@ -353,9 +353,9 @@ export class OrderPlaceOperation implements Operation {
     );
 
     if (someBlidAlreadyHandedOut) {
-      throw new BlError("Some blid is already handed out to a customer").code(
-        801
-      );
+      throw new BlError(
+        "En eller flere av bøkene du prøver å dele ut er allerede aktiv på en annen kunde. Prøv å dele ut én og én bok for å finne ut hvilke bøker dette gjelder."
+      ).code(801);
     }
 
     const returnOrderItems = order.orderItems.filter(
