@@ -229,7 +229,6 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
           );
         }
 
-        /* TODO FIXME!!
         if (data["user"]) {
           return reject(
             new BlError("can not change user restrictions after creation").code(
@@ -237,7 +236,6 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
             )
           );
         }
-         */
 
         document.set(data);
         document.set({ lastUpdated: new Date() });

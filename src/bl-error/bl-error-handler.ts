@@ -164,6 +164,10 @@ export class BlErrorHandler {
           "Ordren inneholder bøker som er låst til en UserMatch; kunden må motta de låste bøkene fra en annen elev";
         blapiErrorResponse.httpStatus = 409;
         break;
+      case 808:
+        blapiErrorResponse.msg = "Bad request format";
+        blapiErrorResponse.httpStatus = 400;
+        break;
     }
 
     return blapiErrorResponse;
@@ -228,6 +232,10 @@ export class BlErrorHandler {
         break;
       case 909:
         blapiErrorResponse.msg = "refreshToken not valid";
+        break;
+      case 910:
+        blapiErrorResponse.msg =
+          "bruker kan ikke endre egen e-post-bekreftet-status";
         break;
     }
 
