@@ -3,6 +3,7 @@ import {
   BranchItem,
   CustomerItem,
   Delivery,
+  EditableText,
   Item,
   OpeningHour,
   Order,
@@ -17,6 +18,7 @@ import {
   PendingPasswordReset,
 } from "@boklisten/bl-model";
 import { Router } from "express";
+import { EditableTextCollection } from "../collections/editable-text/editable-text.collection";
 
 import { CollectionEndpoint } from "./collection-endpoint";
 import { BlErrorLog } from "../collections/bl-error-log/bl-error-log";
@@ -90,6 +92,7 @@ export class CollectionEndpointCreator {
         this._router,
         new UniqueItemCollection()
       ),
+      new CollectionEndpoint<EditableText>(this._router, new EditableTextCollection()),
     ];
 
     for (const collectionEndpoint of collectionEndpoints) {
