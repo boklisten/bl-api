@@ -3,7 +3,6 @@ import {
   BranchItem,
   CustomerItem,
   Delivery,
-  EditableText,
   Item,
   OpeningHour,
   Order,
@@ -28,7 +27,6 @@ import { BranchItemCollection } from "../collections/branch-item/branch-item.col
 import { CompanyCollection } from "../collections/company/company.collection";
 import { CustomerItemCollection } from "../collections/customer-item/customer-item.collection";
 import { DeliveryCollection } from "../collections/delivery/delivery.collection";
-import { EditableTextCollection } from "../collections/editable-text/editable-text.collection";
 import { EmailValidation } from "../collections/email-validation/email-validation";
 import { EmailValidationCollection } from "../collections/email-validation/email-validation.collection";
 import { InvoiceCollection } from "../collections/invoice/invoice.collection";
@@ -92,7 +90,6 @@ export class CollectionEndpointCreator {
         this._router,
         new UniqueItemCollection()
       ),
-      new CollectionEndpoint<EditableText>(this._router, new EditableTextCollection()),
     ];
 
     for (const collectionEndpoint of collectionEndpoints) {

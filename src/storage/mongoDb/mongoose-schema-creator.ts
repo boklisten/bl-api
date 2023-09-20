@@ -18,14 +18,6 @@ export class MongooseModelCreator<T> {
   private standardizeSchema(schema: Schema): Schema {
     schema.add({
       blid: String,
-      lastUpdated: {
-        type: Date,
-        default: Date.now(),
-      },
-      creationTime: {
-        type: Date,
-        default: Date.now(),
-      },
       comments: {
         type: [
           {
@@ -76,6 +68,10 @@ export class MongooseModelCreator<T> {
         delete ret.viewableFor;
       },
     });
+
+    // Enable automatic timestamps
+    schema.set("timestamps", { createdAt: "creationTime", updatedAt: "lastUpdated"});
+
     return schema;
   }
 }
