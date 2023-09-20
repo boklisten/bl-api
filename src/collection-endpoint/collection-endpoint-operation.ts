@@ -43,6 +43,9 @@ export class CollectionEndpointOperation {
       case "post":
         this._router.post(uri, this.handleRequest.bind(this));
         break;
+      case "put":
+        this._router.put(uri, this.handleRequest.bind(this));
+        break;
       default:
         throw new Error(
           `endpoint operation method "${this._method}" is currently not supported`,
@@ -59,6 +62,7 @@ export class CollectionEndpointOperation {
     if (
       operationMethod === "getId" ||
       operationMethod === "patch" ||
+      operationMethod === "put" ||
       operationMethod == "delete"
     ) {
       uri += "/:id";

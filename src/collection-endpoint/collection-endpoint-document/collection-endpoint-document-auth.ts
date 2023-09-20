@@ -23,8 +23,8 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
     documentPermission?: BlDocumentPermission,
   ): Promise<T[]> {
     if (restriction) {
-      if (isNullOrUndefined(docs) || docs.length <= 0) {
-        return Promise.reject(new BlError("docs is empty or undefined"));
+      if (isNullOrUndefined(docs)) {
+        return Promise.reject(new BlError("docs is undefined"));
       }
 
       if (isNullOrUndefined(blApiRequest)) {
