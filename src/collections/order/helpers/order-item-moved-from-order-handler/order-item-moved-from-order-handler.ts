@@ -11,49 +11,32 @@ type OrderItemToUpdate = {
 };
 
 export class OrderItemMovedFromOrderHandler {
-  private _orderStorage: BlDocumentStorage<Order>;
-
-  constructor(orderStorage?: BlDocumentStorage<Order>) {
-    this._orderStorage = orderStorage
-      ? orderStorage
-      : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
+  constructor(private _orderStorage?: BlDocumentStorage<Order>) {
+    this._orderStorage ??= new BlDocumentStorage(
+      BlCollectionName.Orders,
+      orderSchema
+    );
   }
 
   public async updateOrderItems(order: Order): Promise<boolean> {
-    const orderItemsToUpdate: OrderItemToUpdate[] = [];
+    const orderItemsToUpdate: OrderItemToUpdate[] = order.orderItems
+      .filter((orderItem) => orderItem.movedFromOrder)
+      .map((orderItem) => ({
+        itemId: String(orderItem.item),
+        originalOrderId: String(orderItem.movedFromOrder),
+        newOrderId: order.id,
+      }));
 
-    for (const orderItem of order.orderItems) {
-      if (orderItem.movedFromOrder) {
-        orderItemsToUpdate.push({
-          itemId: orderItem.item as string,
-          originalOrderId: orderItem.movedFromOrder as string,
-          newOrderId: order.id,
-        });
-      }
-    }
-
-    // eslint-disable-next-line no-useless-catch
-    try {
-      await this.addMovedToOrderOnOrderItems(orderItemsToUpdate);
-      return true;
-    } catch (e) {
-      throw e;
-    }
+    return await this.addMovedToOrderOnOrderItems(orderItemsToUpdate);
   }
 
   private async addMovedToOrderOnOrderItems(
     orderItemsToUpdate: OrderItemToUpdate[]
   ): Promise<boolean> {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      for (const orderItemToUpdate of orderItemsToUpdate) {
-        await this.updateOrderItem(orderItemToUpdate);
-      }
-
-      return true;
-    } catch (e) {
-      throw e;
-    }
+    await Promise.all(
+      orderItemsToUpdate.map((orderItem) => this.updateOrderItem(orderItem))
+    );
+    return true;
   }
 
   private async updateOrderItem(
@@ -64,7 +47,7 @@ export class OrderItemMovedFromOrderHandler {
     );
 
     for (const orderItem of originalOrder.orderItems) {
-      if (orderItem.item.toString() === orderItemToUpdate.itemId.toString()) {
+      if (String(orderItem.item) === String(orderItemToUpdate.itemId)) {
         if (!orderItem.movedToOrder) {
           orderItem.movedToOrder = orderItemToUpdate.newOrderId;
         } else if (

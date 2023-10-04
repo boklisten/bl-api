@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlError } from "@boklisten/bl-model";
-const qs = require("qs");
+import qs from "qs";
 const request = require("request");
 const rp = require("request-promise");
 import { logger } from "../logger/logger";
