@@ -6,6 +6,7 @@ import {
 } from "../bl-collection";
 import { uniqueItemSchema } from "./unique-item.schema";
 import { UniqueItemActiveOperation } from "./operations/unique-item-active.operation";
+import { GenerateUniqueIdsOperation } from "./operations/generate-unique-ids-operation";
 
 export class UniqueItemCollection implements BlCollection {
   public collectionName = BlCollectionName.UniqueItems;
@@ -20,6 +21,13 @@ export class UniqueItemCollection implements BlCollection {
       restriction: {
         permissions: ["employee", "manager", "admin", "super"],
       },
+      operations: [
+        {
+          name: "generate",
+          operation: new GenerateUniqueIdsOperation(),
+          restriction: { permissions: ["admin", "super"] },
+        },
+      ],
     },
     {
       method: "getId",
