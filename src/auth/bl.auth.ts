@@ -1,7 +1,6 @@
 import { Router } from "express";
 
 import { FacebookAuth } from "./facebook/facebook.auth";
-import { FeideAuth } from "./feide/feide.auth";
 import { GoogleAuth } from "./google/google.auth";
 import { LocalLoginCreator } from "./local/local-login-creator/local-login-creator";
 import { LocalLoginHandler } from "./local/local-login.handler";
@@ -54,6 +53,5 @@ export class BlAuth {
     new FacebookAuth(router, resHandler);
     new LocalAuth(router, resHandler, localLoginValidator, tokenHandler);
     new TokenEndpoint(router, resHandler, tokenHandler);
-    new FeideAuth(router, resHandler);
   }
 }

@@ -88,9 +88,6 @@ export const APP_CONFIG = {
     local: {
       name: "local",
     },
-    feide: {
-      name: "oauth2",
-    },
   },
   token: {
     refresh: {
