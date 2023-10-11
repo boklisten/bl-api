@@ -1,6 +1,5 @@
 import { Canvas } from "canvas";
 import JsBarcode from "jsbarcode";
-import { PassThrough } from "stream";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 
@@ -33,7 +32,7 @@ const PRINTER_DIMENSIONS = {
   },
 };
 
-function generateBLIDs(numberOfIds: number): string[] {
+function generateBlIds(numberOfIds: number): string[] {
   return Array.from({ length: numberOfIds }, () =>
     Array.from(
       { length: BL_ID_LENGTH },
@@ -105,56 +104,45 @@ function createBlIdCanvas(id: string): Canvas {
   return blIdCanvas;
 }
 
-function addIdPagesToDoc(id: string, doc: PDFKit.PDFDocument): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    const canvas: Canvas = createBlIdCanvas(id);
-    const pngBuffers: Buffer[] = [];
-    const stream = canvas.createPNGStream();
+async function addIdPagesToDoc(
+  id: string,
+  doc: PDFKit.PDFDocument
+): Promise<void> {
+  const canvas = createBlIdCanvas(id);
+  const pngBuffers: Buffer[] = [];
+  const stream = canvas.createPNGStream();
 
-    stream.on("data", (chunk: Buffer) => pngBuffers.push(chunk));
-    stream.on("end", () => {
-      const pngBuffer = Buffer.concat(pngBuffers);
+  for await (const chunk of stream) {
+    pngBuffers.push(chunk);
+  }
 
-      for (let i = 0; i < 2; i++) {
-        doc.addPage({
-          size: [canvas.width, canvas.height],
-        });
+  const pngBuffer = Buffer.concat(pngBuffers);
 
-        doc.image(pngBuffer, 0, 0, { width: canvas.width });
-      }
-
-      resolve();
+  for (let i = 0; i < 2; i++) {
+    doc.addPage({
+      size: [canvas.width, canvas.height],
     });
-    stream.on("error", reject);
-  });
+    doc.image(pngBuffer, 0, 0, { width: canvas.width });
+  }
 }
 
 async function generateBlIdPDF(): Promise<Buffer> {
-  const ids = generateBLIDs(400);
-
+  const ids = generateBlIds(400);
   const doc = new PDFDocument({ autoFirstPage: false });
-  const buffers: Buffer[] = [];
-  const pass = new PassThrough();
 
-  doc.pipe(pass);
+  for (const id of ids) {
+    await addIdPagesToDoc(id, doc);
+  }
 
-  const idPromises: Promise<void>[] = ids.map((id: string) =>
-    addIdPagesToDoc(id, doc)
-  );
-
-  await Promise.all(idPromises);
   doc.end();
 
-  // Collecting data from the PDFDocument through the PassThrough stream
-  pass.on("data", (chunk: Buffer) => buffers.push(chunk));
+  const buffers: Buffer[] = [];
 
-  // Wait until the 'finish' event is emitted before resolving the main promise
-  return new Promise<Buffer>((resolve, reject) => {
-    pass.on("end", () => {
-      resolve(Buffer.concat(buffers));
-    });
-    pass.on("error", reject);
-  });
+  for await (const chunk of doc) {
+    buffers.push(chunk as Buffer);
+  }
+
+  return Buffer.concat(buffers);
 }
 
 export default generateBlIdPDF;
