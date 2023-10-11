@@ -235,9 +235,11 @@ export class BlErrorHandler {
         blapiErrorResponse.msg = "refreshToken not valid";
         break;
       case 910:
+        blapiErrorResponse.msg = "accessToken not valid";
+        break;
+      case 911:
         blapiErrorResponse.msg =
           "bruker kan ikke endre egen e-post-bekreftet-status";
-        break;
     }
 
     return blapiErrorResponse;

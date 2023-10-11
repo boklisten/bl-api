@@ -26,7 +26,7 @@ export class UserDetailUpdateHook extends Hook {
     if (emailConfirmed !== undefined && accessToken.permission === "customer") {
       throw new BlError(
         "bruker kan ikke endre egen e-post-bekreftet-status",
-      ).code(910);
+      ).code(911);
     }
 
     // In an update call, a value of 'undefined' will remove a key, so the key
