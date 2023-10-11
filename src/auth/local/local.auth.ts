@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlapiResponse, BlError } from "@boklisten/bl-model";
 import { Router } from "express";
 import passport from "passport";
@@ -26,6 +25,7 @@ export class LocalAuth {
 
   private createPassportStrategy(localLoginValidator: LocalLoginValidator) {
     passport.use(
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       new Strategy((username: string, password: string, done: any) => {
         localLoginValidator.validate(username, password).then(
           () => {
@@ -73,6 +73,7 @@ export class LocalAuth {
   private createAuthLogin(router: Router) {
     router.post(
       this.apiPath.createPath("auth/local/login"),
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       (req: any, res: any, next: any) => {
         passport.authenticate(
           "local",
@@ -128,6 +129,7 @@ export class LocalAuth {
   ) {
     router.post(
       this.apiPath.createPath("auth/local/register"),
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       (req: any, res: any) => {
         localLoginValidator.create(req.body.username, req.body.password).then(
           () => {

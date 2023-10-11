@@ -1,9 +1,8 @@
 import passport from "passport";
-import { Strategy, ExtractJwt } from "passport-jwt";
+import { ExtractJwt, Strategy } from "passport-jwt";
 
 import { AccessToken } from "./access-token";
 import { AccessTokenSecret } from "./access-token.secret";
-import { UserHandler } from "../../user/user.handler";
 import { SEToken } from "../se.token";
 import { TokenConfig } from "../token.config";
 
@@ -11,8 +10,7 @@ export class AccessTokenAuth {
   private accessTokenSecret: AccessTokenSecret;
   private tokenConfig: TokenConfig;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  constructor(userHandler: UserHandler) {
+  constructor() {
     new SEToken();
     this.accessTokenSecret = new AccessTokenSecret();
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -30,15 +28,12 @@ export class AccessTokenAuth {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private getOptions(): any {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const opts: any = {};
-    opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-    opts.secretOrKey = this.accessTokenSecret.get();
-    opts.issuer = this.tokenConfig.accessToken.iss;
-    opts.audience = this.tokenConfig.accessToken.aud;
-
-    return opts;
+  private getOptions() {
+    return {
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: this.accessTokenSecret.get(),
+      issuer: this.tokenConfig.accessToken.iss,
+      audience: this.tokenConfig.accessToken.aud,
+    };
   }
 }

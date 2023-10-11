@@ -48,7 +48,7 @@ export class BlAuth {
 
     const tokenHandler = new TokenHandler(userHandler);
 
-    new AccessTokenAuth(userHandler);
+    new AccessTokenAuth();
 
     new GoogleAuth(router, resHandler);
     new FacebookAuth(router, resHandler);

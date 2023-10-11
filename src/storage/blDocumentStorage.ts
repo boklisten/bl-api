@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
 
@@ -15,7 +14,7 @@ export class BlDocumentStorage<T extends BlDocument>
 
   constructor(
     private collectionName: BlCollectionName,
-    private mongooseSchema?: any,
+    private mongooseSchema?: unknown,
   ) {
     if (mongooseSchema) {
       this.mongoDbHandler = new MongoDbBlStorageHandler(
@@ -106,7 +105,7 @@ export class BlDocumentStorage<T extends BlDocument>
 
   update(
     id: string,
-    data: any,
+    data: unknown,
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
     return new Promise((resolve, reject) => {
@@ -121,7 +120,7 @@ export class BlDocumentStorage<T extends BlDocument>
     });
   }
 
-  updateMany(docs: { id: string; data: any }[]): Promise<T[]> {
+  updateMany(docs: { id: string; data: unknown }[]): Promise<T[]> {
     return new Promise((resolve, reject) => {
       reject(new BlError("not implemented"));
     });
@@ -143,7 +142,7 @@ export class BlDocumentStorage<T extends BlDocument>
     });
   }
 
-  aggregate(aggregation: any[]): Promise<T[]> {
+  aggregate(aggregation: unknown[]): Promise<T[]> {
     return this.mongoDbHandler.aggregate(aggregation);
   }
 

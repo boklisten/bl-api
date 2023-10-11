@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlError } from "@boklisten/bl-model";
 import { Router } from "express";
 import passport from "passport";
@@ -41,9 +40,11 @@ export class FacebookAuth {
       new Strategy(
         this.facebookPassportStrategySettings,
         async (
-          accessToken: any,
-          refreshToken: any,
+          accessToken: unknown,
+          refreshToken: unknown,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           profile: any,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           done: any,
         ) => {
           const provider = APP_CONFIG.login.facebook.name;

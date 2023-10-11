@@ -73,7 +73,7 @@ export class BringDeliveryService {
         "",
         bringAuthHeaders,
       );
-      shipmentAddress.postalCity = postalInfo.postalCode.city;
+      shipmentAddress.postalCity = postalInfo["postalCode"]["city"];
     } catch (e) {
       return Promise.reject(new BlError("fromPostalCode is not valid"));
     }

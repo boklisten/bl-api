@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-useless-catch */
 import {
   BlError,
@@ -69,13 +68,9 @@ export class CustomerItemHandler {
 
       this.getExtendPeriod(branch, orderItem.info["periodType"]);
 
-      const periodExtends = customerItem.periodExtends
-        ? customerItem.periodExtends
-        : [];
+      const periodExtends = customerItem.periodExtends ?? [];
 
-      const customerItemOrders: any[] = customerItem.orders
-        ? customerItem.orders
-        : [];
+      const customerItemOrders = (customerItem.orders ?? []) as string[];
 
       periodExtends.push({
         from: orderItem.info["from"],
@@ -117,9 +112,7 @@ export class CustomerItemHandler {
       }
 
       const customerItem = await this._customerItemStorage.get(customerItemId);
-      const customerItemOrders: any[] = customerItem.orders
-        ? customerItem.orders
-        : [];
+      const customerItemOrders = (customerItem.orders ?? []) as string[];
 
       customerItemOrders.push(orderId);
 
@@ -160,9 +153,7 @@ export class CustomerItemHandler {
 
       const customerItem = await this._customerItemStorage.get(customerItemId);
 
-      const customerItemOrders: any[] = customerItem.orders
-        ? customerItem.orders
-        : [];
+      const customerItemOrders = (customerItem.orders ?? []) as string[];
 
       customerItemOrders.push(orderId);
 
@@ -203,9 +194,7 @@ export class CustomerItemHandler {
 
       const customerItem = await this._customerItemStorage.get(customerItemId);
 
-      const customerItemOrders: any[] = customerItem.orders
-        ? customerItem.orders
-        : [];
+      const customerItemOrders = (customerItem.orders ?? []) as string[];
 
       customerItemOrders.push(orderId);
 
@@ -244,9 +233,7 @@ export class CustomerItemHandler {
       }
 
       const customerItem = await this._customerItemStorage.get(customerItemId);
-      const customerItemOrders: any[] = customerItem.orders
-        ? customerItem.orders
-        : [];
+      const customerItemOrders = (customerItem.orders ?? []) as string[];
 
       customerItemOrders.push(orderId);
 

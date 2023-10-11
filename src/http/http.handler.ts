@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlError } from "@boklisten/bl-model";
 import { stringify } from "qs";
 
@@ -9,7 +8,7 @@ const request = require("request");
 const rp = require("request-promise");
 
 export class HttpHandler {
-  post(url: string, data: any, authorization?: string): Promise<string> {
+  post(url: string, data: unknown, authorization?: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const options = {
         url: url,
@@ -50,7 +49,7 @@ export class HttpHandler {
     url: string,
     queryString: string,
     headers?: object,
-  ): Promise<any> {
+  ): Promise<unknown> {
     return new Promise((resolve, reject) => {
       const options = {
         uri: url + "?" + queryString,
@@ -76,7 +75,7 @@ export class HttpHandler {
     });
   }
 
-  public get(url: string, authorization?: string): Promise<any> {
+  public get(url: string, authorization?: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
       const options = {
         uri: url,
@@ -106,7 +105,7 @@ export class HttpHandler {
     });
   }
 
-  public createQueryString(data: any): string {
+  public createQueryString(data: unknown): string {
     return stringify(data);
   }
 }

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
 import mongoose from "mongoose";
 
@@ -15,10 +14,11 @@ import { NestedDocument } from "../nested-document";
 export class MongoDbBlStorageHandler<T extends BlDocument>
   implements BlStorageHandler<T>
 {
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   private mongooseModel: any;
   private permissionService: PermissionService;
 
-  constructor(collectionName: BlCollectionName, schema: any) {
+  constructor(collectionName: BlCollectionName, schema: unknown) {
     const mongooseModelCreator = new MongooseModelCreator(
       collectionName,
       schema,
@@ -29,7 +29,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public get(id: string, userPermission?: UserPermission): Promise<T> {
     return new Promise((resolve, reject) => {
-      const filter: any = { _id: id };
+      const filter = { _id: id };
 
       this.mongooseModel.findOne(filter, (error, doc) => {
         if (error) {
@@ -118,11 +118,11 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         }
       }
 
-      let filter: any = { _id: { $in: idArr }, active: true };
-
-      if (userPermission && this.permissionService.isAdmin(userPermission)) {
-        filter = { _id: { $id: idArr } }; // if user have admin privileges, he can also get documents that are inactive
-      }
+      // if user have admin privileges, he can also get documents that are inactive
+      const filter =
+        userPermission && this.permissionService.isAdmin(userPermission)
+          ? { _id: { $id: idArr } }
+          : { _id: { $in: idArr }, active: true };
 
       this.mongooseModel.find(filter).exec((error, docs) => {
         if (error || docs.length <= 0) {
@@ -139,7 +139,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     });
   }
 
-  public aggregate(aggregation: any[]): Promise<T[]> {
+  public aggregate(aggregation: unknown[]): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this.mongooseModel.aggregate(aggregation, (error, docs) => {
         if (error || docs === null) {
@@ -157,11 +157,10 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public getAll(userPermission?: UserPermission): Promise<T[]> {
     return new Promise((resolve, reject) => {
-      let filter: any = { active: true };
-
-      if (userPermission && this.permissionService.isAdmin(userPermission)) {
-        filter = {}; // if user have admin privileges, he can also get documents that are inactive
-      }
+      const filter =
+        userPermission && this.permissionService.isAdmin(userPermission)
+          ? {}
+          : { active: true };
 
       this.mongooseModel.find(filter, (error, docs) => {
         if (error || docs === null) {
@@ -209,7 +208,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public update(
     id: string,
-    data: any,
+    data: unknown,
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
     return new Promise((resolve, reject) => {
@@ -257,7 +256,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     });
   }
 
-  public updateMany(docs: { id: string; data: any }[]): Promise<T[]> {
+  public updateMany(docs: { id: string; data: unknown }[]): Promise<T[]> {
     return new Promise((resolve, reject) => {
       reject(new BlError("not implemented"));
     });
@@ -349,7 +348,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     doc: BlDocument,
     nestedDocuments: NestedDocument[],
     userPermission?: UserPermission,
-  ): Promise<any> {
+  ): Promise<BlDocument> {
     const nestedDocumentsPromArray = nestedDocuments.flatMap(
       (nestedDocument) =>
         doc && doc[nestedDocument.field]
@@ -380,7 +379,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     id: string,
     nestedDocument: NestedDocument,
     userPermission?: UserPermission,
-  ): Promise<any> {
+  ): Promise<BlDocument> {
     const documentStorage = new MongoDbBlStorageHandler(
       nestedDocument.collection,
       nestedDocument.mongooseSchema,
@@ -388,6 +387,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     return documentStorage.get(id, userPermission);
   }
 
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   private handleError(blError: BlError, error: any): BlError {
     if (error) {
       if (error.name === "CastError") {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   AccessToken,
   BlError,
@@ -52,7 +51,7 @@ export class CustomerItemPostHook extends Hook {
     }
 
     return this._userDetailStorage
-      .get(customerItem.customer as any)
+      .get(String(customerItem.customer))
       .then((userDetail: UserDetail) => {
         if (!this._userDetailHelper.isValid(userDetail)) {
           throw new BlError(`userDetail "${customerItem.customer}" not valid`);
@@ -105,7 +104,7 @@ export class CustomerItemPostHook extends Hook {
     }
 
     return this._orderStorage
-      .get(customerItem.orders[0] as any)
+      .get(String(customerItem.orders[0]))
       .then((order: Order) => {
         //update the corresponding orderItem with customerItem
         for (const orderItem of order.orderItems) {
@@ -124,7 +123,7 @@ export class CustomerItemPostHook extends Hook {
         );
       })
       .then(() => {
-        return this._userDetailStorage.get(customerItem.customer as any);
+        return this._userDetailStorage.get(String(customerItem.customer));
       })
       .then((userDetail: UserDetail) => {
         let newCustomerItems = [];
