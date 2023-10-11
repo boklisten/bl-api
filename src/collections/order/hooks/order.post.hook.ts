@@ -1,37 +1,53 @@
 import { Hook } from "../../../hook/hook";
-import {
-  BlError,
-  Order,
-  UserDetail,
-  Delivery,
-  AccessToken,
-} from "@boklisten/bl-model";
+import { BlError, Order, UserDetail, AccessToken } from "@boklisten/bl-model";
 import { OrderValidator } from "../helpers/order-validator/order-validator";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { OrderHookBefore } from "./order-hook-before";
+import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
+import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
 
 export class OrderPostHook extends Hook {
   private orderValidator: OrderValidator;
   private orderHookBefore: OrderHookBefore;
+  private userDetailStorage: BlDocumentStorage<UserDetail>;
+  private userDetailHelper: UserDetailHelper;
 
   constructor(
     orderValidator?: OrderValidator,
     orderHookBefore?: OrderHookBefore,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     userDetailStorage?: BlDocumentStorage<UserDetail>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    orderStorage?: BlDocumentStorage<Order>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    deliveryStorage?: BlDocumentStorage<Delivery>
+    userDetailHelper?: UserDetailHelper
   ) {
     super();
     this.orderValidator = orderValidator ?? new OrderValidator();
     this.orderHookBefore = orderHookBefore ?? new OrderHookBefore();
+    this.userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+    this.userDetailHelper = userDetailHelper ?? new UserDetailHelper();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public override before(requestBody: any): Promise<boolean> {
-    return this.orderHookBefore.validate(requestBody);
+  public override async before(
+    requestBody: unknown,
+    accessToken: AccessToken
+  ): Promise<boolean> {
+    const [validUserDetails, validRequestBody] = await Promise.all([
+      this.userDetailStorage
+        .get(accessToken.details)
+        .then((userDetail) => this.userDetailHelper.isValid(userDetail)),
+      this.orderHookBefore.validate(requestBody),
+    ]);
+    if (!validUserDetails) {
+      throw new BlError(
+        "UserDetail not set for user: " + accessToken.username
+      ).code(902);
+    }
+    if (!validRequestBody) {
+      throw new BlError("Invalid order").code(701);
+    }
+
+    return true;
   }
 
   public override after(
