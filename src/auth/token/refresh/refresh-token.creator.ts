@@ -1,5 +1,6 @@
 import { BlError } from "@boklisten/bl-model";
 import isEmail from "validator/lib/isEmail";
+
 import { RefreshTokenSecret } from "./refresh-token.secret";
 import { TokenConfig } from "../token.config";
 

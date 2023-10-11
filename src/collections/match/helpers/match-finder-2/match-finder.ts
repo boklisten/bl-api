@@ -1,4 +1,3 @@
-import { difference, hasDifference, intersect, union } from "../set-methods";
 import {
   MatchableUser,
   CandidateMatch,
@@ -20,6 +19,7 @@ import {
   tryFindTwoWayMatch,
   updateItemImbalances,
 } from "./match-utils";
+import { difference, hasDifference, intersect, union } from "../set-methods";
 
 export class MatchFinder {
   public senders: MatchableUser[];

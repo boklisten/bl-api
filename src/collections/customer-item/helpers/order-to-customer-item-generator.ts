@@ -4,9 +4,10 @@ import {
   OrderItem,
   UserDetail,
 } from "@boklisten/bl-model";
+
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
 
 export class OrderToCustomerItemGenerator {
   constructor(private _userDetailStorage?: BlDocumentStorage<UserDetail>) {

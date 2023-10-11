@@ -1,7 +1,7 @@
 import { BlEndpointMethod } from "./bl-endpoint-method";
+import { BlEndpointOperation } from "./bl-endpoint-operation";
 import { BlEndpointRestriction } from "./bl-endpoint-restriction";
 import { Hook } from "../hook/hook";
-import { BlEndpointOperation } from "./bl-endpoint-operation";
 
 /**
  * A general web-endpoint. Should be used when a

@@ -1,8 +1,9 @@
 import { BlError, Order } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+
 import { SystemUser } from "../../../../auth/permission/permission.service";
-import { orderSchema } from "../../order.schema";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../bl-collection";
+import { orderSchema } from "../../order.schema";
 
 type OrderItemToUpdate = {
   itemId: string;

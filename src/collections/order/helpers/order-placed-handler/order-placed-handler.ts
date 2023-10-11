@@ -5,14 +5,15 @@ import {
   AccessToken,
   UserDetail,
 } from "@boklisten/bl-model";
+
+import { Messenger } from "../../../../messenger/messenger";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { orderSchema } from "../../order.schema";
+import { BlCollectionName } from "../../../bl-collection";
+import { CustomerItemHandler } from "../../../customer-item/helpers/customer-item-handler";
 import { PaymentHandler } from "../../../payment/helpers/payment-handler";
 import { userDetailSchema } from "../../../user-detail/user-detail.schema";
-import { Messenger } from "../../../../messenger/messenger";
-import { CustomerItemHandler } from "../../../customer-item/helpers/customer-item-handler";
+import { orderSchema } from "../../order.schema";
 import { OrderItemMovedFromOrderHandler } from "../order-item-moved-from-order-handler/order-item-moved-from-order-handler";
-import { BlCollectionName } from "../../../bl-collection";
 
 export class OrderPlacedHandler {
   private orderStorage: BlDocumentStorage<Order>;

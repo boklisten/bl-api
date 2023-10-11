@@ -1,10 +1,11 @@
-import { Hook } from "../../../hook/hook";
 import { AccessToken, BlError, Order, UserDetail } from "@boklisten/bl-model";
+
+import { Hook } from "../../../hook/hook";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
+import { OrderPlacedHandler } from "../helpers/order-placed-handler/order-placed-handler";
 import { OrderValidator } from "../helpers/order-validator/order-validator";
 import { orderSchema } from "../order.schema";
-import { OrderPlacedHandler } from "../helpers/order-placed-handler/order-placed-handler";
-import { BlCollectionName } from "../../bl-collection";
 
 export class OrderPatchHook extends Hook {
   private orderValidator: OrderValidator;

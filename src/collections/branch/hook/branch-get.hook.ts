@@ -1,6 +1,7 @@
-import { Hook } from "../../../hook/hook";
 import { Branch, AccessToken } from "@boklisten/bl-model";
+
 import { PermissionService } from "../../../auth/permission/permission.service";
+import { Hook } from "../../../hook/hook";
 
 export class BranchGetHook extends Hook {
   private permissionService: PermissionService;

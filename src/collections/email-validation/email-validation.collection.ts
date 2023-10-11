@@ -1,7 +1,7 @@
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { emailValidationSchema } from "./email-validation.schema";
-import { EmailValidationConfirmOperation } from "./operations/email-validation-confirm.operation";
 import { EmailValidationPostHook } from "./hooks/email-validation-post.hook";
+import { EmailValidationConfirmOperation } from "./operations/email-validation-confirm.operation";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 
 export class EmailValidationCollection implements BlCollection {
   public collectionName = BlCollectionName.EmailValidations;

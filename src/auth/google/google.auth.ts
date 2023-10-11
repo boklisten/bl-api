@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { BlError } from "@boklisten/bl-model";
 import { Router } from "express";
-
-import { OAuth2Strategy } from "passport-google-oauth";
 import passport from "passport";
+import { OAuth2Strategy } from "passport-google-oauth";
+
+import { APP_CONFIG } from "../../application-config";
 import { ApiPath } from "../../config/api-path";
 import { SEResponseHandler } from "../../response/se.response.handler";
-import { BlError } from "@boklisten/bl-model";
-import { APP_CONFIG } from "../../application-config";
 import { UserProvider } from "../user/user-provider/user-provider";
 
 export class GoogleAuth {

@@ -5,13 +5,14 @@ import {
   Payment,
   Delivery,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { paymentSchema } from "../payment.schema";
-import { DibsPaymentService } from "../../../payment/dibs/dibs-payment.service";
-import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
+
 import { PaymentDibsConfirmer } from "./dibs/payment-dibs-confirmer";
-import { deliverySchema } from "../../delivery/delivery.schema";
+import { DibsPaymentService } from "../../../payment/dibs/dibs-payment.service";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { deliverySchema } from "../../delivery/delivery.schema";
+import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
+import { paymentSchema } from "../payment.schema";
 
 export class PaymentHandler {
   private paymentStorage: BlDocumentStorage<Payment>;

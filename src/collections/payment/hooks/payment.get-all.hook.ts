@@ -1,6 +1,7 @@
-import { Hook } from "../../../hook/hook";
 import { BlError, Payment, AccessToken } from "@boklisten/bl-model";
+
 import { PermissionService } from "../../../auth/permission/permission.service";
+import { Hook } from "../../../hook/hook";
 
 export class PaymentGetAllHook extends Hook {
   private _permissionService: PermissionService;

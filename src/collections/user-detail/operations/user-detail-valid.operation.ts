@@ -1,12 +1,13 @@
+import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
+import { NextFunction, Request, Response } from "express";
+
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
-import { NextFunction, Request, Response } from "express";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
-import { userDetailSchema } from "../user-detail.schema";
 import { SEResponseHandler } from "../../../response/se.response.handler";
-import { UserDetailHelper } from "../helpers/user-detail.helper";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { UserDetailHelper } from "../helpers/user-detail.helper";
+import { userDetailSchema } from "../user-detail.schema";
 
 export class UserDetailValidOperation implements Operation {
   private _userDetailStorage: BlDocumentStorage<UserDetail>;

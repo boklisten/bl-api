@@ -1,5 +1,6 @@
-import { CollectionEndpointMethod } from "./collection-endpoint-method";
 import { BlDocument } from "@boklisten/bl-model";
+
+import { CollectionEndpointMethod } from "./collection-endpoint-method";
 import { BlApiRequest } from "../request/bl-api-request";
 
 export interface CollectionEndpointOnRequest<T extends BlDocument>

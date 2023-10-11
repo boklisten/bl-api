@@ -1,5 +1,6 @@
-import { Hook } from "../../../hook/hook";
 import { AccessToken, Payment, BlError } from "@boklisten/bl-model";
+
+import { Hook } from "../../../hook/hook";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { PaymentDibsHandler } from "../helpers/dibs/payment-dibs-handler";
 import { PaymentValidator } from "../helpers/payment.validator";

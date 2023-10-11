@@ -1,7 +1,7 @@
 import { Canvas } from "canvas";
 import JsBarcode from "jsbarcode";
 import PDFDocument from "pdfkit";
-import QRCode from "qrcode";
+import { toCanvas } from "qrcode";
 
 const BL_ID_LENGTH = 12;
 const VALID_BL_ID_CHARACTERS =
@@ -65,7 +65,7 @@ function createQRCodeCanvas(id: string): Canvas {
     PRINTER_DIMENSIONS.qrcode.width,
     PRINTER_DIMENSIONS.qrcode.height,
   );
-  QRCode.toCanvas(
+  toCanvas(
     canvas,
     id,
     {

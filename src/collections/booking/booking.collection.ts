@@ -1,6 +1,6 @@
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { bookingSchema } from "./booking.schema";
 import { BookingPatchHook } from "./hook/booking-patch.hook";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 
 export class BookingCollection implements BlCollection {
   collectionName = BlCollectionName.Bookings;

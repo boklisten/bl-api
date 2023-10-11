@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { EmailHandler } from "@boklisten/bl-email";
-import {
-  Recipient,
-  MessageOptions,
-  PostOffice,
-  postOffice,
-} from "@boklisten/bl-post-office";
+import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
+import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
+import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
 import {
   Delivery,
   Order,
@@ -15,20 +12,24 @@ import {
   Item,
   Message,
 } from "@boklisten/bl-model";
-import { dateService } from "../../blc/date.service";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
+import {
+  Recipient,
+  MessageOptions,
+  PostOffice,
+  postOffice,
+} from "@boklisten/bl-post-office";
+
+import { EMAIL_SETTINGS } from "./email-settings";
 import { OrderEmailHandler } from "./order-email/order-email-handler";
+import { dateService } from "../../blc/date.service";
+import { BlCollectionName } from "../../collections/bl-collection";
+import { itemSchema } from "../../collections/item/item.schema";
+import { logger } from "../../logger/logger";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import {
   MessengerService,
   CustomerDetailWithCustomerItem,
 } from "../messenger-service";
-import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
-import { EMAIL_SETTINGS } from "./email-settings";
-import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
-import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
-import { logger } from "../../logger/logger";
-import { itemSchema } from "../../collections/item/item.schema";
-import { BlCollectionName } from "../../collections/bl-collection";
 
 export class EmailService implements MessengerService {
   private _emailHandler: EmailHandler;

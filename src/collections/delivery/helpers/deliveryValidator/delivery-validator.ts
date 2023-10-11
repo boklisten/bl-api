@@ -1,7 +1,9 @@
-import { Delivery, BlError, Order } from "@boklisten/bl-model";
-import { DeliveryBranchHandler } from "../deliveryBranch/delivery-branch-handler";
 import { isNullOrUndefined } from "util";
+
+import { Delivery, BlError, Order } from "@boklisten/bl-model";
+
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { DeliveryBranchHandler } from "../deliveryBranch/delivery-branch-handler";
 import { DeliveryBringHandler } from "../deliveryBring/delivery-bring-handler";
 
 export class DeliveryValidator {

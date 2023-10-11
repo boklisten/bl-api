@@ -1,5 +1,6 @@
-import { OrderItem, Item, Branch, BlError } from "@boklisten/bl-model";
 import { isNullOrUndefined } from "util";
+
+import { OrderItem, Item, Branch, BlError } from "@boklisten/bl-model";
 
 export class OrderItemPartlyPaymentValidator {
   public validate(

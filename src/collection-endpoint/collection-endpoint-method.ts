@@ -1,20 +1,22 @@
-import { CollectionEndpointAuth } from "./collection-endpoint-auth/collection-endpoint-auth";
-import { SEResponseHandler } from "../response/se.response.handler";
-import { NextFunction, Request, Response, Router } from "express";
-import { BlDocumentPermission, BlEndpoint } from "../collections/bl-collection";
-import { ApiPath } from "../config/api-path";
+import { isBoolean, isNullOrUndefined } from "util";
+
 import {
   AccessToken,
   BlapiResponse,
   BlDocument,
   BlError,
 } from "@boklisten/bl-model";
-import { Hook } from "../hook/hook";
-import { BlDocumentStorage } from "../storage/blDocumentStorage";
-import { BlApiRequest } from "../request/bl-api-request";
+import { NextFunction, Request, Response, Router } from "express";
+
+import { CollectionEndpointAuth } from "./collection-endpoint-auth/collection-endpoint-auth";
 import { CollectionEndpointDocumentAuth } from "./collection-endpoint-document/collection-endpoint-document-auth";
 import { CollectionEndpointOperation } from "./collection-endpoint-operation";
-import { isBoolean, isNullOrUndefined } from "util";
+import { BlDocumentPermission, BlEndpoint } from "../collections/bl-collection";
+import { ApiPath } from "../config/api-path";
+import { Hook } from "../hook/hook";
+import { BlApiRequest } from "../request/bl-api-request";
+import { SEResponseHandler } from "../response/se.response.handler";
+import { BlDocumentStorage } from "../storage/blDocumentStorage";
 
 // eslint-disable-next-line
 declare let onRequest: any;

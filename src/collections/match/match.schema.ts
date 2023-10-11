@@ -1,5 +1,3 @@
-import { Schema } from "mongoose";
-import { BlCollectionName } from "../bl-collection";
 import {
   // used for jsdoc
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -17,6 +15,9 @@ import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   MatchVariant,
 } from "@boklisten/bl-model";
+import { Schema } from "mongoose";
+
+import { BlCollectionName } from "../bl-collection";
 
 const { ObjectId, String, Date, Boolean } = Schema.Types;
 

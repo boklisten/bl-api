@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { IHook } from "./IHook";
 import { BlDocument, AccessToken } from "@boklisten/bl-model";
+
+import { IHook } from "./IHook";
 
 export class Hook implements IHook {
   public before(

@@ -1,13 +1,14 @@
 import { Order, OrderItem, BlError, Branch, Item } from "@boklisten/bl-model";
-import { OrderItemExtendValidator } from "./order-item-extend-validator/order-item-extend-validator";
-import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
-import { itemSchema } from "../../../../item/item.schema";
+
 import { OrderItemBuyValidator } from "./order-item-buy-validator/order-item-buy-validator";
-import { OrderItemRentValidator } from "./order-item-rent-validator/order-item-rent-validator";
-import { OrderFieldValidator } from "../order-field-validator/order-field-validator";
-import { PriceService } from "../../../../../price/price.service";
+import { OrderItemExtendValidator } from "./order-item-extend-validator/order-item-extend-validator";
 import { OrderItemPartlyPaymentValidator } from "./order-item-partly-payment-validator/order-item-partly-payment-validator";
+import { OrderItemRentValidator } from "./order-item-rent-validator/order-item-rent-validator";
+import { PriceService } from "../../../../../price/price.service";
+import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../../bl-collection";
+import { itemSchema } from "../../../../item/item.schema";
+import { OrderFieldValidator } from "../order-field-validator/order-field-validator";
 
 export class OrderItemValidator {
   private orderItemFieldValidator: OrderFieldValidator;

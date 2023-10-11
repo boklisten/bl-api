@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlError } from "@boklisten/bl-model";
+
 import { RefreshTokenSecret } from "./refresh-token.secret";
 
 export class RefreshTokenValidator {

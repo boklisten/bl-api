@@ -1,11 +1,12 @@
-import { Hook } from "../../../hook/hook";
 import { BlError, Order, UserDetail, AccessToken } from "@boklisten/bl-model";
-import { OrderValidator } from "../helpers/order-validator/order-validator";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+
 import { OrderHookBefore } from "./order-hook-before";
-import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
+import { Hook } from "../../../hook/hook";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { OrderValidator } from "../helpers/order-validator/order-validator";
 
 export class OrderPostHook extends Hook {
   private orderValidator: OrderValidator;

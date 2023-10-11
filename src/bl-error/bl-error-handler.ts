@@ -1,9 +1,10 @@
 import { BlError, BlapiErrorResponse } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../storage/blDocumentStorage";
+
+import { BlCollectionName } from "../collections/bl-collection";
 import { BlErrorLog } from "../collections/bl-error-log/bl-error-log";
 import { blErrorLogSchema } from "../collections/bl-error-log/bl-error-log.schema";
 import { logger } from "../logger/logger";
-import { BlCollectionName } from "../collections/bl-collection";
+import { BlDocumentStorage } from "../storage/blDocumentStorage";
 
 export class BlErrorHandler {
   private _errorLogStorage: BlDocumentStorage<BlErrorLog>;

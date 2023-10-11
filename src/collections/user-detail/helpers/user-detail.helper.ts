@@ -1,9 +1,11 @@
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { AccessToken, BlError, UserDetail } from "@boklisten/bl-model";
-import { userDetailSchema } from "../user-detail.schema";
-import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { isNullOrUndefined } from "util";
+
+import { AccessToken, BlError, UserDetail } from "@boklisten/bl-model";
+
+import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../user-detail.schema";
 
 export class UserDetailHelper {
   private _userDetailStorage: BlDocumentStorage<UserDetail>;

@@ -1,11 +1,12 @@
+import { Message, BlError, BlapiResponse } from "@boklisten/bl-model";
+import { Request, Response, NextFunction } from "express";
+
+import { logger } from "../../../logger/logger";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
-import { Message, BlError, BlapiResponse } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { messageSchema } from "../message.schema";
-import { Request, Response, NextFunction } from "express";
-import { logger } from "../../../logger/logger";
 import { BlCollectionName } from "../../bl-collection";
+import { messageSchema } from "../message.schema";
 
 export class TwilioSmsEventOperation implements Operation {
   private _messageStorage: BlDocumentStorage<Message>;

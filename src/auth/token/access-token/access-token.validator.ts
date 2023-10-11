@@ -1,6 +1,7 @@
 import { BlError } from "@boklisten/bl-model";
-import { AccessTokenSecret } from "./access-token.secret";
+
 import { AccessToken } from "./access-token";
+import { AccessTokenSecret } from "./access-token.secret";
 
 export class AccessTokenValidator {
   private accessTokenSecret: AccessTokenSecret;

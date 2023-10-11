@@ -1,22 +1,22 @@
-import { AccessTokenAuth } from "./token/access-token/access-token.auth";
-
-import { GoogleAuth } from "./google/google.auth";
-import { FacebookAuth } from "./facebook/facebook.auth";
 import { Router } from "express";
-import { UserHandler } from "./user/user.handler";
-import { LocalAuth } from "./local/local.auth";
-import { LocalLoginValidator } from "./local/local-login.validator";
-import { LocalLoginHandler } from "./local/local-login.handler";
-import { LocalLoginPasswordValidator } from "./local/password/local-login-password.validator";
-import { SeCrypto } from "../crypto/se.crypto";
-import { HashedPasswordGenerator } from "./local/password/hashed-password-generator";
-import { SaltGenerator } from "./local/salt/salt-generator";
+
+import { FacebookAuth } from "./facebook/facebook.auth";
+import { FeideAuth } from "./feide/feide.auth";
+import { GoogleAuth } from "./google/google.auth";
 import { LocalLoginCreator } from "./local/local-login-creator/local-login-creator";
+import { LocalLoginHandler } from "./local/local-login.handler";
+import { LocalLoginValidator } from "./local/local-login.validator";
+import { LocalAuth } from "./local/local.auth";
+import { HashedPasswordGenerator } from "./local/password/hashed-password-generator";
+import { LocalLoginPasswordValidator } from "./local/password/local-login-password.validator";
 import { ProviderIdGenerator } from "./local/provider-id/provider-id-generator";
-import { SEResponseHandler } from "../response/se.response.handler";
+import { SaltGenerator } from "./local/salt/salt-generator";
+import { AccessTokenAuth } from "./token/access-token/access-token.auth";
 import { TokenEndpoint } from "./token/token.endpoint";
 import { TokenHandler } from "./token/token.handler";
-import { FeideAuth } from "./feide/feide.auth";
+import { UserHandler } from "./user/user.handler";
+import { SeCrypto } from "../crypto/se.crypto";
+import { SEResponseHandler } from "../response/se.response.handler";
 
 export class BlAuth {
   constructor(router: Router) {

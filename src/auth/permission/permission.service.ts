@@ -1,4 +1,5 @@
 import { BlDocument, UserPermission } from "@boklisten/bl-model";
+
 import {
   BlDocumentPermission,
   BlEndpointRestriction,

@@ -1,7 +1,7 @@
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { deliverySchema } from "./delivery.schema";
-import { DeliveryPostHook } from "./hooks/delivery.post.hook";
 import { DeliveryPatchHook } from "./hooks/delivery.patch.hook";
+import { DeliveryPostHook } from "./hooks/delivery.post.hook";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 
 export class DeliveryCollection implements BlCollection {
   public collectionName = BlCollectionName.Deliveries;

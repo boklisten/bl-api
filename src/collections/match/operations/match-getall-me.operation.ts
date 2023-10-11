@@ -5,18 +5,19 @@ import {
   Match,
   UserDetail,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { matchSchema } from "../match.schema";
-import { BlCollectionName } from "../../bl-collection";
-import { Operation } from "../../../operation/operation";
-import { BlApiRequest } from "../../../request/bl-api-request";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { User } from "../../user/user";
-import { UserSchema } from "../../user/user.schema";
-import { customerItemSchema } from "../../customer-item/customer-item.schema";
-import { itemSchema } from "../../item/item.schema";
+
 import { addDetailsToAllMatches } from "./match-getall-me-operation-helper";
 import { getAllMatchesForUser } from "./match-operation-utils";
+import { Operation } from "../../../operation/operation";
+import { BlApiRequest } from "../../../request/bl-api-request";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
+import { customerItemSchema } from "../../customer-item/customer-item.schema";
+import { itemSchema } from "../../item/item.schema";
+import { User } from "../../user/user";
+import { UserSchema } from "../../user/user.schema";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { matchSchema } from "../match.schema";
 
 export class GetMyMatchesOperation implements Operation {
   constructor(

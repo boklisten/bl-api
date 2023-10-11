@@ -1,11 +1,12 @@
+import { BlError } from "@boklisten/bl-model";
+import { Request, NextFunction, Response } from "express";
+
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
 import { PasswordReset } from "../password-reset";
 import { passwordResetSchema } from "../password-reset.schema";
-import { BlError } from "@boklisten/bl-model";
-import { Request, NextFunction, Response } from "express";
-import { BlCollectionName } from "../../bl-collection";
 
 export class PasswordResetOperation implements Operation {
   private _passwordResetStorage: BlDocumentStorage<PasswordReset>;

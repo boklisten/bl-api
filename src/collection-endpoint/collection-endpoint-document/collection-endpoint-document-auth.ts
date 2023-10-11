@@ -1,11 +1,13 @@
-import { BlDocument, BlError } from "@boklisten/bl-model";
-import { BlApiRequest } from "../../request/bl-api-request";
 import { isNullOrUndefined } from "util";
+
+import { BlDocument, BlError } from "@boklisten/bl-model";
+
 import { PermissionService } from "../../auth/permission/permission.service";
 import {
   BlDocumentPermission,
   BlEndpointRestriction,
 } from "../../collections/bl-collection";
+import { BlApiRequest } from "../../request/bl-api-request";
 
 export class CollectionEndpointDocumentAuth<T extends BlDocument> {
   private _permissionService: PermissionService;

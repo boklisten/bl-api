@@ -5,14 +5,15 @@ import {
   OrderItem,
   UserDetail,
 } from "@boklisten/bl-model";
+import { TypedJSON } from "typedjson-npm";
+
 import { DibsEasyItem } from "./dibs-easy-item/dibs-easy-item";
 import { DibsEasyOrder } from "./dibs-easy-order/dibs-easy-order";
-import { HttpHandler } from "../../http/http.handler";
-import { APP_CONFIG } from "../../application-config";
 import { DibsEasyPayment } from "./dibs-easy-payment/dibs-easy-payment";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { TypedJSON } from "typedjson-npm";
+import { APP_CONFIG } from "../../application-config";
 import { UserDetailHelper } from "../../collections/user-detail/helpers/user-detail.helper";
+import { HttpHandler } from "../../http/http.handler";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 
 export class DibsPaymentService {
   private _userDetailHelper: UserDetailHelper;

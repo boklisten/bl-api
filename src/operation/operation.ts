@@ -1,6 +1,7 @@
-import { BlApiRequest } from "../request/bl-api-request";
-import { NextFunction, Request, Response } from "express";
 import { BlapiResponse } from "@boklisten/bl-model";
+import { NextFunction, Request, Response } from "express";
+
+import { BlApiRequest } from "../request/bl-api-request";
 
 export interface Operation {
   run(

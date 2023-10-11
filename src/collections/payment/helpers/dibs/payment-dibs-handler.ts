@@ -1,5 +1,3 @@
-import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.service";
-import { DibsEasyOrder } from "../../../../payment/dibs/dibs-easy-order/dibs-easy-order";
 import {
   Payment,
   Order,
@@ -7,12 +5,15 @@ import {
   Delivery,
   UserDetail,
 } from "@boklisten/bl-model";
+
+import { DibsEasyOrder } from "../../../../payment/dibs/dibs-easy-order/dibs-easy-order";
+import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.service";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { paymentSchema } from "../../payment.schema";
-import { orderSchema } from "../../../order/order.schema";
-import { deliverySchema } from "../../../delivery/delivery.schema";
-import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 import { BlCollectionName } from "../../../bl-collection";
+import { deliverySchema } from "../../../delivery/delivery.schema";
+import { orderSchema } from "../../../order/order.schema";
+import { userDetailSchema } from "../../../user-detail/user-detail.schema";
+import { paymentSchema } from "../../payment.schema";
 
 export class PaymentDibsHandler {
   private paymentStorage: BlDocumentStorage<Payment>;

@@ -1,14 +1,16 @@
+import { isNullOrUndefined } from "util";
+
+import { BlapiResponse, BlError } from "@boklisten/bl-model";
+import { NextFunction, Request, Response } from "express";
+
+import { LocalLoginHandler } from "../../../auth/local/local-login.handler";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
-import { NextFunction, Request, Response } from "express";
+import { SEResponseHandler } from "../../../response/se.response.handler";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
 import { PasswordReset } from "../password-reset";
 import { passwordResetSchema } from "../password-reset.schema";
-import { BlapiResponse, BlError } from "@boklisten/bl-model";
-import { isNullOrUndefined } from "util";
-import { LocalLoginHandler } from "../../../auth/local/local-login.handler";
-import { SEResponseHandler } from "../../../response/se.response.handler";
-import { BlCollectionName } from "../../bl-collection";
 
 export class PasswordResetNewOperation implements Operation {
   private _passwordResetStorage: BlDocumentStorage<PasswordReset>;

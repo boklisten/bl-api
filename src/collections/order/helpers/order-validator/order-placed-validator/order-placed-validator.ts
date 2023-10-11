@@ -1,9 +1,11 @@
+import { isNullOrUndefined } from "util";
+
 import { Order, Delivery, Payment, BlError } from "@boklisten/bl-model";
+
 import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../../../bl-collection";
 import { deliverySchema } from "../../../../delivery/delivery.schema";
 import { paymentSchema } from "../../../../payment/payment.schema";
-import { isNullOrUndefined } from "util";
-import { BlCollectionName } from "../../../../bl-collection";
 
 export class OrderPlacedValidator {
   private deliveryStorage: BlDocumentStorage<Delivery>;

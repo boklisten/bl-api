@@ -1,12 +1,13 @@
 import { BlError } from "@boklisten/bl-model";
-import { RefreshTokenCreator } from "./refresh/refresh-token.creator";
+
+import { AccessToken } from "./access-token/access-token";
 import { AccessTokenCreator } from "./access-token/access-token.creator";
-import { UserHandler } from "../user/user.handler";
-import { User } from "../../collections/user/user";
+import { RefreshToken } from "./refresh/refresh-token";
+import { RefreshTokenCreator } from "./refresh/refresh-token.creator";
 import { TokenConfig } from "./token.config";
 import { APP_CONFIG } from "../../application-config";
-import { AccessToken } from "./access-token/access-token";
-import { RefreshToken } from "./refresh/refresh-token";
+import { User } from "../../collections/user/user";
+import { UserHandler } from "../user/user.handler";
 
 export class TokenHandler {
   private refreshTokenCreator: RefreshTokenCreator;

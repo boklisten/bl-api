@@ -1,18 +1,21 @@
+import { isNullOrUndefined } from "util";
+
+import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
+import { NextFunction, Request, Response } from "express";
+
+import { PermissionService } from "../../../../auth/permission/permission.service";
+import { UserHandler } from "../../../../auth/user/user.handler";
 import { Operation } from "../../../../operation/operation";
 import { BlApiRequest } from "../../../../request/bl-api-request";
-import { NextFunction, Request, Response } from "express";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { User } from "../../../user/user";
-import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
-import { userDetailSchema } from "../../user-detail.schema";
-import { PermissionService } from "../../../../auth/permission/permission.service";
-import { isNullOrUndefined } from "util";
 import { SEResponseHandler } from "../../../../response/se.response.handler";
-import { UserSchema } from "../../../user/user.schema";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../../bl-collection";
 import { LocalLogin } from "../../../local-login/local-login";
 import { localLoginSchema } from "../../../local-login/local-login.schema";
-import { UserHandler } from "../../../../auth/user/user.handler";
-import { BlCollectionName } from "../../../bl-collection";
+import { User } from "../../../user/user";
+import { UserSchema } from "../../../user/user.schema";
+import { userDetailSchema } from "../../user-detail.schema";
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const emailValidator = require("validator");
 

@@ -1,9 +1,10 @@
 import { CustomerItem } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { customerItemSchema } from "../customer-item.schema";
+
 import { CustomerItemActive } from "./customer-item-active";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { customerItemSchema } from "../customer-item.schema";
 
 export class CustomerItemActiveBlid {
   private customerItemActive: CustomerItemActive;

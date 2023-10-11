@@ -8,23 +8,24 @@ import {
   UserDetail,
   UserMatch,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { matchSchema } from "../match.schema";
-import { BlCollectionName } from "../../bl-collection";
-import { Operation } from "../../../operation/operation";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { BlApiRequest } from "../../../request/bl-api-request";
+
 import {
   createMatchOrder,
   getAllMatchesForUser,
 } from "./match-operation-utils";
-import { CustomerItemActiveBlid } from "../../customer-item/helpers/customer-item-active-blid";
 import { SystemUser } from "../../../auth/permission/permission.service";
-import { orderSchema } from "../../order/order.schema";
-import { OrderValidator } from "../../order/helpers/order-validator/order-validator";
+import { Operation } from "../../../operation/operation";
+import { BlApiRequest } from "../../../request/bl-api-request";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
 import { customerItemSchema } from "../../customer-item/customer-item.schema";
+import { CustomerItemActiveBlid } from "../../customer-item/helpers/customer-item-active-blid";
 import { OrderToCustomerItemGenerator } from "../../customer-item/helpers/order-to-customer-item-generator";
 import { OrderItemMovedFromOrderHandler } from "../../order/helpers/order-item-moved-from-order-handler/order-item-moved-from-order-handler";
+import { OrderValidator } from "../../order/helpers/order-validator/order-validator";
+import { orderSchema } from "../../order/order.schema";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { matchSchema } from "../match.schema";
 
 export class MatchTransferItemOperation implements Operation {
   constructor(

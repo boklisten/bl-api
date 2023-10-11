@@ -7,13 +7,14 @@ import {
   DeliveryInfoBring,
   Branch,
 } from "@boklisten/bl-model";
+
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { orderSchema } from "../../../order/order.schema";
-import { itemSchema } from "../../../item/item.schema";
-import { BringDeliveryService } from "../deliveryBring/bringDelivery.service";
-import { deliverySchema } from "../../delivery.schema";
-import { branchSchema } from "../../../branch/branch.schema";
 import { BlCollectionName } from "../../../bl-collection";
+import { branchSchema } from "../../../branch/branch.schema";
+import { itemSchema } from "../../../item/item.schema";
+import { orderSchema } from "../../../order/order.schema";
+import { deliverySchema } from "../../delivery.schema";
+import { BringDeliveryService } from "../deliveryBring/bringDelivery.service";
 
 export class DeliveryHandler {
   private orderStorage: BlDocumentStorage<Order>;

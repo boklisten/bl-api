@@ -5,21 +5,22 @@ import {
   Match,
   Order,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { matchSchema } from "../match.schema";
-import { customerItemSchema } from "../../customer-item/customer-item.schema";
-import { BlCollectionName } from "../../bl-collection";
-import { MatchFinder } from "../helpers/match-finder-2/match-finder";
+
 import {
   candidateMatchToMatch,
   getMatchableReceivers,
   getMatchableSenders,
   verifyMatcherSpec,
 } from "./match-generate-operation-helper";
-import { orderSchema } from "../../order/order.schema";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
+import { customerItemSchema } from "../../customer-item/customer-item.schema";
+import { orderSchema } from "../../order/order.schema";
+import { MatchFinder } from "../helpers/match-finder-2/match-finder";
 import assignMeetingInfoToMatches from "../helpers/match-finder-2/match-meeting-info";
+import { matchSchema } from "../match.schema";
 
 export class MatchGenerateOperation implements Operation {
   constructor(

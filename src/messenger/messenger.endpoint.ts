@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { ApiPath } from "../config/api-path";
+
 import { BlEndpoint, BlEndpointMethod } from "../collections/bl-collection";
+import { ApiPath } from "../config/api-path";
 
 export class MessengerEndpoint implements BlEndpoint {
   method: BlEndpointMethod;

@@ -1,16 +1,18 @@
-import { LocalLogin } from "../../collections/local-login/local-login";
-import { SEDbQuery } from "../../query/se.db-query";
+import { isNullOrUndefined } from "util";
+
 import { BlapiErrorResponse, BlError } from "@boklisten/bl-model";
 import isEmail from "validator/lib/isEmail";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { localLoginSchema } from "../../collections/local-login/local-login.schema";
-import { isNullOrUndefined } from "util";
+
+import { LocalLoginCreator } from "./local-login-creator/local-login-creator";
 import { HashedPasswordGenerator } from "./password/hashed-password-generator";
 import { SaltGenerator } from "./salt/salt-generator";
-import { SeCrypto } from "../../crypto/se.crypto";
-import { SystemUser } from "../permission/permission.service";
-import { LocalLoginCreator } from "./local-login-creator/local-login-creator";
 import { BlCollectionName } from "../../collections/bl-collection";
+import { LocalLogin } from "../../collections/local-login/local-login";
+import { localLoginSchema } from "../../collections/local-login/local-login.schema";
+import { SeCrypto } from "../../crypto/se.crypto";
+import { SEDbQuery } from "../../query/se.db-query";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
+import { SystemUser } from "../permission/permission.service";
 
 export class LocalLoginHandler {
   private localLoginStorage: BlDocumentStorage<LocalLogin>;

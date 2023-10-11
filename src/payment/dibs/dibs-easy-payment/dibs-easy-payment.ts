@@ -1,9 +1,10 @@
+import { JsonMember, JsonObject } from "typedjson-npm";
+
 import { DibsEasyPaymentConsumer } from "./dibs-easy-payment-consumer/dibs-easy-payment-consumer";
 import { DibsEasyPaymentDetails } from "./dibs-easy-payment-details/dibs-easy-payment-details";
 import { DibsEasyPaymentOrderDetails } from "./dibs-easy-payment-order-details/dibs-easy-payment-order-details";
 import { DibsEasyPaymentRefund } from "./dibs-easy-payment-refund/dibs-easy-payment-refund";
 import { DibsEasyPaymentSummary } from "./dibs-easy-payment-summary/dibs-easy-payment-summary";
-import { JsonMember, JsonObject } from "typedjson-npm";
 
 @JsonObject
 export class DibsEasyPayment {

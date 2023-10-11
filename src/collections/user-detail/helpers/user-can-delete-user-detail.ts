@@ -1,11 +1,12 @@
 import { AccessToken, UserDetail } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+
 import { PermissionService } from "../../../auth/permission/permission.service";
-import { userDetailSchema } from "../user-detail.schema";
+import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
 import { User } from "../../user/user";
 import { UserSchema } from "../../user/user.schema";
-import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
-import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../user-detail.schema";
 
 export class UserCanDeleteUserDetail {
   private queryBuilder: SEDbQueryBuilder;

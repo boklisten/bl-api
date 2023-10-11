@@ -7,13 +7,14 @@ import {
   OrderItem,
   Period,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import moment = require("moment-timezone");
+
 import { SystemUser } from "../../../auth/permission/permission.service";
+import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
 import { branchSchema } from "../../branch/branch.schema";
 import { customerItemSchema } from "../customer-item.schema";
-import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
-import moment = require("moment-timezone");
-import { BlCollectionName } from "../../bl-collection";
 
 export class CustomerItemHandler {
   private _customerItemStorage: BlDocumentStorage<CustomerItem>;

@@ -1,9 +1,10 @@
+import { BlError } from "@boklisten/bl-model";
+import { Router } from "express";
 import passport from "passport";
 import OAuth2Strategy from "passport-oauth2";
-import { ApiPath } from "../../config/api-path";
-import { Router } from "express";
+
 import { APP_CONFIG } from "../../application-config";
-import { BlError } from "@boklisten/bl-model";
+import { ApiPath } from "../../config/api-path";
 import { HttpHandler } from "../../http/http.handler";
 import { SEResponseHandler } from "../../response/se.response.handler";
 import { UserProvider } from "../user/user-provider/user-provider";

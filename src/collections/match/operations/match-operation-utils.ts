@@ -1,12 +1,19 @@
-import { BlError, Match } from "@boklisten/bl-model";
-import { Branch, CustomerItem, Item, Order } from "@boklisten/bl-model";
+import {
+  BlError,
+  Match,
+  Branch,
+  CustomerItem,
+  Item,
+  Order,
+} from "@boklisten/bl-model";
+
 import { SEDbQuery } from "../../../query/se.db-query";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
-import { matchSchema } from "../match.schema";
-import { itemSchema } from "../../item/item.schema";
 import { branchSchema } from "../../branch/branch.schema";
+import { itemSchema } from "../../item/item.schema";
 import { OrderActive } from "../../order/helpers/order-active/order-active";
+import { matchSchema } from "../match.schema";
 
 export async function createMatchOrder(
   customerItem: CustomerItem,

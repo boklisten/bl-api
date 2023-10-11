@@ -1,5 +1,6 @@
-import { Hook } from "../../../hook/hook";
 import { AccessToken, Item } from "@boklisten/bl-model";
+
+import { Hook } from "../../../hook/hook";
 
 export class ItemPostHook extends Hook {
   constructor() {

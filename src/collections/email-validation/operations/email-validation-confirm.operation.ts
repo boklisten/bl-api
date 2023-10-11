@@ -1,15 +1,17 @@
+import { isNullOrUndefined } from "util";
+
+import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
+import { NextFunction, Request, Response } from "express";
+
+import { SystemUser } from "../../../auth/permission/permission.service";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
-import { NextFunction, Request, Response } from "express";
+import { SEResponseHandler } from "../../../response/se.response.handler";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { EmailValidation } from "../email-validation";
 import { emailValidationSchema } from "../email-validation.schema";
-import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
-import { SEResponseHandler } from "../../../response/se.response.handler";
-import { isNullOrUndefined } from "util";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { SystemUser } from "../../../auth/permission/permission.service";
-import { BlCollectionName } from "../../bl-collection";
 
 export class EmailValidationConfirmOperation implements Operation {
   private _emailValidationStorage: BlDocumentStorage<EmailValidation>;

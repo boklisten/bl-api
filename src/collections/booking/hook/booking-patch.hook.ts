@@ -1,12 +1,13 @@
-import { Hook } from "../../../hook/hook";
 import { AccessToken, Booking, BlError } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { bookingSchema } from "../booking.schema";
+
 import { PermissionService } from "../../../auth/permission/permission.service";
-import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
 import { DateService } from "../../../blc/date.service";
+import { Hook } from "../../../hook/hook";
 import { BookingEmailService } from "../../../messenger/email/booking-email-service";
+import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { bookingSchema } from "../booking.schema";
 
 export class BookingPatchHook extends Hook {
   private bookingStorage: BlDocumentStorage<Booking>;

@@ -1,7 +1,8 @@
-import { RefreshTokenValidator } from "../refresh/refresh-token.validator";
-import { UserPermission } from "../../user/user-permission";
 import { BlError } from "@boklisten/bl-model";
+
 import { AccessTokenSecret } from "./access-token.secret";
+import { UserPermission } from "../../user/user-permission";
+import { RefreshTokenValidator } from "../refresh/refresh-token.validator";
 import { TokenConfig } from "../token.config";
 
 export class AccessTokenCreator {

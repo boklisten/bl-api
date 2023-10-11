@@ -1,9 +1,11 @@
-import { BlError, DeliveryInfoBring, Item } from "@boklisten/bl-model";
-import { HttpHandler } from "../../../../http/http.handler";
-import { BringDelivery } from "./bringDelivery";
-import moment = require("moment");
-import { APP_CONFIG } from "../../../../application-config";
 import { isNullOrUndefined } from "util";
+
+import { BlError, DeliveryInfoBring, Item } from "@boklisten/bl-model";
+import moment = require("moment");
+
+import { BringDelivery } from "./bringDelivery";
+import { APP_CONFIG } from "../../../../application-config";
+import { HttpHandler } from "../../../../http/http.handler";
 
 export type ShipmentAddress = {
   name: string;

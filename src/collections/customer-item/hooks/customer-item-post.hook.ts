@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Hook } from "../../../hook/hook";
 import {
   AccessToken,
   BlError,
@@ -7,12 +6,14 @@ import {
   Order,
   UserDetail,
 } from "@boklisten/bl-model";
-import { CustomerItemValidator } from "../validators/customer-item-validator";
+
+import { Hook } from "../../../hook/hook";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { BlCollectionName } from "../../bl-collection";
 import { orderSchema } from "../../order/order.schema";
 import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
-import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { CustomerItemValidator } from "../validators/customer-item-validator";
 
 export class CustomerItemPostHook extends Hook {
   private _customerItemValidator: CustomerItemValidator;

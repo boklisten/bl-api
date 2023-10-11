@@ -1,18 +1,19 @@
 import {
-  CandidateMatchVariant,
-  MatchableUser,
-  MatchLocation,
-  MatchWithMeetingInfo,
-} from "../helpers/match-finder-2/match-types";
-import {
   CustomerItem,
   Match,
   Order,
   StandMatch,
   UserMatch,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { ObjectId } from "mongodb";
+
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import {
+  CandidateMatchVariant,
+  MatchableUser,
+  MatchLocation,
+  MatchWithMeetingInfo,
+} from "../helpers/match-finder-2/match-types";
 
 /**
  * The information required to generate matches.

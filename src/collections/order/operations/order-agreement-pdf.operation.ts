@@ -1,13 +1,14 @@
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlapiResponse, Order, UserDetail } from "@boklisten/bl-model";
-import { Messenger } from "../../../messenger/messenger";
-import { SEResponseHandler } from "../../../response/se.response.handler";
-import { BlApiRequest } from "../../../request/bl-api-request";
 import { NextFunction, Request, Response } from "express";
+
+import { Messenger } from "../../../messenger/messenger";
 import { Operation } from "../../../operation/operation";
-import { orderSchema } from "../order.schema";
+import { BlApiRequest } from "../../../request/bl-api-request";
+import { SEResponseHandler } from "../../../response/se.response.handler";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { orderSchema } from "../order.schema";
 
 export class OrderAgreementPdfOperation implements Operation {
   private _messenger: Messenger;

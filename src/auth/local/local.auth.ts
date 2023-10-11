@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { BlapiResponse, BlError } from "@boklisten/bl-model";
+import { Router } from "express";
 import passport from "passport";
 import { Strategy } from "passport-local";
-import { Router } from "express";
-import { ApiPath } from "../../config/api-path";
+
 import { LocalLoginValidator } from "./local-login.validator";
+import { ApiPath } from "../../config/api-path";
 import { SEResponseHandler } from "../../response/se.response.handler";
-import { BlapiResponse, BlError } from "@boklisten/bl-model";
 import { TokenHandler } from "../token/token.handler";
 
 export class LocalAuth {

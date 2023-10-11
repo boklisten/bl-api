@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NumberFilter } from "./number-filter/db-query-number-filter";
-import { StringFilter } from "./string-filter/db-query-string-filter";
-import { OnlyGetFilter } from "./only-get-filter/db-query-only-get-filter";
-import { SkipFilter } from "./skip-filter/db-query-skip-filter";
-import { SortFilter } from "./sort-filter/db-query-sort-filter";
-import { LimitFilter } from "./limit-filter/db-query-limit-filter";
-import { RegexFilter } from "./regex-filter/db-query-regex-filter";
 import { BooleanFilter } from "./boolean-filter/db-query-boolean-filter";
 import { DateFilter } from "./date-filter/db-query-date-filter";
 import { ExpandFilter } from "./expand-filter/db-query-expand-filter";
+import { LimitFilter } from "./limit-filter/db-query-limit-filter";
+import { NumberFilter } from "./number-filter/db-query-number-filter";
 import { ObjectIdFilter } from "./object-id-filter/db-query-object-id-filter";
+import { OnlyGetFilter } from "./only-get-filter/db-query-only-get-filter";
+import { RegexFilter } from "./regex-filter/db-query-regex-filter";
+import { SkipFilter } from "./skip-filter/db-query-skip-filter";
+import { SortFilter } from "./sort-filter/db-query-sort-filter";
+import { StringFilter } from "./string-filter/db-query-string-filter";
 
 export class SEDbQuery {
   booleanFilters: BooleanFilter[];

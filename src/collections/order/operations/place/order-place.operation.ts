@@ -1,9 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-useless-catch */
-import { NextFunction, Request, Response } from "express";
-import { Operation } from "../../../../operation/operation";
-import { BlApiRequest } from "../../../../request/bl-api-request";
-import { SEResponseHandler } from "../../../../response/se.response.handler";
 import {
   BlapiResponse,
   BlError,
@@ -17,17 +13,22 @@ import {
   UserDetail,
   UserMatch,
 } from "@boklisten/bl-model";
-import { OrderToCustomerItemGenerator } from "../../../customer-item/helpers/order-to-customer-item-generator";
+import { NextFunction, Request, Response } from "express";
+
+import { SystemUser } from "../../../../auth/permission/permission.service";
+import { Operation } from "../../../../operation/operation";
+import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
+import { BlApiRequest } from "../../../../request/bl-api-request";
+import { SEResponseHandler } from "../../../../response/se.response.handler";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { orderSchema } from "../../order.schema";
+import { BlCollectionName } from "../../../bl-collection";
 import { customerItemSchema } from "../../../customer-item/customer-item.schema";
+import { OrderToCustomerItemGenerator } from "../../../customer-item/helpers/order-to-customer-item-generator";
+import { matchSchema } from "../../../match/match.schema";
+import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
 import { OrderValidator } from "../../helpers/order-validator/order-validator";
-import { userDetailSchema } from "../../../user-detail/user-detail.schema";
-import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
-import { BlCollectionName } from "../../../bl-collection";
-import { matchSchema } from "../../../match/match.schema";
-import { SystemUser } from "../../../../auth/permission/permission.service";
+import { orderSchema } from "../../order.schema";
 
 export class OrderPlaceOperation implements Operation {
   private _queryBuilder: SEDbQueryBuilder;

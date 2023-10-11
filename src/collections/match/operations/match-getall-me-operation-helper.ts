@@ -11,6 +11,7 @@ import {
   UserDetail,
   UserMatch,
 } from "@boklisten/bl-model";
+
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 
 function selectMatchRelevantUserDetails({

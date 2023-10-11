@@ -1,5 +1,5 @@
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { invoiceSchema } from "./invoice.schema";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 
 export class InvoiceCollection implements BlCollection {
   collectionName = BlCollectionName.Invoices;

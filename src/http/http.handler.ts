@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlError } from "@boklisten/bl-model";
-import qs from "qs";
+import { stringify } from "qs";
+
+import { logger } from "../logger/logger";
+
 const request = require("request");
 const rp = require("request-promise");
-import { logger } from "../logger/logger";
 
 export class HttpHandler {
   post(url: string, data: any, authorization?: string): Promise<string> {
@@ -105,6 +107,6 @@ export class HttpHandler {
   }
 
   public createQueryString(data: any): string {
-    return qs.stringify(data);
+    return stringify(data);
   }
 }

@@ -1,16 +1,16 @@
+import { UserDetailDeleteHook } from "./hooks/user-detail-delete.hook";
+import { UserDetailUpdateHook } from "./hooks/user-detail-update.hook";
+import { UserDetailChangeEmailOperation } from "./operations/change-email/user-detail-change-email.operation";
+import { UserDetailPermissionOperation } from "./operations/permission/user-detail-permission.operation";
+import { UserDetailReadPermissionOperation } from "./operations/read-permission/user-detail-read-permission.operation";
+import { UserDetailValidOperation } from "./operations/user-detail-valid.operation";
+import { userDetailSchema } from "./user-detail.schema";
 import {
   BlCollection,
   BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
 } from "../bl-collection";
-import { userDetailSchema } from "./user-detail.schema";
-import { UserDetailValidOperation } from "./operations/user-detail-valid.operation";
-import { UserDetailDeleteHook } from "./hooks/user-detail-delete.hook";
-import { UserDetailPermissionOperation } from "./operations/permission/user-detail-permission.operation";
-import { UserDetailReadPermissionOperation } from "./operations/read-permission/user-detail-read-permission.operation";
-import { UserDetailChangeEmailOperation } from "./operations/change-email/user-detail-change-email.operation";
-import { UserDetailUpdateHook } from "./hooks/user-detail-update.hook";
 
 export class UserDetailCollection implements BlCollection {
   collectionName = BlCollectionName.UserDetails;

@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EmailHandler, EmailLog } from "@boklisten/bl-email";
+import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
+import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
+import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
 import {
   OrderItemType,
   Delivery,
@@ -10,18 +13,16 @@ import {
   BlError,
   Branch,
 } from "@boklisten/bl-model";
-import { EMAIL_SETTINGS } from "../email-settings";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { paymentSchema } from "../../../collections/payment/payment.schema";
-import { deliverySchema } from "../../../collections/delivery/delivery.schema";
-import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
-import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
-import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
-import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import moment = require("moment-timezone");
-import { branchSchema } from "../../../collections/branch/branch.schema";
+
 import { dateService } from "../../../blc/date.service";
 import { BlCollectionName } from "../../../collections/bl-collection";
+import { branchSchema } from "../../../collections/branch/branch.schema";
+import { deliverySchema } from "../../../collections/delivery/delivery.schema";
+import { paymentSchema } from "../../../collections/payment/payment.schema";
+import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { EMAIL_SETTINGS } from "../email-settings";
 
 export class OrderEmailHandler {
   private defaultCurrency = "NOK";

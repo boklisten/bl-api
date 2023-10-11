@@ -1,6 +1,7 @@
-import winston from "winston";
-import { getLogLevel } from "../server/commander/commander";
 import moment from "moment";
+import { createLogger, format, transports } from "winston";
+
+import { getLogLevel } from "../server/commander/commander";
 
 function formatTimestamp(timestamp: string) {
   return moment(timestamp).format("HH:mm:ss.SSS");
@@ -15,12 +16,12 @@ const customLevels = {
   silly: 5,
 };
 
-export const logger = winston.createLogger({
+export const logger = createLogger({
   levels: customLevels,
-  format: winston.format.combine(
+  format: format.combine(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    winston.format.printf((info: any) => {
-      const colorizer = winston.format.colorize();
+    format.printf((info: any) => {
+      const colorizer = format.colorize();
       if (
         process.env.NODE_ENV === "production" ||
         process.env.NODE_ENV === "dev"
@@ -32,12 +33,12 @@ export const logger = winston.createLogger({
         `${formatTimestamp(info.timestamp)} ${info.level} ${info.message}`,
       );
     }),
-    winston.format.colorize({
-      all: process.env.NODE_ENV === "production" ? false : true,
+    format.colorize({
+      all: process.env.NODE_ENV !== "production",
     }),
   ),
   transports: [
-    new winston.transports.Console({
+    new transports.Console({
       level: getLogLevel() || "info",
       handleExceptions: true,
     }),

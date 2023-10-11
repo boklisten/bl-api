@@ -1,13 +1,14 @@
+import { BlapiResponse, Booking } from "@boklisten/bl-model";
+import { NextFunction, Request, Response } from "express";
+import mongoose from "mongoose";
+
+import { DateService } from "../../../blc/date.service";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
-import { NextFunction, Request, Response } from "express";
-import { bookingSchema } from "../../booking/booking.schema";
-import { BlapiResponse, Booking } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { SEResponseHandler } from "../../../response/se.response.handler";
-import { DateService } from "../../../blc/date.service";
-import mongoose from "mongoose";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { bookingSchema } from "../../booking/booking.schema";
 
 export class BranchBookingTimesOperation implements Operation {
   private dateService: DateService;

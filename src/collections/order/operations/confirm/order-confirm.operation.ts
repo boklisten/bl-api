@@ -1,18 +1,19 @@
-import { NextFunction, Request, Response } from "express";
-import { Operation } from "../../../../operation/operation";
-import { BlApiRequest } from "../../../../request/bl-api-request";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { orderSchema } from "../../order.schema";
-import { SEResponseHandler } from "../../../../response/se.response.handler";
 import {
   AccessToken,
   BlapiResponse,
   BlError,
   Order,
 } from "@boklisten/bl-model";
-import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
+import { NextFunction, Request, Response } from "express";
+
+import { Operation } from "../../../../operation/operation";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
+import { BlApiRequest } from "../../../../request/bl-api-request";
+import { SEResponseHandler } from "../../../../response/se.response.handler";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../bl-collection";
+import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
+import { orderSchema } from "../../order.schema";
 
 export class OrderConfirmOperation implements Operation {
   private _queryBuilder: SEDbQueryBuilder;

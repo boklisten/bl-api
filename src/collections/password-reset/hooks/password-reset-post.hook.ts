@@ -1,14 +1,15 @@
-import { Hook } from "../../../hook/hook";
 import { AccessToken, BlError, UserDetail } from "@boklisten/bl-model";
-import { PasswordReset } from "../password-reset";
 import isEmail from "validator/lib/isEmail";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+
 import { UserHandler } from "../../../auth/user/user.handler";
-import { User } from "../../user/user";
 import { SeCrypto } from "../../../crypto/se.crypto";
+import { Hook } from "../../../hook/hook";
 import { Messenger } from "../../../messenger/messenger";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { User } from "../../user/user";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { PasswordReset } from "../password-reset";
 
 export class PasswordResetPostHook extends Hook {
   private _userDetailStorage: BlDocumentStorage<UserDetail>;

@@ -1,16 +1,17 @@
-import { Operation } from "../../../operation/operation";
-import { BlApiRequest } from "../../../request/bl-api-request";
 import {
   Message,
   BlError,
   BlapiResponse,
   SendgridEvent,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { messageSchema } from "../message.schema";
 import { Request, Response, NextFunction } from "express";
+
 import { logger } from "../../../logger/logger";
+import { Operation } from "../../../operation/operation";
+import { BlApiRequest } from "../../../request/bl-api-request";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { messageSchema } from "../message.schema";
 
 export class SendgridEventOperation implements Operation {
   private _messageStorage: BlDocumentStorage<Message>;

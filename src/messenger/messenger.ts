@@ -1,4 +1,3 @@
-import { EmailService } from "./email/email-service";
 import {
   Delivery,
   Order,
@@ -6,14 +5,16 @@ import {
   CustomerItem,
   Message,
 } from "@boklisten/bl-model";
+
+import { EmailService } from "./email/email-service";
 import {
   MessengerService,
   CustomerDetailWithCustomerItem,
 } from "./messenger-service";
-import { BlDocumentStorage } from "../storage/blDocumentStorage";
-import { deliverySchema } from "../collections/delivery/delivery.schema";
 import { PdfService } from "./pdf/pdf-service";
 import { BlCollectionName } from "../collections/bl-collection";
+import { deliverySchema } from "../collections/delivery/delivery.schema";
+import { BlDocumentStorage } from "../storage/blDocumentStorage";
 
 export class Messenger implements MessengerService {
   private _emailService: EmailService;

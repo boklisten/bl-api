@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
-import { BlStorageHandler } from "../blStorageHandler";
+import mongoose from "mongoose";
+
 import { MongooseModelCreator } from "./mongoose-schema-creator";
 import { PermissionService } from "../../auth/permission/permission.service";
-import { SEDbQuery } from "../../query/se.db-query";
-import { NestedDocument } from "../nested-document";
-import { ExpandFilter } from "../../query/expand-filter/db-query-expand-filter";
-import mongoose from "mongoose";
-import { logger } from "../../logger/logger";
 import { BlCollectionName } from "../../collections/bl-collection";
+import { logger } from "../../logger/logger";
+import { ExpandFilter } from "../../query/expand-filter/db-query-expand-filter";
+import { SEDbQuery } from "../../query/se.db-query";
+import { BlStorageHandler } from "../blStorageHandler";
+import { NestedDocument } from "../nested-document";
 
 export class MongoDbBlStorageHandler<T extends BlDocument>
   implements BlStorageHandler<T>

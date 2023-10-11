@@ -1,5 +1,3 @@
-import { Router } from "express";
-import { SEResponseHandler } from "../response/se.response.handler";
 import {
   BlDocument,
   Branch,
@@ -18,29 +16,31 @@ import {
   Booking,
   UniqueItem,
 } from "@boklisten/bl-model";
+import { Router } from "express";
 
-import { ItemCollection } from "../collections/item/item.collection";
-import { CustomerItemCollection } from "../collections/customer-item/customer-item.collection";
 import { CollectionEndpoint } from "./collection-endpoint";
-import { BranchCollection } from "../collections/branch/branch.collection";
-import { UserDetailCollection } from "../collections/user-detail/user-detail.collection";
-import { DeliveryCollection } from "../collections/delivery/delivery.collection";
-import { OpeningHourCollection } from "../collections/opening-hour/opening-hour.collection";
-import { OrderCollection } from "../collections/order/order.collection";
-import { PaymentCollection } from "../collections/payment/payment.collection";
 import { BlErrorLog } from "../collections/bl-error-log/bl-error-log";
 import { BlErrorLogCollection } from "../collections/bl-error-log/bl-error-log.collection";
+import { BookingCollection } from "../collections/booking/booking.collection";
+import { BranchCollection } from "../collections/branch/branch.collection";
 import { BranchItemCollection } from "../collections/branch-item/branch-item.collection";
-import { PasswordReset } from "../collections/password-reset/password-reset";
-import { PasswordResetCollection } from "../collections/password-reset/password-reset.collection";
+import { CompanyCollection } from "../collections/company/company.collection";
+import { CustomerItemCollection } from "../collections/customer-item/customer-item.collection";
+import { DeliveryCollection } from "../collections/delivery/delivery.collection";
 import { EmailValidation } from "../collections/email-validation/email-validation";
 import { EmailValidationCollection } from "../collections/email-validation/email-validation.collection";
-import { MessageCollection } from "../collections/message/message.collection";
 import { InvoiceCollection } from "../collections/invoice/invoice.collection";
-import { CompanyCollection } from "../collections/company/company.collection";
+import { ItemCollection } from "../collections/item/item.collection";
 import { MatchCollection } from "../collections/match/match.collection";
-import { BookingCollection } from "../collections/booking/booking.collection";
+import { MessageCollection } from "../collections/message/message.collection";
+import { OpeningHourCollection } from "../collections/opening-hour/opening-hour.collection";
+import { OrderCollection } from "../collections/order/order.collection";
+import { PasswordReset } from "../collections/password-reset/password-reset";
+import { PasswordResetCollection } from "../collections/password-reset/password-reset.collection";
+import { PaymentCollection } from "../collections/payment/payment.collection";
 import { UniqueItemCollection } from "../collections/unique-item/unique-item.collection";
+import { UserDetailCollection } from "../collections/user-detail/user-detail.collection";
+import { SEResponseHandler } from "../response/se.response.handler";
 
 export class CollectionEndpointCreator {
   constructor(private _router: Router) {

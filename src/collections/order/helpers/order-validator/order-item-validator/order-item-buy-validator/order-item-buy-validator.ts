@@ -1,8 +1,9 @@
 import { BlError, Item, OrderItem, Branch, Order } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
+
 import { PriceService } from "../../../../../../price/price.service";
-import { orderSchema } from "../../../../order.schema";
+import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../../../bl-collection";
+import { orderSchema } from "../../../../order.schema";
 
 export class OrderItemBuyValidator {
   private priceService: PriceService;

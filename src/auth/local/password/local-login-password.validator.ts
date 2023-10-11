@@ -1,5 +1,6 @@
-import { SeCrypto } from "../../../crypto/se.crypto";
 import { BlError } from "@boklisten/bl-model";
+
+import { SeCrypto } from "../../../crypto/se.crypto";
 
 export class LocalLoginPasswordValidator {
   constructor(private seCrypto: SeCrypto) {}
