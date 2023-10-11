@@ -135,7 +135,7 @@ describe("OrderPostHook", () => {
 
     it("should reject if requestBody is not valid", () => {
       return expect(
-        orderPostHook.before({ valid: false })
+        orderPostHook.before({ valid: false }, testAccessToken)
       ).to.eventually.be.rejectedWith(BlError, /not a valid order/);
     });
 
