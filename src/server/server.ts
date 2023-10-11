@@ -43,7 +43,7 @@ export class Server {
         ) {
           const interval = 5000;
           logger.error(
-            `failed to connect to mongodb, will try again in ${interval} sec`
+            `failed to connect to mongodb, will try again in ${interval} sec`,
           );
 
           setTimeout(() => {
@@ -56,7 +56,7 @@ export class Server {
   private connectToMongoDb(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       logger.verbose(
-        `trying to connect to mongodb: ${process.env.MONGODB_URI}`
+        `trying to connect to mongodb: ${process.env.MONGODB_URI}`,
       );
 
       mongoose.connection.on("disconnected", () => {
@@ -157,7 +157,7 @@ export class Server {
 
   private generateEndpoints() {
     const collectionEndpointCreator = new CollectionEndpointCreator(
-      this.router
+      this.router,
     );
     collectionEndpointCreator.create();
   }
@@ -211,7 +211,7 @@ export class Server {
       "server url:\t" +
         process.env.SERVER_HOST +
         process.env.SERVER_PORT +
-        process.env.SERVER_PATH
+        process.env.SERVER_PATH,
     );
     logger.verbose("mongoDB path:\t" + process.env.MONGODB_URI);
   }

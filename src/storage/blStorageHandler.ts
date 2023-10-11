@@ -7,23 +7,23 @@ export interface BlStorageHandler<T extends BlDocument> {
   get(
     id: string,
     userPermission?: UserPermission,
-    nestedDocuments?: NestedDocument[]
+    nestedDocuments?: NestedDocument[],
   ): Promise<T>;
 
   getMany(
     ids: string[],
     userPermission?: UserPermission,
-    nestedDocuments?: NestedDocument[]
+    nestedDocuments?: NestedDocument[],
   ): Promise<T[]>;
 
   getByQuery(
     dbQuery: SEDbQuery,
-    nestedDocuments?: NestedDocument[]
+    nestedDocuments?: NestedDocument[],
   ): Promise<T[]>;
 
   getAll(
     userPermission?: UserPermission,
-    nestedDocuments?: NestedDocument[]
+    nestedDocuments?: NestedDocument[],
   ): Promise<T[]>;
 
   add(doc: T, user: { id: string; permission: UserPermission }): Promise<T>;
@@ -33,14 +33,14 @@ export interface BlStorageHandler<T extends BlDocument> {
   update(
     id: string,
     data: any,
-    user: { id: string; permission: UserPermission }
+    user: { id: string; permission: UserPermission },
   ): Promise<T>;
 
   updateMany(docs: { id: string; data: any }[]): Promise<T[]>;
 
   remove(
     id: string,
-    user: { id: string; permission: UserPermission }
+    user: { id: string; permission: UserPermission },
   ): Promise<T>;
 
   removeMany(ids: string[]): Promise<T[]>;

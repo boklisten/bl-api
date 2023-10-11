@@ -23,13 +23,13 @@ export class RefreshTokenValidator {
             if (error)
               return reject(new BlError("could not validate token").code(909));
             resolve(payload);
-          }
+          },
         );
       } catch (error) {
         reject(
           new BlError("could not validate token")
             .store("jwt error", error)
-            .code(909)
+            .code(909),
         );
       }
     });

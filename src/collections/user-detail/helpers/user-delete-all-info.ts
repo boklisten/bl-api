@@ -11,7 +11,7 @@ export class UserDeleteAllInfo {
   private queryBuilder: SEDbQueryBuilder;
   constructor(
     private userStorage?: BlDocumentStorage<User>,
-    private localLoginStorage?: BlDocumentStorage<LocalLogin>
+    private localLoginStorage?: BlDocumentStorage<LocalLogin>,
   ) {
     this.userStorage = this.userStorage
       ? this.userStorage
@@ -24,7 +24,7 @@ export class UserDeleteAllInfo {
 
   public async deleteAllInfo(
     userDetailId: string,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     const user = await this.removeUser(userDetailId, accessToken);
 
@@ -35,7 +35,7 @@ export class UserDeleteAllInfo {
 
   private async removeUser(
     userDetailId: string,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<User> {
     const dbQuery = this.queryBuilder.getDbQuery({ userDetail: userDetailId }, [
       { fieldName: "userDetail", type: "object-id" },
@@ -45,7 +45,7 @@ export class UserDeleteAllInfo {
 
     if (users.length > 1) {
       throw new BlError(
-        `could not remove user "${userDetailId}": multiple users was found with same username`
+        `could not remove user "${userDetailId}": multiple users was found with same username`,
       );
     }
 
@@ -61,16 +61,15 @@ export class UserDeleteAllInfo {
 
   private async removeLocalLogin(
     username: string,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     const localLoginDbQuery = this.queryBuilder.getDbQuery(
       { username: username },
-      [{ fieldName: "username", type: "string" }]
+      [{ fieldName: "username", type: "string" }],
     );
 
-    const localLogins = await this.localLoginStorage.getByQuery(
-      localLoginDbQuery
-    );
+    const localLogins =
+      await this.localLoginStorage.getByQuery(localLoginDbQuery);
     const localLogin = localLogins[0];
 
     await this.localLoginStorage.remove(localLogin.id, {

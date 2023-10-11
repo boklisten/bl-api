@@ -11,7 +11,7 @@ export class PaymentPatchHook extends Hook {
   constructor(
     paymentStorage?: BlDocumentStorage<Payment>,
     paymentDibsHandler?: PaymentDibsHandler,
-    paymentValidator?: PaymentValidator
+    paymentValidator?: PaymentValidator,
   ) {
     super();
     this.paymentDibsHandler = paymentDibsHandler ?? new PaymentDibsHandler();
@@ -24,14 +24,14 @@ export class PaymentPatchHook extends Hook {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     accessToken: AccessToken,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    id: string
+    id: string,
   ): Promise<boolean> {
     return Promise.resolve(true);
   }
 
   override after(
     payments: Payment[],
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Payment[]> {
     if (!payments || payments.length !== 1) {
       return Promise.reject(new BlError("payments are empty or undefined"));
@@ -54,7 +54,7 @@ export class PaymentPatchHook extends Hook {
 
   private updatePaymentBasedOnMethod(
     payment: Payment,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Payment> {
     switch (payment.method) {
       case "later":
@@ -63,7 +63,7 @@ export class PaymentPatchHook extends Hook {
         return this.paymentDibsHandler.handleDibsPayment(payment, accessToken);
       default:
         return Promise.reject(
-          new BlError(`payment.method "${payment.method}" not supported`)
+          new BlError(`payment.method "${payment.method}" not supported`),
         );
     }
   }
@@ -71,7 +71,7 @@ export class PaymentPatchHook extends Hook {
   private handlePaymentLater(
     payment: Payment,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Payment> {
     return Promise.resolve(payment);
   }

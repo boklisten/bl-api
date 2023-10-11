@@ -17,7 +17,7 @@ program
     "--generate-dev-environment",
     "adds test data to the default database (" +
       applicationConfig.APP_CONFIG.dev.mongoDb.dbName +
-      ")"
+      ")",
   )
   .parse(process.argv);
 

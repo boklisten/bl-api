@@ -15,7 +15,7 @@ export class UserDetailUpdateHook extends Hook {
 
   public override async before(
     body: unknown,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<UserDetailPatch> {
     if (!validateUserDetailUpdateType(body)) {
       throw new BlError("Invalid UserDetailUpdateType request body").code(808);
@@ -24,7 +24,7 @@ export class UserDetailUpdateHook extends Hook {
       body;
     if (emailConfirmed !== undefined && accessToken.permission === "customer") {
       throw new BlError(
-        "bruker kan ikke endre egen e-post-bekreftet-status"
+        "bruker kan ikke endre egen e-post-bekreftet-status",
       ).code(910);
     }
 
@@ -52,12 +52,12 @@ export type UserDetailPatch = Partial<
 >;
 
 const validateUserDetailUpdateType = (
-  candidate: unknown
+  candidate: unknown,
 ): candidate is UserDetailPatch => {
   const _typeofTypeHelper = typeof ("" as unknown);
   const isTypeOrUndefined = (
     key: keyof UserDetailPatch,
-    typeName: typeof _typeofTypeHelper
+    typeName: typeof _typeofTypeHelper,
   ) => candidate[key] === undefined || typeof candidate[key] === typeName;
 
   try {

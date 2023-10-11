@@ -18,7 +18,7 @@ chai.use(chaiAsPromised);
 
 describe("TwilioSmsEventOperation", () => {
   const messageStorage = new BlDocumentStorage<Message>(
-    BlCollectionName.Messages
+    BlCollectionName.Messages,
   );
 
   const twilioSmsEventOperation = new TwilioSmsEventOperation(messageStorage);

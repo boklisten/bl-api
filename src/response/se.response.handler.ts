@@ -25,7 +25,7 @@ export class SEResponseHandler {
     res: Response,
     accessToken: string,
     refreshToken: string,
-    referer?: string
+    referer?: string,
   ) {
     const redirectUrl = `${
       referer ?? process.env.CLIENT_URI

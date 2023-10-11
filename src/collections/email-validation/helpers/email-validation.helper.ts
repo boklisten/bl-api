@@ -15,7 +15,7 @@ export class EmailValidationHelper {
   constructor(
     messenger?: Messenger,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
-    emailValidationStorage?: BlDocumentStorage<EmailValidation>
+    emailValidationStorage?: BlDocumentStorage<EmailValidation>,
   ) {
     this._messenger = messenger ? messenger : new Messenger();
     this._userDetailStorage = userDetailStorage
@@ -25,12 +25,12 @@ export class EmailValidationHelper {
       ? emailValidationStorage
       : new BlDocumentStorage(
           BlCollectionName.EmailValidations,
-          emailValidationSchema
+          emailValidationSchema,
         );
   }
 
   public createAndSendEmailValidationLink(
-    userDetailId: string
+    userDetailId: string,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this._userDetailStorage
@@ -46,7 +46,7 @@ export class EmailValidationHelper {
             .then((addedEmailValidation: EmailValidation) => {
               this._messenger.emailConfirmation(
                 userDetail,
-                addedEmailValidation.id
+                addedEmailValidation.id,
               );
 
               resolve(true);
@@ -54,23 +54,23 @@ export class EmailValidationHelper {
             .catch((addEmailValidationError: BlError) => {
               reject(
                 new BlError("could not add emailValidation").add(
-                  addEmailValidationError
-                )
+                  addEmailValidationError,
+                ),
               );
             });
         })
         .catch((getUserDetailError: BlError) => {
           reject(
             new BlError(`userDetail "${userDetailId}" not found`).add(
-              getUserDetailError
-            )
+              getUserDetailError,
+            ),
           );
         });
     });
   }
 
   public sendEmailValidationLink(
-    emailValidation: EmailValidation
+    emailValidation: EmailValidation,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this._userDetailStorage
@@ -83,8 +83,8 @@ export class EmailValidationHelper {
         .catch((getUserDetailError: BlError) => {
           reject(
             new BlError(
-              `userDetail "${emailValidation.userDetail}" not found`
-            ).add(getUserDetailError)
+              `userDetail "${emailValidation.userDetail}" not found`,
+            ).add(getUserDetailError),
           );
         });
     });

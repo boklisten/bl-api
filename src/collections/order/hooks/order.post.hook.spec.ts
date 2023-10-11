@@ -26,7 +26,7 @@ describe("OrderPostHook", () => {
   const orderValidator: OrderValidator = new OrderValidator();
   const orderStorage: BlDocumentStorage<Order> = new BlDocumentStorage(
     BlCollectionName.Orders,
-    orderSchema
+    orderSchema,
   );
   const userDetailStorage: BlDocumentStorage<UserDetail> =
     new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
@@ -35,7 +35,7 @@ describe("OrderPostHook", () => {
     orderValidator,
     orderHookBefore,
     userDetailStorage,
-    orderStorage
+    orderStorage,
   );
 
   let testOrder: Order;
@@ -135,7 +135,7 @@ describe("OrderPostHook", () => {
 
     it("should reject if requestBody is not valid", () => {
       return expect(
-        orderPostHook.before({ valid: false }, testAccessToken)
+        orderPostHook.before({ valid: false }, testAccessToken),
       ).to.eventually.be.rejectedWith(BlError, /not a valid order/);
     });
 
@@ -148,7 +148,7 @@ describe("OrderPostHook", () => {
     it("should reject if accessToken is empty or undefined", (done) => {
       orderPostHook.after([testOrder]).catch((blError: BlError) => {
         expect(blError.getMsg()).to.contain(
-          "accessToken was not specified when trying to process order"
+          "accessToken was not specified when trying to process order",
         );
         done();
       });
@@ -160,7 +160,7 @@ describe("OrderPostHook", () => {
 
         testOrder.id = "order1";
         return expect(
-          orderPostHook.after([testOrder], testAccessToken)
+          orderPostHook.after([testOrder], testAccessToken),
         ).to.eventually.be.rejectedWith(BlError, /not a valid order/);
       });
     });
@@ -184,10 +184,10 @@ describe("OrderPostHook", () => {
       testOrder.placed = true;
 
       return expect(
-        orderPostHook.after([testOrder], testAccessToken)
+        orderPostHook.after([testOrder], testAccessToken),
       ).to.be.rejectedWith(
         BlError,
-        /order.placed is set to true on post of order/
+        /order.placed is set to true on post of order/,
       );
     });
   });

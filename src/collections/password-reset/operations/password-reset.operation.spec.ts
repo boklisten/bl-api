@@ -20,10 +20,10 @@ describe("PasswordResetOperation", () => {
   let testPasswordReset: PasswordReset;
   let testRedirectPath: string;
   const passwordResetStorage = new BlDocumentStorage<PasswordReset>(
-    BlCollectionName.PasswordResets
+    BlCollectionName.PasswordResets,
   );
   const passwordResetOperation = new PasswordResetOperation(
-    passwordResetStorage
+    passwordResetStorage,
   );
 
   const testResponse = {
@@ -64,7 +64,7 @@ describe("PasswordResetOperation", () => {
       testBlApiRequest.documentId = "notFoundId";
 
       return expect(
-        passwordResetOperation.run(testBlApiRequest)
+        passwordResetOperation.run(testBlApiRequest),
       ).to.be.rejectedWith(BlError, /passwordReset "notFoundId" not found/);
     });
 

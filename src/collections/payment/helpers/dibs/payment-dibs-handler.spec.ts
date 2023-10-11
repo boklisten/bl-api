@@ -24,14 +24,14 @@ chai.use(chaiAsPromised);
 describe("PaymentDibsHandler", () => {
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const paymentStorage = new BlDocumentStorage<Payment>(
-    BlCollectionName.Payments
+    BlCollectionName.Payments,
   );
   const dibsPaymentService = new DibsPaymentService();
   const deliveryStorage = new BlDocumentStorage<Delivery>(
-    BlCollectionName.Deliveries
+    BlCollectionName.Deliveries,
   );
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
 
   const paymentDibsHandler = new PaymentDibsHandler(
@@ -39,7 +39,7 @@ describe("PaymentDibsHandler", () => {
     orderStorage,
     dibsPaymentService,
     deliveryStorage,
-    userDetailStorage
+    userDetailStorage,
   );
 
   describe("handleDibsPayment()", () => {
@@ -187,7 +187,7 @@ describe("PaymentDibsHandler", () => {
       testPayment.order = "notFoundOrder";
 
       return expect(
-        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken)
+        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken),
       ).to.be.rejectedWith(BlError, /order not found/);
     });
 
@@ -195,7 +195,7 @@ describe("PaymentDibsHandler", () => {
       getDibsEasyOrderConfirm = false;
 
       return expect(
-        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken)
+        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken),
       ).to.be.rejectedWith(BlError, /could not create dibs easy order/);
     });
 
@@ -203,7 +203,7 @@ describe("PaymentDibsHandler", () => {
       getPaymentIdConfirm = false;
 
       return expect(
-        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken)
+        paymentDibsHandler.handleDibsPayment(testPayment, testAccessToken),
       ).to.be.rejectedWith(BlError);
     });
 

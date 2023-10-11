@@ -13,7 +13,7 @@ export class BlErrorHandler {
       ? errorLogStorage
       : new BlDocumentStorage<BlErrorLog>(
           BlCollectionName.BlErrorLogs,
-          blErrorLogSchema
+          blErrorLogSchema,
         );
   }
 
@@ -31,7 +31,7 @@ export class BlErrorHandler {
     return new BlapiErrorResponse(
       blErrorResponse.httpStatus,
       blErrorResponse.code,
-      blErrorResponse.msg
+      blErrorResponse.msg,
     );
   }
 
@@ -50,7 +50,7 @@ export class BlErrorHandler {
       .catch((blErrorAddError) => {
         logger.warn(
           "blErrorHandler: there was a error saving the BlErrorLog: " +
-            blErrorAddError
+            blErrorAddError,
         );
       });
   }
@@ -76,7 +76,7 @@ export class BlErrorHandler {
     if (blError.getStore() && blError.getStore().length > 0) {
       for (const storeData of blError.getStore()) {
         logger.verbose(
-          `! (${blError.getCode()}) ${JSON.stringify(storeData.value)}`
+          `! (${blError.getCode()}) ${JSON.stringify(storeData.value)}`,
         );
       }
     }

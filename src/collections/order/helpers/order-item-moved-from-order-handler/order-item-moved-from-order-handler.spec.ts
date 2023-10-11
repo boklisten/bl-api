@@ -15,7 +15,7 @@ chai.use(chaiAsPromised);
 describe("OrderItemMovedFromOrderHandler", () => {
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const oiMovedFromOrderHandler = new OrderItemMovedFromOrderHandler(
-    orderStorage
+    orderStorage,
   );
   const getOrderStub = sinon.stub(orderStorage, "get");
   const updateOrderStub = sinon.stub(orderStorage, "update");
@@ -98,10 +98,10 @@ describe("OrderItemMovedFromOrderHandler", () => {
         updateOrderStub.resolves(testMovedFromOrder);
 
         return expect(
-          oiMovedFromOrderHandler.updateOrderItems(order)
+          oiMovedFromOrderHandler.updateOrderItems(order),
         ).to.be.rejectedWith(
           BlError,
-          /orderItem has "movedToOrder" already set/
+          /orderItem has "movedToOrder" already set/,
         );
       });
     });

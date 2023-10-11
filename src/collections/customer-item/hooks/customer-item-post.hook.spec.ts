@@ -29,10 +29,10 @@ describe("CustomerItemPostHook", () => {
   let validateCustomerItem: boolean;
   let testUserDetail: UserDetail;
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    BlCollectionName.CustomerItems
+    BlCollectionName.CustomerItems,
   );
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const customerItemValidator = new CustomerItemValidator(customerItemStorage);
@@ -40,7 +40,7 @@ describe("CustomerItemPostHook", () => {
     customerItemValidator,
     customerItemStorage,
     userDetailStorage,
-    orderStorage
+    orderStorage,
   );
 
   beforeEach(() => {
@@ -157,7 +157,7 @@ describe("CustomerItemPostHook", () => {
   describe("before()", () => {
     it("should reject if customerItem parameter is undefined", () => {
       return expect(
-        customerItemPostHook.before(undefined, testAccessToken)
+        customerItemPostHook.before(undefined, testAccessToken),
       ).to.be.rejectedWith(BlError, /customerItem is undefined/);
     });
 
@@ -165,13 +165,13 @@ describe("CustomerItemPostHook", () => {
       validateCustomerItem = false;
 
       return expect(
-        customerItemPostHook.before(testCustomerItem, testAccessToken)
+        customerItemPostHook.before(testCustomerItem, testAccessToken),
       ).to.be.rejectedWith(BlError, "could not validate customerItem");
     });
 
     it("should resolve with true if customerItemValidator.validate resolves", () => {
       return expect(
-        customerItemPostHook.before(testCustomerItem, testAccessToken)
+        customerItemPostHook.before(testCustomerItem, testAccessToken),
       ).to.be.fulfilled;
     });
 
@@ -180,7 +180,7 @@ describe("CustomerItemPostHook", () => {
       testUserDetail.dob = null;
 
       return expect(
-        customerItemPostHook.before(testCustomerItem, testAccessToken)
+        customerItemPostHook.before(testCustomerItem, testAccessToken),
       ).to.be.rejectedWith(BlError, /userDetail "userDetail1" not valid/);
     });
   });
@@ -188,7 +188,7 @@ describe("CustomerItemPostHook", () => {
   describe("after()", () => {
     it("should reject if customerItems are empty", () => {
       return expect(
-        customerItemPostHook.after([], testAccessToken)
+        customerItemPostHook.after([], testAccessToken),
       ).to.be.rejectedWith(BlError, /customerItems is empty or undefined/);
     });
 
@@ -196,7 +196,7 @@ describe("CustomerItemPostHook", () => {
       testCustomerItem.customer = "notFoundCustomer";
 
       return expect(
-        customerItemPostHook.after([testCustomerItem], testAccessToken)
+        customerItemPostHook.after([testCustomerItem], testAccessToken),
       ).to.be.rejectedWith(BlError, /userDetail not found/);
     });
 
@@ -210,7 +210,7 @@ describe("CustomerItemPostHook", () => {
           expect(
             userDetailStub.calledWithMatch("userDetail1", {
               customerItems: ["customerItem1"],
-            })
+            }),
           ).to.be.true;
           done();
         });
@@ -234,10 +234,10 @@ describe("CustomerItemPostHook", () => {
       testCustomerItem.orders = ["order1", "order2"];
 
       expect(
-        customerItemPostHook.after([testCustomerItem], testAccessToken)
+        customerItemPostHook.after([testCustomerItem], testAccessToken),
       ).to.be.rejectedWith(
         BlError,
-        /customerItem.orders.length is "2" but should be "1"/
+        /customerItem.orders.length is "2" but should be "1"/,
       );
     });
 

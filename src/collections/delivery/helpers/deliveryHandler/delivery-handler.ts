@@ -27,7 +27,7 @@ export class DeliveryHandler {
     branchStorage?: BlDocumentStorage<Branch>,
     itemStorage?: BlDocumentStorage<Item>,
     deliveryStorage?: BlDocumentStorage<Delivery>,
-    bringDeliveryService?: BringDeliveryService
+    bringDeliveryService?: BringDeliveryService,
   ) {
     this.orderStorage =
       orderStorage ??
@@ -47,20 +47,20 @@ export class DeliveryHandler {
   public updateOrderBasedOnMethod(
     delivery: Delivery,
     order: Order,
-    accessToken?: AccessToken
+    accessToken?: AccessToken,
   ): Promise<Delivery> {
     switch (delivery.method) {
       case "branch":
         return this.updateOrderWithDeliveryMethodBranch(
           delivery,
           order,
-          accessToken
+          accessToken,
         );
       case "bring":
         return this.updateOrderWithDeliveryMethodBring(
           delivery,
           order,
-          accessToken
+          accessToken,
         );
     }
   }
@@ -68,7 +68,7 @@ export class DeliveryHandler {
   private updateOrderWithDeliveryMethodBranch(
     delivery: Delivery,
     order: Order,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Delivery> {
     return this.updateOrder(order, delivery, accessToken)
       .then(() => {
@@ -82,7 +82,7 @@ export class DeliveryHandler {
   private updateOrderWithDeliveryMethodBring(
     delivery: Delivery,
     order: Order,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Delivery> {
     return new Promise((resolve, reject) => {
       this.fetchItems(order).then((items: Item[]) => {
@@ -90,7 +90,7 @@ export class DeliveryHandler {
           order,
           delivery,
           items,
-          accessToken
+          accessToken,
         )
           .then((updatedDelivery: Delivery) => {
             this.updateOrder(order, updatedDelivery, accessToken)
@@ -104,8 +104,8 @@ export class DeliveryHandler {
           .catch((bringDeliveryInfoError) => {
             reject(
               new BlError("failed to get bring delivery info").add(
-                bringDeliveryInfoError
-              )
+                bringDeliveryInfoError,
+              ),
             );
           });
       });
@@ -115,7 +115,7 @@ export class DeliveryHandler {
   private updateOrder(
     order: Order,
     delivery: Delivery,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     const orderUpdateData = { delivery: delivery.id };
 
@@ -129,7 +129,7 @@ export class DeliveryHandler {
       })
       .catch((blError: BlError) => {
         return Promise.reject(
-          new BlError("could not update order").add(blError)
+          new BlError("could not update order").add(blError),
         );
       });
   }
@@ -137,7 +137,7 @@ export class DeliveryHandler {
   private fetchItems(order: Order): Promise<Item[]> {
     return new Promise((resolve, reject) => {
       const itemIds: string[] = order.orderItems.map(
-        (orderItem) => orderItem.item as string
+        (orderItem) => orderItem.item as string,
       );
 
       this.itemStorage
@@ -155,7 +155,7 @@ export class DeliveryHandler {
     order: Order,
     delivery: Delivery,
     items: Item[],
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Delivery> {
     return new Promise((resolve, reject) => {
       this.branchStorage
@@ -170,7 +170,7 @@ export class DeliveryHandler {
               delivery.info["facilityAddress"],
               delivery.info["shipmentAddress"],
               items,
-              freeDelivery
+              freeDelivery,
             )
             .then((deliveryInfoBring: DeliveryInfoBring) => {
               if (delivery.info["trackingNumber"]) {
@@ -182,7 +182,7 @@ export class DeliveryHandler {
                 .update(
                   delivery.id,
                   { amount: deliveryInfoBring.amount, info: deliveryInfoBring },
-                  { id: accessToken.sub, permission: accessToken.permission }
+                  { id: accessToken.sub, permission: accessToken.permission },
                 )
                 .then((updatedDelivery: Delivery) => {
                   resolve(updatedDelivery);

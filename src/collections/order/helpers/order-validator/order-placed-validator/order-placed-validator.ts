@@ -11,7 +11,7 @@ export class OrderPlacedValidator {
 
   constructor(
     deliveryStorage?: BlDocumentStorage<Delivery>,
-    paymentStorage?: BlDocumentStorage<Payment>
+    paymentStorage?: BlDocumentStorage<Payment>,
   ) {
     this.deliveryStorage = deliveryStorage
       ? deliveryStorage
@@ -30,8 +30,8 @@ export class OrderPlacedValidator {
       if (!this.validateOrderItems(order)) {
         return reject(
           new BlError(
-            "total of order.orderItems amount is not equal to order.amount"
-          )
+            "total of order.orderItems amount is not equal to order.amount",
+          ),
         );
       }
 
@@ -57,7 +57,9 @@ export class OrderPlacedValidator {
           })
           .catch((blError: BlError) => {
             reject(
-              new BlError(`delivery "${order.delivery}" not found`).add(blError)
+              new BlError(`delivery "${order.delivery}" not found`).add(
+                blError,
+              ),
             );
           });
       }
@@ -76,7 +78,7 @@ export class OrderPlacedValidator {
 
   private validatePayments(
     order: Order,
-    delivery?: Delivery
+    delivery?: Delivery,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const totalOrderAmount = order.amount + (delivery ? delivery.amount : 0);
@@ -91,8 +93,8 @@ export class OrderPlacedValidator {
               return reject(
                 new BlError("payment is not confirmed").store(
                   "paymentId",
-                  payment.id
-                )
+                  payment.id,
+                ),
               );
             }
             paymentTotal += payment.amount;
@@ -101,8 +103,8 @@ export class OrderPlacedValidator {
           if (paymentTotal != totalOrderAmount) {
             return reject(
               new BlError(
-                "total amount of payments is not equal to total of order.amount + delivery.amount"
-              )
+                "total amount of payments is not equal to total of order.amount + delivery.amount",
+              ),
             );
           }
 
@@ -110,7 +112,7 @@ export class OrderPlacedValidator {
         })
         .catch((blError: BlError) => {
           reject(
-            new BlError("order.payments is not found").code(702).add(blError)
+            new BlError("order.payments is not found").code(702).add(blError),
           );
         });
     });

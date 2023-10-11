@@ -14,7 +14,7 @@ export class OrderItemMovedFromOrderHandler {
   constructor(private _orderStorage?: BlDocumentStorage<Order>) {
     this._orderStorage ??= new BlDocumentStorage(
       BlCollectionName.Orders,
-      orderSchema
+      orderSchema,
     );
   }
 
@@ -31,19 +31,19 @@ export class OrderItemMovedFromOrderHandler {
   }
 
   private async addMovedToOrderOnOrderItems(
-    orderItemsToUpdate: OrderItemToUpdate[]
+    orderItemsToUpdate: OrderItemToUpdate[],
   ): Promise<boolean> {
     await Promise.all(
-      orderItemsToUpdate.map((orderItem) => this.updateOrderItem(orderItem))
+      orderItemsToUpdate.map((orderItem) => this.updateOrderItem(orderItem)),
     );
     return true;
   }
 
   private async updateOrderItem(
-    orderItemToUpdate: OrderItemToUpdate
+    orderItemToUpdate: OrderItemToUpdate,
   ): Promise<boolean> {
     const originalOrder = await this._orderStorage.get(
-      orderItemToUpdate.originalOrderId
+      orderItemToUpdate.originalOrderId,
     );
 
     for (const orderItem of originalOrder.orderItems) {
@@ -61,7 +61,7 @@ export class OrderItemMovedFromOrderHandler {
     await this._orderStorage.update(
       orderItemToUpdate.originalOrderId,
       { orderItems: originalOrder.orderItems },
-      new SystemUser()
+      new SystemUser(),
     );
     return true;
   }

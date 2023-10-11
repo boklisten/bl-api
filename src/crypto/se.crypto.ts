@@ -8,7 +8,9 @@ export class SeCrypto {
     return new Promise((resolve, reject) => {
       if (msg.length <= 0)
         reject(
-          new BlError("msg to short").className("SeCrypto").methodName("cipher")
+          new BlError("msg to short")
+            .className("SeCrypto")
+            .methodName("cipher"),
         );
 
       const msgCipher = crypto.createCipher("aes128", msg);

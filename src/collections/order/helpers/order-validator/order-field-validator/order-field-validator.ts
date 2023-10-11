@@ -16,8 +16,8 @@ export class OrderFieldValidator {
       return Promise.reject(
         new BlError("unknown error, orderItem could not be validated").store(
           "error",
-          e
-        )
+          e,
+        ),
       );
     }
 

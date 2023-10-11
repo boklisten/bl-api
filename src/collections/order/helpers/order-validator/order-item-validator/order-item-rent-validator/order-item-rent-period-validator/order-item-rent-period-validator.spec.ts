@@ -15,7 +15,7 @@ chai.use(chaiAsPromised);
 describe("OrderItemRentPeriodValidator", () => {
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const orderItemRentPeriodValidator = new OrderItemRentPeriodValidator(
-    orderStorage
+    orderStorage,
   );
 
   const orderStorageGetStub = sinon.stub(orderStorage, "get").callsFake(() => {
@@ -36,10 +36,14 @@ describe("OrderItemRentPeriodValidator", () => {
       };
 
       return expect(
-        orderItemRentPeriodValidator.validate(orderItem, branchPaymentInfo, 100)
+        orderItemRentPeriodValidator.validate(
+          orderItem,
+          branchPaymentInfo,
+          100,
+        ),
       ).to.be.rejectedWith(
         BlError,
-        /rent period "semester" is not valid on branch/
+        /rent period "semester" is not valid on branch/,
       );
     });
 
@@ -64,11 +68,11 @@ describe("OrderItemRentPeriodValidator", () => {
           orderItemRentPeriodValidator.validate(
             orderItem,
             branchPaymentInfo,
-            100
-          )
+            100,
+          ),
         ).to.be.rejectedWith(
           BlError,
-          /amounts where set on orderItem when branch is responsible/
+          /amounts where set on orderItem when branch is responsible/,
         );
       });
 
@@ -84,8 +88,8 @@ describe("OrderItemRentPeriodValidator", () => {
           orderItemRentPeriodValidator.validate(
             orderItem,
             branchPaymentInfo,
-            100
-          )
+            100,
+          ),
         ).to.be.fulfilled;
       });
     });
@@ -151,7 +155,7 @@ describe("OrderItemRentPeriodValidator", () => {
           })
           .catch((err: BlError) => {
             expect(err.getMsg()).to.contain(
-              'the original order has not been payed, but current orderItem.amount is "0"'
+              'the original order has not been payed, but current orderItem.amount is "0"',
             );
             expect(orderStorageGetStub).to.have.been.called;
             done();
@@ -179,7 +183,7 @@ describe("OrderItemRentPeriodValidator", () => {
           })
           .catch((err: BlError) => {
             expect(err.getMsg()).to.contain(
-              'the original order has been payed, but current orderItem.amount is "100"'
+              'the original order has been payed, but current orderItem.amount is "100"',
             );
             expect(orderStorageGetStub).to.have.been.called;
             done();
@@ -219,7 +223,7 @@ describe("OrderItemRentPeriodValidator", () => {
               })
               .catch((err: BlError) => {
                 expect(err.getMsg()).to.contain(
-                  'orderItem amount is "100" but should be "50" since the old orderItem.amount was "200"'
+                  'orderItem amount is "100" but should be "50" since the old orderItem.amount was "200"',
                 );
                 expect(orderStorageGetStub).to.have.been.called;
                 done();
@@ -258,7 +262,7 @@ describe("OrderItemRentPeriodValidator", () => {
               })
               .catch((err: BlError) => {
                 expect(err.getMsg()).to.contain(
-                  'orderItem amount is "0" but should be "-250" since the old orderItem.amount was "750"'
+                  'orderItem amount is "0" but should be "-250" since the old orderItem.amount was "750"',
                 );
                 expect(orderStorageGetStub).to.have.been.called;
                 done();
@@ -294,11 +298,11 @@ describe("OrderItemRentPeriodValidator", () => {
               orderItemRentPeriodValidator.validate(
                 orderItem,
                 branchPaymentInfo,
-                itemPrice
-              )
+                itemPrice,
+              ),
             ).to.be.fulfilled;
           });
-        }
+        },
       );
 
       it("should reject if orderItem.amount is not equalt to branchPayment percentage * itemPrice", () => {
@@ -328,11 +332,11 @@ describe("OrderItemRentPeriodValidator", () => {
           orderItemRentPeriodValidator.validate(
             orderItem,
             branchPaymentInfo,
-            itemPrice
-          )
+            itemPrice,
+          ),
         ).to.be.rejectedWith(
           BlError,
-          /orderItem.amount "0" is not equal to itemPrice "100" \* percentage "0.5" "50"/
+          /orderItem.amount "0" is not equal to itemPrice "100" \* percentage "0.5" "50"/,
         );
       });
 
@@ -363,8 +367,8 @@ describe("OrderItemRentPeriodValidator", () => {
           orderItemRentPeriodValidator.validate(
             orderItem,
             branchPaymentInfo,
-            itemPrice
-          )
+            itemPrice,
+          ),
         ).to.be.fulfilled;
       });
     });

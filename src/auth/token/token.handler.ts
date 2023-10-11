@@ -15,7 +15,7 @@ export class TokenHandler {
   constructor(private userHandler: UserHandler) {
     const tokenConfig = new TokenConfig(
       APP_CONFIG.token.access as AccessToken,
-      APP_CONFIG.token.refresh as RefreshToken
+      APP_CONFIG.token.refresh as RefreshToken,
     );
 
     this.refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
@@ -23,7 +23,7 @@ export class TokenHandler {
   }
 
   public createTokens(
-    username: string
+    username: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     return new Promise((resolve, reject) => {
       this.userHandler.getByUsername(username).then(
@@ -41,7 +41,7 @@ export class TokenHandler {
                       user.blid,
                       user.permission,
                       user.userDetail,
-                      refreshToken
+                      refreshToken,
                     )
                     .then(
                       (accessToken: string) => {
@@ -54,23 +54,23 @@ export class TokenHandler {
                         reject(
                           new BlError("failed to create accessToken")
                             .code(906)
-                            .add(accessTokenCreationError)
+                            .add(accessTokenCreationError),
                         );
-                      }
+                      },
                     );
                 },
                 (refreshTokenCreatorError: BlError) => {
                   reject(
                     new BlError("failed to create refreshToken")
                       .code(906)
-                      .add(refreshTokenCreatorError)
+                      .add(refreshTokenCreatorError),
                   );
-                }
+                },
               );
             })
             .catch((userValidError: BlError) => {
               reject(
-                new BlError("user is not valid").add(userValidError).code(902)
+                new BlError("user is not valid").add(userValidError).code(902),
               );
             });
         },
@@ -78,9 +78,9 @@ export class TokenHandler {
           reject(
             new BlError('could not get user with username "' + username + '"')
               .add(getUserError)
-              .code(906)
+              .code(906),
           );
-        }
+        },
       );
     });
   }

@@ -31,18 +31,18 @@ const testLocalLogin = {
 
 describe("LocalLoginValidator", () => {
   const localLoginPasswordValidator = new LocalLoginPasswordValidator(
-    new SeCrypto()
+    new SeCrypto(),
   );
   const saltGenerator = new SaltGenerator();
   const seCrypto = new SeCrypto();
   const hashedPasswordGenerator = new HashedPasswordGenerator(
     saltGenerator,
-    seCrypto
+    seCrypto,
   );
   const providerIdGenerator = new ProviderIdGenerator(seCrypto);
   const localLoginCreator = new LocalLoginCreator(
     hashedPasswordGenerator,
-    providerIdGenerator
+    providerIdGenerator,
   );
   const localLoginHandler = new LocalLoginHandler();
   const userHandler = new UserHandler();
@@ -50,7 +50,7 @@ describe("LocalLoginValidator", () => {
     localLoginHandler,
     localLoginPasswordValidator,
     localLoginCreator,
-    userHandler
+    userHandler,
   );
 
   sinon.stub(localLoginHandler, "get").callsFake((username: string) => {
@@ -132,7 +132,7 @@ describe("LocalLoginValidator", () => {
           },
           (error: BlError) => {
             error.getCode().should.be.eq(702);
-          }
+          },
         );
       });
     });
@@ -151,7 +151,7 @@ describe("LocalLoginValidator", () => {
           },
           (error: any) => {
             reject(error);
-          }
+          },
         );
       }).should.eventually.be.true;
     });
@@ -168,7 +168,7 @@ describe("LocalLoginValidator", () => {
         },
         (error: BlError) => {
           error.getMsg().should.contain("already exists");
-        }
+        },
       );
     });
 
@@ -188,7 +188,7 @@ describe("LocalLoginValidator", () => {
         },
         (error: BlError) => {
           error.should.not.be.fulfilled;
-        }
+        },
       );
     });
   });

@@ -18,14 +18,14 @@ chai.use(chaiAsPromised);
 
 describe("PasswordResetNewOperation", () => {
   const passwordResetStorage = new BlDocumentStorage<PasswordReset>(
-    BlCollectionName.PasswordResets
+    BlCollectionName.PasswordResets,
   );
   const localLoginHandler = new LocalLoginHandler();
   const resHandler = new SEResponseHandler();
   const passwordResetNewOperation = new PasswordResetNewOperation(
     passwordResetStorage,
     localLoginHandler,
-    resHandler
+    resHandler,
   );
   let testBlApiRequest: BlApiRequest;
   let testPasswordReset: PasswordReset;
@@ -77,10 +77,10 @@ describe("PasswordResetNewOperation", () => {
       testBlApiRequest.documentId = "notFoundPasswordReset";
 
       return expect(
-        passwordResetNewOperation.run(testBlApiRequest)
+        passwordResetNewOperation.run(testBlApiRequest),
       ).to.be.rejectedWith(
         BlError,
-        /passwordReset "notFoundPasswordReset" not found/
+        /passwordReset "notFoundPasswordReset" not found/,
       );
     });
 
@@ -88,10 +88,10 @@ describe("PasswordResetNewOperation", () => {
       testBlApiRequest.data["password"] = null;
 
       return expect(
-        passwordResetNewOperation.run(testBlApiRequest)
+        passwordResetNewOperation.run(testBlApiRequest),
       ).to.be.rejectedWith(
         BlError,
-        /blApiRequest.data.password is null or undefined/
+        /blApiRequest.data.password is null or undefined/,
       );
     });
 
@@ -99,10 +99,10 @@ describe("PasswordResetNewOperation", () => {
       testBlApiRequest.data["password"] = "abcde";
 
       return expect(
-        passwordResetNewOperation.run(testBlApiRequest)
+        passwordResetNewOperation.run(testBlApiRequest),
       ).to.be.rejectedWith(
         BlError,
-        /blApiRequest.data.password is under length of 6/
+        /blApiRequest.data.password is under length of 6/,
       );
     });
 
@@ -110,10 +110,10 @@ describe("PasswordResetNewOperation", () => {
       localLoginUpdateSuccess = false;
 
       return expect(
-        passwordResetNewOperation.run(testBlApiRequest)
+        passwordResetNewOperation.run(testBlApiRequest),
       ).to.be.rejectedWith(
         BlError,
-        /could not update localLogin with password/
+        /could not update localLogin with password/,
       );
     });
 

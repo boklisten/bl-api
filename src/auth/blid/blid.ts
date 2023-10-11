@@ -13,7 +13,7 @@ export class Blid {
       return Promise.reject(
         new BlError("provider or providerId can not be empty")
           .className("Blid")
-          .methodName("createUserBlid")
+          .methodName("createUserBlid"),
       );
     }
 
@@ -28,9 +28,9 @@ export class Blid {
             new BlError("error creating cipher for user_blid")
               .data(error)
               .className("Blid")
-              .methodName("createUserBlid")
+              .methodName("createUserBlid"),
           );
-        }
+        },
       );
     });
   }

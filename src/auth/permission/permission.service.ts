@@ -23,7 +23,7 @@ export class PermissionService {
   }
 
   public getLowestPermission(
-    userPermissions: UserPermission[]
+    userPermissions: UserPermission[],
   ): UserPermission {
     if (userPermissions.some((permission) => permission === "customer")) {
       return "customer";
@@ -50,7 +50,7 @@ export class PermissionService {
 
   public haveDocumentPermission(
     userPermission: UserPermission,
-    document: BlDocument
+    document: BlDocument,
   ) {
     return (
       this.isPermissionOver(userPermission, document.user.permission) ||
@@ -63,7 +63,7 @@ export class PermissionService {
     userPermission: UserPermission,
     document: BlDocument,
     endpointRestriction: BlEndpointRestriction,
-    documentPermission?: BlDocumentPermission
+    documentPermission?: BlDocumentPermission,
   ): boolean {
     if (
       document.user.id === userId ||
@@ -75,7 +75,7 @@ export class PermissionService {
     if (documentPermission?.viewableForPermission) {
       return this.isPermissionEqualOrOver(
         userPermission,
-        documentPermission.viewableForPermission
+        documentPermission.viewableForPermission,
       );
     }
 
@@ -84,7 +84,7 @@ export class PermissionService {
 
   public isPermissionEqualOrOver(
     permission: UserPermission,
-    restrictedPermission: UserPermission
+    restrictedPermission: UserPermission,
   ): boolean {
     return permission === restrictedPermission
       ? true
@@ -93,7 +93,7 @@ export class PermissionService {
 
   public isPermissionOver(
     permission: UserPermission,
-    restrictedPermission: UserPermission
+    restrictedPermission: UserPermission,
   ): boolean {
     if (!restrictedPermission || !permission) return false;
 

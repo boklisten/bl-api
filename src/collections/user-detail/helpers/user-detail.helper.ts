@@ -17,7 +17,7 @@ export class UserDetailHelper {
   public updateUserDetailBasedOnDibsEasyPayment(
     userDetailId: string,
     dibsEasyPayment: DibsEasyPayment,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<UserDetail> {
     return new Promise((resolve, reject) => {
       this._userDetailStorage
@@ -25,7 +25,7 @@ export class UserDetailHelper {
         .then((userDetail: UserDetail) => {
           const updateObject = this.getUserDetailUpdateObject(
             dibsEasyPayment,
-            userDetail
+            userDetail,
           );
 
           this._userDetailStorage
@@ -39,16 +39,16 @@ export class UserDetailHelper {
             .catch((updateUserDetailError: BlError) => {
               reject(
                 new BlError(
-                  `could not update userDetail "${userDetailId}" with user details from dibsPayment`
-                ).add(updateUserDetailError)
+                  `could not update userDetail "${userDetailId}" with user details from dibsPayment`,
+                ).add(updateUserDetailError),
               );
             });
         })
         .catch((getUserDetailError: BlError) => {
           reject(
             new BlError(`could not get userDetail "${userDetailId}"`).add(
-              getUserDetailError
-            )
+              getUserDetailError,
+            ),
           );
         });
     });
@@ -56,7 +56,7 @@ export class UserDetailHelper {
 
   private getUserDetailUpdateObject(
     dibsEasyPayment: DibsEasyPayment,
-    userDetail: UserDetail
+    userDetail: UserDetail,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any {
     const dibsUserDetail = dibsEasyPayment.consumer.privatePerson;

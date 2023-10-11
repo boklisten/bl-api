@@ -28,7 +28,7 @@ export class OrderUserDetailValidator {
         })
         .catch((userDetailValidateError: BlError) => {
           throw new BlError("userDetail could not be validated").add(
-            userDetailValidateError
+            userDetailValidateError,
           );
         })
     );

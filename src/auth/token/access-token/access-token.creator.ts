@@ -19,14 +19,14 @@ export class AccessTokenCreator {
     userid: string,
     permission: UserPermission,
     userDetailId: string,
-    refreshToken: string
+    refreshToken: string,
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       if (!username || !userid || !refreshToken)
         return reject(
           new BlError("parameter is empty or undefined")
             .className("TokenHandler")
-            .methodName("createAccessToken")
+            .methodName("createAccessToken"),
         );
 
       this.refreshTokenValidator.validate(refreshToken).then(
@@ -43,20 +43,20 @@ export class AccessTokenCreator {
                   new BlError("could not sign jwt")
                     .store("usename", username)
                     .store("permission", permission)
-                    .code(905)
+                    .code(905),
                 );
 
               return resolve(accessToken);
-            }
+            },
           );
         },
         (refreshTokenError: BlError) => {
           reject(
             new BlError("refreshToken is not valid")
               .add(refreshTokenError)
-              .code(905)
+              .code(905),
           );
-        }
+        },
       );
     });
   }
@@ -65,7 +65,7 @@ export class AccessTokenCreator {
     username: string,
     userid: string,
     permission: UserPermission,
-    userDetailId: string
+    userDetailId: string,
   ) {
     return {
       iss: this.tokenConfig.accessToken.iss,

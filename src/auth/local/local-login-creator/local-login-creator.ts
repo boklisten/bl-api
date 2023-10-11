@@ -12,7 +12,7 @@ export class LocalLoginCreator {
 
   constructor(
     private hashedPasswordGenerator?: HashedPasswordGenerator,
-    private providerIdGenerator?: ProviderIdGenerator
+    private providerIdGenerator?: ProviderIdGenerator,
   ) {
     this._hashedPasswordGenerator = hashedPasswordGenerator
       ? hashedPasswordGenerator
@@ -31,7 +31,7 @@ export class LocalLoginCreator {
         return reject(
           blError
             .msg('username "' + username + '" is undefined or not an Email')
-            .code(103)
+            .code(103),
         );
       if (!password || password.length < 6)
         return reject(blError.msg("password is to short or empty").code(103));
@@ -54,18 +54,18 @@ export class LocalLoginCreator {
               reject(
                 blError
                   .msg("could not create providerId")
-                  .add(providerIdGeneratorError)
+                  .add(providerIdGeneratorError),
               );
-            }
+            },
           );
         },
         (hashedPasswordGeneratorError: BlError) => {
           reject(
             blError
               .msg("could not create hashedPassword and salt")
-              .add(hashedPasswordGeneratorError)
+              .add(hashedPasswordGeneratorError),
           );
-        }
+        },
       );
     });
   }

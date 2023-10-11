@@ -14,7 +14,7 @@ chai.use(chaiAsPromised);
 
 describe("CustomerItemValidator", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    BlCollectionName.CustomerItems
+    BlCollectionName.CustomerItems,
   );
   const customerItemValidator = new CustomerItemValidator(customerItemStorage);
 
@@ -40,7 +40,7 @@ describe("CustomerItemValidator", () => {
   it("should reject if sent customerItem is undefined", () => {
     return expect(customerItemValidator.validate(undefined)).to.be.rejectedWith(
       BlError,
-      /customerItem is undefined/
+      /customerItem is undefined/,
     );
   });
 });

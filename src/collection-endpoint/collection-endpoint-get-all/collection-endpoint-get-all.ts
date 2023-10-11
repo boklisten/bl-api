@@ -23,7 +23,7 @@ export class CollectionEndpointGetAll<T extends BlDocument>
       try {
         dbQuery = dbQueryBuilder.getDbQuery(
           blApiRequest.query,
-          this._endpoint.validQueryParams
+          this._endpoint.validQueryParams,
         );
       } catch (e) {
         throw new BlError("could not create query from request query string")

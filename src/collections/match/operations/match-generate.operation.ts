@@ -25,13 +25,13 @@ export class MatchGenerateOperation implements Operation {
   constructor(
     private customerItemStorage?: BlDocumentStorage<CustomerItem>,
     private matchStorage?: BlDocumentStorage<Match>,
-    private orderStorage?: BlDocumentStorage<Order>
+    private orderStorage?: BlDocumentStorage<Order>,
   ) {
     this.customerItemStorage = customerItemStorage
       ? customerItemStorage
       : new BlDocumentStorage(
           BlCollectionName.CustomerItems,
-          customerItemSchema
+          customerItemSchema,
         );
     this.matchStorage = matchStorage
       ? matchStorage
@@ -50,7 +50,7 @@ export class MatchGenerateOperation implements Operation {
       getMatchableSenders(
         matcherSpec.senderBranches,
         matcherSpec.deadlineBefore,
-        this.customerItemStorage
+        this.customerItemStorage,
       ),
       getMatchableReceivers(matcherSpec.receiverBranches, this.orderStorage),
     ]);
@@ -61,7 +61,7 @@ export class MatchGenerateOperation implements Operation {
       new MatchFinder(senders, receivers).generateMatches(),
       matcherSpec.standLocation,
       matcherSpec.userMatchLocations,
-      new Date(matcherSpec.startTime)
+      new Date(matcherSpec.startTime),
     ).map((candidate) => candidateMatchToMatch(candidate));
     if (matches.length === 0) {
       throw new BlError("No matches generated");

@@ -24,27 +24,27 @@ export class GetMyMatchesOperation implements Operation {
     private userDetailStorage?: BlDocumentStorage<UserDetail>,
     private matchStorage?: BlDocumentStorage<Match>,
     private customerItemStorage?: BlDocumentStorage<CustomerItem>,
-    private itemStorage?: BlDocumentStorage<Item>
+    private itemStorage?: BlDocumentStorage<Item>,
   ) {
     this.userStorage ??= new BlDocumentStorage(
       BlCollectionName.Users,
-      UserSchema
+      UserSchema,
     );
     this.userDetailStorage ??= new BlDocumentStorage(
       BlCollectionName.UserDetails,
-      userDetailSchema
+      userDetailSchema,
     );
     this.matchStorage ??= new BlDocumentStorage(
       BlCollectionName.Matches,
-      matchSchema
+      matchSchema,
     );
     this.customerItemStorage ??= new BlDocumentStorage(
       BlCollectionName.CustomerItems,
-      customerItemSchema
+      customerItemSchema,
     );
     this.itemStorage ??= new BlDocumentStorage(
       BlCollectionName.Items,
-      itemSchema
+      itemSchema,
     );
   }
 
@@ -59,7 +59,7 @@ export class GetMyMatchesOperation implements Operation {
       matches,
       this.userDetailStorage,
       this.itemStorage,
-      this.customerItemStorage
+      this.customerItemStorage,
     );
 
     return new BlapiResponse(matchesWithDetails);

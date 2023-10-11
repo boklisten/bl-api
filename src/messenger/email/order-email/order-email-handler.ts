@@ -38,7 +38,7 @@ export class OrderEmailHandler {
     private _emailHandler: EmailHandler,
     private _deliveryStorage?: BlDocumentStorage<Delivery>,
     private _paymentStorage?: BlDocumentStorage<Payment>,
-    private _branchStorage?: BlDocumentStorage<Branch>
+    private _branchStorage?: BlDocumentStorage<Branch>,
   ) {
     this._deliveryStorage = _deliveryStorage
       ? _deliveryStorage
@@ -53,7 +53,7 @@ export class OrderEmailHandler {
 
   public async sendOrderReceipt(
     customerDetail: UserDetail,
-    order: Order
+    order: Order,
   ): Promise<EmailLog> {
     const emailSetting: EmailSetting = {
       toEmail: customerDetail.email,
@@ -67,7 +67,7 @@ export class OrderEmailHandler {
     const withAgreement: boolean = await this.shouldSendAgreement(
       order,
       customerDetail,
-      branchId
+      branchId,
     );
 
     const emailOrder: EmailOrder = await this.orderToEmailOrder(order);
@@ -97,7 +97,7 @@ export class OrderEmailHandler {
       emailSetting,
       emailOrder,
       emailUser,
-      withAgreement
+      withAgreement,
     );
   }
 
@@ -120,12 +120,12 @@ export class OrderEmailHandler {
   private sendToGuardianIfUserIsUnder18(
     customerDetail: UserDetail,
     emailOrder: EmailOrder,
-    emailUser: EmailUser
+    emailUser: EmailUser,
   ) {
     if (
       moment(customerDetail.dob).isValid() &&
       moment(customerDetail.dob).isAfter(
-        moment(new Date()).subtract(18, "years")
+        moment(new Date()).subtract(18, "years"),
       ) &&
       customerDetail?.guardian?.email
     ) {
@@ -147,7 +147,7 @@ export class OrderEmailHandler {
         emailSetting,
         emailOrder,
         emailUser,
-        true
+        true,
       );
     }
   }
@@ -194,12 +194,12 @@ export class OrderEmailHandler {
 
   private shouldShowDeadline(order: Order) {
     return order.orderItems.some(
-      (orderItem) => orderItem.type === "rent" || orderItem.type === "extend"
+      (orderItem) => orderItem.type === "rent" || orderItem.type === "extend",
     );
   }
 
   private extractEmailOrderPaymentFromOrder(
-    order: Order
+    order: Order,
   ): Promise<{ payment: any; showPayment: boolean }> {
     if (!Array.isArray(order.payments) || !order.payments.length) {
       return Promise.resolve({ payment: null, showPayment: false });
@@ -207,8 +207,8 @@ export class OrderEmailHandler {
 
     const paymentPromises: Promise<Payment>[] = order.payments.map((payment) =>
       this._paymentStorage.get(
-        typeof payment === "string" ? payment : payment.id
-      )
+        typeof payment === "string" ? payment : payment.id,
+      ),
     );
 
     return Promise.all(paymentPromises)
@@ -216,12 +216,12 @@ export class OrderEmailHandler {
         const emailPayment = {
           total: payments.reduce(
             (subTotal, payment) => subTotal + payment.amount,
-            0
+            0,
           ),
           currency: this.defaultCurrency,
           taxAmount: 0,
           payments: payments.map((payment) =>
-            this.paymentToEmailPayment(payment)
+            this.paymentToEmailPayment(payment),
           ),
         };
 
@@ -242,7 +242,7 @@ export class OrderEmailHandler {
   }
 
   private extractEmailOrderDeliveryFromOrder(
-    order: Order
+    order: Order,
   ): Promise<{ delivery: any; showDelivery: boolean }> {
     const deliveryId = order.delivery as string;
     if (!order.delivery || !deliveryId.length) {
@@ -282,7 +282,7 @@ export class OrderEmailHandler {
         ? dateService.format(
             payment.creationTime,
             "Europe/Oslo",
-            this.standardTimeFormat
+            this.standardTimeFormat,
           )
         : null,
     };
@@ -297,7 +297,7 @@ export class OrderEmailHandler {
 
           if (paymentInfo.paymentDetails.cardDetails?.maskedPan) {
             paymentObj.cardInfo = `***${this.stripTo4LastDigits(
-              paymentInfo.paymentDetails.cardDetails.maskedPan
+              paymentInfo.paymentDetails.cardDetails.maskedPan,
             )}`;
           }
         }
@@ -347,7 +347,7 @@ export class OrderEmailHandler {
   }
 
   private orderItemsToEmailItems(
-    orderItems: OrderItem[]
+    orderItems: OrderItem[],
   ): { title: string; status: string; deadline?: string; price?: string }[] {
     return orderItems.map((orderItem) => ({
       title: orderItem.title,
@@ -373,7 +373,7 @@ export class OrderEmailHandler {
 
   private translateOrderItemType(
     orderItemType: OrderItemType,
-    handout?: boolean
+    handout?: boolean,
   ): string {
     if (this.localeSetting === "nb") {
       const translations = {
@@ -397,11 +397,11 @@ export class OrderEmailHandler {
   private async shouldSendAgreement(
     order: Order,
     customerDetail: UserDetail,
-    branchId: string
+    branchId: string,
   ): Promise<boolean> {
     const onlyHandout = order.orderItems[0].handout;
     const rentFound = order.orderItems.some(
-      (orderItem) => orderItem.type === "rent"
+      (orderItem) => orderItem.type === "rent",
     );
 
     if (onlyHandout) {
@@ -416,7 +416,7 @@ export class OrderEmailHandler {
       if (moment(customerDetail.dob).isValid()) {
         if (
           moment(customerDetail.dob).isAfter(
-            moment(new Date()).subtract(18, "years")
+            moment(new Date()).subtract(18, "years"),
           )
         ) {
           return Promise.resolve(true); // the user is under the age of 18

@@ -34,12 +34,12 @@ describe("OrderPlacedHandler", () => {
   let userDeatilUpdate: boolean;
 
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    BlCollectionName.CustomerItems
+    BlCollectionName.CustomerItems,
   );
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const paymentHandler = new PaymentHandler();
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const messenger = new Messenger();
   const orderItemMovedFromOrderHandler = new OrderItemMovedFromOrderHandler();
@@ -51,7 +51,7 @@ describe("OrderPlacedHandler", () => {
     userDetailStorage,
     messenger,
     customerItemHandler,
-    orderItemMovedFromOrderHandler
+    orderItemMovedFromOrderHandler,
   );
 
   sinon.stub(orderItemMovedFromOrderHandler, "updateOrderItems").resolves(true);
@@ -201,7 +201,7 @@ describe("OrderPlacedHandler", () => {
         .placeOrder(testOrder, testAccessToken)
         .catch((err: BlError) => {
           expect(err.errorStack[0].getMsg()).to.be.eq(
-            "could not confirm payments"
+            "could not confirm payments",
           );
           done();
         });
@@ -214,7 +214,7 @@ describe("OrderPlacedHandler", () => {
         await orderPlacedHandler.placeOrder(testOrder, testAccessToken);
       } catch (e) {
         return expect(e.errorStack[0].getMsg()).to.eq(
-          'customer "notFoundUserDetails" not found'
+          'customer "notFoundUserDetails" not found',
         );
       }
     });
@@ -226,7 +226,7 @@ describe("OrderPlacedHandler", () => {
         .placeOrder(testOrder, testAccessToken)
         .catch((err: BlError) => {
           expect(err.errorStack[0].getMsg()).to.be.eq(
-            "could not update userDetail with placed order"
+            "could not update userDetail with placed order",
           );
           done();
         });

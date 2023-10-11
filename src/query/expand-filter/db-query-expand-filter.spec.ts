@@ -21,19 +21,21 @@ describe("DbQueryExpandFilter", () => {
 
   it('should return empty array if "expand" keyword is not found in query', () => {
     expect(
-      dbQueryExpandFilter.getExpandFilters({ og: "customer" }, ["customer"])
+      dbQueryExpandFilter.getExpandFilters({ og: "customer" }, ["customer"]),
     ).to.eql([]);
   });
 
   it('should return empty array if "validQueryParams" is empty', () => {
     expect(
-      dbQueryExpandFilter.getExpandFilters({ expand: "customer" }, [])
+      dbQueryExpandFilter.getExpandFilters({ expand: "customer" }, []),
     ).to.eql([]);
   });
 
   it("should return array of expand field when present in query", () => {
     expect(
-      dbQueryExpandFilter.getExpandFilters({ expand: "customer" }, ["customer"])
+      dbQueryExpandFilter.getExpandFilters({ expand: "customer" }, [
+        "customer",
+      ]),
     ).to.eql([{ fieldName: "customer" }]);
   });
 
@@ -42,7 +44,7 @@ describe("DbQueryExpandFilter", () => {
       dbQueryExpandFilter.getExpandFilters({ expand: ["customer", "order"] }, [
         "customer",
         "order",
-      ])
+      ]),
     ).to.eql([{ fieldName: "customer" }, { fieldName: "order" }]);
   });
 });

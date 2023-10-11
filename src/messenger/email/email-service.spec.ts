@@ -46,7 +46,7 @@ describe("EmailService", () => {
   const emailService = new EmailService(
     emailHandler,
     itemStorage,
-    mockPostOffice
+    mockPostOffice,
   );
 
   const itemStorageGetStub = sinon.stub(itemStorage, "get");
@@ -125,7 +125,7 @@ describe("EmailService", () => {
         .remind(
           message,
           { id: "abc", email: "some@email.org" } as UserDetail,
-          [{ id: "customerItem1" }] as CustomerItem[]
+          [{ id: "customerItem1" }] as CustomerItem[],
         )
         .then(() => {
           expect(postOfficeSendStub).to.have.been.calledOnce;
@@ -155,7 +155,7 @@ describe("EmailService", () => {
             guardian: { email: "someOther@email.com", phone: "91804211" },
             dob: new Date(),
           } as UserDetail,
-          [{ id: "customerItem1" }] as CustomerItem[]
+          [{ id: "customerItem1" }] as CustomerItem[],
         )
         .then(() => {
           expect(postOfficeSendStub).to.have.been.calledTwice;

@@ -7,6 +7,6 @@ export interface Operation {
     blApiRequest: BlApiRequest,
     req?: Request,
     res?: Response,
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean | BlapiResponse>;
 }

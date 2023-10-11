@@ -19,12 +19,12 @@ describe("LocalLoginCreator", () => {
   const seCrypto = new SeCrypto();
   const hashedPasswordGenerator = new HashedPasswordGenerator(
     saltGenerator,
-    seCrypto
+    seCrypto,
   );
   const providerIdGenerator = new ProviderIdGenerator(seCrypto);
   const localLoginCreator = new LocalLoginCreator(
     hashedPasswordGenerator,
-    providerIdGenerator
+    providerIdGenerator,
   );
 
   describe("create()", () => {
@@ -88,7 +88,7 @@ describe("LocalLoginCreator", () => {
               .property("hashedPassword")
               .and.have.length.gte(64);
           },
-          (error: any) => {}
+          (error: any) => {},
         );
       });
     });

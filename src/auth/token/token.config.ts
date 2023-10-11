@@ -4,7 +4,7 @@ import { AccessToken } from "./access-token/access-token";
 export class TokenConfig {
   constructor(
     private _accessToken: AccessToken,
-    private _refreshToken: RefreshToken
+    private _refreshToken: RefreshToken,
   ) {}
 
   set refreshToken(refreshToken: RefreshToken) {

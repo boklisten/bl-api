@@ -36,8 +36,8 @@ export class HttpHandler {
 
           return reject(
             new BlError(
-              `the request to "${url}" responded with status ${res.statusCode}`
-            ).store("body", body)
+              `the request to "${url}" responded with status ${res.statusCode}`,
+            ).store("body", body),
           );
         }
       });
@@ -47,7 +47,7 @@ export class HttpHandler {
   public getWithQuery(
     url: string,
     queryString: string,
-    headers?: object
+    headers?: object,
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       const options = {
@@ -68,7 +68,7 @@ export class HttpHandler {
           reject(
             new BlError("could not get page with query")
               .store("responseError", error)
-              .store("uri", url + "?" + queryString)
+              .store("uri", url + "?" + queryString),
           );
         });
     });
@@ -97,8 +97,8 @@ export class HttpHandler {
 
           reject(
             new BlError(
-              `could not get the requested resource at "${url}"`
-            ).store("error", error)
+              `could not get the requested resource at "${url}"`,
+            ).store("error", error),
           );
         });
     });

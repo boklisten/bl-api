@@ -18,14 +18,14 @@ export class OrderItemRentValidator {
   public async validate(
     branch: Branch,
     orderItem: OrderItem,
-    item: Item
+    item: Item,
   ): Promise<boolean> {
     try {
       await this.validateOrderItemInfoFields(orderItem);
       await this.orderItemRentPeriodValidator.validate(
         orderItem,
         branch.paymentInfo,
-        item.price
+        item.price,
       );
       return Promise.resolve(true);
     } catch (e) {
@@ -34,8 +34,8 @@ export class OrderItemRentValidator {
       }
       return Promise.reject(
         new BlError(
-          "unknown error, could not validate orderItem type rent"
-        ).store("error", e)
+          "unknown error, could not validate orderItem type rent",
+        ).store("error", e),
       );
     }
   }
@@ -43,7 +43,7 @@ export class OrderItemRentValidator {
   private validateOrderItemInfoFields(orderItem: OrderItem): boolean {
     if (isNullOrUndefined(orderItem.info)) {
       throw new BlError(
-        'orderItem.info is not set when orderItem.type is "rent"'
+        'orderItem.info is not set when orderItem.type is "rent"',
       );
     }
     return true;

@@ -18,7 +18,7 @@ chai.use(chaiAsPromised);
 
 describe("SendgridEventOperation", () => {
   const messageStorage = new BlDocumentStorage<Message>(
-    BlCollectionName.Messages
+    BlCollectionName.Messages,
   );
 
   const sendgridEventOperation = new SendgridEventOperation(messageStorage);

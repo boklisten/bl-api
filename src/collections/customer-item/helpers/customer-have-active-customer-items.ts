@@ -35,7 +35,7 @@ export class CustomerHaveActiveCustomerItems {
     }
 
     return customerItems.some((customerItem) =>
-      this.customerItemActive.isActive(customerItem)
+      this.customerItemActive.isActive(customerItem),
     );
   }
 }

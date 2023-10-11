@@ -18,7 +18,7 @@ export class OrderReceiptPdfOperation implements Operation {
   constructor(
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     resHandler?: SEResponseHandler,
-    orderStorage?: BlDocumentStorage<Order>
+    orderStorage?: BlDocumentStorage<Order>,
   ) {
     this._messenger = new Messenger();
     this._userDetailStorage = userDetailStorage
@@ -35,16 +35,16 @@ export class OrderReceiptPdfOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     const order = await this._orderStorage.get(blApiRequest.documentId);
     const customerDetail = await this._userDetailStorage.get(
-      order.customer as string
+      order.customer as string,
     );
 
     const orderReceiptPdf = await this._messenger.getOrderReceiptPdf(
       customerDetail,
-      order
+      order,
     );
 
     this._resHandler.sendResponse(res, new BlapiResponse([orderReceiptPdf]));

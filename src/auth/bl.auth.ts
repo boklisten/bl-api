@@ -23,7 +23,7 @@ export class BlAuth {
     const userHandler = new UserHandler();
 
     const localLoginPasswordValidator = new LocalLoginPasswordValidator(
-      new SeCrypto()
+      new SeCrypto(),
     );
 
     const localLoginHandler = new LocalLoginHandler();
@@ -31,18 +31,18 @@ export class BlAuth {
     const saltGenerator = new SaltGenerator();
     const hashedPasswordGenerator = new HashedPasswordGenerator(
       saltGenerator,
-      seCrypto
+      seCrypto,
     );
     const providerIdGenerator = new ProviderIdGenerator(seCrypto);
     const localLoginCreator = new LocalLoginCreator(
       hashedPasswordGenerator,
-      providerIdGenerator
+      providerIdGenerator,
     );
     const localLoginValidator = new LocalLoginValidator(
       localLoginHandler,
       localLoginPasswordValidator,
       localLoginCreator,
-      userHandler
+      userHandler,
     );
     const resHandler = new SEResponseHandler();
 

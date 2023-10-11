@@ -15,7 +15,7 @@ export class PasswordResetOperation implements Operation {
       ? passwordResetStorage
       : new BlDocumentStorage(
           BlCollectionName.PasswordResets,
-          passwordResetSchema
+          passwordResetSchema,
         );
   }
 
@@ -24,7 +24,7 @@ export class PasswordResetOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -44,7 +44,7 @@ export class PasswordResetOperation implements Operation {
           reject(
             new BlError(`passwordReset "${blApiRequest.documentId}" not found`)
               .code(702)
-              .add(getPasswordResetError)
+              .add(getPasswordResetError),
           );
         });
     });

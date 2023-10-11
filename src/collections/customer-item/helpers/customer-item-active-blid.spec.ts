@@ -23,16 +23,16 @@ chai.use(chaiAsPromised);
 
 describe("CustomerItemActiveBlid", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    BlCollectionName.CustomerItems
+    BlCollectionName.CustomerItems,
   );
 
   const getByQueryCustomerItemStub = sinon.stub(
     customerItemStorage,
-    "getByQuery"
+    "getByQuery",
   );
 
   const customerItemActiveBlid = new CustomerItemActiveBlid(
-    customerItemStorage
+    customerItemStorage,
   );
 
   beforeEach(() => {
@@ -64,7 +64,7 @@ describe("CustomerItemActiveBlid", () => {
       getByQueryCustomerItemStub.resolves([customerItem1, customerItem2]);
 
       return expect(
-        customerItemActiveBlid.getActiveCustomerItemIds("blid1")
+        customerItemActiveBlid.getActiveCustomerItemIds("blid1"),
       ).eventually.be.eql(["customerItem1"]);
     });
 
@@ -82,7 +82,7 @@ describe("CustomerItemActiveBlid", () => {
       getByQueryCustomerItemStub.resolves([customerItem]);
 
       return expect(
-        customerItemActiveBlid.getActiveCustomerItemIds("blid1")
+        customerItemActiveBlid.getActiveCustomerItemIds("blid1"),
       ).eventually.be.eql([]);
     });
   });

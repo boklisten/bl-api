@@ -38,7 +38,7 @@ const mathias = createFakeMatchableUser(
   "book1",
   "book2",
   "book3",
-  "book4"
+  "book4",
 );
 
 describe("Full User Match", () => {
@@ -65,12 +65,12 @@ describe("Full User Match", () => {
     const expectedUserMatch = createFakeUserMatch(
       mathias,
       beate,
-      new Set(["book1", "book2", "book3"])
+      new Set(["book1", "book2", "book3"]),
     );
     const expectedStandMatch = createFakeStandMatch(
       mathias,
       new Set(),
-      new Set(["book4"])
+      new Set(["book4"]),
     );
     assert.deepEqual(matches, [expectedStandMatch, expectedUserMatch]);
   });
@@ -87,18 +87,18 @@ describe("Full User Match", () => {
   it("should be able to create multiple full matches with overlapping books", () => {
     const matchFinder = new MatchFinder(
       [monika, mathias],
-      [mathias, monika, mathias]
+      [mathias, monika, mathias],
     );
     matchFinder.generateMatches();
     expect(
       Array.from(matchFinder.senders).filter(
-        (sender) => sender.items.size !== 0
-      ).length
+        (sender) => sender.items.size !== 0,
+      ).length,
     ).to.equal(0);
     expect(
       Array.from(matchFinder.receivers).filter(
-        (receiver) => receiver.items.size !== 0
-      ).length
+        (receiver) => receiver.items.size !== 0,
+      ).length,
     ).to.equal(0);
   });
 });
@@ -111,12 +111,12 @@ describe("Partly User Match", () => {
     const mathiasXmonika = createFakeUserMatch(
       mathias,
       monika,
-      intersect(mathias.items, monika.items)
+      intersect(mathias.items, monika.items),
     );
     const mathiasXstand = createFakeStandMatch(
       mathias,
       new Set(),
-      difference(mathias.items, monika.items)
+      difference(mathias.items, monika.items),
     );
 
     assert.deepEqual(matches, [andrineXbeate, mathiasXstand, mathiasXmonika]);
@@ -137,18 +137,18 @@ describe("Partly User Match", () => {
     // C => B, C
     const matchFinder = new MatchFinder(
       [...senderGroupA, ...senderGroupB, ...senderGroupC],
-      [...receiverGroupA, ...receiverGroupB, ...receiverGroupC]
+      [...receiverGroupA, ...receiverGroupB, ...receiverGroupC],
     );
     const matches = matchFinder.generateMatches();
     expect(
       Array.from(matchFinder.senders).filter(
-        (sender) => sender.items.size !== 0
-      ).length
+        (sender) => sender.items.size !== 0,
+      ).length,
     ).to.equal(0);
     expect(
       Array.from(matchFinder.receivers).filter(
-        (receiver) => receiver.items.size !== 0
-      ).length
+        (receiver) => receiver.items.size !== 0,
+      ).length,
     ).to.equal(0);
     expect(matches.length).to.equal(25);
   });
@@ -169,22 +169,22 @@ describe("Partly User Match", () => {
     // C => B, C
     const matchFinder = new MatchFinder(
       shuffle([...senderGroupA, ...senderGroupB, ...senderGroupC]),
-      shuffle([...receiverGroupA, ...receiverGroupB, ...receiverGroupC])
+      shuffle([...receiverGroupA, ...receiverGroupB, ...receiverGroupC]),
     );
     const matches = matchFinder.generateMatches();
     expect(
       Array.from(matchFinder.senders).filter(
-        (sender) => sender.items.size !== 0
-      ).length
+        (sender) => sender.items.size !== 0,
+      ).length,
     ).to.equal(0, "expected number of senders with remaining items to be 0");
     expect(
       Array.from(matchFinder.receivers).filter(
-        (receiver) => receiver.items.size !== 0
-      ).length
+        (receiver) => receiver.items.size !== 0,
+      ).length,
     ).to.equal(0, "expected number of receivers with remaining items to be 0");
     expect(matches.length).to.be.lessThan(
       30,
-      "expected reasonable number of matches"
+      "expected reasonable number of matches",
     );
   });
 
@@ -197,17 +197,19 @@ describe("Partly User Match", () => {
 
     const matchFinder = new MatchFinder(
       [...senderGroupA, ...senderGroupB, ...senderGroupC],
-      receiverGroupA
+      receiverGroupA,
     );
     const matches = matchFinder.generateMatches();
     expect(
-      Array.from(matchFinder.senders).every((sender) => sender.items.size === 0)
+      Array.from(matchFinder.senders).every(
+        (sender) => sender.items.size === 0,
+      ),
     ).to.be.true;
 
     expect(
       Array.from(matchFinder.receivers).every(
-        (receiver) => receiver.items.size === 0
-      )
+        (receiver) => receiver.items.size === 0,
+      ),
     ).to.be.true;
 
     // 5 matches made in heaven
@@ -228,17 +230,19 @@ describe("Partly User Match", () => {
 
     const matchFinder = new MatchFinder(
       shuffle([...senderGroupA, ...senderGroupB, ...senderGroupC]),
-      shuffle(receiverGroupA)
+      shuffle(receiverGroupA),
     );
     const matches = matchFinder.generateMatches();
     expect(
-      Array.from(matchFinder.senders).every((sender) => sender.items.size === 0)
+      Array.from(matchFinder.senders).every(
+        (sender) => sender.items.size === 0,
+      ),
     ).to.be.true;
 
     expect(
       Array.from(matchFinder.receivers).every(
-        (receiver) => receiver.items.size === 0
-      )
+        (receiver) => receiver.items.size === 0,
+      ),
     ).to.be.true;
 
     // 5 matches made in heaven
@@ -268,7 +272,7 @@ describe("Large User Groups", () => {
 
     const matchFinder = new MatchFinder(
       shuffle(senderGroups.flat()),
-      shuffle(recieverGroups.flat())
+      shuffle(recieverGroups.flat()),
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -276,10 +280,10 @@ describe("Large User Groups", () => {
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
-      senderGroups.flat().length * 1.5
+      senderGroups.flat().length * 1.5,
     );
     expect(numberOfMatchesPerType.standMatches).to.be.lessThan(
-      recieverGroups.flat().length * 0.6
+      recieverGroups.flat().length * 0.6,
     );
   });
 
@@ -293,7 +297,7 @@ describe("Large User Groups", () => {
 
     const matchFinder = new MatchFinder(
       shuffle(test_users.slice()),
-      shuffle(test_users.slice())
+      shuffle(test_users.slice()),
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -301,10 +305,10 @@ describe("Large User Groups", () => {
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
-      test_users.length * 1.4
+      test_users.length * 1.4,
     );
     expect(numberOfMatchesPerType.standMatches).to.be.lessThanOrEqual(
-      test_users.length * 0.1
+      test_users.length * 0.1,
     );
   });
 
@@ -318,7 +322,7 @@ describe("Large User Groups", () => {
 
     const matchFinder = new MatchFinder(
       shuffle(test_users.slice()).slice(33),
-      shuffle(test_users.slice()).slice(20)
+      shuffle(test_users.slice()).slice(20),
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -326,25 +330,25 @@ describe("Large User Groups", () => {
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
-      test_users.flat().length * 1.4
+      test_users.flat().length * 1.4,
     );
     expect(numberOfMatchesPerType.standMatches).to.be.lessThanOrEqual(
-      test_users.flat().length * 0.2
+      test_users.flat().length * 0.2,
     );
   });
 
   it("should have a lot of pickup and deliveries when many new books are introduced", () => {
     const shuffle = shuffler(seededRandom(128738745));
     const testUsersYear1: MatchableUser[] = otto_treider_test_users_year_1.map(
-      ({ items, id }) => ({ items: new Set(items), id })
+      ({ items, id }) => ({ items: new Set(items), id }),
     );
     const testUsersYear2: MatchableUser[] = otto_treider_test_users_year_2.map(
-      ({ items, id }) => ({ items: new Set(items), id })
+      ({ items, id }) => ({ items: new Set(items), id }),
     );
 
     const matchFinder = new MatchFinder(
       shuffle(testUsersYear1),
-      shuffle(testUsersYear2)
+      shuffle(testUsersYear2),
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -352,25 +356,25 @@ describe("Large User Groups", () => {
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
-      testUsersYear1.flat().length * 1.1
+      testUsersYear1.flat().length * 1.1,
     );
     expect(numberOfMatchesPerType.standMatches).to.be.greaterThan(
-      testUsersYear2.length * 0.9
+      testUsersYear2.length * 0.9,
     );
   });
 
   it("should be able to sufficiently match two different year classes with similar books", () => {
     const shuffle = shuffler(seededRandom(123982));
     const testUsersYear0: MatchableUser[] = otto_treider_test_users_year_0.map(
-      ({ items, id }) => ({ items: new Set(items), id })
+      ({ items, id }) => ({ items: new Set(items), id }),
     );
     const testUsersYear1: MatchableUser[] = otto_treider_test_users_year_1.map(
-      ({ items, id }) => ({ items: new Set(items), id })
+      ({ items, id }) => ({ items: new Set(items), id }),
     );
 
     const matchFinder = new MatchFinder(
       shuffle(testUsersYear0),
-      shuffle(testUsersYear1)
+      shuffle(testUsersYear1),
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -380,28 +384,28 @@ describe("Large User Groups", () => {
     const standDeliveryItems = matches
       .filter((match) => match.variant === CandidateMatchVariant.StandMatch)
       .flatMap((match) =>
-        Array.from((match as CandidateStandMatch).handoffItems)
+        Array.from((match as CandidateStandMatch).handoffItems),
       );
     const standPickupItems = matches
       .filter((match) => match.variant === CandidateMatchVariant.StandMatch)
       .flatMap((match) =>
-        Array.from((match as CandidateStandMatch).pickupItems)
+        Array.from((match as CandidateStandMatch).pickupItems),
       );
 
     expect(
       standDeliveryItems.every(
-        (deliveryItem) => !standPickupItems.includes(deliveryItem)
-      )
+        (deliveryItem) => !standPickupItems.includes(deliveryItem),
+      ),
     );
 
     const groupedUsers = groupMatchesByUser(matches);
     expect(groupedUsers[0]?.matches.length).to.be.lessThanOrEqual(3);
 
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
-      testUsersYear0.length * 1.1
+      testUsersYear0.length * 1.1,
     );
     expect(numberOfMatchesPerType.standMatches).to.be.lessThan(
-      testUsersYear0.length * 0.65
+      testUsersYear0.length * 0.65,
     );
   });
 });

@@ -19,13 +19,13 @@ export class EmailValidationConfirmOperation implements Operation {
   constructor(
     emailValidationStorage?: BlDocumentStorage<EmailValidation>,
     resHandler?: SEResponseHandler,
-    userDetailStorage?: BlDocumentStorage<UserDetail>
+    userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
     this._emailValidationStorage = emailValidationStorage
       ? emailValidationStorage
       : new BlDocumentStorage(
           BlCollectionName.EmailValidations,
-          emailValidationSchema
+          emailValidationSchema,
         );
     this._resHandler = resHandler ? resHandler : new SEResponseHandler();
     this._userDetailStorage = userDetailStorage
@@ -38,7 +38,7 @@ export class EmailValidationConfirmOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (isNullOrUndefined(blApiRequest.documentId)) {
@@ -52,18 +52,18 @@ export class EmailValidationConfirmOperation implements Operation {
             .update(
               emailValidation.userDetail,
               { emailConfirmed: true },
-              new SystemUser()
+              new SystemUser(),
             )
             .then(() => {
               this._resHandler.sendResponse(
                 res,
-                new BlapiResponse([{ confirmed: true }])
+                new BlapiResponse([{ confirmed: true }]),
               );
               resolve(true);
             })
             .catch((updateUserDetailError: BlError) => {
               const err = new BlError(
-                `could not update userDetail "${emailValidation.id}" with emailConfirmed true`
+                `could not update userDetail "${emailValidation.id}" with emailConfirmed true`,
               ).add(updateUserDetailError);
 
               this._resHandler.sendErrorResponse(res, err);
@@ -74,10 +74,10 @@ export class EmailValidationConfirmOperation implements Operation {
           this._resHandler.sendErrorResponse(res, getEmailValidationError);
           reject(
             new BlError(
-              `emailValidation "${blApiRequest.documentId}" not found`
+              `emailValidation "${blApiRequest.documentId}" not found`,
             )
               .code(702)
-              .add(getEmailValidationError)
+              .add(getEmailValidationError),
           );
         });
     });

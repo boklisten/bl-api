@@ -49,10 +49,10 @@ describe("OrderFieldValidator", () => {
         testOrder.orderItems = [];
 
         return expect(
-          orderItemFieldValidator.validate(testOrder)
+          orderItemFieldValidator.validate(testOrder),
         ).to.eventually.be.rejectedWith(
           BlError,
-          "order.orderItems is empty or undefined"
+          "order.orderItems is empty or undefined",
         );
       });
     });
@@ -64,10 +64,10 @@ describe("OrderFieldValidator", () => {
           testOrder.orderItems[0].item = null;
 
           return expect(
-            orderItemFieldValidator.validate(testOrder)
+            orderItemFieldValidator.validate(testOrder),
           ).to.eventually.rejectedWith(
             BlError,
-            /orderItem.item is not defined/
+            /orderItem.item is not defined/,
           );
         });
 
@@ -75,10 +75,10 @@ describe("OrderFieldValidator", () => {
           testOrder.orderItems[0].title = undefined;
 
           return expect(
-            orderItemFieldValidator.validate(testOrder)
+            orderItemFieldValidator.validate(testOrder),
           ).to.eventually.be.rejectedWith(
             BlError,
-            /orderItem.title is not defined/
+            /orderItem.title is not defined/,
           );
         });
 
@@ -86,10 +86,10 @@ describe("OrderFieldValidator", () => {
           testOrder.orderItems[0].amount = undefined;
 
           return expect(
-            orderItemFieldValidator.validate(testOrder)
+            orderItemFieldValidator.validate(testOrder),
           ).to.eventually.be.rejectedWith(
             BlError,
-            /orderItem.amount is not defined/
+            /orderItem.amount is not defined/,
           );
         });
 
@@ -97,10 +97,10 @@ describe("OrderFieldValidator", () => {
           testOrder.orderItems[0].unitPrice = null;
 
           return expect(
-            orderItemFieldValidator.validate(testOrder)
+            orderItemFieldValidator.validate(testOrder),
           ).to.eventually.be.rejectedWith(
             BlError,
-            /orderItem.unitPrice is not defined/
+            /orderItem.unitPrice is not defined/,
           );
         });
 
@@ -108,10 +108,10 @@ describe("OrderFieldValidator", () => {
           testOrder.orderItems[0].taxAmount = null;
 
           return expect(
-            orderItemFieldValidator.validate(testOrder)
+            orderItemFieldValidator.validate(testOrder),
           ).to.eventually.be.rejectedWith(
             BlError,
-            /orderItem.taxAmount is not defined/
+            /orderItem.taxAmount is not defined/,
           );
         });
 
@@ -119,10 +119,10 @@ describe("OrderFieldValidator", () => {
           testOrder.orderItems[0].taxRate = undefined;
 
           return expect(
-            orderItemFieldValidator.validate(testOrder)
+            orderItemFieldValidator.validate(testOrder),
           ).to.eventually.be.rejectedWith(
             BlError,
-            /orderItem.taxRate is not defined/
+            /orderItem.taxRate is not defined/,
           );
         });
 
@@ -130,13 +130,13 @@ describe("OrderFieldValidator", () => {
           testOrder.orderItems[0].type = null;
 
           return expect(
-            orderItemFieldValidator.validate(testOrder)
+            orderItemFieldValidator.validate(testOrder),
           ).to.eventually.be.rejectedWith(
             BlError,
-            /orderItem.type is not defined/
+            /orderItem.type is not defined/,
           );
         });
-      }
+      },
     );
   });
 });

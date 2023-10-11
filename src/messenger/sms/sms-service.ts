@@ -13,7 +13,7 @@ const client = twilio(accountSid, authToken);
  */
 export async function sendSMS(
   toNumber: string,
-  message: string
+  message: string,
 ): Promise<void> {
   try {
     await client.messages.create({
@@ -35,9 +35,9 @@ export async function sendSMS(
  */
 export async function massSendSMS(
   toNumbers: string[],
-  message: string
+  message: string,
 ): Promise<Array<PromiseSettledResult<Awaited<Promise<void>>>>> {
   return Promise.allSettled(
-    toNumbers.map((toNumber) => sendSMS(toNumber, message))
+    toNumbers.map((toNumber) => sendSMS(toNumber, message)),
   );
 }

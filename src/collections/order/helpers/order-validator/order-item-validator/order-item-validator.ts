@@ -25,7 +25,7 @@ export class OrderItemValidator {
     orderItemRentValidator?: OrderItemRentValidator,
     orderItemBuyValidator?: OrderItemBuyValidator,
     orderItemExtendValidator?: OrderItemExtendValidator,
-    orderItemPartlyPaymentValidator?: OrderItemPartlyPaymentValidator
+    orderItemPartlyPaymentValidator?: OrderItemPartlyPaymentValidator,
   ) {
     this.itemStorage =
       itemStorage ?? new BlDocumentStorage(BlCollectionName.Items, itemSchema);
@@ -60,8 +60,8 @@ export class OrderItemValidator {
       return Promise.reject(
         new BlError("unknown error, orderItem could not be validated").store(
           "error",
-          e
-        )
+          e,
+        ),
       );
     }
     return undefined;
@@ -70,26 +70,26 @@ export class OrderItemValidator {
   private async validateOrderItemBasedOnType(
     branch: Branch,
     item: Item,
-    orderItem: OrderItem
+    orderItem: OrderItem,
   ): Promise<boolean> {
     switch (orderItem.type) {
       case "rent":
         return await this.orderItemRentValidator.validate(
           branch,
           orderItem,
-          item
+          item,
         );
       case "partly-payment":
         return await this.orderItemPartlyPaymentValidator.validate(
           orderItem,
           item,
-          branch
+          branch,
         );
       case "buy":
         return await this.orderItemBuyValidator.validate(
           branch,
           orderItem,
-          item
+          item,
         );
       case "extend":
         return await this.orderItemExtendValidator.validate(branch, orderItem);
@@ -99,22 +99,22 @@ export class OrderItemValidator {
 
   private validateOrderItemAmounts(orderItem: OrderItem) {
     const expectedTotalAmount = this.priceService.sanitize(
-      orderItem.unitPrice + orderItem.taxAmount
+      orderItem.unitPrice + orderItem.taxAmount,
     );
 
     if (orderItem.amount !== expectedTotalAmount) {
       throw new BlError(
-        `orderItem.amount "${orderItem.amount}" is not equal to orderItem.unitPrice "${orderItem.unitPrice}" + orderItem.taxAmount "${orderItem.taxAmount}"`
+        `orderItem.amount "${orderItem.amount}" is not equal to orderItem.unitPrice "${orderItem.unitPrice}" + orderItem.taxAmount "${orderItem.taxAmount}"`,
       );
     }
 
     const expectedTaxAmount = this.priceService.sanitize(
-      orderItem.unitPrice * orderItem.taxRate
+      orderItem.unitPrice * orderItem.taxRate,
     );
 
     if (orderItem.taxAmount !== expectedTaxAmount) {
       throw new BlError(
-        `orderItem.taxAmount "${orderItem.taxAmount}" is not equal to orderItem.unitPrice "${orderItem.unitPrice}" * orderItem.taxRate "${orderItem.taxRate}"`
+        `orderItem.taxAmount "${orderItem.taxAmount}" is not equal to orderItem.unitPrice "${orderItem.unitPrice}" * orderItem.taxRate "${orderItem.taxRate}"`,
       );
     }
   }
@@ -128,7 +128,7 @@ export class OrderItemValidator {
 
     if (expectedTotalAmount !== order.amount) {
       throw new BlError(
-        `order.amount is "${order.amount}" but total of orderItems amount is "${expectedTotalAmount}"`
+        `order.amount is "${order.amount}" but total of orderItems amount is "${expectedTotalAmount}"`,
       );
     }
 

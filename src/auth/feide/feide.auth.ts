@@ -13,7 +13,10 @@ export class FeideAuth {
   private httpHandler: HttpHandler;
   private _userProvider: UserProvider;
 
-  constructor(router: Router, private resHandler: SEResponseHandler) {
+  constructor(
+    router: Router,
+    private resHandler: SEResponseHandler,
+  ) {
     this.apiPath = new ApiPath();
     this.createPassportStrategy();
     this.createAuthGet(router);
@@ -41,7 +44,7 @@ export class FeideAuth {
           try {
             feideUserInfo = await this.httpHandler.get(
               process.env.FEIDE_USER_INFO_URL,
-              "Bearer " + feideAccessToken
+              "Bearer " + feideAccessToken,
             );
           } catch (e) {
             done(new Error("something went wrong with feide login"));
@@ -58,19 +61,19 @@ export class FeideAuth {
             userAndTokens = await this._userProvider.loginOrCreate(
               feideEmail,
               provider,
-              feideUserId
+              feideUserId,
             );
           } catch (e) {
             return done(
               null,
               null,
-              new BlError("could not create user").code(902)
+              new BlError("could not create user").code(902),
             );
           }
 
           done(null, userAndTokens.tokens);
-        }
-      )
+        },
+      ),
     );
   }
 
@@ -79,7 +82,7 @@ export class FeideAuth {
       this.apiPath.createPath("auth/feide"),
       passport.authenticate(APP_CONFIG.login.feide.name, {
         scope: ["profile", "email", "userid"],
-      })
+      }),
     );
   }
 
@@ -91,7 +94,7 @@ export class FeideAuth {
           if (!tokens && (err || blError)) {
             return res.redirect(
               process.env.CLIENT_URI +
-                APP_CONFIG.path.client.auth.socialLoginFailure
+                APP_CONFIG.path.client.auth.socialLoginFailure,
             );
           }
           if (tokens) {
@@ -99,10 +102,10 @@ export class FeideAuth {
               res,
               tokens.accessToken,
               tokens.refreshToken,
-              this.apiPath.retrieveRefererPath(req.headers)
+              this.apiPath.retrieveRefererPath(req.headers),
             );
           }
-        }
+        },
       )(req, res);
     });
   }

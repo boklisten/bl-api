@@ -14,7 +14,7 @@ export class UserDetailReadPermissionOperation implements Operation {
   constructor(
     private _userDetailStorage?: BlDocumentStorage<UserDetail>,
     private _userStorage?: BlDocumentStorage<User>,
-    private _resHandler?: SEResponseHandler
+    private _resHandler?: SEResponseHandler,
   ) {
     this._userDetailStorage = _userDetailStorage
       ? _userDetailStorage
@@ -34,7 +34,7 @@ export class UserDetailReadPermissionOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     let userDetail;
 
@@ -59,7 +59,7 @@ export class UserDetailReadPermissionOperation implements Operation {
 
     this._resHandler.sendResponse(
       res,
-      new BlapiResponse([{ permission: user.permission }])
+      new BlapiResponse([{ permission: user.permission }]),
     );
     return true;
   }

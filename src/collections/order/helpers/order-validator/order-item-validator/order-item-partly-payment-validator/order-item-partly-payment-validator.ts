@@ -5,11 +5,11 @@ export class OrderItemPartlyPaymentValidator {
   public validate(
     orderItem: OrderItem,
     Item: Item,
-    branch: Branch
+    branch: Branch,
   ): Promise<boolean> {
     if (orderItem.type !== "partly-payment") {
       return Promise.reject(
-        new BlError("orderItem not of type 'partly-payment'")
+        new BlError("orderItem not of type 'partly-payment'"),
       );
     }
 
@@ -22,8 +22,8 @@ export class OrderItemPartlyPaymentValidator {
     if (!this.isPeriodSupported(orderItem.info.periodType, branch)) {
       return Promise.reject(
         new BlError(
-          `partly-payment period "${orderItem.info.periodType}" not supported on branch`
-        )
+          `partly-payment period "${orderItem.info.periodType}" not supported on branch`,
+        ),
       );
     }
 

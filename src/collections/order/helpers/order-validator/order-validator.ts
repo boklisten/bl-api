@@ -22,7 +22,7 @@ export class OrderValidator {
     branchValidator?: BranchValidator,
     branchStorage?: BlDocumentStorage<Branch>,
     orderFieldValidator?: OrderFieldValidator,
-    orderUserDetailValidator?: OrderUserDetailValidator
+    orderUserDetailValidator?: OrderUserDetailValidator,
   ) {
     this.orderItemValidator = orderItemValidator
       ? orderItemValidator
@@ -61,7 +61,7 @@ export class OrderValidator {
         return Promise.reject(e);
       }
       return Promise.reject(
-        new BlError("order could not be validated").store("error", e)
+        new BlError("order could not be validated").store("error", e),
       );
     }
     return Promise.resolve(true);

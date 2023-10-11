@@ -15,7 +15,7 @@ export class DbQueryLimitFilter {
       throw new TypeError(
         'limit with value "' +
           query.limit +
-          '" is not a valid number, number must be valid and over 0'
+          '" is not a valid number, number must be valid and over 0',
       );
 
     const limitNum = parseInt(query.limit);

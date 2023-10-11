@@ -11,7 +11,7 @@ export class SaltGenerator {
             new BlError("could not create random bytes")
               .data(error)
               .className("SaltGenerator")
-              .methodName("generate")
+              .methodName("generate"),
           );
 
         resolve(buffer.toString("hex"));

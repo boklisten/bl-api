@@ -17,7 +17,7 @@ export class BookingPatchHook extends Hook {
 
   constructor(
     bookingStorage?: BlDocumentStorage<Booking>,
-    bookingEmailService?: BookingEmailService
+    bookingEmailService?: BookingEmailService,
   ) {
     super();
     this.bookingStorage =
@@ -33,7 +33,7 @@ export class BookingPatchHook extends Hook {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any,
     accessToken: AccessToken,
-    id: string
+    id: string,
   ): Promise<boolean> {
     if (!id) {
       throw new BlError("id is not provided");
@@ -58,7 +58,7 @@ export class BookingPatchHook extends Hook {
     if (
       !this.permissionService.isPermissionEqualOrOver(
         accessToken.permission,
-        "admin"
+        "admin",
       )
     ) {
       for (const key of Object.keys(body)) {
@@ -84,13 +84,13 @@ export class BookingPatchHook extends Hook {
               this.dateService.format(
                 new Date(),
                 "Europe/Oslo",
-                "DDMMYYYYHHMM"
+                "DDMMYYYYHHMM",
               ),
           },
           [
             { fieldName: "from", type: "date" },
             { fieldName: "customer", type: "object-id" },
-          ]
+          ],
         );
 
         activeBookings = await this.bookingStorage.getByQuery(query);
@@ -120,7 +120,7 @@ export class BookingPatchHook extends Hook {
           booking.customer.toString() !== accessToken.details.toString()
         ) {
           throw new BlError(
-            `user "${accessToken.details}" has no permission to cancel booking "${id}"`
+            `user "${accessToken.details}" has no permission to cancel booking "${id}"`,
           );
         }
       }
@@ -132,7 +132,7 @@ export class BookingPatchHook extends Hook {
 
   public override async after(
     bookings: Booking[],
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Booking[]> {
     for (const booking of bookings) {
       if (!booking.booked && booking.customer) {
@@ -141,14 +141,14 @@ export class BookingPatchHook extends Hook {
 
       if (booking.booked && !booking.customer) {
         throw new BlError(
-          "booking.booked is set but customer is null or undefined"
+          "booking.booked is set but customer is null or undefined",
         );
       }
 
       if (
         !this.permissionService.isPermissionEqualOrOver(
           accessToken.permission,
-          "admin"
+          "admin",
         )
       ) {
         let subtype = null;
@@ -165,7 +165,7 @@ export class BookingPatchHook extends Hook {
               accessToken.details,
               booking,
               subtype,
-              { id: accessToken.details, permission: accessToken.permission }
+              { id: accessToken.details, permission: accessToken.permission },
             );
             // eslint-disable-next-line no-empty
           } catch (e) {}

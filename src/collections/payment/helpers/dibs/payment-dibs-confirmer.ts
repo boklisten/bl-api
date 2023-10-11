@@ -9,7 +9,7 @@ import { BlCollectionName } from "../../../bl-collection";
 export class PaymentDibsConfirmer {
   constructor(
     private _dibsPaymentService?: DibsPaymentService,
-    private _paymentStorage?: BlDocumentStorage<Payment>
+    private _paymentStorage?: BlDocumentStorage<Payment>,
   ) {
     this._dibsPaymentService = _dibsPaymentService
       ? _dibsPaymentService
@@ -22,7 +22,7 @@ export class PaymentDibsConfirmer {
   public async confirm(
     order: Order,
     payment: Payment,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     let dibsEasyPaymentDetails;
     if (payment.amount >= 0) {
@@ -31,11 +31,11 @@ export class PaymentDibsConfirmer {
       try {
         dibsEasyPaymentDetails =
           await this._dibsPaymentService.fetchDibsPaymentData(
-            payment.info["paymentId"]
+            payment.info["paymentId"],
           );
       } catch (getDibsPaymentError) {
         throw new BlError("could not get dibs payment from dibs api").add(
-          getDibsPaymentError
+          getDibsPaymentError,
         );
       }
 
@@ -46,11 +46,11 @@ export class PaymentDibsConfirmer {
       await this._paymentStorage.update(
         payment.id,
         { info: dibsEasyPaymentDetails },
-        { id: accessToken.details, permission: accessToken.permission }
+        { id: accessToken.details, permission: accessToken.permission },
       );
     } catch (e) {
       throw new BlError(
-        "payment could not be updated with dibs information:" + e
+        "payment could not be updated with dibs information:" + e,
       );
     }
 
@@ -93,14 +93,14 @@ export class PaymentDibsConfirmer {
   private validateDibsEasyPayment(
     order: Order,
     payment: Payment,
-    dibsEasyPaymentDetails: DibsEasyPayment
+    dibsEasyPaymentDetails: DibsEasyPayment,
   ): boolean {
     if (
       isNullOrUndefined(dibsEasyPaymentDetails.orderDetails) ||
       dibsEasyPaymentDetails.orderDetails.reference !== order.id
     ) {
       throw new BlError(
-        "dibsEasyPaymentDetails.orderDetails.reference is not equal to order.id"
+        "dibsEasyPaymentDetails.orderDetails.reference is not equal to order.id",
       );
     }
 
@@ -113,7 +113,7 @@ export class PaymentDibsConfirmer {
       throw new BlError(
         `dibsEasyPaymentDetails.summary.reservedAmount "${
           dibsEasyPaymentDetails.summary.reservedAmount
-        }" is not equal to payment.amount "${payment.amount * 100}"`
+        }" is not equal to payment.amount "${payment.amount * 100}"`,
       );
     }
     return false;
@@ -125,7 +125,7 @@ export class PaymentDibsConfirmer {
       isNullOrUndefined(payment.info["paymentId"])
     ) {
       throw new BlError(
-        'payment.method is "dibs" but payment.info.paymentId is undefined'
+        'payment.method is "dibs" but payment.info.paymentId is undefined',
       );
     }
 

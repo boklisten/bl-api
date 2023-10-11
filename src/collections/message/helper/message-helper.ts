@@ -24,7 +24,7 @@ export class MessageHelper {
         { fieldName: "messageMethod", type: "string" },
         { fieldName: "customerId", type: "string" },
         { fieldName: "sequenceNumber", type: "number" },
-      ]
+      ],
     );
 
     try {

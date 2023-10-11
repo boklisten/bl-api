@@ -29,7 +29,7 @@ import { OrderItemMovedFromOrderHandler } from "../../order/helpers/order-item-m
 export class MatchTransferItemOperation implements Operation {
   constructor(
     private matchStorage?: BlDocumentStorage<Match>,
-    private userDetailStorage?: BlDocumentStorage<UserDetail>
+    private userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
     this.matchStorage =
       matchStorage ??
@@ -55,7 +55,7 @@ export class MatchTransferItemOperation implements Operation {
     const blid = blApiRequest?.data?.blid;
     if (!blid || typeof blid !== "string" || blid.length === 0) {
       throw new BlError(
-        "blid must be a string with length greater than 0"
+        "blid must be a string with length greater than 0",
       ).code(803);
     } else if (!this.isValidBlid(blid)) {
       throw new BlError("blid is not a valid blid").code(803);
@@ -65,7 +65,7 @@ export class MatchTransferItemOperation implements Operation {
 
     const receiverMatches = await getAllMatchesForUser(receiverUserDetailId);
     const receiverUserMatches = receiverMatches.filter(
-      (match) => match._variant === MatchVariant.UserMatch
+      (match) => match._variant === MatchVariant.UserMatch,
     ) as UserMatch[];
 
     if (receiverUserMatches.length === 0) {
@@ -85,7 +85,7 @@ export class MatchTransferItemOperation implements Operation {
     const customerItem = activeCustomerItems[0];
 
     const receiverUserMatch = receiverUserMatches.find((userMatch) =>
-      userMatch.expectedItems.includes(String(customerItem.item))
+      userMatch.expectedItems.includes(String(customerItem.item)),
     );
 
     if (!receiverUserMatch) {
@@ -98,12 +98,12 @@ export class MatchTransferItemOperation implements Operation {
 
     const senderMatches = await getAllMatchesForUser(customerItem.customer);
     const senderUserMatches = senderMatches.filter(
-      (match) => match._variant === MatchVariant.UserMatch
+      (match) => match._variant === MatchVariant.UserMatch,
     ) as UserMatch[];
     const senderUserMatch = senderUserMatches.find(
       (userMatch) =>
         userMatch.expectedItems.includes(String(customerItem.item)) &&
-        !userMatch.deliveredCustomerItems.includes(String(customerItem.item))
+        !userMatch.deliveredCustomerItems.includes(String(customerItem.item)),
     );
 
     if (
@@ -115,17 +115,17 @@ export class MatchTransferItemOperation implements Operation {
 
     const matchStorage = new BlDocumentStorage<Match>(
       BlCollectionName.Matches,
-      matchSchema
+      matchSchema,
     );
 
     const orderStorage = new BlDocumentStorage<Order>(
       BlCollectionName.Orders,
-      orderSchema
+      orderSchema,
     );
 
     const customerItemStorage = new BlDocumentStorage<CustomerItem>(
       BlCollectionName.CustomerItems,
-      customerItemSchema
+      customerItemSchema,
     );
 
     const orderValidator = new OrderValidator();
@@ -138,18 +138,18 @@ export class MatchTransferItemOperation implements Operation {
           customerItem.id,
         ],
       },
-      new SystemUser()
+      new SystemUser(),
     );
 
     const receiverOrder = await createMatchOrder(
       customerItem,
       receiverUserDetailId,
-      false
+      false,
     );
 
     const placedReceiverOrder = await orderStorage.add(
       receiverOrder,
-      new SystemUser()
+      new SystemUser(),
     );
     await orderValidator.validate(placedReceiverOrder);
 
@@ -165,18 +165,18 @@ export class MatchTransferItemOperation implements Operation {
             customerItem.id,
           ],
         },
-        new SystemUser()
+        new SystemUser(),
       );
 
       const senderOrder = await createMatchOrder(
         customerItem,
         customerItem.customer,
-        true
+        true,
       );
 
       const placedSenderOrder = await orderStorage.add(
         senderOrder,
-        new SystemUser()
+        new SystemUser(),
       );
       await orderValidator.validate(placedSenderOrder);
     }
@@ -186,14 +186,13 @@ export class MatchTransferItemOperation implements Operation {
       {
         returned: true,
       },
-      new SystemUser()
+      new SystemUser(),
     );
 
     const customerItemGenerator = new OrderToCustomerItemGenerator();
 
-    const generatedCustomerItems = await customerItemGenerator.generate(
-      placedReceiverOrder
-    );
+    const generatedCustomerItems =
+      await customerItemGenerator.generate(placedReceiverOrder);
 
     if (!generatedCustomerItems || generatedCustomerItems.length === 0) {
       throw new BlError("Failed to create new customer item");

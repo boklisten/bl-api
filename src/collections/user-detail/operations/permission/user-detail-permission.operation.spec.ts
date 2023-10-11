@@ -17,14 +17,14 @@ import { BlCollectionName } from "../../../bl-collection";
 
 describe("UserDetailPermissionOperation", () => {
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const userStorage = new BlDocumentStorage<User>(BlCollectionName.Users);
   const resHandler = new SEResponseHandler();
   const userDetailPermissionOperation = new UserDetailPermissionOperation(
     userDetailStorage,
     userStorage,
-    resHandler
+    resHandler,
   );
 
   const userAggregateStub = sinon.stub(userStorage, "aggregate");
@@ -46,7 +46,7 @@ describe("UserDetailPermissionOperation", () => {
       userDetailPermissionOperation.run({
         user: { id: "userDetail2", permission: "admin" },
         data: { permission: "employee" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(BlError, /user-detail not found/);
   });
 
@@ -62,7 +62,7 @@ describe("UserDetailPermissionOperation", () => {
       userDetailPermissionOperation.run({
         user: { id: "userDetail2", permission: "admin" },
         data: { permission: "employee" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(BlError, /user not found/);
   });
 
@@ -82,10 +82,10 @@ describe("UserDetailPermissionOperation", () => {
           user: { id: "userDetail2", permission: permission },
           documentId: "userDetail1",
           data: { permission: "employee" },
-        })
+        }),
       ).to.eventually.be.rejectedWith(
         BlError,
-        "no access to change permission"
+        "no access to change permission",
       );
     });
   }
@@ -103,7 +103,7 @@ describe("UserDetailPermissionOperation", () => {
         user: { id: "userDetail2", permission: "manager" },
         documentId: "userDetail1",
         data: { permission: "employee" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(BlError, "no access to change permission");
   });
 
@@ -120,10 +120,10 @@ describe("UserDetailPermissionOperation", () => {
         user: { id: "userDetail1", permission: "manager" },
         documentId: "userDetail1",
         data: { permission: "employee" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(
       BlError,
-      "user can not change own permission"
+      "user can not change own permission",
     );
   });
 
@@ -133,10 +133,10 @@ describe("UserDetailPermissionOperation", () => {
         user: { id: "userDetail1", permission: "admin" },
         documentId: "userDetail2",
         data: {},
-      })
+      }),
     ).to.eventually.be.rejectedWith(
       BlError,
-      "permission is not valid or not provided"
+      "permission is not valid or not provided",
     );
   });
 
@@ -154,7 +154,7 @@ describe("UserDetailPermissionOperation", () => {
         user: { id: "userDetail1", permission: "admin" },
         documentId: "userDetail2",
         data: { permission: "employee" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(BlError, "could not update permission");
   });
 
@@ -173,7 +173,7 @@ describe("UserDetailPermissionOperation", () => {
         user: { id: "userDetail1", permission: "admin" },
         documentId: "userDetail2",
         data: { permission: "employee" },
-      })
+      }),
     ).to.eventually.be.true;
   });
 });

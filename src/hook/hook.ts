@@ -9,7 +9,7 @@ export class Hook implements IHook {
     accessToken?: AccessToken,
     id?: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    query?: any
+    query?: any,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<boolean | any> {
     return Promise.resolve(true);
@@ -17,7 +17,7 @@ export class Hook implements IHook {
 
   public after(
     docs: BlDocument[],
-    accessToken?: AccessToken
+    accessToken?: AccessToken,
   ): Promise<BlDocument[]> {
     return Promise.resolve(docs ? docs : []);
   }

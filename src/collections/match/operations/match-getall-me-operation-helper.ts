@@ -25,7 +25,7 @@ function selectMatchRelevantUserDetails({
 
 function mapCustomerItemIdsToItemIds(
   customerItemIds: string[],
-  customerItemsMap: Map<string, CustomerItem>
+  customerItemsMap: Map<string, CustomerItem>,
 ): { [customerItemId: string]: string } {
   return Object.fromEntries(
     customerItemIds.map(String).map((customerItemId) => {
@@ -34,20 +34,20 @@ function mapCustomerItemIdsToItemIds(
         throw new BlError(`No customerItem with id ${customerItemId} found`);
       }
       return [customerItemId, String(customerItem.item)];
-    })
+    }),
   );
 }
 
 function mapItemIdsToItemDetails(
   itemIds: string[],
-  itemsMap: Map<string, Item>
+  itemsMap: Map<string, Item>,
 ): { [itemId: string]: MatchRelevantItemDetails } {
   return Object.fromEntries(
     Array.from(new Set(itemIds.map(String))).map((itemId) => {
       const item = itemsMap.get(itemId);
       if (item === undefined) {
         throw new BlError(
-          `No item found with id ${itemId} when detailing match`
+          `No item found with id ${itemId} when detailing match`,
         );
       }
       const details: MatchRelevantItemDetails = {
@@ -55,7 +55,7 @@ function mapItemIdsToItemDetails(
         title: item.title,
       };
       return [itemId, details];
-    })
+    }),
   );
 }
 
@@ -63,7 +63,7 @@ function addDetailsToMatch(
   match: Match,
   detailsMap: Map<string, UserDetail>,
   customerItemsMap: Map<string, CustomerItem>,
-  itemsMap: Map<string, Item>
+  itemsMap: Map<string, Item>,
 ): MatchWithDetails {
   if (match._variant === MatchVariant.StandMatch) {
     return {
@@ -75,7 +75,7 @@ function addDetailsToMatch(
           ...match.receivedItems,
           ...match.deliveredItems,
         ],
-        itemsMap
+        itemsMap,
       ),
     };
   }
@@ -88,7 +88,7 @@ function addDetailsToMatch(
     receiverDetails: selectMatchRelevantUserDetails(receiverDetails),
     customerItemToItemMap: mapCustomerItemIdsToItemIds(
       [...match.receivedCustomerItems, ...match.deliveredCustomerItems],
-      customerItemsMap
+      customerItemsMap,
     ),
     itemDetails: mapItemIdsToItemDetails(match.expectedItems, itemsMap),
   };
@@ -98,7 +98,7 @@ export async function addDetailsToAllMatches(
   matches: Match[],
   userDetailStorage: BlDocumentStorage<UserDetail>,
   itemStorage: BlDocumentStorage<Item>,
-  customerItemStorage: BlDocumentStorage<CustomerItem>
+  customerItemStorage: BlDocumentStorage<CustomerItem>,
 ): Promise<MatchWithDetails[]> {
   const userIds = Array.from(
     matches.reduce(
@@ -106,17 +106,17 @@ export async function addDetailsToAllMatches(
         match._variant === MatchVariant.UserMatch
           ? new Set([...userIds, match.sender, match.receiver])
           : new Set([...userIds, match.customer]),
-      new Set<string>()
-    )
+      new Set<string>(),
+    ),
   );
   const userDetailsMap = new Map(
     await Promise.all(
       userIds.map((id) =>
         userDetailStorage
           .get(id)
-          .then((detail): [string, UserDetail] => [id, detail])
-      )
-    )
+          .then((detail): [string, UserDetail] => [id, detail]),
+      ),
+    ),
   );
 
   const customerItemsToMap = Array.from(
@@ -129,8 +129,8 @@ export async function addDetailsToAllMatches(
               ...match.deliveredCustomerItems.map(String),
             ])
           : customerItems,
-      new Set<string>()
-    )
+      new Set<string>(),
+    ),
   );
   const itemsToMapFromExpectedItems = Array.from(
     matches.reduce(
@@ -142,36 +142,36 @@ export async function addDetailsToAllMatches(
               ...match.expectedHandoffItems.map(String),
               ...match.expectedPickupItems.map(String),
             ]),
-      new Set<string>()
-    )
+      new Set<string>(),
+    ),
   );
   const customerItemsMap = new Map(
     await Promise.all(
       customerItemsToMap.map((id) =>
         customerItemStorage
           .get(id)
-          .then((customerItem): [string, CustomerItem] => [id, customerItem])
-      )
-    )
+          .then((customerItem): [string, CustomerItem] => [id, customerItem]),
+      ),
+    ),
   );
   const itemsToMapFromCustomerItems = Array.from(
     Array.from(customerItemsMap.values()).reduce(
       (itemIds, customerItem) =>
         new Set([...itemIds, String(customerItem.item)]),
-      new Set<string>()
-    )
+      new Set<string>(),
+    ),
   );
   const itemsToMap = Array.from(
-    new Set([...itemsToMapFromExpectedItems, ...itemsToMapFromCustomerItems])
+    new Set([...itemsToMapFromExpectedItems, ...itemsToMapFromCustomerItems]),
   );
   const itemsMap = new Map(
     (await itemStorage.getMany(itemsToMap)).map((item) => [
       String(item.id),
       item,
-    ])
+    ]),
   );
 
   return matches.map((match) =>
-    addDetailsToMatch(match, userDetailsMap, customerItemsMap, itemsMap)
+    addDetailsToMatch(match, userDetailsMap, customerItemsMap, itemsMap),
   );
 }

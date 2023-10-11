@@ -13,7 +13,7 @@ export class MessengerReminder {
   constructor(
     customerItemHandler?: CustomerItemHandler,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
-    emailService?: EmailService
+    emailService?: EmailService,
   ) {
     this.customerItemHandler = customerItemHandler
       ? customerItemHandler
@@ -22,7 +22,7 @@ export class MessengerReminder {
       ? userDetailStorage
       : new BlDocumentStorage<UserDetail>(
           BlCollectionName.UserDetails,
-          userDetailSchema
+          userDetailSchema,
         );
     this.emailService = emailService ? emailService : new EmailService();
   }
@@ -57,7 +57,7 @@ export class MessengerReminder {
           message.customerId,
           message.info["deadline"],
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          message.messageSubtype as any
+          message.messageSubtype as any,
         );
 
       const userDetail = await this.userDetailStorage.get(message.customerId);
@@ -65,7 +65,7 @@ export class MessengerReminder {
       await this.emailService.remind(
         message,
         userDetail,
-        notReturnedCustomerItems
+        notReturnedCustomerItems,
       );
     } catch (e) {
       throw e;

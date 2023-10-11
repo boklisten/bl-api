@@ -20,7 +20,7 @@ describe("DbQuerySortFilter", () => {
 
     it("should return empty array if query does not have the sort object", () => {
       expect(
-        dbQuerySortFilter.getSortFilters({ name: "hello" }, ["age"])
+        dbQuerySortFilter.getSortFilters({ name: "hello" }, ["age"]),
       ).to.eql([]);
     });
 
@@ -40,7 +40,7 @@ describe("DbQuerySortFilter", () => {
         dbQuerySortFilter.getSortFilters({ sort: ["name", "-age"] }, [
           "name",
           "age",
-        ])
+        ]),
       ).to.eql(result);
     });
   });

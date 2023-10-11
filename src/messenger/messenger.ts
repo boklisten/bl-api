@@ -24,7 +24,7 @@ export class Messenger implements MessengerService {
     this._emailService = new EmailService();
     this._deliveryStorage = new BlDocumentStorage<Delivery>(
       BlCollectionName.Deliveries,
-      deliverySchema
+      deliverySchema,
     );
     this._pdfService = new PdfService();
   }
@@ -55,7 +55,7 @@ export class Messenger implements MessengerService {
   public remind(
     message: Message,
     customerDetail: UserDetail,
-    customerItems: CustomerItem[]
+    customerItems: CustomerItem[],
   ) {
     this._emailService.remind(message, customerDetail, customerItems);
   }
@@ -65,7 +65,7 @@ export class Messenger implements MessengerService {
    * @param {CustomerDetailWithCustomerItem[]} customerDetails with customerItems to remind about
    */
   public remindMany(
-    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[]
+    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[],
   ) {
     this._emailService.remindMany(customerDetailsWithCustomerItems);
   }
@@ -115,7 +115,7 @@ export class Messenger implements MessengerService {
    */
   public emailConfirmation(
     customerDetail: UserDetail,
-    confirmationCode: string
+    confirmationCode: string,
   ) {
     this._emailService.emailConfirmation(customerDetail, confirmationCode);
   }

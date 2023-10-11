@@ -24,11 +24,11 @@ export class AccessTokenValidator {
               return reject(
                 new BlError("could not verify jwt")
                   .store("accessToken", accessToken)
-                  .code(910)
+                  .code(910),
               );
 
             resolve(payload);
-          }
+          },
         );
       } catch (error) {
         return reject(new BlError("could not verify accessToken").code(910));

@@ -59,7 +59,7 @@ describe("AccessTokenCreator", () => {
         (error: BlError) => {
           testRefreshToken = "this is not valid..";
           done();
-        }
+        },
       );
     });
 
@@ -72,7 +72,7 @@ describe("AccessTokenCreator", () => {
             testUserid,
             testPermission,
             testUserDetailId,
-            testRefreshToken
+            testRefreshToken,
           )
           .should.be.rejectedWith(BlError);
       });
@@ -85,7 +85,7 @@ describe("AccessTokenCreator", () => {
             testUserid,
             testPermission,
             testUserDetailId,
-            testRefreshToken
+            testRefreshToken,
           )
           .should.be.rejectedWith(BlError);
       });
@@ -98,7 +98,7 @@ describe("AccessTokenCreator", () => {
             userid,
             testPermission,
             testUserDetailId,
-            testRefreshToken
+            testRefreshToken,
           )
           .should.be.rejectedWith(BlError);
       });
@@ -111,7 +111,7 @@ describe("AccessTokenCreator", () => {
             testUserid,
             testPermission,
             testUserDetailId,
-            refreshToken
+            refreshToken,
           )
           .should.be.rejectedWith(BlError);
       });
@@ -126,7 +126,7 @@ describe("AccessTokenCreator", () => {
             testUserid,
             testPermission,
             testUserDetailId,
-            refreshToken
+            refreshToken,
           )
           .then(
             (accessToken: string) => {
@@ -136,7 +136,7 @@ describe("AccessTokenCreator", () => {
             (error: BlError) => {
               error.getCode().should.be.eq(905);
               done();
-            }
+            },
           );
       });
     });
@@ -149,7 +149,7 @@ describe("AccessTokenCreator", () => {
             testUserid,
             testPermission,
             testUserDetailId,
-            testRefreshToken
+            testRefreshToken,
           )
           .then(
             (accessToken: string) => {
@@ -159,7 +159,7 @@ describe("AccessTokenCreator", () => {
             (error: BlError) => {
               error.should.not.be.fulfilled;
               done();
-            }
+            },
           );
       });
     });

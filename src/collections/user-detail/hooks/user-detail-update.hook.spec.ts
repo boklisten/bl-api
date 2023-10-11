@@ -80,7 +80,7 @@ describe("UserDetailUpdateHook", () => {
       emailConfirmed: true,
     };
     await assert.isRejected(
-      userDetailUpdateHook.before(body, customerAccessToken)
+      userDetailUpdateHook.before(body, customerAccessToken),
     );
   });
 
@@ -131,13 +131,13 @@ describe("UserDetailUpdateHook", () => {
               .then(() =>
                 reject(
                   new Error(
-                    `Validator accepted wrongly typed ${JSON.stringify(body)}`
-                  )
-                )
+                    `Validator accepted wrongly typed ${JSON.stringify(body)}`,
+                  ),
+                ),
               )
               .catch(() => resolve());
-          })
-      )
+          }),
+      ),
     );
   });
 });

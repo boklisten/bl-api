@@ -17,16 +17,16 @@ chai.use(chaiAsPromised);
 
 describe("EmailValidationConfirmOperation", () => {
   const emailValidationStorage = new BlDocumentStorage<EmailValidation>(
-    BlCollectionName.EmailValidations
+    BlCollectionName.EmailValidations,
   );
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const resHandler = new SEResponseHandler();
   const emailValidationConfirmOperation = new EmailValidationConfirmOperation(
     emailValidationStorage,
     resHandler,
-    userDetailStorage
+    userDetailStorage,
   );
 
   const testUserDetail: UserDetail = {
@@ -122,7 +122,7 @@ describe("EmailValidationConfirmOperation", () => {
       testEmailValidation.userDetail = "notFoundUserDetail";
 
       expect(
-        emailValidationConfirmOperation.run(blApiRequest)
+        emailValidationConfirmOperation.run(blApiRequest),
       ).to.be.rejectedWith(BlError, /could not update userDetail/);
     });
 
@@ -138,12 +138,12 @@ describe("EmailValidationConfirmOperation", () => {
             testEmailValidation.userDetail,
             {
               emailConfirmed: true,
-            }
+            },
           );
 
           expect(resHandlerSendResponseStub).to.have.been.calledWith(
             {},
-            new BlapiResponse([{ confirmed: true }])
+            new BlapiResponse([{ confirmed: true }]),
           );
 
           done();

@@ -16,7 +16,7 @@ import { BlApiRequest } from "../../../request/bl-api-request";
 export class MatchNotifyOperation implements Operation {
   constructor(
     private matchStorage?: BlDocumentStorage<Match>,
-    private userDetailStorage?: BlDocumentStorage<UserDetail>
+    private userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
     this.matchStorage =
       matchStorage ??
@@ -42,9 +42,9 @@ export class MatchNotifyOperation implements Operation {
         matches.flatMap((match) =>
           match._variant === MatchVariant.UserMatch
             ? [match.sender, match.receiver]
-            : match.customer
-        )
-      )
+            : match.customer,
+        ),
+      ),
     );
 
     const customerPhoneNumbers = (

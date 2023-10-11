@@ -14,7 +14,7 @@ export class DbQueryExpandFilter {
   public getExpandFilters(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
-    validExpandParams: string[]
+    validExpandParams: string[],
   ): ExpandFilter[] {
     if (
       !query ||
@@ -33,7 +33,7 @@ export class DbQueryExpandFilter {
   private generateExpandFilter(
     expand: string | string[],
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    validExpandParams: string[]
+    validExpandParams: string[],
   ): ExpandFilter[] {
     let expandFilterArray = [];
 

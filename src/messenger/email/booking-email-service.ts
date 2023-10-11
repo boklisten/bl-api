@@ -18,15 +18,15 @@ export class BookingEmailService {
     this.emailService = new EmailService();
     this.messageStorage = new BlDocumentStorage(
       BlCollectionName.Messages,
-      messageSchema
+      messageSchema,
     );
     this.userDetailStorage = new BlDocumentStorage(
       BlCollectionName.UserDetails,
-      userDetailSchema
+      userDetailSchema,
     );
     this.branchStorage = new BlDocumentStorage(
       BlCollectionName.Branches,
-      branchSchema
+      branchSchema,
     );
     this.dateService = new DateService();
   }
@@ -36,7 +36,7 @@ export class BookingEmailService {
     booking: Booking,
     subtype: "confirmed" | "canceled",
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    user: any
+    user: any,
   ): Promise<boolean> {
     let message: Message = {
       messageType: "booking",
@@ -70,7 +70,7 @@ export class BookingEmailService {
     return this.emailService.sendBookingEmail(
       message,
       userDetail,
-      bookingDetails
+      bookingDetails,
     );
   }
 }

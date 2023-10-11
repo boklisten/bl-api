@@ -12,7 +12,7 @@ export class UniqueItemActiveOperation implements Operation {
   constructor(
     private customerItemActiveBlid?: CustomerItemActiveBlid,
     private uniqueItemStorage?: BlDocumentStorage<UniqueItem>,
-    private resHandler?: SEResponseHandler
+    private resHandler?: SEResponseHandler,
   ) {
     this.customerItemActiveBlid = customerItemActiveBlid
       ? customerItemActiveBlid
@@ -28,7 +28,7 @@ export class UniqueItemActiveOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     let uniqueItem: UniqueItem;
     try {
@@ -41,7 +41,7 @@ export class UniqueItemActiveOperation implements Operation {
     try {
       activeCustomerItemIds =
         await this.customerItemActiveBlid.getActiveCustomerItemIds(
-          uniqueItem.blid
+          uniqueItem.blid,
         );
     } catch (e) {
       this.sendResponse(res, []);

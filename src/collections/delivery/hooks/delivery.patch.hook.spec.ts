@@ -16,17 +16,17 @@ chai.use(chaiAsPromised);
 
 describe("DeliveryPatchHook", () => {
   const deliveryStorage = new BlDocumentStorage<Delivery>(
-    BlCollectionName.Deliveries
+    BlCollectionName.Deliveries,
   );
   const deliveryValidator = new DeliveryValidator();
   const orderStorage = new BlDocumentStorage<Order>(
     BlCollectionName.Orders,
-    orderSchema
+    orderSchema,
   );
   const deliveryPatchHook = new DeliveryPatchHook(
     deliveryValidator,
     deliveryStorage,
-    orderStorage
+    orderStorage,
   );
 
   let testRequest: any;
@@ -106,25 +106,25 @@ describe("DeliveryPatchHook", () => {
   describe("before()", () => {
     it("should resolve if all parameters are valid", () => {
       return expect(
-        deliveryPatchHook.before(testRequest, testAccessToken, "delivery1")
+        deliveryPatchHook.before(testRequest, testAccessToken, "delivery1"),
       ).to.be.fulfilled;
     });
 
     it("should reject if id is undefined", () => {
       return expect(
-        deliveryPatchHook.before(testRequest, testAccessToken, undefined)
+        deliveryPatchHook.before(testRequest, testAccessToken, undefined),
       ).to.be.rejectedWith(BlError, /id is undefined/);
     });
 
     it("should reject if body is empty or undefined", () => {
       return expect(
-        deliveryPatchHook.before(null, testAccessToken, "delivery1")
+        deliveryPatchHook.before(null, testAccessToken, "delivery1"),
       ).to.be.rejectedWith(BlError, /body is undefined/);
     });
 
     it("should reject if accessToken is empty or undefined", () => {
       return expect(
-        deliveryPatchHook.before(testRequest, undefined, "delivery1")
+        deliveryPatchHook.before(testRequest, undefined, "delivery1"),
       ).to.be.rejectedWith(BlError, /accessToken is undefined/);
     });
 
@@ -133,8 +133,8 @@ describe("DeliveryPatchHook", () => {
         deliveryPatchHook.before(
           testRequest,
           testAccessToken,
-          "deliveryNotFound"
-        )
+          "deliveryNotFound",
+        ),
       ).to.be.rejectedWith(BlError, /delivery "deliveryNotFound" not found/);
     });
 
@@ -143,8 +143,8 @@ describe("DeliveryPatchHook", () => {
         deliveryPatchHook.before(
           { order: "notFoundOrder" },
           testAccessToken,
-          "delivery1"
-        )
+          "delivery1",
+        ),
       ).to.be.rejectedWith(BlError, /order "notFoundOrder" not found/);
     });
 
@@ -152,7 +152,7 @@ describe("DeliveryPatchHook", () => {
       deliveryValidated = false;
 
       return expect(
-        deliveryPatchHook.before(testRequest, testAccessToken, "delivery1")
+        deliveryPatchHook.before(testRequest, testAccessToken, "delivery1"),
       ).to.be.rejectedWith(BlError, /patched delivery could not be validated/);
     });
   });

@@ -74,8 +74,8 @@ describe("DeliveryHandler", () => {
         deliveryHandler.updateOrderBasedOnMethod(
           testDelivery,
           testOrder,
-          testAccessToken
-        )
+          testAccessToken,
+        ),
       ).to.be.rejectedWith(BlError, /could not update/);
     });
   });

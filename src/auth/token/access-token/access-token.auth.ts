@@ -19,13 +19,13 @@ export class AccessTokenAuth {
       .token;
     this.tokenConfig = new TokenConfig(
       appTokenConfig.access,
-      appTokenConfig.refresh
+      appTokenConfig.refresh,
     );
 
     passport.use(
       new Strategy(this.getOptions(), (accessToken: AccessToken, done) => {
         done(null, { accessToken: accessToken });
-      })
+      }),
     );
   }
 

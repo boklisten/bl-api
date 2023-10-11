@@ -20,7 +20,7 @@ export class CustomerInvoiceActive {
   public async haveActiveInvoices(userId: string): Promise<boolean> {
     const dbQuery = this.queryBuilder.getDbQuery(
       { "customerInfo.userDetail": userId },
-      [{ fieldName: "customerInfo.userDetail", type: "object-id" }]
+      [{ fieldName: "customerInfo.userDetail", type: "object-id" }],
     );
     let invoices: Invoice[];
     try {

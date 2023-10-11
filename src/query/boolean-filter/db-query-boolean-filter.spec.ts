@@ -21,7 +21,7 @@ describe("DbQueryBooleanFilter", () => {
 
     it("should return empty filter if ValidBoomeanParams array is empty", () => {
       expect(
-        dbQueryBooleanFilter.getBooleanFilters({ name: "albert" }, [])
+        dbQueryBooleanFilter.getBooleanFilters({ name: "albert" }, []),
       ).to.eql([]);
     });
 
@@ -30,7 +30,7 @@ describe("DbQueryBooleanFilter", () => {
       expect(
         dbQueryBooleanFilter.getBooleanFilters({ haveEaten: "true" }, [
           "haveEaten",
-        ])
+        ]),
       ).to.eql(result);
     });
 
@@ -52,8 +52,8 @@ describe("DbQueryBooleanFilter", () => {
       expect(
         dbQueryBooleanFilter.getBooleanFilters(
           { confirmed: "true", hasCar: "false", isOld: "true" },
-          ["confirmed", "hasCar", "isOld", "haveChildren"]
-        )
+          ["confirmed", "hasCar", "isOld", "haveChildren"],
+        ),
       ).to.eql(result);
     });
   });

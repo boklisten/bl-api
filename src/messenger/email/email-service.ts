@@ -39,7 +39,7 @@ export class EmailService implements MessengerService {
   constructor(
     emailHandler?: EmailHandler,
     itemStorage?: BlDocumentStorage<Item>,
-    inputPostOffice?: PostOffice
+    inputPostOffice?: PostOffice,
   ) {
     this._emailHandler = emailHandler
       ? emailHandler
@@ -80,12 +80,12 @@ export class EmailService implements MessengerService {
 
   public async sendGeneric(
     message: Message,
-    customerDetail: UserDetail
+    customerDetail: UserDetail,
   ): Promise<boolean> {
     const recipient = await this.customerDetailToRecipient(
       message,
       customerDetail,
-      []
+      [],
     );
 
     const messageOptions: MessageOptions = {
@@ -115,12 +115,12 @@ export class EmailService implements MessengerService {
       hour: string;
       branch: string;
       address: string;
-    }
+    },
   ): Promise<boolean> {
     const recipient = await this.customerDetailToRecipient(
       message,
       customerDetail,
-      []
+      [],
     );
 
     recipient["booking"] = bookingDetails;
@@ -143,12 +143,12 @@ export class EmailService implements MessengerService {
 
   public async sendMatch(
     message: Message,
-    customerDetail: UserDetail
+    customerDetail: UserDetail,
   ): Promise<boolean> {
     const recipient = await this.customerDetailToRecipient(
       message,
       customerDetail,
-      []
+      [],
     );
 
     const messageOptions: MessageOptions = {
@@ -180,12 +180,12 @@ export class EmailService implements MessengerService {
   public async remind(
     message: Message,
     customerDetail: UserDetail,
-    customerItems: CustomerItem[]
+    customerItems: CustomerItem[],
   ): Promise<boolean> {
     const recipient = await this.customerDetailToRecipient(
       message,
       customerDetail,
-      customerItems
+      customerItems,
     );
 
     const messageOptions: MessageOptions = {
@@ -217,7 +217,7 @@ export class EmailService implements MessengerService {
   private async sendToGuardian(
     customerDetail: UserDetail,
     recipient: Recipient,
-    messageOptions: MessageOptions
+    messageOptions: MessageOptions,
   ): Promise<boolean> {
     if (!customerDetail.guardian) {
       return false;
@@ -256,7 +256,7 @@ export class EmailService implements MessengerService {
 
   public remindMany(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[]
+    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[],
   ) {}
 
   public orderPlaced(customerDetail: UserDetail, order: Order) {
@@ -269,7 +269,7 @@ export class EmailService implements MessengerService {
   private async customerDetailToRecipient(
     message: Message,
     customerDetail: UserDetail,
-    customerItems: CustomerItem[]
+    customerItems: CustomerItem[],
   ): Promise<Recipient> {
     return {
       message_id: message.id,
@@ -290,7 +290,7 @@ export class EmailService implements MessengerService {
 
   private async customerItemsToItemList(
     message: Message,
-    customerItems: CustomerItem[]
+    customerItems: CustomerItem[],
   ) {
     if (message.messageSubtype === "partly-payment") {
       return {
@@ -317,7 +317,7 @@ export class EmailService implements MessengerService {
 
   private async customerItemsToEmailItems(
     message: Message,
-    customerItems: CustomerItem[]
+    customerItems: CustomerItem[],
   ) {
     const items = [];
 
@@ -332,7 +332,7 @@ export class EmailService implements MessengerService {
   private customerItemToEmailItem(
     message: Message,
     customerItem: CustomerItem,
-    item: Item
+    item: Item,
   ) {
     if (message.messageSubtype === "partly-payment") {
       return {
@@ -363,14 +363,14 @@ export class EmailService implements MessengerService {
   private getCustomerItemLeftToPayTotal(customerItems: CustomerItem[]): number {
     return customerItems.reduce(
       (total, next) => total + next.amountLeftToPay,
-      0
+      0,
     );
   }
 
   public deliveryInformation(
     customerDetail: UserDetail,
     order: Order,
-    delivery: Delivery
+    delivery: Delivery,
   ) {
     const emailSetting: EmailSetting = {
       toEmail: customerDetail.email,
@@ -450,7 +450,7 @@ export class EmailService implements MessengerService {
 
   public emailConfirmation(
     customerDetail: UserDetail,
-    confirmationCode: string
+    confirmationCode: string,
   ) {
     const emailSetting: EmailSetting = {
       toEmail: customerDetail.email,

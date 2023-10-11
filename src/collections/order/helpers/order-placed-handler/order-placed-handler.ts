@@ -29,7 +29,7 @@ export class OrderPlacedHandler {
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     messenger?: Messenger,
     customerItemHandler?: CustomerItemHandler,
-    orderItemMovedFromOrderHandler?: OrderItemMovedFromOrderHandler
+    orderItemMovedFromOrderHandler?: OrderItemMovedFromOrderHandler,
   ) {
     this.orderStorage =
       orderStorage ??
@@ -47,12 +47,12 @@ export class OrderPlacedHandler {
 
   public async placeOrder(
     order: Order,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Order> {
     try {
       const payments = await this.paymentHandler.confirmPayments(
         order,
-        accessToken
+        accessToken,
       );
 
       const paymentIds = payments.map((payment) => payment.id);
@@ -63,7 +63,7 @@ export class OrderPlacedHandler {
         {
           id: accessToken.sub,
           permission: accessToken.permission,
-        }
+        },
       );
 
       await this.updateCustomerItemsIfPresent(placedOrder, accessToken);
@@ -79,7 +79,7 @@ export class OrderPlacedHandler {
 
   private async updateCustomerItemsIfPresent(
     order: Order,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Order> {
     // eslint-disable-next-line no-useless-catch
     try {
@@ -105,25 +105,25 @@ export class OrderPlacedHandler {
                 customerItemId,
                 orderItem,
                 order.branch as string,
-                order.id
+                order.id,
               );
             } else if (orderItem.type === "buyout") {
               await this._customerItemHandler.buyout(
                 customerItemId,
                 order.id,
-                orderItem
+                orderItem,
               );
             } else if (orderItem.type === "buyback") {
               await this._customerItemHandler.buyback(
                 customerItemId,
                 order.id,
-                orderItem
+                orderItem,
               );
             } else if (orderItem.type === "cancel") {
               await this._customerItemHandler.cancel(
                 customerItemId,
                 order.id,
-                orderItem
+                orderItem,
               );
             } else if (orderItem.type === "return") {
               await this._customerItemHandler.return(
@@ -131,7 +131,7 @@ export class OrderPlacedHandler {
                 order.id,
                 orderItem,
                 order.branch as string,
-                accessToken.details
+                accessToken.details,
               );
             }
           }
@@ -146,7 +146,7 @@ export class OrderPlacedHandler {
 
   private updateUserDetailWithPlacedOrder(
     order: Order,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     if (!order?.customer) {
       return Promise.resolve(true);
@@ -166,14 +166,14 @@ export class OrderPlacedHandler {
               .update(
                 order.customer as string,
                 { orders: orders },
-                { id: accessToken.sub, permission: accessToken.permission }
+                { id: accessToken.sub, permission: accessToken.permission },
               )
               .then(() => {
                 resolve(true);
               })
               .catch(() => {
                 reject(
-                  new BlError("could not update userDetail with placed order")
+                  new BlError("could not update userDetail with placed order"),
                 );
               });
           } else {
@@ -183,8 +183,8 @@ export class OrderPlacedHandler {
         .catch((getUserDetailError: BlError) => {
           reject(
             new BlError(`customer "${order.customer}" not found`).add(
-              getUserDetailError
-            )
+              getUserDetailError,
+            ),
           );
         });
     });

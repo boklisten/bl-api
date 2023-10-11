@@ -22,7 +22,7 @@ describe("OrderPlaceOperation", () => {
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const orderToCustomerItemGenerator = new OrderToCustomerItemGenerator();
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    BlCollectionName.CustomerItems
+    BlCollectionName.CustomerItems,
   );
   const matchesStorage = new BlDocumentStorage<Match>(BlCollectionName.Matches);
   const orderPlacedHandler = new OrderPlacedHandler();
@@ -36,7 +36,7 @@ describe("OrderPlaceOperation", () => {
     orderPlacedHandler,
     orderValidator,
     undefined,
-    matchesStorage
+    matchesStorage,
   );
 
   const placeOrderStub = sinon.stub(orderPlacedHandler, "placeOrder");
@@ -46,7 +46,7 @@ describe("OrderPlaceOperation", () => {
   const getManyCustomerItemsStub = sinon.stub(customerItemStorage, "getMany");
   const generateCustomerItemStub = sinon.stub(
     orderToCustomerItemGenerator,
-    "generate"
+    "generate",
   );
   const validateOrderStub = sinon.stub(orderValidator, "validate");
   const getAllMatchesStub = sinon.stub(matchesStorage, "getAll");
@@ -97,7 +97,7 @@ describe("OrderPlaceOperation", () => {
       getOrderStub.rejects(new BlError('order "randomOrder" not found'));
 
       return expect(
-        orderPlaceOperation.run({ documentId: "randomOrder" })
+        orderPlaceOperation.run({ documentId: "randomOrder" }),
       ).to.eventually.be.rejectedWith(/order "randomOrder" not found/);
     });
 
@@ -111,7 +111,7 @@ describe("OrderPlaceOperation", () => {
         orderPlaceOperation.run({
           documentId: validOrder.id,
           user: { id: "user1", permission: "admin" },
-        })
+        }),
       ).to.eventually.be.rejectedWith(/order could not be placed/);
     });
 
@@ -126,7 +126,7 @@ describe("OrderPlaceOperation", () => {
         orderPlaceOperation.run({
           documentId: validOrder.id,
           user: { id: "user1", permission: "admin" },
-        })
+        }),
       ).to.eventually.be.rejectedWith(/order not valid/);
     });
 

@@ -65,7 +65,7 @@ describe("LocalLoginPasswordValidator", () => {
       return localLoginPasswordValidator.validate(
         testPassword,
         testSalt,
-        testHashedPassword
+        testHashedPassword,
       ).should.eventually.be.true;
     });
   });

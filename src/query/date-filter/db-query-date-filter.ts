@@ -58,11 +58,11 @@ export class DbQueryDateFilter {
 
   private generateSingleDayFilter(
     fieldName: string,
-    value: string
+    value: string,
   ): DateFilter {
     if (!value)
       throw new Error(
-        "QueryBuilderDateFilter.generateDateFilter(): value is not defined"
+        "QueryBuilderDateFilter.generateDateFilter(): value is not defined",
       );
 
     const operation = this.getOperation(value);
@@ -101,7 +101,7 @@ export class DbQueryDateFilter {
 
   private generateMultipleDateFilter(
     fieldName: string,
-    values: string[]
+    values: string[],
   ): DateFilter[] {
     const operations = {};
 

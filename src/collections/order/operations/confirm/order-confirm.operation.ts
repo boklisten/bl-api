@@ -20,7 +20,7 @@ export class OrderConfirmOperation implements Operation {
   constructor(
     private _resHandler?: SEResponseHandler,
     private _orderStorage?: BlDocumentStorage<Order>,
-    private _orderPlacedHandler?: OrderPlacedHandler
+    private _orderPlacedHandler?: OrderPlacedHandler,
   ) {
     this._resHandler = this._resHandler
       ? this._resHandler
@@ -74,7 +74,7 @@ export class OrderConfirmOperation implements Operation {
       [
         { fieldName: "customer", type: "object-id" },
         { fieldName: "placed", type: "boolean" },
-      ]
+      ],
     );
 
     try {
@@ -104,7 +104,7 @@ export class OrderConfirmOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     const accessToken = {
       details: blApiRequest.user.id,
@@ -119,13 +119,12 @@ export class OrderConfirmOperation implements Operation {
       throw new BlError(`order "${blApiRequest.documentId}" not found`);
     }
 
-    const alreadyOrderedSomeItems = await this.hasOpenOrderWithOrderItems(
-      order
-    );
+    const alreadyOrderedSomeItems =
+      await this.hasOpenOrderWithOrderItems(order);
 
     if (alreadyOrderedSomeItems) {
       throw new BlError(
-        "There already exists an order with some of these orderitems"
+        "There already exists an order with some of these orderitems",
       );
     }
 
@@ -134,7 +133,7 @@ export class OrderConfirmOperation implements Operation {
     try {
       placedOrder = await this._orderPlacedHandler.placeOrder(
         order,
-        accessToken
+        accessToken,
       );
     } catch (e) {
       throw new BlError("order could not be placed:" + e);

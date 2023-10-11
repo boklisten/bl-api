@@ -17,13 +17,13 @@ chai.use(chaiAsPromised);
 describe("PaymentPatchHook", () => {
   const paymentDibsHandler = new PaymentDibsHandler();
   const paymentStorage = new BlDocumentStorage<Payment>(
-    BlCollectionName.Payments
+    BlCollectionName.Payments,
   );
   const paymentValidator = new PaymentValidator();
   const paymentPatchHook = new PaymentPatchHook(
     paymentStorage,
     paymentDibsHandler,
-    paymentValidator
+    paymentValidator,
   );
 
   let testPayment: Payment;
@@ -82,7 +82,7 @@ describe("PaymentPatchHook", () => {
       paymentValidated = false;
 
       return expect(
-        paymentPatchHook.after([testPayment], testAccessToken)
+        paymentPatchHook.after([testPayment], testAccessToken),
       ).to.be.rejectedWith(BlError, /could not validate payment/);
     });
 
@@ -96,7 +96,7 @@ describe("PaymentPatchHook", () => {
         dibsPaymentCreated = false;
 
         return expect(
-          paymentPatchHook.after([testPayment], testAccessToken)
+          paymentPatchHook.after([testPayment], testAccessToken),
         ).to.be.rejectedWith(BlError, /could not create dibs payment/);
       });
     });
@@ -106,10 +106,10 @@ describe("PaymentPatchHook", () => {
         testPayment.method = "something" as any;
 
         return expect(
-          paymentPatchHook.after([testPayment], testAccessToken)
+          paymentPatchHook.after([testPayment], testAccessToken),
         ).to.be.rejectedWith(
           BlError,
-          /payment.method "something" not supported/
+          /payment.method "something" not supported/,
         );
       });
     });

@@ -33,20 +33,20 @@ describe("OrderEmailHandler", () => {
   const standardTimeFormat = "DD.MM.YYYY HH.mm.ss";
   const standardDayFormat = "DD.MM.YY";
   const branchStorage = new BlDocumentStorage<Branch>(
-    BlCollectionName.Branches
+    BlCollectionName.Branches,
   );
   const deliveryStorage = new BlDocumentStorage<Delivery>(
-    BlCollectionName.Deliveries
+    BlCollectionName.Deliveries,
   );
   const paymentStorage = new BlDocumentStorage<Payment>(
-    BlCollectionName.Payments
+    BlCollectionName.Payments,
   );
   const emailHandler = new EmailHandler({ sendgrid: { apiKey: "someKey" } });
   const orderEmailHandler = new OrderEmailHandler(
     emailHandler,
     deliveryStorage,
     paymentStorage,
-    branchStorage
+    branchStorage,
   );
 
   sinon.stub(deliveryStorage, "get").callsFake(async (id: string) => {
@@ -86,13 +86,13 @@ describe("OrderEmailHandler", () => {
       emailSendSuccessful = false;
 
       return expect(
-        orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder)
+        orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder),
       ).to.be.rejectedWith(Error, /could not send email/);
     });
 
     it("should resolve with EmailLog if emailHandler.sendWithAgreement resolves", () => {
       return expect(
-        orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder)
+        orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder),
       ).to.be.fulfilled;
     });
 
@@ -143,7 +143,7 @@ describe("OrderEmailHandler", () => {
                   .catch((err) => {
                     done(err);
                   });
-              }
+              },
             );
           }
         });
@@ -189,7 +189,7 @@ describe("OrderEmailHandler", () => {
                   ].args[0]; // the next to last call should be to the guardian
 
                 expect(guardianEmailSetting.toEmail).to.be.eq(
-                  testCustomerDetail.guardian.email
+                  testCustomerDetail.guardian.email,
                 );
 
                 done();
@@ -336,17 +336,17 @@ describe("OrderEmailHandler", () => {
             const emailOrder = sendOrderReceiptArguments[1];
 
             expect(emailOrder.items[0].title).to.be.eq(
-              testOrder.orderItems[0].title
+              testOrder.orderItems[0].title,
             );
             expect(emailOrder.items[0].price).to.be.eq(
-              testOrder.orderItems[0].amount.toString()
+              testOrder.orderItems[0].amount.toString(),
             );
             expect(emailOrder.items[0].deadline).to.be.eq(
               dateService.format(
                 testOrder.orderItems[0].info.to,
                 "Europe/Oslo",
-                standardDayFormat
-              )
+                standardDayFormat,
+              ),
             );
 
             done();
@@ -389,27 +389,27 @@ describe("OrderEmailHandler", () => {
             const emailOrder = sendOrderReceiptArguments[1];
 
             expect(emailOrder.items[0].title).to.be.eq(
-              testOrder.orderItems[0].title
+              testOrder.orderItems[0].title,
             );
             expect(emailOrder.items[0].price).to.be.null;
             expect(emailOrder.items[0].deadline).to.be.eq(
               dateService.format(
                 testOrder.orderItems[1].info.to,
                 "Europe/Oslo",
-                standardDayFormat
-              )
+                standardDayFormat,
+              ),
             );
 
             expect(emailOrder.items[1].title).to.be.eq(
-              testOrder.orderItems[1].title
+              testOrder.orderItems[1].title,
             );
             expect(emailOrder.items[1].price).to.be.null;
             expect(emailOrder.items[1].deadline).to.be.eq(
               dateService.format(
                 testOrder.orderItems[1].info.to,
                 "Europe/Oslo",
-                standardDayFormat
-              )
+                standardDayFormat,
+              ),
             );
 
             done();
@@ -443,7 +443,7 @@ describe("OrderEmailHandler", () => {
             const emailOrder = sendOrderReceiptArguments[1];
 
             expect(emailOrder.items[0].title).to.be.eq(
-              testOrder.orderItems[0].title
+              testOrder.orderItems[0].title,
             );
             expect(emailOrder.items[0].status).to.be.eq("returnert");
             expect(emailOrder.items[0].price).to.be.null;
@@ -511,7 +511,7 @@ describe("OrderEmailHandler", () => {
               trackingNumber: testDelivery.info["trackingNumber"],
               estimatedDeliveryDate: dateService.toPrintFormat(
                 testDelivery.info["estimatedDelivery"],
-                "Europe/Oslo"
+                "Europe/Oslo",
               ),
             });
 
@@ -560,31 +560,31 @@ describe("OrderEmailHandler", () => {
             expect(emailOrder.showPayment).to.be.true;
             expect(emailOrder.payment.total).to.be.eq(expectedTotal);
             expect(emailOrder.payment.currency).to.be.eq(
-              testPayment.info["orderDetails"].currency
+              testPayment.info["orderDetails"].currency,
             );
 
             expect(emailOrder.payment.payments[0].method).to.be.eq(
-              testPayment.info["paymentDetails"]["paymentMethod"]
+              testPayment.info["paymentDetails"]["paymentMethod"],
             );
             expect(emailOrder.payment.payments[0].amount).to.be.eq(
-              (testPayment.info["orderDetails"]["amount"] / 100).toString()
+              (testPayment.info["orderDetails"]["amount"] / 100).toString(),
             ); // the amount is in ears when it comes from dibs
             expect(emailOrder.payment.payments[0].cardInfo).to.be.eq(
-              "***" + "0079"
+              "***" + "0079",
             ); // should only send the last 4 digits
             expect(emailOrder.payment.payments[0].taxAmount).to.be.eq(
-              testPayment.taxAmount.toString()
+              testPayment.taxAmount.toString(),
             );
             expect(emailOrder.payment.payments[0].paymentId).to.be.eq(
-              testPayment.info["paymentId"]
+              testPayment.info["paymentId"],
             );
             expect(emailOrder.payment.payments[0].status).to.be.eq("bekreftet");
             expect(emailOrder.payment.payments[0].creationTime).to.be.eq(
               dateService.format(
                 testPayment.creationTime,
                 "Europe/Oslo",
-                standardTimeFormat
-              )
+                standardTimeFormat,
+              ),
             );
 
             done();
@@ -636,49 +636,49 @@ describe("OrderEmailHandler", () => {
             expect(emailOrder.payment.total).to.be.eq(testOrder.amount);
             expect(emailOrder.payment.currency).to.be.eq("NOK");
             expect(emailOrder.payment.taxAmount).to.be.eq(
-              payments[0].taxAmount + payments[1].taxAmount
+              payments[0].taxAmount + payments[1].taxAmount,
             );
 
             expect(emailOrder.payment.payments[0].method).to.be.eq(
-              payments[0].method
+              payments[0].method,
             );
             expect(emailOrder.payment.payments[0].amount).to.be.eq(
-              payments[0].amount.toString()
+              payments[0].amount.toString(),
             );
             expect(emailOrder.payment.payments[0].taxAmount).to.be.eq(
-              payments[0].taxAmount.toString()
+              payments[0].taxAmount.toString(),
             );
             expect(emailOrder.payment.payments[0].paymentId).to.be.eq(
-              payments[0].id
+              payments[0].id,
             );
             expect(emailOrder.payment.payments[0].status).to.be.eq("bekreftet");
             expect(emailOrder.payment.payments[0].creationTime).to.be.eq(
               dateService.format(
                 payments[0].creationTime,
                 "Europe/Oslo",
-                "DD.MM.YYYY HH.mm.ss"
-              )
+                "DD.MM.YYYY HH.mm.ss",
+              ),
             );
 
             expect(emailOrder.payment.payments[1].method).to.be.eq(
-              payments[1].method
+              payments[1].method,
             );
             expect(emailOrder.payment.payments[1].amount).to.be.eq(
-              payments[1].amount.toString()
+              payments[1].amount.toString(),
             );
             expect(emailOrder.payment.payments[1].taxAmount).to.be.eq(
-              payments[1].taxAmount.toString()
+              payments[1].taxAmount.toString(),
             );
             expect(emailOrder.payment.payments[1].paymentId).to.be.eq(
-              payments[1].id
+              payments[1].id,
             );
             expect(emailOrder.payment.payments[1].status).to.be.eq("bekreftet");
             expect(emailOrder.payment.payments[1].creationTime).to.be.eq(
               dateService.format(
                 payments[1].creationTime,
                 "Europe/Oslo",
-                "DD.MM.YYYY HH.mm.ss"
-              )
+                "DD.MM.YYYY HH.mm.ss",
+              ),
             );
 
             done();

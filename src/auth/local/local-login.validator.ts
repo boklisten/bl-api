@@ -12,12 +12,12 @@ export class LocalLoginValidator {
     private localLoginHandler: LocalLoginHandler,
     private localLoginPasswordValidator: LocalLoginPasswordValidator,
     private localLoginCreator: LocalLoginCreator,
-    private userHandler: UserHandler
+    private userHandler: UserHandler,
   ) {}
 
   public validate(
     username: string,
-    password: string
+    password: string,
   ): Promise<{ provider: string; providerId: string }> {
     return new Promise((resolve, reject) => {
       const blError = new BlError("")
@@ -25,7 +25,7 @@ export class LocalLoginValidator {
         .methodName("validate");
       if (!username || !isEmail(username))
         return reject(
-          blError.msg('username "' + username + '" is not an email')
+          blError.msg('username "' + username + '" is not an email'),
         );
       if (!password || password.length <= 0)
         return reject(blError.msg("password is empty or undefined"));
@@ -49,10 +49,10 @@ export class LocalLoginValidator {
                       error.add(
                         blError
                           .msg("username or password is not correct")
-                          .code(908)
-                      )
+                          .code(908),
+                      ),
                     );
-                  }
+                  },
                 );
             },
             (error: BlError) => {
@@ -60,12 +60,14 @@ export class LocalLoginValidator {
                 error.add(
                   blError
                     .msg(
-                      'could not find the user with username "' + username + '"'
+                      'could not find the user with username "' +
+                        username +
+                        '"',
                     )
-                    .code(702)
-                )
+                    .code(702),
+                ),
               );
-            }
+            },
           );
         })
         .catch((userValidError: BlError) => {
@@ -80,7 +82,7 @@ export class LocalLoginValidator {
 
   public create(
     username: string,
-    password: string
+    password: string,
   ): Promise<{ provider: string; providerId: string }> {
     return new Promise((resolve, reject) => {
       const blError = new BlError("")
@@ -96,7 +98,7 @@ export class LocalLoginValidator {
             blError
               .msg("username already exists")
               .store("username", username)
-              .code(903)
+              .code(903),
           );
         },
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -109,7 +111,7 @@ export class LocalLoginValidator {
                     .create(
                       username,
                       addedLocalLogin.provider,
-                      addedLocalLogin.providerId
+                      addedLocalLogin.providerId,
                     )
                     .then(
                       (user: User) => {
@@ -122,33 +124,33 @@ export class LocalLoginValidator {
                         reject(
                           createError.add(
                             blError.msg(
-                              "could not create user based on the provider,providerId and username provided"
-                            )
-                          )
+                              "could not create user based on the provider,providerId and username provided",
+                            ),
+                          ),
                         );
-                      }
+                      },
                     );
                 },
                 (addError: BlError) => {
                   reject(
                     addError.add(
-                      blError.msg("could not insert the localLogin object")
-                    )
+                      blError.msg("could not insert the localLogin object"),
+                    ),
                   );
-                }
+                },
               );
             },
             (localLoginCreateError: BlError) => {
               reject(
                 localLoginCreateError.add(
                   blError.msg(
-                    "could not create LocalLogin object by the provided username and password"
-                  )
-                )
+                    "could not create LocalLogin object by the provided username and password",
+                  ),
+                ),
               );
-            }
+            },
           );
-        }
+        },
       );
     });
   }

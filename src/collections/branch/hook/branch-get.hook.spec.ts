@@ -46,7 +46,7 @@ describe("BranchGetHook", () => {
       };
 
       return expect(
-        branchGetHook.after([branch], {} as AccessToken)
+        branchGetHook.after([branch], {} as AccessToken),
       ).to.eventually.be.eql([expectedResult]);
     });
 
@@ -72,7 +72,7 @@ describe("BranchGetHook", () => {
       };
 
       return expect(
-        branchGetHook.after([branch], {} as AccessToken)
+        branchGetHook.after([branch], {} as AccessToken),
       ).to.eventually.be.eql([expectedResult]);
     });
 
@@ -102,7 +102,7 @@ describe("BranchGetHook", () => {
       };
 
       return expect(
-        branchGetHook.after([branch], accessToken as AccessToken)
+        branchGetHook.after([branch], accessToken as AccessToken),
       ).to.eventually.be.eql([expectedResult]);
     });
 
@@ -132,7 +132,7 @@ describe("BranchGetHook", () => {
       };
 
       return expect(
-        branchGetHook.after([branch], accessToken as AccessToken)
+        branchGetHook.after([branch], accessToken as AccessToken),
       ).to.eventually.be.eql([expectedResult]);
     });
   });

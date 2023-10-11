@@ -14,10 +14,13 @@ import { logger } from "../logger/logger";
 export class CollectionEndpoint<T extends BlDocument> {
   private _documentStorage: BlDocumentStorage<T>;
 
-  constructor(private _router: Router, private _collection: BlCollection) {
+  constructor(
+    private _router: Router,
+    private _collection: BlCollection,
+  ) {
     this._documentStorage = new BlDocumentStorage<T>(
       _collection.collectionName,
-      _collection.mongooseSchema
+      _collection.mongooseSchema,
     );
     new PermissionService();
     new ApiPath();
@@ -43,7 +46,7 @@ export class CollectionEndpoint<T extends BlDocument> {
           break;
         default:
           throw new BlError(
-            `the collection endpoint method "${endpoint.method}" is not supported`
+            `the collection endpoint method "${endpoint.method}" is not supported`,
           );
       }
     }
@@ -89,7 +92,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission
+      this._collection.documentPermission,
     );
     collectionEndpointGetAll.create();
   }
@@ -100,7 +103,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission
+      this._collection.documentPermission,
     );
     collectionEndpointGetId.create();
   }
@@ -111,7 +114,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission
+      this._collection.documentPermission,
     );
     collectionEndpointPost.create();
   }
@@ -122,7 +125,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission
+      this._collection.documentPermission,
     );
     collectionEndpointDelete.create();
   }
@@ -133,7 +136,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission
+      this._collection.documentPermission,
     );
     collectionEndpointPatch.create();
   }

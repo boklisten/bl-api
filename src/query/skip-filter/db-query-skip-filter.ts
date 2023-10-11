@@ -24,7 +24,7 @@ export class DbQuerySkipFilter {
     for (const s of skipstr) {
       if (s !== "0" && !parseInt(s))
         throw new TypeError(
-          'skip parameter "' + skip + '" is not a valid number'
+          'skip parameter "' + skip + '" is not a valid number',
         );
     }
 

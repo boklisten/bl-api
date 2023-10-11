@@ -40,7 +40,7 @@ export class OrderPlaceOperation implements Operation {
     private _orderPlacedHandler?: OrderPlacedHandler,
     private _orderValidator?: OrderValidator,
     private _userDetailStorage?: BlDocumentStorage<UserDetail>,
-    private _matchStorage?: BlDocumentStorage<Match>
+    private _matchStorage?: BlDocumentStorage<Match>,
   ) {
     this._resHandler = this._resHandler
       ? this._resHandler
@@ -58,7 +58,7 @@ export class OrderPlaceOperation implements Operation {
       ? this._customerItemStorage
       : new BlDocumentStorage(
           BlCollectionName.CustomerItems,
-          customerItemSchema
+          customerItemSchema,
         );
 
     this._orderPlacedHandler = this._orderPlacedHandler
@@ -75,7 +75,7 @@ export class OrderPlaceOperation implements Operation {
 
     this._matchStorage ??= new BlDocumentStorage(
       BlCollectionName.Matches,
-      matchSchema
+      matchSchema,
     );
 
     this._queryBuilder = new SEDbQueryBuilder();
@@ -118,7 +118,7 @@ export class OrderPlaceOperation implements Operation {
       [
         { fieldName: "customer", type: "object-id" },
         { fieldName: "placed", type: "boolean" },
-      ]
+      ],
     );
 
     try {
@@ -162,7 +162,7 @@ export class OrderPlaceOperation implements Operation {
     ]);
     const handoutItems = order.orderItems.filter(
       (orderItem) =>
-        handoutOrderTypes.has(orderItem.type) && orderItem.blid != null
+        handoutOrderTypes.has(orderItem.type) && orderItem.blid != null,
     );
     if (handoutItems.length === 0) {
       return false;
@@ -188,7 +188,7 @@ export class OrderPlaceOperation implements Operation {
       return unreturnedItems.length > 0;
     } catch {
       console.error(
-        "Could not check whether some items are already handed out"
+        "Could not check whether some items are already handed out",
       );
       return false;
     }
@@ -203,7 +203,7 @@ export class OrderPlaceOperation implements Operation {
    */
   private verifyCustomerItemsNotInLockedUserMatch(
     customerItems: CustomerItem[],
-    userMatches: UserMatch[]
+    userMatches: UserMatch[],
   ) {
     for (const customerItem of customerItems) {
       const customerId = String(customerItem.customer);
@@ -214,11 +214,11 @@ export class OrderPlaceOperation implements Operation {
             // We need String(obj) because typeof sender/receiver === object
             (String(userMatch.sender) === customerId ||
               String(userMatch.receiver) === customerId) &&
-            userMatch.expectedItems.includes(String(customerItem.item))
+            userMatch.expectedItems.includes(String(customerItem.item)),
         )
       ) {
         throw new BlError(
-          "Ordren inneholder bøker som er låst til en UserMatch; kunden må overlevere de låste bøkene til en annen elev"
+          "Ordren inneholder bøker som er låst til en UserMatch; kunden må overlevere de låste bøkene til en annen elev",
         ).code(802);
       }
     }
@@ -235,7 +235,7 @@ export class OrderPlaceOperation implements Operation {
   private verifyItemsNotInLockedUserMatch(
     itemIds: string[],
     userMatches: UserMatch[],
-    customerId: string
+    customerId: string,
   ) {
     for (const itemId of itemIds) {
       if (
@@ -245,11 +245,11 @@ export class OrderPlaceOperation implements Operation {
             // We need String(obj) because typeof sender/receiver === object
             (String(userMatch.sender) === customerId ||
               String(userMatch.receiver) === customerId) &&
-            userMatch.expectedItems.includes(itemId)
+            userMatch.expectedItems.includes(itemId),
         )
       ) {
         throw new BlError(
-          "Ordren inneholder bøker som er låst til en UserMatch; kunden må motta de låste bøkene fra en annen elev"
+          "Ordren inneholder bøker som er låst til en UserMatch; kunden må motta de låste bøkene fra en annen elev",
         ).code(807);
       }
     }
@@ -265,22 +265,22 @@ export class OrderPlaceOperation implements Operation {
   private async updateMatchesIfPresent(
     allMatches: Match[],
     returnOrderItems: OrderItem[],
-    handoutOrderItems: OrderItem[]
+    handoutOrderItems: OrderItem[],
   ) {
     if (returnOrderItems.length === 0 && handoutOrderItems.length === 0) {
       return;
     }
 
     const returnCustomerItems = await this._customerItemStorage.getMany(
-      returnOrderItems.map((orderItem) => String(orderItem.customerItem))
+      returnOrderItems.map((orderItem) => String(orderItem.customerItem)),
     );
 
     const handoutCustomerItems = await this._customerItemStorage.getMany(
-      handoutOrderItems.map((orderItem) => String(orderItem.customerItem))
+      handoutOrderItems.map((orderItem) => String(orderItem.customerItem)),
     );
 
     const standMatches: StandMatch[] = allMatches.filter(
-      (match) => match._variant === MatchVariant.StandMatch
+      (match) => match._variant === MatchVariant.StandMatch,
     ) as StandMatch[];
 
     // Register items as delivered
@@ -288,7 +288,7 @@ export class OrderPlaceOperation implements Operation {
       const foundStandMatch = standMatches.find(
         (standMatch) =>
           standMatch.expectedHandoffItems.includes(String(customerItem.item)) &&
-          !standMatch.deliveredItems.includes(String(customerItem.item))
+          !standMatch.deliveredItems.includes(String(customerItem.item)),
       );
       if (foundStandMatch) {
         await this._matchStorage.update(
@@ -299,7 +299,7 @@ export class OrderPlaceOperation implements Operation {
               customerItem.item,
             ],
           },
-          new SystemUser()
+          new SystemUser(),
         );
       }
     }
@@ -309,7 +309,7 @@ export class OrderPlaceOperation implements Operation {
       const foundStandMatch = standMatches.find(
         (standMatch) =>
           standMatch.expectedPickupItems.includes(String(customerItem.item)) &&
-          !standMatch.receivedItems.includes(String(customerItem.item))
+          !standMatch.receivedItems.includes(String(customerItem.item)),
       );
       if (foundStandMatch) {
         await this._matchStorage.update(
@@ -320,7 +320,7 @@ export class OrderPlaceOperation implements Operation {
               customerItem.item,
             ],
           },
-          new SystemUser()
+          new SystemUser(),
         );
       }
     }
@@ -331,7 +331,7 @@ export class OrderPlaceOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     let order: Order;
 
@@ -348,21 +348,21 @@ export class OrderPlaceOperation implements Operation {
       }
     }
 
-    const someBlidAlreadyHandedOut = await this.isSomeBlidAlreadyHandedOut(
-      order
-    );
+    const someBlidAlreadyHandedOut =
+      await this.isSomeBlidAlreadyHandedOut(order);
 
     if (someBlidAlreadyHandedOut) {
       throw new BlError(
-        "En eller flere av bøkene du prøver å dele ut er allerede aktiv på en annen kunde. Prøv å dele ut én og én bok for å finne ut hvilke bøker dette gjelder."
+        "En eller flere av bøkene du prøver å dele ut er allerede aktiv på en annen kunde. Prøv å dele ut én og én bok for å finne ut hvilke bøker dette gjelder.",
       ).code(801);
     }
 
     const returnOrderItems = order.orderItems.filter(
-      (orderItem) => orderItem.type === "return" || orderItem.type === "buyback"
+      (orderItem) =>
+        orderItem.type === "return" || orderItem.type === "buyback",
     );
     const handoutOrderItems = order.orderItems.filter(
-      (orderItem) => orderItem.type === "rent"
+      (orderItem) => orderItem.type === "rent",
     );
 
     const allMatches = await this._matchStorage.getAll();
@@ -372,25 +372,24 @@ export class OrderPlaceOperation implements Operation {
         returnOrderItems,
         handoutOrderItems,
         allMatches,
-        String(order.customer)
+        String(order.customer),
       );
     }
 
-    let customerItems = await this._orderToCustomerItemGenerator.generate(
-      order
-    );
+    let customerItems =
+      await this._orderToCustomerItemGenerator.generate(order);
 
     if (customerItems && customerItems.length > 0) {
       customerItems = await this.addCustomerItems(
         customerItems,
-        blApiRequest.user
+        blApiRequest.user,
       );
       order = this.addCustomerItemIdToOrderItems(order, customerItems);
 
       await this._orderStorage.update(
         order.id,
         { orderItems: order.orderItems },
-        blApiRequest.user
+        blApiRequest.user,
       );
     }
 
@@ -398,7 +397,7 @@ export class OrderPlaceOperation implements Operation {
       await this.updateMatchesIfPresent(
         allMatches,
         returnOrderItems,
-        handoutOrderItems
+        handoutOrderItems,
       );
     }
 
@@ -415,7 +414,7 @@ export class OrderPlaceOperation implements Operation {
         await this.addCustomerItemsToCustomer(
           customerItems,
           order.customer as string,
-          blApiRequest.user
+          blApiRequest.user,
         );
         // eslint-disable-next-line no-empty
       } catch (e) {}
@@ -438,27 +437,27 @@ export class OrderPlaceOperation implements Operation {
     returnOrderItems: OrderItem[],
     handoutOrderItems: OrderItem[],
     allMatches: Match[],
-    customerId: string
+    customerId: string,
   ) {
     const userMatches: UserMatch[] = allMatches.filter(
-      (match) => match._variant === MatchVariant.UserMatch
+      (match) => match._variant === MatchVariant.UserMatch,
     ) as UserMatch[];
     const returnCustomerItems = await this._customerItemStorage.getMany(
-      returnOrderItems.map((orderItem) => String(orderItem.customerItem))
+      returnOrderItems.map((orderItem) => String(orderItem.customerItem)),
     );
     const handoutItems = handoutOrderItems.map((orderItem) =>
-      String(orderItem.item)
+      String(orderItem.item),
     );
     this.verifyCustomerItemsNotInLockedUserMatch(
       returnCustomerItems,
-      userMatches
+      userMatches,
     );
     this.verifyItemsNotInLockedUserMatch(handoutItems, userMatches, customerId);
   }
 
   private async addCustomerItems(
     customerItems: CustomerItem[],
-    user: any
+    user: any,
   ): Promise<CustomerItem[]> {
     const addedCustomerItems = [];
     for (const customerItem of customerItems) {
@@ -475,7 +474,7 @@ export class OrderPlaceOperation implements Operation {
   private async addCustomerItemsToCustomer(
     customerItems: CustomerItem[],
     customerId: string,
-    user: { id: string; permission: any }
+    user: { id: string; permission: any },
   ): Promise<boolean> {
     const customerItemIds: string[] = customerItems.map((ci) => {
       return ci.id.toString();
@@ -493,7 +492,7 @@ export class OrderPlaceOperation implements Operation {
     await this._userDetailStorage.update(
       customerId,
       { customerItems: userDetailCustomerItemsIds },
-      user
+      user,
     );
 
     return true;
@@ -501,7 +500,7 @@ export class OrderPlaceOperation implements Operation {
 
   private addCustomerItemIdToOrderItems(
     order: Order,
-    customerItems: CustomerItem[]
+    customerItems: CustomerItem[],
   ) {
     for (const customerItem of customerItems) {
       for (const orderItem of order.orderItems) {

@@ -20,7 +20,7 @@ export class DibsPaymentService {
 
   constructor(
     deliveryStorage?: BlDocumentStorage<Delivery>,
-    httpHandler?: HttpHandler
+    httpHandler?: HttpHandler,
   ) {
     this._httpHandler = httpHandler ?? new HttpHandler();
     this._userDetailHelper = new UserDetailHelper();
@@ -32,7 +32,7 @@ export class DibsPaymentService {
         .post(
           process.env.DIBS_URI + APP_CONFIG.path.dibs.payment,
           dibsEasyOrder,
-          process.env.DIBS_SECRET_KEY
+          process.env.DIBS_SECRET_KEY,
         )
         .then((responseData: string) => {
           if (responseData) {
@@ -41,7 +41,7 @@ export class DibsPaymentService {
             }
           }
           return reject(
-            new BlError("did not get the paymentId back from dibs")
+            new BlError("did not get the paymentId back from dibs"),
           );
         })
         .catch((blError: BlError) => {
@@ -54,19 +54,19 @@ export class DibsPaymentService {
     return this._httpHandler
       .get(
         process.env.DIBS_URI + APP_CONFIG.path.dibs.payment + "/" + paymentId,
-        process.env.DIBS_SECRET_KEY
+        process.env.DIBS_SECRET_KEY,
       )
       .then((response) => {
         if (!response["payment"]) {
           throw new BlError(
-            "dibs response did not include payment information"
+            "dibs response did not include payment information",
           ).store("paymentId", paymentId);
         }
         return TypedJSON.parse(response["payment"], DibsEasyPayment);
       })
       .catch((getDibsPaymentDetailError: BlError) => {
         throw new BlError(
-          `could not get payment details for paymentId "${paymentId}"`
+          `could not get payment details for paymentId "${paymentId}"`,
         ).add(getDibsPaymentDetailError);
       });
   }
@@ -74,12 +74,12 @@ export class DibsPaymentService {
   public orderToDibsEasyOrder(
     userDetail: UserDetail,
     order: Order,
-    delivery?: Delivery
+    delivery?: Delivery,
   ): DibsEasyOrder {
     this.validateOrder(order);
 
     const items: DibsEasyItem[] = order.orderItems.map((orderItem) =>
-      this.orderItemToEasyItem(orderItem)
+      this.orderItemToEasyItem(orderItem),
     );
 
     if (order.delivery && delivery && delivery.amount > 0) {
@@ -149,7 +149,7 @@ export class DibsPaymentService {
       throw new BlError("order.id is not defined");
     if (!order.byCustomer)
       throw new BlError(
-        "order.byCustomer is false, no need to make dibs easy order"
+        "order.byCustomer is false, no need to make dibs easy order",
       );
     if (order.amount == 0) throw new BlError("order.amount is zero");
   }
@@ -157,7 +157,7 @@ export class DibsPaymentService {
   private getTotalGrossAmount(dibsEasyItems: DibsEasyItem[]): number {
     return dibsEasyItems.reduce(
       (subTotal, dbi) => subTotal + dbi.grossTotalAmount,
-      0
+      0,
     );
   }
 

@@ -33,14 +33,14 @@ export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
         candidate.userId,
         Array.from(candidate.handoffItems),
         Array.from(candidate.pickupItems),
-        candidate.meetingInfo
+        candidate.meetingInfo,
       );
     case CandidateMatchVariant.UserMatch:
       return new UserMatch(
         candidate.senderId,
         candidate.receiverId,
         Array.from(candidate.items),
-        candidate.meetingInfo
+        candidate.meetingInfo,
       );
   }
 }
@@ -55,7 +55,7 @@ export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
 export async function getMatchableSenders(
   branchIds: string[],
   deadlineBefore: string,
-  customerItemStorage: BlDocumentStorage<CustomerItem>
+  customerItemStorage: BlDocumentStorage<CustomerItem>,
 ): Promise<MatchableUser[]> {
   const branchCustomerItems = await customerItemStorage.aggregate([
     {
@@ -77,7 +77,7 @@ export async function getMatchableSenders(
   return groupItemsByUser(
     branchCustomerItems,
     (customerItem) => customerItem.customer.toString(),
-    (customerItem) => [customerItem.item.toString()]
+    (customerItem) => [customerItem.item.toString()],
   );
 }
 
@@ -89,7 +89,7 @@ export async function getMatchableSenders(
  */
 export async function getMatchableReceivers(
   branchIds: string[],
-  orderStorage: BlDocumentStorage<Order>
+  orderStorage: BlDocumentStorage<Order>,
 ): Promise<MatchableUser[]> {
   const branchOrders = await orderStorage.aggregate([
     {
@@ -132,12 +132,12 @@ export async function getMatchableReceivers(
   return groupItemsByUser(
     branchOrders,
     (order) => order.customer.toString(),
-    (order) => order.orderItems.map((oi) => oi.item.toString())
+    (order) => order.orderItems.map((oi) => oi.item.toString()),
   );
 }
 
 export function verifyMatcherSpec(
-  matcherSpec: unknown
+  matcherSpec: unknown,
 ): matcherSpec is MatcherSpec {
   const m = matcherSpec as Record<string, unknown>;
   return (
@@ -146,10 +146,10 @@ export function verifyMatcherSpec(
     Array.isArray(m.receiverBranches) &&
     Array.isArray(m.userMatchLocations) &&
     m.senderBranches.every(
-      (branchId) => typeof branchId === "string" && branchId.length === 24
+      (branchId) => typeof branchId === "string" && branchId.length === 24,
     ) &&
     m.receiverBranches.every(
-      (branchId) => typeof branchId === "string" && branchId.length === 24
+      (branchId) => typeof branchId === "string" && branchId.length === 24,
     ) &&
     typeof m.standLocation === "string" &&
     m.standLocation.length > 0 &&
@@ -159,7 +159,7 @@ export function verifyMatcherSpec(
         location.name.length > 0 &&
         (location.simultaneousMatchLimit === undefined ||
           (Number.isInteger(location.simultaneousMatchLimit) &&
-            location.simultaneousMatchLimit > 0))
+            location.simultaneousMatchLimit > 0)),
     ) &&
     typeof m.startTime === "string" &&
     !isNaN(new Date(m.startTime).getTime()) &&
@@ -185,7 +185,7 @@ export function verifyMatcherSpec(
 function groupItemsByUser<T>(
   fromDocuments: T[],
   selectUserId: (document: T) => string,
-  selectItems: (document: T) => string[]
+  selectItems: (document: T) => string[],
 ): MatchableUser[] {
   const itemsByUserId: Map<string, string[]> = new Map();
   for (const document of fromDocuments) {

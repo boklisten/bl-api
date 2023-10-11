@@ -10,7 +10,7 @@ export class OrderHookBefore {
         return reject(
           new BlError("request is an array but should be a object")
             .store("requestBody", requestJsonBody)
-            .code(701)
+            .code(701),
         );
       }
 
@@ -23,7 +23,7 @@ export class OrderHookBefore {
         reject(
           new BlError("unkown error, request body is not valid")
             .store("error", e)
-            .code(701)
+            .code(701),
         );
       }
 

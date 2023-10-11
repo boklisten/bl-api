@@ -24,7 +24,7 @@ export class UserDetailChangeEmailOperation implements Operation {
     private _userStorage?: BlDocumentStorage<User>,
     private _localLoginStorage?: BlDocumentStorage<LocalLogin>,
     private _userHandler?: UserHandler,
-    private _resHandler?: SEResponseHandler
+    private _resHandler?: SEResponseHandler,
   ) {
     this._userDetailStorage = _userDetailStorage
       ? _userDetailStorage
@@ -45,7 +45,7 @@ export class UserDetailChangeEmailOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     let userDetail: UserDetail;
     let user: User;
@@ -70,17 +70,17 @@ export class UserDetailChangeEmailOperation implements Operation {
       await this._userDetailStorage.update(
         userDetail["_id"],
         { email: emailChange },
-        blApiRequest.user
+        blApiRequest.user,
       );
       await this._userStorage.update(
         user["_id"],
         { username: emailChange },
-        blApiRequest.user
+        blApiRequest.user,
       );
       await this._localLoginStorage.update(
         localLogin["_id"],
         { username: emailChange },
-        blApiRequest.user
+        blApiRequest.user,
       );
     } catch (e) {
       throw e;
@@ -107,12 +107,12 @@ export class UserDetailChangeEmailOperation implements Operation {
 
   private validatePermission(
     userPermission,
-    permissionToEmailChangeUser
+    permissionToEmailChangeUser,
   ): boolean {
     if (
       !this._permissionService.isPermissionOver(
         userPermission,
-        permissionToEmailChangeUser
+        permissionToEmailChangeUser,
       )
     ) {
       throw new BlError("no access to change email");

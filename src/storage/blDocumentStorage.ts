@@ -14,12 +14,12 @@ export class BlDocumentStorage<T extends BlDocument>
 
   constructor(
     private collectionName: BlCollectionName,
-    private mongooseSchema?: any
+    private mongooseSchema?: any,
   ) {
     if (mongooseSchema) {
       this.mongoDbHandler = new MongoDbBlStorageHandler(
         collectionName,
-        mongooseSchema
+        mongooseSchema,
       );
     }
   }
@@ -39,7 +39,7 @@ export class BlDocumentStorage<T extends BlDocument>
 
   getByQuery(
     dbQuery: SEDbQuery,
-    nestedDocuments?: NestedDocument[]
+    nestedDocuments?: NestedDocument[],
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this.mongoDbHandler
@@ -56,7 +56,7 @@ export class BlDocumentStorage<T extends BlDocument>
   getMany(
     ids: string[],
     userPermission?: UserPermission,
-    nestedDocuments?: NestedDocument[]
+    nestedDocuments?: NestedDocument[],
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this.mongoDbHandler
@@ -72,7 +72,7 @@ export class BlDocumentStorage<T extends BlDocument>
 
   getAll(
     userPermission?: UserPermission,
-    nestedDocuments?: NestedDocument[]
+    nestedDocuments?: NestedDocument[],
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this.mongoDbHandler
@@ -106,7 +106,7 @@ export class BlDocumentStorage<T extends BlDocument>
   update(
     id: string,
     data: any,
-    user: { id: string; permission: UserPermission }
+    user: { id: string; permission: UserPermission },
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       this.mongoDbHandler
@@ -128,7 +128,7 @@ export class BlDocumentStorage<T extends BlDocument>
 
   remove(
     id: string,
-    user: { id: string; permission: UserPermission }
+    user: { id: string; permission: UserPermission },
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       this.mongoDbHandler

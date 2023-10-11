@@ -16,15 +16,15 @@ describe("OrderPlacedValidator", () => {
   describe("#validate()", () => {
     let testOrder: Order;
     const paymentStorage: BlDocumentStorage<Payment> = new BlDocumentStorage(
-      BlCollectionName.Payments
+      BlCollectionName.Payments,
     );
 
     const deliveryStorage: BlDocumentStorage<Delivery> = new BlDocumentStorage(
-      BlCollectionName.Deliveries
+      BlCollectionName.Deliveries,
     );
     const orderPlacedValidator = new OrderPlacedValidator(
       deliveryStorage,
-      paymentStorage
+      paymentStorage,
     );
 
     beforeEach(() => {
@@ -128,7 +128,7 @@ describe("OrderPlacedValidator", () => {
           .validate(testOrder)
           .should.be.rejectedWith(
             BlError,
-            /delivery "notFoundDelivery" not found/
+            /delivery "notFoundDelivery" not found/,
           );
       });
 
@@ -157,7 +157,7 @@ describe("OrderPlacedValidator", () => {
           .validate(testOrder)
           .should.be.rejectedWith(
             BlError,
-            /total amount of payments is not equal to total of order.amount \+ delivery.amount/
+            /total amount of payments is not equal to total of order.amount \+ delivery.amount/,
           );
       });
 
@@ -170,7 +170,7 @@ describe("OrderPlacedValidator", () => {
           .validate(testOrder)
           .should.be.rejectedWith(
             BlError,
-            /total of order.orderItems amount is not equal to order.amount/
+            /total of order.orderItems amount is not equal to order.amount/,
           );
       });
 

@@ -8,7 +8,7 @@ export class ItemValidator {
           item.id +
           '" is not equal to orderItem.item "' +
           orderItem.item +
-          '"'
+          '"',
       );
     }
     if (!item.active) {

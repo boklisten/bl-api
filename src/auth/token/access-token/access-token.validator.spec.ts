@@ -80,7 +80,7 @@ describe("", () => {
                 error.getCode().should.be.eq(910);
                 done();
               });
-          }
+          },
         );
       });
     });

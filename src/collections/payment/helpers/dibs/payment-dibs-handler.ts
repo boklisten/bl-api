@@ -26,7 +26,7 @@ export class PaymentDibsHandler {
     orderStorage?: BlDocumentStorage<Order>,
     dibsPaymentService?: DibsPaymentService,
     deliveryStorage?: BlDocumentStorage<Delivery>,
-    userDetailStorage?: BlDocumentStorage<UserDetail>
+    userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
     this.paymentStorage = paymentStorage
       ? paymentStorage
@@ -47,25 +47,24 @@ export class PaymentDibsHandler {
 
   public async handleDibsPayment(
     payment: Payment,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Payment> {
     // eslint-disable-next-line no-useless-catch
     try {
       const order = await this.orderStorage.get(payment.order as string);
       const userDetail = await this.userDetailStorage.get(
-        payment.customer as string
+        payment.customer as string,
       );
       const dibsEasyOrder: DibsEasyOrder = await this.getDibsEasyOrder(
         userDetail,
-        order
+        order,
       );
-      const paymentId = await this.dibsPaymentService.getPaymentId(
-        dibsEasyOrder
-      );
+      const paymentId =
+        await this.dibsPaymentService.getPaymentId(dibsEasyOrder);
       const updatedPayment = await this.paymentStorage.update(
         payment.id,
         { info: { paymentId: paymentId } },
-        { id: accessToken.sub, permission: accessToken.permission }
+        { id: accessToken.sub, permission: accessToken.permission },
       );
 
       return updatedPayment;
@@ -101,7 +100,7 @@ export class PaymentDibsHandler {
 
   private getDibsEasyOrder(
     userDetail: UserDetail,
-    order: Order
+    order: Order,
   ): Promise<DibsEasyOrder> {
     if (order.delivery) {
       return this.deliveryStorage
@@ -110,12 +109,12 @@ export class PaymentDibsHandler {
           return this.dibsPaymentService.orderToDibsEasyOrder(
             userDetail,
             order,
-            delivery
+            delivery,
           );
         });
     }
     return Promise.resolve(
-      this.dibsPaymentService.orderToDibsEasyOrder(userDetail, order)
+      this.dibsPaymentService.orderToDibsEasyOrder(userDetail, order),
     );
   }
 }

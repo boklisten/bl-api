@@ -18,13 +18,13 @@ export class PasswordResetNewOperation implements Operation {
   constructor(
     passwordResetStorage?: BlDocumentStorage<PasswordReset>,
     localLoginHandler?: LocalLoginHandler,
-    responseHandler?: SEResponseHandler
+    responseHandler?: SEResponseHandler,
   ) {
     this._passwordResetStorage = passwordResetStorage
       ? passwordResetStorage
       : new BlDocumentStorage(
           BlCollectionName.PasswordResets,
-          passwordResetSchema
+          passwordResetSchema,
         );
     this._localLoginHandler = localLoginHandler
       ? localLoginHandler
@@ -39,7 +39,7 @@ export class PasswordResetNewOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (
@@ -47,7 +47,7 @@ export class PasswordResetNewOperation implements Operation {
         isNullOrUndefined(blApiRequest.data["password"])
       ) {
         return reject(
-          new BlError("blApiRequest.data.password is null or undefined")
+          new BlError("blApiRequest.data.password is null or undefined"),
         );
       }
 
@@ -55,7 +55,7 @@ export class PasswordResetNewOperation implements Operation {
 
       if (newPassword.length < 6) {
         return reject(
-          new BlError("blApiRequest.data.password is under length of 6")
+          new BlError("blApiRequest.data.password is under length of 6"),
         );
       }
 
@@ -67,7 +67,7 @@ export class PasswordResetNewOperation implements Operation {
             .then(() => {
               this._resHandler.sendResponse(
                 res,
-                new BlapiResponse([{ success: true }])
+                new BlapiResponse([{ success: true }]),
               );
 
               resolve(true);
@@ -75,8 +75,8 @@ export class PasswordResetNewOperation implements Operation {
             .catch((setPasswordError: BlError) => {
               reject(
                 new BlError("could not update localLogin with password").add(
-                  setPasswordError
-                )
+                  setPasswordError,
+                ),
               );
             });
         })
@@ -84,7 +84,7 @@ export class PasswordResetNewOperation implements Operation {
           reject(
             new BlError(`passwordReset "${blApiRequest.documentId}" not found`)
               .code(702)
-              .add(getPasswordResetError)
+              .add(getPasswordResetError),
           );
         });
     });

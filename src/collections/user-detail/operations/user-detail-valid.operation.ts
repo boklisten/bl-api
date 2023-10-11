@@ -17,7 +17,7 @@ export class UserDetailValidOperation implements Operation {
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     resHandler?: SEResponseHandler,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    userDetailHelper?: UserDetailHelper
+    userDetailHelper?: UserDetailHelper,
   ) {
     this._userDetailStorage = userDetailStorage
       ? userDetailStorage
@@ -31,11 +31,11 @@ export class UserDetailValidOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     try {
       const userDetail = await this._userDetailStorage.get(
-        blApiRequest.documentId
+        blApiRequest.documentId,
       );
 
       const invalidUserDetailFields =
@@ -44,21 +44,21 @@ export class UserDetailValidOperation implements Operation {
       if (invalidUserDetailFields.length <= 0) {
         this._resHandler.sendResponse(
           res,
-          new BlapiResponse([{ valid: true }])
+          new BlapiResponse([{ valid: true }]),
         );
       } else {
         this._resHandler.sendResponse(
           res,
           new BlapiResponse([
             { valid: false, invalidFields: invalidUserDetailFields },
-          ])
+          ]),
         );
       }
 
       return true;
     } catch (err) {
       const responseError: BlError = new BlError(
-        "userDetail could not be validated"
+        "userDetail could not be validated",
       );
 
       if (err instanceof BlError) {

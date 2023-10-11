@@ -15,7 +15,7 @@ chai.use(chaiAsPromised);
 
 describe("UserCanDeleteUserDetail", () => {
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const userDetailGetIdStub = sinon.stub(userDetailStorage, "get");
 
@@ -24,7 +24,7 @@ describe("UserCanDeleteUserDetail", () => {
 
   const userCanDeleteUserDetail = new UserCanDeleteUserDetail(
     userDetailStorage,
-    userStorage
+    userStorage,
   );
 
   beforeEach(() => {
@@ -47,7 +47,7 @@ describe("UserCanDeleteUserDetail", () => {
       userDetailGetIdStub.resolves({ id: "userDetail1" });
 
       return expect(
-        userCanDeleteUserDetail.canDelete("userDetail1", accessToken)
+        userCanDeleteUserDetail.canDelete("userDetail1", accessToken),
       ).to.eventually.be.true;
     });
 
@@ -71,7 +71,7 @@ describe("UserCanDeleteUserDetail", () => {
       userGetByQueryStub.resolves([{ permission: "admin" }]);
 
       return expect(
-        userCanDeleteUserDetail.canDelete("userDetail2", accessToken)
+        userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
       ).to.eventually.be.false;
     });
 
@@ -95,7 +95,7 @@ describe("UserCanDeleteUserDetail", () => {
       userGetByQueryStub.resolves([{ permission: "admin" }]);
 
       return expect(
-        userCanDeleteUserDetail.canDelete("userDetail2", accessToken)
+        userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
       ).to.eventually.be.false;
     });
 
@@ -119,7 +119,7 @@ describe("UserCanDeleteUserDetail", () => {
       userGetByQueryStub.resolves([{ permission: "customer" }]);
 
       return expect(
-        userCanDeleteUserDetail.canDelete("userDetail2", accessToken)
+        userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
       ).to.eventually.be.false;
     });
 
@@ -143,7 +143,7 @@ describe("UserCanDeleteUserDetail", () => {
       userGetByQueryStub.resolves([{ permission: "admin" }]);
 
       return expect(
-        userCanDeleteUserDetail.canDelete("userDetail2", accessToken)
+        userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
       ).to.eventually.be.true;
     });
 
@@ -167,7 +167,7 @@ describe("UserCanDeleteUserDetail", () => {
       userGetByQueryStub.resolves([{ permission: "manager" }]);
 
       return expect(
-        userCanDeleteUserDetail.canDelete("userDetail2", accessToken)
+        userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
       ).to.eventually.be.true;
     });
 
@@ -191,7 +191,7 @@ describe("UserCanDeleteUserDetail", () => {
       userGetByQueryStub.resolves([{ permission: "employee" }]);
 
       return expect(
-        userCanDeleteUserDetail.canDelete("userDetail2", accessToken)
+        userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
       ).to.eventually.be.true;
     });
 
@@ -215,7 +215,7 @@ describe("UserCanDeleteUserDetail", () => {
       userGetByQueryStub.resolves([{ permission: "customer" }]);
 
       return expect(
-        userCanDeleteUserDetail.canDelete("userDetail2", accessToken)
+        userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
       ).to.eventually.be.true;
     });
   });

@@ -22,7 +22,7 @@ export class UserHandler {
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     userStorage?: BlDocumentStorage<User>,
     emailValidationHelper?: EmailValidationHelper,
-    localLoginHandler?: LocalLoginHandler
+    localLoginHandler?: LocalLoginHandler,
   ) {
     this.blid = new Blid();
     this.userDetailStorage = userDetailStorage
@@ -56,7 +56,7 @@ export class UserHandler {
               })
               .catch(() => {
                 reject(
-                  new BlError(`could not handle user with multiple entries`)
+                  new BlError(`could not handle user with multiple entries`),
                 );
               });
           } else {
@@ -67,9 +67,9 @@ export class UserHandler {
           reject(
             new BlError('could not find user with username "' + username + '"')
               .add(error)
-              .code(702)
+              .code(702),
           );
-        }
+        },
       );
     });
   }
@@ -99,8 +99,8 @@ export class UserHandler {
             this.userStorage.update(
               user.id,
               { movedToPrimary: selectedUser.id },
-              new SystemUser()
-            )
+              new SystemUser(),
+            ),
           );
 
           return Promise.all(promiseArr)
@@ -109,13 +109,13 @@ export class UserHandler {
             })
             .catch(() => {
               throw new BlError(
-                `user with multiple entries could not update the other entries with invalid`
+                `user with multiple entries could not update the other entries with invalid`,
               );
             });
         })
         .catch(() => {
           throw new BlError(
-            "user with multiple entries could not update one to primary"
+            "user with multiple entries could not update one to primary",
           );
         });
     }
@@ -148,7 +148,7 @@ export class UserHandler {
             new BlError("an error occured when getting user")
               .store("provider", provider)
               .store("providerId", providerId)
-              .add(error)
+              .add(error),
           );
         });
     });
@@ -157,7 +157,7 @@ export class UserHandler {
   public async create(
     username: string,
     provider: string,
-    providerId: string
+    providerId: string,
   ): Promise<User> {
     if (!username || username.length <= 0)
       throw new BlError("username is empty or undefined").code(907);
@@ -176,7 +176,7 @@ export class UserHandler {
     if (userExists) {
       if (provider === "local") {
         throw new BlError(
-          `username "${username}" already exists, but trying to create new user with provider "local"`
+          `username "${username}" already exists, but trying to create new user with provider "local"`,
         ).code(903);
       } else if (this.isThirdPartyProvider(provider)) {
         // if user already exists and the creation is with google or facebook
@@ -190,7 +190,7 @@ export class UserHandler {
         return userExists;
       } else {
         throw new BlError(
-          `username "${username}" already exists, but could not link it with new provider "${provider}"`
+          `username "${username}" already exists, but could not link it with new provider "${provider}"`,
         );
       }
     }
@@ -214,7 +214,7 @@ export class UserHandler {
 
       const addedUserDetail: UserDetail = await this.userDetailStorage.add(
         userDetail,
-        { id: blid, permission: "customer" }
+        { id: blid, permission: "customer" },
       );
 
       if (!addedUserDetail.emailConfirmed) {
@@ -265,7 +265,7 @@ export class UserHandler {
       })
       .catch((sendEmailValidationLinkError: BlError) => {
         throw new BlError("could not send out email validation link").add(
-          sendEmailValidationLinkError
+          sendEmailValidationLinkError,
         );
       });
   }
@@ -289,7 +289,7 @@ export class UserHandler {
   public exists(provider: string, providerId: string): Promise<boolean> {
     if (!provider || !providerId) {
       return Promise.reject(
-        new BlError("provider or providerId is empty or undefinedl")
+        new BlError("provider or providerId is empty or undefinedl"),
       );
     }
 

@@ -32,10 +32,10 @@ describe("DeliveryBringHandler", () => {
         testDelivery.amount = 133;
 
         return expect(
-          deliveryBranchHandler.validate(testDelivery)
+          deliveryBranchHandler.validate(testDelivery),
         ).to.be.rejectedWith(
           BlError,
-          /delivery.amount is "133" but should be "0"/
+          /delivery.amount is "133" but should be "0"/,
         );
       });
     });

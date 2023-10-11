@@ -18,14 +18,14 @@ describe("PaymentPostHook", () => {
   const paymentValidator = new PaymentValidator();
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const paymentStorage: BlDocumentStorage<Payment> = new BlDocumentStorage(
-    BlCollectionName.Payments
+    BlCollectionName.Payments,
   );
   const paymentDibsHandler = new PaymentDibsHandler();
   const paymentPostHook = new PaymentPostHook(
     paymentStorage,
     orderStorage,
     paymentValidator,
-    paymentDibsHandler
+    paymentDibsHandler,
   );
 
   let testOrder: Order;
@@ -113,16 +113,16 @@ describe("PaymentPostHook", () => {
   describe("#after()", () => {
     it("should reject if ids is empty or undefined", () => {
       return expect(
-        paymentPostHook.after([], testAccessToken)
+        paymentPostHook.after([], testAccessToken),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /payments is empty or undefined/
+        /payments is empty or undefined/,
       );
     });
 
     it("should reject if accessToken is undefined", () => {
       return expect(
-        paymentPostHook.after([testPayment], undefined)
+        paymentPostHook.after([testPayment], undefined),
       ).to.be.rejectedWith(BlError, /accessToken is undefined/);
     });
 
@@ -130,7 +130,7 @@ describe("PaymentPostHook", () => {
       paymentValidated = false;
 
       return expect(
-        paymentPostHook.after([testPayment], testAccessToken)
+        paymentPostHook.after([testPayment], testAccessToken),
       ).to.be.rejectedWith(BlError, /payment could not be validated/);
     });
 
@@ -143,7 +143,7 @@ describe("PaymentPostHook", () => {
         handleDibsPaymentValid = false;
 
         return expect(
-          paymentPostHook.after([testPayment], testAccessToken)
+          paymentPostHook.after([testPayment], testAccessToken),
         ).to.be.rejectedWith(BlError, /could not create dibs payment/);
       });
     });

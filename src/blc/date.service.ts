@@ -14,7 +14,7 @@ export class DateService {
 
   public utcToLocalTimeString(
     utcDate: Date | string,
-    location: MomentLocation
+    location: MomentLocation,
   ): string {
     return moment.tz(utcDate, location).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
   }
@@ -37,7 +37,7 @@ export class DateService {
   public format(
     date: Date | string,
     location: MomentLocation,
-    format: string
+    format: string,
   ): string {
     return moment.tz(date, location).format(format);
   }
@@ -46,7 +46,7 @@ export class DateService {
     date: Date,
     from: Date,
     to: Date,
-    location: MomentLocation
+    location: MomentLocation,
   ): boolean {
     return moment.tz(date, location).isBetween(from, to);
   }
@@ -55,7 +55,7 @@ export class DateService {
     date: Date,
     fromHour: number,
     toHour: number,
-    location: MomentLocation
+    location: MomentLocation,
   ): boolean {
     const from = moment.tz().hour(fromHour).minute(0).second(0);
     const to = moment.tz().hour(toHour).minute(0).second(0);

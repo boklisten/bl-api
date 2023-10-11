@@ -13,13 +13,13 @@ import { BlCollectionName } from "../../bl-collection";
 
 describe("CustomerHaveActiveCustomerItems", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    BlCollectionName.CustomerItems
+    BlCollectionName.CustomerItems,
   );
 
   const customerItemByQueryStub = sinon.stub(customerItemStorage, "getByQuery");
 
   const customerHaveActiveCustomerItems = new CustomerHaveActiveCustomerItems(
-    customerItemStorage
+    customerItemStorage,
   );
 
   const testUserId = "5d765db5fc8c47001c408d8d";
@@ -33,7 +33,7 @@ describe("CustomerHaveActiveCustomerItems", () => {
       customerItemByQueryStub.rejects(new BlError("not found").code(702));
 
       return expect(
-        customerHaveActiveCustomerItems.haveActiveCustomerItems(testUserId)
+        customerHaveActiveCustomerItems.haveActiveCustomerItems(testUserId),
       ).to.eventually.be.false;
     });
 
@@ -50,7 +50,7 @@ describe("CustomerHaveActiveCustomerItems", () => {
       customerItemByQueryStub.resolves([nonActiveCustomerItem]);
 
       return expect(
-        customerHaveActiveCustomerItems.haveActiveCustomerItems(testUserId)
+        customerHaveActiveCustomerItems.haveActiveCustomerItems(testUserId),
       ).to.eventually.be.false;
     });
 
@@ -79,7 +79,7 @@ describe("CustomerHaveActiveCustomerItems", () => {
       ]);
 
       return expect(
-        customerHaveActiveCustomerItems.haveActiveCustomerItems(testUserId)
+        customerHaveActiveCustomerItems.haveActiveCustomerItems(testUserId),
       ).to.eventually.be.true;
     });
   });

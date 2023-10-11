@@ -11,7 +11,7 @@ export class CollectionEndpointAuth {
     restriction: BlEndpointRestriction,
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<AccessToken | boolean> {
     return new Promise((resolve, reject) => {
       if (restriction || !isNullOrUndefined(req.headers["authorization"])) {
@@ -26,7 +26,7 @@ export class CollectionEndpointAuth {
               // if authorization tokens is not valid
               return reject(e);
             }
-          }
+          },
         )(req, res, next);
       } else {
         // no authentication needed
@@ -37,7 +37,7 @@ export class CollectionEndpointAuth {
 
   private validateAuth(
     restriction: BlEndpointRestriction,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): boolean {
     if (!accessToken) {
       throw new BlError("accessToken invalid").code(910);
@@ -46,7 +46,7 @@ export class CollectionEndpointAuth {
     if (restriction && restriction.permissions) {
       if (restriction.permissions.indexOf(accessToken.permission) <= -1) {
         throw new BlError(
-          `user "${accessToken.sub}" with permission "${accessToken.permission}" does not have access to this endpoint`
+          `user "${accessToken.sub}" with permission "${accessToken.permission}" does not have access to this endpoint`,
         ).code(904);
       }
     }

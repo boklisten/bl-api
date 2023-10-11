@@ -21,7 +21,7 @@ export class PaymentHandler {
     dibsPaymentService?: DibsPaymentService,
     userDetailHelper?: UserDetailHelper,
     private _paymentDibsConfirmer?: PaymentDibsConfirmer,
-    private _deliveryStorage?: BlDocumentStorage<Delivery>
+    private _deliveryStorage?: BlDocumentStorage<Delivery>,
   ) {
     this.paymentStorage = paymentStorage
       ? paymentStorage
@@ -36,7 +36,7 @@ export class PaymentHandler {
 
   public async confirmPayments(
     order: Order,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Payment[]> {
     if (!order.payments || order.payments.length <= 0) {
       return [];
@@ -61,7 +61,7 @@ export class PaymentHandler {
   private async confirmAllPayments(
     order: Order,
     payments: Payment[],
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Payment[]> {
     await this.validateOrderAmount(order, payments);
     this.validatePaymentMethods(payments);
@@ -77,7 +77,7 @@ export class PaymentHandler {
         await this.paymentStorage.update(
           payment.id,
           { confirmed: true },
-          { id: accessToken.sub, permission: accessToken.permission }
+          { id: accessToken.sub, permission: accessToken.permission },
         );
       } catch (e) {
         throw e;
@@ -89,7 +89,7 @@ export class PaymentHandler {
   private confirmPayment(
     order: Order,
     payment: Payment,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     switch (payment.method) {
       case "dibs":
@@ -102,7 +102,7 @@ export class PaymentHandler {
         return this.confirmMethodVipps(order, payment);
       default:
         return Promise.reject(
-          new BlError(`payment method "${payment.method}" not supported`)
+          new BlError(`payment method "${payment.method}" not supported`),
         );
     }
   }
@@ -136,7 +136,7 @@ export class PaymentHandler {
       for (const payment of payments) {
         if (payment.method == "dibs") {
           throw new BlError(
-            `multiple payments found but "${payment.id}" have method dibs`
+            `multiple payments found but "${payment.id}" have method dibs`,
           );
         }
       }
@@ -146,11 +146,11 @@ export class PaymentHandler {
 
   private async validateOrderAmount(
     order,
-    payments: Payment[]
+    payments: Payment[],
   ): Promise<boolean> {
     const total = payments.reduce(
       (subTotal, payment) => subTotal + payment.amount,
-      0
+      0,
     );
     let orderTotal = order.amount;
 
@@ -166,7 +166,7 @@ export class PaymentHandler {
 
     if (total !== orderTotal) {
       throw new BlError(
-        "total of payment amounts does not equal order.amount + delivery.amount"
+        "total of payment amounts does not equal order.amount + delivery.amount",
       );
     }
 
@@ -176,7 +176,7 @@ export class PaymentHandler {
   private async confirmMethodDibs(
     order: Order,
     payment: Payment,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     return this._paymentDibsConfirmer.confirm(order, payment, accessToken);
   }

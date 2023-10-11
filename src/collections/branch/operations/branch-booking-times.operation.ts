@@ -13,13 +13,13 @@ export class BranchBookingTimesOperation implements Operation {
   private dateService: DateService;
   constructor(
     private bookingStorage?: BlDocumentStorage<Booking>,
-    private resHandler?: SEResponseHandler
+    private resHandler?: SEResponseHandler,
   ) {
     this.bookingStorage = this.bookingStorage
       ? this.bookingStorage
       : new BlDocumentStorage<Booking>(
           BlCollectionName.Bookings,
-          bookingSchema
+          bookingSchema,
         );
     this.resHandler = this.resHandler
       ? this.resHandler
@@ -33,7 +33,7 @@ export class BranchBookingTimesOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let bookingTimes: any[];
@@ -77,14 +77,14 @@ export class BranchBookingTimesOperation implements Operation {
           from: this.dateService.toDate(
             bookingTime["_id"],
             "DDMMYYYY",
-            "Europe/Oslo"
+            "Europe/Oslo",
           ),
         };
       });
 
       this.resHandler.sendResponse(
         res,
-        new BlapiResponse([cleanedBookingTimes])
+        new BlapiResponse([cleanedBookingTimes]),
       );
       return true;
     }

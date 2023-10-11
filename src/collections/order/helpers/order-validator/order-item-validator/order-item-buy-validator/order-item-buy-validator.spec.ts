@@ -95,8 +95,8 @@ describe("OrderItemBuyValidator", () => {
         orderItemPriceValidator.validate(
           testBranch,
           testOrder.orderItems[0],
-          testItem
-        )
+          testItem,
+        ),
       ).to.eventually.be.fulfilled;
     });
 
@@ -113,11 +113,11 @@ describe("OrderItemBuyValidator", () => {
           orderItemPriceValidator.validate(
             testBranch,
             testOrder.orderItems[0],
-            testItem
-          )
+            testItem,
+          ),
         ).to.be.rejectedWith(
           BlError,
-          /orderItem.taxRate "0.75" is not equal to item.taxRate "0.33"/
+          /orderItem.taxRate "0.75" is not equal to item.taxRate "0.33"/,
         );
       });
 
@@ -132,11 +132,11 @@ describe("OrderItemBuyValidator", () => {
           orderItemPriceValidator.validate(
             testBranch,
             testOrder.orderItems[0],
-            testItem
-          )
+            testItem,
+          ),
         ).to.be.rejectedWith(
           BlError,
-          /orderItem.taxAmount "100" is not equal to \(orderItem.amount "300" \* item.taxRate "0.5"\) "150"/
+          /orderItem.taxAmount "100" is not equal to \(orderItem.amount "300" \* item.taxRate "0.5"\) "150"/,
         );
       });
 
@@ -151,11 +151,11 @@ describe("OrderItemBuyValidator", () => {
           orderItemPriceValidator.validate(
             testBranch,
             testOrder.orderItems[0],
-            testItem
-          )
+            testItem,
+          ),
         ).to.be.rejectedWith(
           BlError,
-          /orderItem.amount "100" is not equal to item.price "200" - orderItem.discount "0" = "200"/
+          /orderItem.amount "100" is not equal to item.price "200" - orderItem.discount "0" = "200"/,
         );
       });
 
@@ -170,11 +170,11 @@ describe("OrderItemBuyValidator", () => {
           orderItemPriceValidator.validate(
             testBranch,
             testOrder.orderItems[0],
-            testItem
-          )
+            testItem,
+          ),
         ).to.be.rejectedWith(
           BlError,
-          /orderItem.amount "400" is not equal to item.price "134" - orderItem.discount "0" = "134"/
+          /orderItem.amount "400" is not equal to item.price "134" - orderItem.discount "0" = "134"/,
         );
       });
 
@@ -190,8 +190,8 @@ describe("OrderItemBuyValidator", () => {
           orderItemPriceValidator.validate(
             testBranch,
             testOrder.orderItems[0],
-            testItem
-          )
+            testItem,
+          ),
         ).to.be.fulfilled;
       });
     });
@@ -220,11 +220,11 @@ describe("OrderItemBuyValidator", () => {
           orderItemPriceValidator.validate(
             testBranch,
             testOrder.orderItems[0],
-            testItem
-          )
+            testItem,
+          ),
         ).to.be.rejectedWith(
           BlError,
-          /orderItem.taxAmount "100" is not equal to \(orderItem.amount "400" \* item.taxRate "0.5"\) "200"/
+          /orderItem.taxAmount "100" is not equal to \(orderItem.amount "400" \* item.taxRate "0.5"\) "200"/,
         );
       });
 
@@ -239,11 +239,11 @@ describe("OrderItemBuyValidator", () => {
           orderItemPriceValidator.validate(
             testBranch,
             testOrder.orderItems[0],
-            testItem
-          )
+            testItem,
+          ),
         ).to.be.rejectedWith(
           BlError,
-          /orderItem.amount "100" is not equal to item.price "500" - orderItem.discount "100" = "400"/
+          /orderItem.amount "100" is not equal to item.price "500" - orderItem.discount "100" = "400"/,
         );
       });
 
@@ -258,11 +258,11 @@ describe("OrderItemBuyValidator", () => {
           orderItemPriceValidator.validate(
             testBranch,
             testOrder.orderItems[0],
-            testItem
-          )
+            testItem,
+          ),
         ).to.be.rejectedWith(
           BlError,
-          /orderItem.amount "560" is not equal to item.price "500" - orderItem.discount "300" = "200"/
+          /orderItem.amount "560" is not equal to item.price "500" - orderItem.discount "300" = "200"/,
         );
       });
 
@@ -280,8 +280,8 @@ describe("OrderItemBuyValidator", () => {
           orderItemPriceValidator.validate(
             testBranch,
             testOrder.orderItems[0],
-            testItem
-          )
+            testItem,
+          ),
         ).to.be.fulfilled;
       });
     });

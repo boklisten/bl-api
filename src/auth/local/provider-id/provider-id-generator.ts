@@ -25,10 +25,10 @@ export class ProviderIdGenerator {
           (error: BlError) => {
             reject(
               error.add(
-                blError.msg("could not hash the provided username and salt")
-              )
+                blError.msg("could not hash the provided username and salt"),
+              ),
             );
-          }
+          },
         );
       });
     });

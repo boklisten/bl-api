@@ -31,7 +31,7 @@ export class MatchFinder {
 
   constructor(
     private _senders: MatchableUser[],
-    private _receivers: MatchableUser[]
+    private _receivers: MatchableUser[],
   ) {
     this.receivers = copyUsers(_receivers);
     this.senders = copyUsers(_senders);
@@ -72,7 +72,7 @@ export class MatchFinder {
       this.createMatches(
         tryFindPartialMatch,
         sortedSenderGroup,
-        sortedSenderGroups
+        sortedSenderGroups,
       );
     }
 
@@ -109,7 +109,7 @@ export class MatchFinder {
           ? match.handoffItems
           : match.items;
       const sender: MatchableUser = originalSenders.find(
-        (sender) => sender.id === senderId
+        (sender) => sender.id === senderId,
       );
       if (sender) {
         if (hasDifference(intersect(sentItems, sender.items), sentItems)) {
@@ -128,7 +128,7 @@ export class MatchFinder {
           ? match.pickupItems
           : match.items;
       const receiver: MatchableUser = originalReceivers.find(
-        (receiver) => receiver.id === receiverId
+        (receiver) => receiver.id === receiverId,
       );
       if (receiver) {
         if (
@@ -183,7 +183,7 @@ export class MatchFinder {
     this.createImbalanceMinimizingMatches(
       this.receivers,
       itemImbalances,
-      false
+      false,
     );
   }
 
@@ -200,7 +200,7 @@ export class MatchFinder {
   private createImbalanceMinimizingMatches(
     users: MatchableUser[],
     itemImbalances: { [item: string]: number },
-    userIsSender: boolean
+    userIsSender: boolean,
   ) {
     for (const user of users) {
       if (canMatchPerfectlyWithStand(user, itemImbalances, userIsSender)) {
@@ -223,7 +223,7 @@ export class MatchFinder {
    */
   private createStandMatchIfReachedMatchLimit(
     user: MatchableUser,
-    userIsSender: boolean
+    userIsSender: boolean,
   ) {
     const matchTypeId = userIsSender ? "senderId" : "receiverId";
     let count = 0;
@@ -254,10 +254,10 @@ export class MatchFinder {
   private createMatches(
     matchFinder: (
       sender: MatchableUser,
-      receivers: MatchableUser[]
+      receivers: MatchableUser[],
     ) => MatchableUser,
     senders: MatchableUser[],
-    sortedSenderGroups?: MatchableUser[][]
+    sortedSenderGroups?: MatchableUser[][],
   ) {
     for (const sender of senders) {
       // Match unmatchable items with stand
@@ -333,7 +333,7 @@ export class MatchFinder {
   private createStandMatch(
     user: MatchableUser,
     items: Set<string>,
-    userIsSender: boolean
+    userIsSender: boolean,
   ) {
     const remainingItems = intersect(user.items, items);
     if (remainingItems.size === 0) {
@@ -343,19 +343,19 @@ export class MatchFinder {
     const existingMatch = this.matches.find(
       (match) =>
         match.variant === CandidateMatchVariant.StandMatch &&
-        (match as CandidateStandMatch).userId === user.id
+        (match as CandidateStandMatch).userId === user.id,
     ) as CandidateStandMatch | undefined;
 
     if (existingMatch) {
       if (userIsSender) {
         existingMatch.handoffItems = union(
           existingMatch.handoffItems,
-          remainingItems
+          remainingItems,
         );
       } else {
         existingMatch.pickupItems = union(
           existingMatch.pickupItems,
-          remainingItems
+          remainingItems,
         );
       }
       user.items = difference(user.items, remainingItems);

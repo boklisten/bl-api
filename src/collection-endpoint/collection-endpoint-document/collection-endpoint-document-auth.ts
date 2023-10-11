@@ -18,7 +18,7 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
     restriction: BlEndpointRestriction,
     docs: T[],
     blApiRequest: BlApiRequest,
-    documentPermission?: BlDocumentPermission
+    documentPermission?: BlDocumentPermission,
   ): Promise<T[]> {
     if (restriction) {
       if (isNullOrUndefined(docs) || docs.length <= 0) {
@@ -38,13 +38,13 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
                 blApiRequest.user.permission,
                 doc,
                 restriction,
-                documentPermission
+                documentPermission,
               )
             ) {
               return Promise.reject(
                 new BlError(
-                  "lacking restricted permission to view or edit the document"
-                ).code(904)
+                  "lacking restricted permission to view or edit the document",
+                ).code(904),
               );
             }
           } else {
@@ -61,7 +61,7 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
               blApiRequest.user.permission,
               doc,
               restriction,
-              documentPermission
+              documentPermission,
             )
           ) {
             for (const id of doc.viewableFor) {
@@ -78,7 +78,7 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
             return Promise.reject(
               new BlError("document is not viewable for user")
                 .store("userId", blApiRequest.user.id)
-                .code(904)
+                .code(904),
             );
           }
         }

@@ -23,7 +23,7 @@ export class PdfService {
 
   async getOrderReceiptPdf(
     customerDetail: UserDetail,
-    order: Order
+    order: Order,
   ): Promise<EmailAttachment> {
     const emailSetting = {} as EmailSetting;
 
@@ -45,13 +45,13 @@ export class PdfService {
     return await this._pdfHandler.getOrderReceipt(
       emailSetting,
       emailOrder,
-      emailUser
+      emailUser,
     );
   }
 
   async getOrderAgreementPdf(
     customerDetail: UserDetail,
-    order: Order
+    order: Order,
   ): Promise<EmailAttachment> {
     const emailSetting = {} as EmailSetting;
 
@@ -72,7 +72,7 @@ export class PdfService {
     return await this._pdfHandler.getRentAgreement(
       emailSetting,
       emailOrder,
-      emailUser
+      emailUser,
     );
   }
 }

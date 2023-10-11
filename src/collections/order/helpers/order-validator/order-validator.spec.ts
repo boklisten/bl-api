@@ -30,7 +30,7 @@ describe("OrderValidator", () => {
   let testBranch: Branch;
 
   const branchStorage: BlDocumentStorage<Branch> = new BlDocumentStorage(
-    BlCollectionName.Branches
+    BlCollectionName.Branches,
   );
   const orderUserDetailValidator = new OrderUserDetailValidator();
 
@@ -44,7 +44,7 @@ describe("OrderValidator", () => {
     branchValidator,
     branchStorage,
     orderFieldValidator,
-    orderUserDetailValidator
+    orderUserDetailValidator,
   );
 
   let orderItemShouldResolve;
@@ -93,7 +93,7 @@ describe("OrderValidator", () => {
     it("should reject if amount is null or undefined", () => {
       testOrder.amount = undefined;
       return expect(
-        orderValidator.validate(testOrder)
+        orderValidator.validate(testOrder),
       ).to.eventually.be.rejectedWith(BlError, /order.amount is undefined/);
     });
 
@@ -102,17 +102,17 @@ describe("OrderValidator", () => {
 
       return expect(orderValidator.validate(testOrder)).to.be.rejectedWith(
         BlError,
-        "not found"
+        "not found",
       );
     });
 
     it("should reject if orderItems is empty or undefined", () => {
       testOrder.orderItems = [];
       return expect(
-        orderValidator.validate(testOrder)
+        orderValidator.validate(testOrder),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /order.orderItems is empty or undefined/
+        /order.orderItems is empty or undefined/,
       );
     });
 
@@ -121,7 +121,7 @@ describe("OrderValidator", () => {
         orderItemShouldResolve = false;
 
         return expect(
-          orderValidator.validate(testOrder)
+          orderValidator.validate(testOrder),
         ).to.eventually.be.rejectedWith(BlError, /orderItems not valid/);
       });
     });
@@ -131,10 +131,10 @@ describe("OrderValidator", () => {
         orderPlacedShouldResolve = false;
 
         return expect(
-          orderValidator.validate(testOrder)
+          orderValidator.validate(testOrder),
         ).to.eventually.be.rejectedWith(
           BlError,
-          /validation of order.placed failed/
+          /validation of order.placed failed/,
         );
       });
     });
@@ -143,7 +143,7 @@ describe("OrderValidator", () => {
       it("should reject with error", () => {
         branchValidatorShouldResolve = false;
         return expect(
-          orderValidator.validate(testOrder)
+          orderValidator.validate(testOrder),
         ).to.eventually.be.rejectedWith(BlError, /validation of branch failed/);
       });
     });
@@ -154,7 +154,7 @@ describe("OrderValidator", () => {
 
         return expect(orderValidator.validate(testOrder)).to.be.rejectedWith(
           BlError,
-          /validation of UserDetail failed/
+          /validation of UserDetail failed/,
         );
       });
     });

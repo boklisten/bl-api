@@ -52,35 +52,35 @@ export class CollectionEndpointCreator {
       new CollectionEndpoint<Branch>(this._router, new BranchCollection()),
       new CollectionEndpoint<BranchItem>(
         this._router,
-        new BranchItemCollection()
+        new BranchItemCollection(),
       ),
       new CollectionEndpoint<CustomerItem>(
         this._router,
-        new CustomerItemCollection()
+        new CustomerItemCollection(),
       ),
       new CollectionEndpoint<Delivery>(this._router, new DeliveryCollection()),
       new CollectionEndpoint<Item>(this._router, new ItemCollection()),
       new CollectionEndpoint<OpeningHour>(
         this._router,
-        new OpeningHourCollection()
+        new OpeningHourCollection(),
       ),
       new CollectionEndpoint<Order>(this._router, new OrderCollection()),
       new CollectionEndpoint<Payment>(this._router, new PaymentCollection()),
       new CollectionEndpoint<UserDetail>(
         this._router,
-        new UserDetailCollection()
+        new UserDetailCollection(),
       ),
       new CollectionEndpoint<BlErrorLog>(
         this._router,
-        new BlErrorLogCollection()
+        new BlErrorLogCollection(),
       ),
       new CollectionEndpoint<PasswordReset>(
         this._router,
-        new PasswordResetCollection()
+        new PasswordResetCollection(),
       ),
       new CollectionEndpoint<EmailValidation>(
         this._router,
-        new EmailValidationCollection()
+        new EmailValidationCollection(),
       ),
       new CollectionEndpoint<Message>(this._router, new MessageCollection()),
       new CollectionEndpoint<Match>(this._router, new MatchCollection()),
@@ -89,7 +89,7 @@ export class CollectionEndpointCreator {
       new CollectionEndpoint<Booking>(this._router, new BookingCollection()),
       new CollectionEndpoint<UniqueItem>(
         this._router,
-        new UniqueItemCollection()
+        new UniqueItemCollection(),
       ),
     ];
 

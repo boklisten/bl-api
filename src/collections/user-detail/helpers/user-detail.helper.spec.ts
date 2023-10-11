@@ -15,7 +15,7 @@ chai.use(chaiAsPromised);
 
 describe("UserDetailHelper", () => {
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const userDetailHelper = new UserDetailHelper(userDetailStorage);
 
@@ -96,7 +96,7 @@ describe("UserDetailHelper", () => {
         .updateUserDetailBasedOnDibsEasyPayment(
           "userDetail1",
           testDibsEasyPayment as DibsEasyPayment,
-          testAccessToken
+          testAccessToken,
         )
         .then((updatedUserDetail: UserDetail) => {
           const name =
@@ -106,13 +106,13 @@ describe("UserDetailHelper", () => {
 
           expect(updatedUserDetail.name).to.eq(name);
           expect(updatedUserDetail.phone).to.eq(
-            testDibsEasyPayment.consumer.privatePerson.phoneNumber.number
+            testDibsEasyPayment.consumer.privatePerson.phoneNumber.number,
           );
           expect(updatedUserDetail.postCode).to.eq(
-            testDibsEasyPayment.consumer.shippingAddress.postalCode
+            testDibsEasyPayment.consumer.shippingAddress.postalCode,
           );
           expect(updatedUserDetail.postCity).to.eql(
-            testDibsEasyPayment.consumer.shippingAddress.city
+            testDibsEasyPayment.consumer.shippingAddress.city,
           );
 
           const expectedAddress =
@@ -134,12 +134,12 @@ describe("UserDetailHelper", () => {
         .updateUserDetailBasedOnDibsEasyPayment(
           "userDetail1",
           testDibsEasyPayment,
-          testAccessToken
+          testAccessToken,
         )
         .then((updatedUserDetail: UserDetail) => {
           expect(updatedUserDetail.name).to.eq("Jenny Jensen"); // this value was already stored
           expect(updatedUserDetail.postCity).to.eq(
-            testDibsEasyPayment.consumer.shippingAddress.city
+            testDibsEasyPayment.consumer.shippingAddress.city,
           ); // this value was empty, should set it from dibsPayment
           done();
         });

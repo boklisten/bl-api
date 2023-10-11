@@ -15,7 +15,7 @@ export class LocalAuth {
     router: Router,
     private resHandler: SEResponseHandler,
     private localLoginValidator: LocalLoginValidator,
-    private tokenHandler: TokenHandler
+    private tokenHandler: TokenHandler,
   ) {
     this.apiPath = new ApiPath();
     this.createPassportStrategy(localLoginValidator);
@@ -38,9 +38,9 @@ export class LocalAuth {
                   false,
                   new BlError("error when trying to create tokens")
                     .code(906)
-                    .add(createTokensError)
+                    .add(createTokensError),
                 );
-              }
+              },
             );
           },
           (validateError: BlError) => {
@@ -54,18 +54,18 @@ export class LocalAuth {
                 false,
                 new BlError("username or password is wrong")
                   .code(908)
-                  .add(validateError)
+                  .add(validateError),
               );
             } else {
               return done(
                 null,
                 false,
-                new BlError("could not login").code(900).add(validateError)
+                new BlError("could not login").code(900).add(validateError),
               );
             }
-          }
+          },
         );
-      })
+      }),
     );
   }
 
@@ -78,7 +78,7 @@ export class LocalAuth {
           (
             error,
             jwTokens: { accessToken: string; refreshToken: string },
-            blError: BlError
+            blError: BlError,
           ) => {
             if (blError) {
               if (!(blError instanceof BlError)) {
@@ -102,28 +102,28 @@ export class LocalAuth {
                 refreshToken: jwTokens.refreshToken,
               });
             });
-          }
+          },
         )(req, res, next);
-      }
+      },
     );
   }
 
   private respondWithTokens(
     res,
-    tokens: { accessToken: string; refreshToken: string }
+    tokens: { accessToken: string; refreshToken: string },
   ) {
     return this.resHandler.sendResponse(
       res,
       new BlapiResponse([
         { documentName: "refreshToken", data: tokens.refreshToken },
         { documentName: "accessToken", data: tokens.accessToken },
-      ])
+      ]),
     );
   }
 
   private createAuthRegister(
     router: Router,
-    localLoginValidator: LocalLoginValidator
+    localLoginValidator: LocalLoginValidator,
   ) {
     router.post(
       this.apiPath.createPath("auth/local/register"),
@@ -139,9 +139,9 @@ export class LocalAuth {
                   res,
                   new BlError("could not create tokens")
                     .add(createTokensError)
-                    .code(906)
+                    .code(906),
                 );
-              }
+              },
             );
           },
           (loginValidatorCreateError: BlError) => {
@@ -152,12 +152,12 @@ export class LocalAuth {
                 res,
                 new BlError("could not create user")
                   .add(loginValidatorCreateError)
-                  .code(907)
+                  .code(907),
               );
             }
-          }
+          },
         );
-      }
+      },
     );
   }
 }

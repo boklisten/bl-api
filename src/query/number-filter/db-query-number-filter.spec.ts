@@ -23,8 +23,8 @@ describe("DbQueryNumberFilter", () => {
       expect(
         dbQueryNumberFilter.getNumberFilters(
           { title: "test title", name: "hello" },
-          []
-        )
+          [],
+        ),
       ).to.eql([]);
     });
 
@@ -44,7 +44,7 @@ describe("DbQueryNumberFilter", () => {
       const result = [{ fieldName: "age", op: { $lt: 60 } }];
 
       expect(
-        dbQueryNumberFilter.getNumberFilters({ age: "<60" }, ["age"])
+        dbQueryNumberFilter.getNumberFilters({ age: "<60" }, ["age"]),
       ).to.eql(result);
     });
 
@@ -52,7 +52,7 @@ describe("DbQueryNumberFilter", () => {
       const result = [{ fieldName: "age", op: { $lt: 86, $gt: 12 } }];
 
       expect(
-        dbQueryNumberFilter.getNumberFilters({ age: ["<86", ">12"] }, ["age"])
+        dbQueryNumberFilter.getNumberFilters({ age: ["<86", ">12"] }, ["age"]),
       ).to.eql(result);
     });
 
@@ -60,7 +60,7 @@ describe("DbQueryNumberFilter", () => {
       const result = [{ fieldName: "age", op: { $eq: 10 } }];
 
       expect(
-        dbQueryNumberFilter.getNumberFilters({ age: "10" }, ["age"])
+        dbQueryNumberFilter.getNumberFilters({ age: "10" }, ["age"]),
       ).to.eql(result);
     });
 
@@ -93,7 +93,7 @@ describe("DbQueryNumberFilter", () => {
         dbQueryNumberFilter.getNumberFilters({ title: "test", name: "bill" }, [
           "age",
           "price",
-        ])
+        ]),
       ).to.eql([]);
     });
   });

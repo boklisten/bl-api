@@ -29,12 +29,12 @@ export const logger = winston.createLogger({
       }
       return colorizer.colorize(
         info.level,
-        `${formatTimestamp(info.timestamp)} ${info.level} ${info.message}`
+        `${formatTimestamp(info.timestamp)} ${info.level} ${info.message}`,
       );
     }),
     winston.format.colorize({
       all: process.env.NODE_ENV === "production" ? false : true,
-    })
+    }),
   ),
   transports: [
     new winston.transports.Console({

@@ -14,7 +14,7 @@ export class CustomerItemActiveBlid {
       ? customerItemStorage
       : new BlDocumentStorage<CustomerItem>(
           BlCollectionName.CustomerItems,
-          customerItemSchema
+          customerItemSchema,
         );
     this.customerItemActive = new CustomerItemActive();
     this.dbQueryBuilder = new SEDbQueryBuilder();
@@ -36,7 +36,7 @@ export class CustomerItemActiveBlid {
     const customerItems = await this.customerItemStorage.getByQuery(dbQuery);
 
     const activeCustomerItems = customerItems.filter((customerItem) =>
-      this.customerItemActive.isActive(customerItem)
+      this.customerItemActive.isActive(customerItem),
     );
 
     if (!activeCustomerItems || activeCustomerItems.length <= 0) {

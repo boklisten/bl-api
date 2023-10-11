@@ -16,12 +16,12 @@ export class PaymentGetAllHook extends Hook {
     accessToken?: AccessToken,
     id?: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    query?: any
+    query?: any,
   ): Promise<boolean> {
     if (
       !this._permissionService.isPermissionOver(
         accessToken.permission,
-        "customer"
+        "customer",
       )
     ) {
       if (!query || !query["info.paymentId"]) {

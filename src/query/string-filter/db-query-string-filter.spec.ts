@@ -14,7 +14,7 @@ describe("DbQueryStringFilter", () => {
   describe("getStringFilters()", () => {
     it("should return empty array if query is valid and validStringParams is empty", () => {
       expect(
-        dbQueryStringFilter.getStringFilters({ name: "testerman" }, [])
+        dbQueryStringFilter.getStringFilters({ name: "testerman" }, []),
       ).to.eql([]);
     });
 
@@ -41,7 +41,7 @@ describe("DbQueryStringFilter", () => {
       expect(
         dbQueryStringFilter.getStringFilters({ name: "albert", phone: "123" }, [
           "name",
-        ])
+        ]),
       ).to.eql(result);
     });
 
@@ -64,7 +64,7 @@ describe("DbQueryStringFilter", () => {
           "desc",
           "title",
           "branch",
-        ])
+        ]),
       ).to.eql(result);
     });
   });

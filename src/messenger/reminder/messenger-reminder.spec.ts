@@ -18,29 +18,29 @@ chai.use(chaiAsPromised);
 
 describe("MessengerReminder", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    BlCollectionName.CustomerItems
+    BlCollectionName.CustomerItems,
   );
   const customerItemHandler = new CustomerItemHandler();
   const customerItemStorageGetAllStub = sinon.stub(
     customerItemStorage,
-    "getAll"
+    "getAll",
   );
   const customerItemStorageGetByQueryStub = sinon.stub(
     customerItemStorage,
-    "getByQuery"
+    "getByQuery",
   );
   const emailService = new EmailService();
   const emailServiceRemindStub = sinon.stub(emailService, "remind");
   const getNotReturnedStub = sinon.stub(customerItemHandler, "getNotReturned");
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const userDetailStorageGetStub = sinon.stub(userDetailStorage, "get");
 
   const messengerReminder = new MessengerReminder(
     customerItemHandler,
     userDetailStorage,
-    emailService
+    emailService,
   );
 
   afterEach(() => {
@@ -140,7 +140,7 @@ describe("MessengerReminder", () => {
           expect(emailServiceRemindStub).calledWith(
             message,
             customerDetail,
-            customerItems
+            customerItems,
           );
           done();
         })

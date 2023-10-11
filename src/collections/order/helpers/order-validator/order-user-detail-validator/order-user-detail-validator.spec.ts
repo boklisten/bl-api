@@ -14,7 +14,7 @@ chai.use(chaiAsPromised);
 describe("OrderUserDetailValidator", () => {
   const userDetailStorage = new BlDocumentStorage<UserDetail>("user_details");
   const orderUserDetailValidator = new OrderUserDetailValidator(
-    userDetailStorage
+    userDetailStorage,
   );
   let testOrder: Order;
   let testUserDetail: UserDetail;

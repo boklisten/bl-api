@@ -30,7 +30,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
     protected _endpoint: BlEndpoint,
     protected _collectionName: string,
     protected _documentStorage: BlDocumentStorage<T>,
-    protected documentPermission?: BlDocumentPermission
+    protected documentPermission?: BlDocumentPermission,
   ) {
     const apiPath = new ApiPath();
     this._collectionUri = apiPath.createPath(this._collectionName);
@@ -66,7 +66,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
         break;
       default:
         throw new BlError(
-          `the endpoint "${this._endpoint.method}" is not supported`
+          `the endpoint "${this._endpoint.method}" is not supported`,
         );
     }
 
@@ -85,7 +85,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
           this._router,
           this._collectionUri,
           endpoint.method,
-          operation
+          operation,
         );
         collectionEndpointOperation.create();
       }
@@ -104,7 +104,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
           req.body,
           accessToken,
           req.params.id,
-          req.query
+          req.query,
         );
       })
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -134,15 +134,15 @@ export class CollectionEndpointMethod<T extends BlDocument> {
           this._endpoint.restriction,
           docs,
           blApiRequest,
-          this.documentPermission
-        )
+          this.documentPermission,
+        ),
       )
       .then((docs: T[]) => this._endpoint.hook.after(docs, userAccessToken))
       .then((docs: T[]) =>
-        this._responseHandler.sendResponse(res, new BlapiResponse(docs))
+        this._responseHandler.sendResponse(res, new BlapiResponse(docs)),
       )
       .catch((blError: BlError) =>
-        this._responseHandler.sendErrorResponse(res, blError)
+        this._responseHandler.sendErrorResponse(res, blError),
       );
   }
 
@@ -153,7 +153,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
   private routerGetId() {
     this._router.get(
       this._collectionUri + "/:id",
-      this.handleRequest.bind(this)
+      this.handleRequest.bind(this),
     );
   }
 
@@ -164,21 +164,21 @@ export class CollectionEndpointMethod<T extends BlDocument> {
   private routerDelete() {
     this._router.delete(
       this._collectionUri + "/:id",
-      this.handleRequest.bind(this)
+      this.handleRequest.bind(this),
     );
   }
 
   private routerPatch() {
     this._router.patch(
       this._collectionUri + "/:id",
-      this.handleRequest.bind(this)
+      this.handleRequest.bind(this),
     );
   }
 
   private routerPut() {
     this._router.put(
       this._collectionUri + "/:id",
-      this.handleRequest.bind(this)
+      this.handleRequest.bind(this),
     );
   }
 }
