@@ -105,7 +105,7 @@ function createBlIdCanvas(id: string): Canvas {
   return blIdCanvas;
 }
 
-function addIdPageToDoc(id: string, doc: PDFKit.PDFDocument): Promise<void> {
+function addIdPagesToDoc(id: string, doc: PDFKit.PDFDocument): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const canvas: Canvas = createBlIdCanvas(id);
     const pngBuffers: Buffer[] = [];
@@ -115,12 +115,13 @@ function addIdPageToDoc(id: string, doc: PDFKit.PDFDocument): Promise<void> {
     stream.on("end", () => {
       const pngBuffer = Buffer.concat(pngBuffers);
 
-      doc.addPage({
-        size: [canvas.width, canvas.height * 2],
-      });
+      for (let i = 0; i < 2; i++) {
+        doc.addPage({
+          size: [canvas.width, canvas.height],
+        });
 
-      doc.image(pngBuffer, 0, 0, { width: canvas.width });
-      doc.image(pngBuffer, 0, canvas.height, { width: canvas.width });
+        doc.image(pngBuffer, 0, 0, { width: canvas.width });
+      }
 
       resolve();
     });
@@ -138,7 +139,7 @@ async function generateBlIdPDF(): Promise<Buffer> {
   doc.pipe(pass);
 
   const idPromises: Promise<void>[] = ids.map((id: string) =>
-    addIdPageToDoc(id, doc)
+    addIdPagesToDoc(id, doc)
   );
 
   await Promise.all(idPromises);
