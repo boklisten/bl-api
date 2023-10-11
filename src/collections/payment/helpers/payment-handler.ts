@@ -51,12 +51,7 @@ export class PaymentHandler {
       throw new BlError("one or more payments was not found");
     }
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      return await this.confirmAllPayments(order, payments, accessToken);
-    } catch (e) {
-      throw e;
-    }
+    return await this.confirmAllPayments(order, payments, accessToken);
   }
 
   private async confirmAllPayments(
@@ -72,17 +67,12 @@ export class PaymentHandler {
         continue;
       }
 
-      // eslint-disable-next-line no-useless-catch
-      try {
-        await this.confirmPayment(order, payment, accessToken);
-        await this.paymentStorage.update(
-          payment.id,
-          { confirmed: true },
-          { id: accessToken.sub, permission: accessToken.permission },
-        );
-      } catch (e) {
-        throw e;
-      }
+      await this.confirmPayment(order, payment, accessToken);
+      await this.paymentStorage.update(
+        payment.id,
+        { confirmed: true },
+        { id: accessToken.sub, permission: accessToken.permission },
+      );
     }
     return payments;
   }
@@ -156,13 +146,8 @@ export class PaymentHandler {
     let orderTotal = order.amount;
 
     if (order.delivery) {
-      // eslint-disable-next-line no-useless-catch
-      try {
-        const delivery = await this._deliveryStorage.get(order.delivery);
-        orderTotal += delivery.amount;
-      } catch (e) {
-        throw e;
-      }
+      const delivery = await this._deliveryStorage.get(order.delivery);
+      orderTotal += delivery.amount;
     }
 
     if (total !== orderTotal) {

@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-catch */
 import {
   BlapiResponse,
   BlError,

@@ -1,4 +1,4 @@
-import { OpeningHour, Branch, BlError } from "@boklisten/bl-model";
+import { BlError, Branch, OpeningHour } from "@boklisten/bl-model";
 import moment from "moment-timezone";
 
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
@@ -23,23 +23,11 @@ export class OpeningHourHelper {
       throw new BlError("no opening hours found at branch");
     }
 
-    let firstAvailableOpeningHour: OpeningHour | PromiseLike<OpeningHour>;
+    const openingHours = await this.openingHourStorage.getMany(
+      branch.openingHours as string[],
+    );
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const openingHours = await this.openingHourStorage.getMany(
-        branch.openingHours as string[],
-      );
-
-      firstAvailableOpeningHour = this.getFirstAvailableOpeningHour(
-        openingHours,
-        after,
-      );
-    } catch (e) {
-      throw e;
-    }
-
-    return firstAvailableOpeningHour;
+    return this.getFirstAvailableOpeningHour(openingHours, after);
   }
 
   private getFirstAvailableOpeningHour(

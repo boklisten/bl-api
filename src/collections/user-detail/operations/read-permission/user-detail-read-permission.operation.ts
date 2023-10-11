@@ -37,26 +37,14 @@ export class UserDetailReadPermissionOperation implements Operation {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction,
   ): Promise<boolean> {
-    let userDetail;
+    const userDetail = await this._userDetailStorage.get(
+      blApiRequest.documentId,
+    );
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      userDetail = await this._userDetailStorage.get(blApiRequest.documentId);
-    } catch (e) {
-      throw e;
-    }
-
-    let user: User;
-
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const users = await this._userStorage.aggregate([
-        { $match: { blid: userDetail.blid } },
-      ]);
-      user = users[0];
-    } catch (e) {
-      throw e;
-    }
+    const users = await this._userStorage.aggregate([
+      { $match: { blid: userDetail.blid } },
+    ]);
+    const user = users[0];
 
     this._resHandler.sendResponse(
       res,

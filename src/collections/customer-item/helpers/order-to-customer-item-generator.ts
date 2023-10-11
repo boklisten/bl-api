@@ -18,20 +18,14 @@ export class OrderToCustomerItemGenerator {
 
   public async generate(order: Order): Promise<CustomerItem[]> {
     const customerItems = [];
-    let customerDetail: UserDetail;
 
     if (!order.customer) {
       return [];
     }
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      customerDetail = await this._userDetailStorage.get(
-        order.customer as string,
-      );
-    } catch (e) {
-      throw e;
-    }
+    const customerDetail = await this._userDetailStorage.get(
+      order.customer as string,
+    );
 
     for (const orderItem of order.orderItems) {
       if (this.shouldCreateCustomerItem(orderItem)) {

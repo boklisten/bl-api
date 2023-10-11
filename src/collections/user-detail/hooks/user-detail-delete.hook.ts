@@ -54,66 +54,46 @@ export class UserDetailDeleteHook extends Hook {
     id: string,
     accessToken: AccessToken,
   ): Promise<boolean> {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const canDelete = await this.userCanDeleteUserDetail.canDelete(
-        id,
-        accessToken,
+    const canDelete = await this.userCanDeleteUserDetail.canDelete(
+      id,
+      accessToken,
+    );
+    if (!canDelete) {
+      throw new BlError(
+        `user "${accessToken.details}" has no permission to delete user "${id}"`,
       );
-      if (!canDelete) {
-        throw new BlError(
-          `user "${accessToken.details}" has no permission to delete user "${id}"`,
-        );
-      }
-    } catch (e) {
-      throw e;
     }
 
     return true;
   }
 
   private async checkActiveInvoices(userId: string): Promise<boolean> {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const haveActiveInvoices =
-        await this.customerInvoiceActive.haveActiveInvoices(userId);
-      if (haveActiveInvoices) {
-        throw new BlError("customer have active invoices");
-      }
-      return false;
-    } catch (e) {
-      throw e;
+    const haveActiveInvoices =
+      await this.customerInvoiceActive.haveActiveInvoices(userId);
+    if (haveActiveInvoices) {
+      throw new BlError("customer have active invoices");
     }
+    return false;
   }
 
   private async checkActiveCustomerItems(userId: string): Promise<boolean> {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const haveActiveCustomerItems =
-        await this.customerHaveActiveCustomerItems.haveActiveCustomerItems(
-          userId,
-        );
+    const haveActiveCustomerItems =
+      await this.customerHaveActiveCustomerItems.haveActiveCustomerItems(
+        userId,
+      );
 
-      if (haveActiveCustomerItems) {
-        throw new BlError("customer have active customer-items");
-      }
-
-      return false;
-    } catch (e) {
-      throw e;
+    if (haveActiveCustomerItems) {
+      throw new BlError("customer have active customer-items");
     }
+
+    return false;
   }
 
   private async checkActiveOrders(userId: string): Promise<boolean> {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const haveActiveOrders = await this.orderActive.haveActiveOrders(userId);
-      if (haveActiveOrders) {
-        throw new BlError("customer have active orders");
-      }
-      return false;
-    } catch (e) {
-      throw e;
+    const haveActiveOrders = await this.orderActive.haveActiveOrders(userId);
+    if (haveActiveOrders) {
+      throw new BlError("customer have active orders");
     }
+    return false;
   }
 }

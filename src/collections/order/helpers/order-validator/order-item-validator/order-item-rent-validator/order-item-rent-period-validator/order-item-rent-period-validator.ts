@@ -56,36 +56,22 @@ export class OrderItemRentPeriodValidator {
     const period = orderItem.info.periodType;
 
     if (!isNullOrUndefined(orderItem.movedFromOrder)) {
-      // eslint-disable-next-line no-useless-catch
-      try {
-        const branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
-          period,
-          branchPaymentInfo,
-        );
-        return this.validateIfMovedFromOrder(
-          orderItem,
-          branchPaymentPeriod,
-          itemPrice,
-        );
-      } catch (e) {
-        throw e;
-      }
-    }
-
-    // eslint-disable-next-line no-useless-catch
-    try {
       const branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
         period,
         branchPaymentInfo,
       );
-      await this.validateOrderItemPrice(
+      return this.validateIfMovedFromOrder(
         orderItem,
         branchPaymentPeriod,
         itemPrice,
       );
-    } catch (e) {
-      throw e;
     }
+
+    const branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
+      period,
+      branchPaymentInfo,
+    );
+    this.validateOrderItemPrice(orderItem, branchPaymentPeriod, itemPrice);
 
     return true;
   }

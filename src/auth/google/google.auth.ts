@@ -49,14 +49,7 @@ export class GoogleAuth {
         ) => {
           const provider = APP_CONFIG.login.google.name;
           const providerId = profile.id;
-          let username;
-
-          // eslint-disable-next-line no-useless-catch
-          try {
-            username = this.retrieveUsername(profile);
-          } catch (e) {
-            throw e;
-          }
+          const username = this.retrieveUsername(profile);
 
           if (!providerId) {
             return done(null, false, new BlError("no providerId").code(902));

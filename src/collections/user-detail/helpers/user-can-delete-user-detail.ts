@@ -29,14 +29,7 @@ export class UserCanDeleteUserDetail {
     userIdToDelete: string,
     accessToken: AccessToken,
   ): Promise<boolean> {
-    let userDetailToDelete;
-
-    // eslint-disable-next-line no-useless-catch
-    try {
-      userDetailToDelete = await this.userDetailStorage.get(userIdToDelete);
-    } catch (e) {
-      throw e;
-    }
+    const userDetailToDelete = await this.userDetailStorage.get(userIdToDelete);
 
     if (userDetailToDelete.id === accessToken.details) {
       return true;
@@ -51,26 +44,14 @@ export class UserCanDeleteUserDetail {
       [{ fieldName: "username", type: "string" }],
     );
 
-    let userToDelete;
+    const users = await this.userStorage.getByQuery(dbQuery);
+    const userToDelete = users[0];
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const users = await this.userStorage.getByQuery(dbQuery);
-      userToDelete = users[0];
-    } catch (e) {
-      throw e;
-    }
-
-    if (
+    return !(
       !this.permissionService.isPermissionEqualOrOver(
         accessToken.permission,
         userToDelete.permission,
-      ) ||
-      accessToken.permission === userToDelete.permission
-    ) {
-      return false;
-    }
-
-    return true;
+      ) || accessToken.permission === userToDelete.permission
+    );
   }
 }

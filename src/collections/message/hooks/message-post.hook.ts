@@ -130,12 +130,7 @@ export class MessagePostHook implements Hook {
   }
 
   private async onRemind(message: Message): Promise<Message[]> {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      await this.messengerReminder.remindCustomer(message);
-      return [message];
-    } catch (e) {
-      throw e;
-    }
+    await this.messengerReminder.remindCustomer(message);
+    return [message];
   }
 }

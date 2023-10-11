@@ -426,12 +426,7 @@ export class OrderEmailHandler {
       }
     }
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      return await this.isBranchResponsible(branchId);
-    } catch (e) {
-      throw e;
-    }
+    return await this.isBranchResponsible(branchId);
   }
 
   private isBranchResponsible(branchId: string): Promise<boolean> {

@@ -51,26 +51,21 @@ export class MessengerReminder {
       throw new BlError("deadline is null or undefined");
     }
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const notReturnedCustomerItems =
-        await this.customerItemHandler.getNotReturned(
-          message.customerId,
-          message.info["deadline"],
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          message.messageSubtype as any,
-        );
-
-      const userDetail = await this.userDetailStorage.get(message.customerId);
-
-      await this.emailService.remind(
-        message,
-        userDetail,
-        notReturnedCustomerItems,
+    const notReturnedCustomerItems =
+      await this.customerItemHandler.getNotReturned(
+        message.customerId,
+        message.info["deadline"],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        message.messageSubtype as any,
       );
-    } catch (e) {
-      throw e;
-    }
+
+    const userDetail = await this.userDetailStorage.get(message.customerId);
+
+    await this.emailService.remind(
+      message,
+      userDetail,
+      notReturnedCustomerItems,
+    );
 
     return true;
   }
