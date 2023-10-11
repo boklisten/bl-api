@@ -1,7 +1,7 @@
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
-import { itemSchema } from "./item.schema";
-import { ItemPostHook } from "./hook/item-post.hook";
 import { ItemPatchHook } from "./hook/item-patch.hook";
+import { ItemPostHook } from "./hook/item-post.hook";
+import { itemSchema } from "./item.schema";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 
 export class ItemCollection implements BlCollection {
   collectionName = BlCollectionName.Items;

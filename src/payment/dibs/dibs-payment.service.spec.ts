@@ -17,11 +17,11 @@ chai.use(chaiAsPromised);
 describe("DibsPaymentService", () => {
   const httpHandler = new HttpHandler();
   const deliveryStorage = new BlDocumentStorage<Delivery>(
-    BlCollectionName.Deliveries
+    BlCollectionName.Deliveries,
   );
   const dibsPaymentService: DibsPaymentService = new DibsPaymentService(
     deliveryStorage,
-    httpHandler
+    httpHandler,
   );
   let testOrder: Order;
   let testDibsEasyOrder: DibsEasyOrder;
@@ -115,7 +115,7 @@ describe("DibsPaymentService", () => {
       testOrder.orderItems[0].unitPrice = 100;
       const deo: DibsEasyOrder = dibsPaymentService.orderToDibsEasyOrder(
         testUser,
-        testOrder
+        testOrder,
       );
 
       expect(deo.order.amount).to.eql(10000);
@@ -125,7 +125,7 @@ describe("DibsPaymentService", () => {
       testOrder.id = "103";
       const deo: DibsEasyOrder = dibsPaymentService.orderToDibsEasyOrder(
         testUser,
-        testOrder
+        testOrder,
       );
       expect(deo.order.reference).to.eql("103");
     });
@@ -137,7 +137,7 @@ describe("DibsPaymentService", () => {
 
         const deo = dibsPaymentService.orderToDibsEasyOrder(
           testUser,
-          testOrder
+          testOrder,
         );
 
         expect(deo.order.items[0].name).to.eql(title);
@@ -149,7 +149,7 @@ describe("DibsPaymentService", () => {
         testOrder.amount = 150;
         const deo = dibsPaymentService.orderToDibsEasyOrder(
           testUser,
-          testOrder
+          testOrder,
         );
 
         expect(deo.order.items[0].grossTotalAmount).to.eql(15000);
@@ -162,7 +162,7 @@ describe("DibsPaymentService", () => {
 
         const deo = dibsPaymentService.orderToDibsEasyOrder(
           testUser,
-          testOrder
+          testOrder,
         );
 
         expect(deo.order.items[0].taxAmount).to.eql(5000);
@@ -174,7 +174,7 @@ describe("DibsPaymentService", () => {
 
         const deo = dibsPaymentService.orderToDibsEasyOrder(
           testUser,
-          testOrder
+          testOrder,
         );
 
         expect(deo.order.items[0].taxRate).to.eql(2500);
@@ -187,7 +187,7 @@ describe("DibsPaymentService", () => {
 
         const deo = dibsPaymentService.orderToDibsEasyOrder(
           testUser,
-          testOrder
+          testOrder,
         );
 
         expect(deo.order.reference).to.eql(testOrder.id);
@@ -196,7 +196,7 @@ describe("DibsPaymentService", () => {
       it("should have items.length equal to the number of items in order", () => {
         const deo = dibsPaymentService.orderToDibsEasyOrder(
           testUser,
-          testOrder
+          testOrder,
         );
 
         expect(deo.order.items.length).to.eql(testOrder.orderItems.length);
@@ -231,10 +231,10 @@ describe("DibsPaymentService", () => {
     it("should reject if httpHandler rejects", () => {
       httpHandlerGetSuccess = false;
       return expect(
-        dibsPaymentService.fetchDibsPaymentData("dibsPaymentId1")
+        dibsPaymentService.fetchDibsPaymentData("dibsPaymentId1"),
       ).to.be.rejectedWith(
         BlError,
-        /could not get payment details for paymentId "dibsPaymentId1"/
+        /could not get payment details for paymentId "dibsPaymentId1"/,
       );
     });
 
@@ -247,7 +247,7 @@ describe("DibsPaymentService", () => {
         .fetchDibsPaymentData("dibsPaymentId1")
         .catch((err: BlError) => {
           expect(err.errorStack[0].getMsg()).to.be.eq(
-            "dibs response did not include payment information"
+            "dibs response did not include payment information",
           );
           done();
         });
@@ -261,7 +261,7 @@ describe("DibsPaymentService", () => {
       };
 
       return expect(
-        dibsPaymentService.fetchDibsPaymentData("aPaymentId")
+        dibsPaymentService.fetchDibsPaymentData("aPaymentId"),
       ).to.eventually.be.eql({ paymentId: "aPaymentId" });
     });
   });

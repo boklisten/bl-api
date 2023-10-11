@@ -1,5 +1,6 @@
-import { BlError } from "@boklisten/bl-model";
 import { isNullOrUndefined } from "util";
+
+import { BlError } from "@boklisten/bl-model";
 export class OrderHookBefore {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   validate(requestJsonBody: any): Promise<boolean> {
@@ -10,7 +11,7 @@ export class OrderHookBefore {
         return reject(
           new BlError("request is an array but should be a object")
             .store("requestBody", requestJsonBody)
-            .code(701)
+            .code(701),
         );
       }
 
@@ -23,7 +24,7 @@ export class OrderHookBefore {
         reject(
           new BlError("unkown error, request body is not valid")
             .store("error", e)
-            .code(701)
+            .code(701),
         );
       }
 

@@ -7,13 +7,14 @@ import {
   OrderItem,
   Period,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import moment = require("moment-timezone");
+
 import { SystemUser } from "../../../auth/permission/permission.service";
+import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
 import { branchSchema } from "../../branch/branch.schema";
 import { customerItemSchema } from "../customer-item.schema";
-import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
-import moment = require("moment-timezone");
-import { BlCollectionName } from "../../bl-collection";
 
 export class CustomerItemHandler {
   private _customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -21,13 +22,13 @@ export class CustomerItemHandler {
 
   constructor(
     customerItemStorage?: BlDocumentStorage<CustomerItem>,
-    branchStorage?: BlDocumentStorage<Branch>
+    branchStorage?: BlDocumentStorage<Branch>,
   ) {
     this._customerItemStorage = customerItemStorage
       ? customerItemStorage
       : new BlDocumentStorage(
           BlCollectionName.CustomerItems,
-          customerItemSchema
+          customerItemSchema,
         );
     this._branchStorage = branchStorage
       ? branchStorage
@@ -43,14 +44,14 @@ export class CustomerItemHandler {
     customerItemId: string,
     orderItem: OrderItem,
     branchId: string,
-    orderId: string
+    orderId: string,
   ): Promise<CustomerItem> {
     try {
       const customerItem = await this._customerItemStorage.get(customerItemId);
 
       if (customerItem.returned) {
         return Promise.reject(
-          new BlError("can not extend when returned is true")
+          new BlError("can not extend when returned is true"),
         );
       }
 
@@ -60,7 +61,7 @@ export class CustomerItemHandler {
 
       if (!orderItem.info || !orderItem.info["periodType"]) {
         return Promise.reject(
-          new BlError('orderItem info is not present when type is "extend"')
+          new BlError('orderItem info is not present when type is "extend"'),
         );
       }
 
@@ -92,7 +93,7 @@ export class CustomerItemHandler {
           periodExtends: periodExtends,
           orders: customerItemOrders,
         },
-        new SystemUser()
+        new SystemUser(),
       );
     } catch (e) {
       throw e;
@@ -108,7 +109,7 @@ export class CustomerItemHandler {
   public async buyout(
     customerItemId: string,
     orderId: string,
-    orderItem: OrderItem
+    orderItem: OrderItem,
   ) {
     try {
       if (orderItem.type !== "buyout") {
@@ -132,7 +133,7 @@ export class CustomerItemHandler {
             time: new Date(),
           },
         },
-        new SystemUser()
+        new SystemUser(),
       );
     } catch (e) {
       throw e;
@@ -150,7 +151,7 @@ export class CustomerItemHandler {
     orderId: string,
     orderItem: OrderItem,
     branchId: string,
-    employeeId: string
+    employeeId: string,
   ) {
     try {
       if (orderItem.type !== "return") {
@@ -177,7 +178,7 @@ export class CustomerItemHandler {
             time: new Date(),
           },
         },
-        new SystemUser()
+        new SystemUser(),
       );
     } catch (e) {
       throw e;
@@ -193,7 +194,7 @@ export class CustomerItemHandler {
   public async cancel(
     customerItemId: string,
     orderId: string,
-    orderItem: OrderItem
+    orderItem: OrderItem,
   ) {
     try {
       if (orderItem.type !== "cancel") {
@@ -219,7 +220,7 @@ export class CustomerItemHandler {
             order: orderId,
           },
         },
-        new SystemUser()
+        new SystemUser(),
       );
     } catch (e) {
       throw e;
@@ -235,7 +236,7 @@ export class CustomerItemHandler {
   public async buyback(
     customerItemId: string,
     orderId: string,
-    orderItem: OrderItem
+    orderItem: OrderItem,
   ) {
     try {
       if (orderItem.type !== "buyback") {
@@ -260,7 +261,7 @@ export class CustomerItemHandler {
             time: new Date(),
           },
         },
-        new SystemUser()
+        new SystemUser(),
       );
     } catch (e) {
       throw e;
@@ -275,7 +276,7 @@ export class CustomerItemHandler {
   public async getNotReturned(
     customerId: string,
     deadline: Date,
-    type?: "partly-payment" | "rent" | "loan" | "all"
+    type?: "partly-payment" | "rent" | "loan" | "all",
   ): Promise<CustomerItem[]> {
     if (customerId == null || customerId.length <= 0) {
       throw new BlError("customerId is null or undefined");
@@ -344,7 +345,7 @@ export class CustomerItemHandler {
 
   private getExtendPeriod(
     branch: Branch,
-    period: Period
+    period: Period,
   ): { type: Period; date: Date; maxNumberOfPeriods: number; price: number } {
     if (!branch.paymentInfo.extendPeriods) {
       throw new BlError("no extend periods present on branch");

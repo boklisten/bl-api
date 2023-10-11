@@ -1,11 +1,12 @@
-import { SaltGenerator } from "../salt/salt-generator";
 import { BlError } from "@boklisten/bl-model";
+
 import { SeCrypto } from "../../../crypto/se.crypto";
+import { SaltGenerator } from "../salt/salt-generator";
 
 export class HashedPasswordGenerator {
   constructor(
     private saltGenerator: SaltGenerator,
-    private seCrypto: SeCrypto
+    private seCrypto: SeCrypto,
   ) {}
 
   public generate(password): Promise<{ hashedPassword: string; salt: string }> {
@@ -27,15 +28,15 @@ export class HashedPasswordGenerator {
                 error.add(
                   blError
                     .msg("could not hash the provided password and salt")
-                    .store("salt", generatedSalt)
-                )
+                    .store("salt", generatedSalt),
+                ),
               );
-            }
+            },
           );
         },
         (error: BlError) => {
           reject(error.add(blError.msg("could not generate salt")));
-        }
+        },
       );
     });
   }

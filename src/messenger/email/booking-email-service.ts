@@ -1,11 +1,12 @@
 import { UserDetail, Message, Booking, Branch } from "@boklisten/bl-model";
+
 import { EmailService } from "./email-service";
-import { messageSchema } from "../../collections/message/message.schema";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { branchSchema } from "../../collections/branch/branch.schema";
 import { DateService } from "../../blc/date.service";
-import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
 import { BlCollectionName } from "../../collections/bl-collection";
+import { branchSchema } from "../../collections/branch/branch.schema";
+import { messageSchema } from "../../collections/message/message.schema";
+import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 
 export class BookingEmailService {
   private emailService: EmailService;
@@ -18,15 +19,15 @@ export class BookingEmailService {
     this.emailService = new EmailService();
     this.messageStorage = new BlDocumentStorage(
       BlCollectionName.Messages,
-      messageSchema
+      messageSchema,
     );
     this.userDetailStorage = new BlDocumentStorage(
       BlCollectionName.UserDetails,
-      userDetailSchema
+      userDetailSchema,
     );
     this.branchStorage = new BlDocumentStorage(
       BlCollectionName.Branches,
-      branchSchema
+      branchSchema,
     );
     this.dateService = new DateService();
   }
@@ -36,7 +37,7 @@ export class BookingEmailService {
     booking: Booking,
     subtype: "confirmed" | "canceled",
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    user: any
+    user: any,
   ): Promise<boolean> {
     let message: Message = {
       messageType: "booking",
@@ -70,7 +71,7 @@ export class BookingEmailService {
     return this.emailService.sendBookingEmail(
       message,
       userDetail,
-      bookingDetails
+      bookingDetails,
     );
   }
 }

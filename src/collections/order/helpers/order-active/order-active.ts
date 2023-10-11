@@ -1,8 +1,9 @@
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { Order, OrderItem, BlError } from "@boklisten/bl-model";
+
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
-import { orderSchema } from "../../order.schema";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../bl-collection";
+import { orderSchema } from "../../order.schema";
 
 export class OrderActive {
   private _queryBuilder: SEDbQueryBuilder;

@@ -1,11 +1,12 @@
+import { BlError } from "@boklisten/bl-model";
+import { Request, NextFunction, Response } from "express";
+
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
 import { PasswordReset } from "../password-reset";
 import { passwordResetSchema } from "../password-reset.schema";
-import { BlError } from "@boklisten/bl-model";
-import { Request, NextFunction, Response } from "express";
-import { BlCollectionName } from "../../bl-collection";
 
 export class PasswordResetOperation implements Operation {
   private _passwordResetStorage: BlDocumentStorage<PasswordReset>;
@@ -15,7 +16,7 @@ export class PasswordResetOperation implements Operation {
       ? passwordResetStorage
       : new BlDocumentStorage(
           BlCollectionName.PasswordResets,
-          passwordResetSchema
+          passwordResetSchema,
         );
   }
 
@@ -24,7 +25,7 @@ export class PasswordResetOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -44,7 +45,7 @@ export class PasswordResetOperation implements Operation {
           reject(
             new BlError(`passwordReset "${blApiRequest.documentId}" not found`)
               .code(702)
-              .add(getPasswordResetError)
+              .add(getPasswordResetError),
           );
         });
     });

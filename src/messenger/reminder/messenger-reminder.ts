@@ -1,9 +1,10 @@
 import { BlError, Message, UserDetail } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { CustomerItemHandler } from "../../collections/customer-item/helpers/customer-item-handler";
-import { EmailService } from "../email/email-service";
-import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
+
 import { BlCollectionName } from "../../collections/bl-collection";
+import { CustomerItemHandler } from "../../collections/customer-item/helpers/customer-item-handler";
+import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
+import { EmailService } from "../email/email-service";
 
 export class MessengerReminder {
   private customerItemHandler: CustomerItemHandler;
@@ -13,7 +14,7 @@ export class MessengerReminder {
   constructor(
     customerItemHandler?: CustomerItemHandler,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
-    emailService?: EmailService
+    emailService?: EmailService,
   ) {
     this.customerItemHandler = customerItemHandler
       ? customerItemHandler
@@ -22,7 +23,7 @@ export class MessengerReminder {
       ? userDetailStorage
       : new BlDocumentStorage<UserDetail>(
           BlCollectionName.UserDetails,
-          userDetailSchema
+          userDetailSchema,
         );
     this.emailService = emailService ? emailService : new EmailService();
   }
@@ -57,7 +58,7 @@ export class MessengerReminder {
           message.customerId,
           message.info["deadline"],
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          message.messageSubtype as any
+          message.messageSubtype as any,
         );
 
       const userDetail = await this.userDetailStorage.get(message.customerId);
@@ -65,7 +66,7 @@ export class MessengerReminder {
       await this.emailService.remind(
         message,
         userDetail,
-        notReturnedCustomerItems
+        notReturnedCustomerItems,
       );
     } catch (e) {
       throw e;

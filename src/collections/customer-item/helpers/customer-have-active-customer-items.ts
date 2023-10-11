@@ -1,9 +1,10 @@
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlError, CustomerItem } from "@boklisten/bl-model";
-import { customerItemSchema } from "../customer-item.schema";
-import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+
 import { CustomerItemActive } from "./customer-item-active";
+import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { customerItemSchema } from "../customer-item.schema";
 
 export class CustomerHaveActiveCustomerItems {
   private queryBuilder: SEDbQueryBuilder;
@@ -35,7 +36,7 @@ export class CustomerHaveActiveCustomerItems {
     }
 
     return customerItems.some((customerItem) =>
-      this.customerItemActive.isActive(customerItem)
+      this.customerItemActive.isActive(customerItem),
     );
   }
 }

@@ -1,16 +1,18 @@
-import { LocalLogin } from "../../collections/local-login/local-login";
-import { SEDbQuery } from "../../query/se.db-query";
+import { isNullOrUndefined } from "util";
+
 import { BlapiErrorResponse, BlError } from "@boklisten/bl-model";
 import isEmail from "validator/lib/isEmail";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { localLoginSchema } from "../../collections/local-login/local-login.schema";
-import { isNullOrUndefined } from "util";
+
+import { LocalLoginCreator } from "./local-login-creator/local-login-creator";
 import { HashedPasswordGenerator } from "./password/hashed-password-generator";
 import { SaltGenerator } from "./salt/salt-generator";
-import { SeCrypto } from "../../crypto/se.crypto";
-import { SystemUser } from "../permission/permission.service";
-import { LocalLoginCreator } from "./local-login-creator/local-login-creator";
 import { BlCollectionName } from "../../collections/bl-collection";
+import { LocalLogin } from "../../collections/local-login/local-login";
+import { localLoginSchema } from "../../collections/local-login/local-login.schema";
+import { SeCrypto } from "../../crypto/se.crypto";
+import { SEDbQuery } from "../../query/se.db-query";
+import { BlDocumentStorage } from "../../storage/blDocumentStorage";
+import { SystemUser } from "../permission/permission.service";
 
 export class LocalLoginHandler {
   private localLoginStorage: BlDocumentStorage<LocalLogin>;
@@ -21,7 +23,7 @@ export class LocalLoginHandler {
   constructor(
     localLoginStorage?: BlDocumentStorage<LocalLogin>,
     hashedPasswordGenerator?: HashedPasswordGenerator,
-    localLoginCreator?: LocalLoginCreator
+    localLoginCreator?: LocalLoginCreator,
   ) {
     this._seCrypto = new SeCrypto();
     this.localLoginStorage = localLoginStorage
@@ -39,7 +41,7 @@ export class LocalLoginHandler {
     return new Promise((resolve, reject) => {
       if (!username || !isEmail(username))
         return reject(
-          new BlError(`username "${username}" is not a valid email`)
+          new BlError(`username "${username}" is not a valid email`),
         );
 
       const dbQuery = new SEDbQuery();
@@ -53,8 +55,8 @@ export class LocalLoginHandler {
               new BlError(
                 'could not get LocalLogin by the provided username "' +
                   username +
-                  '"'
-              ).store("username", username)
+                  '"',
+              ).store("username", username),
             );
           }
           return resolve(localLogins[0]);
@@ -63,14 +65,14 @@ export class LocalLoginHandler {
           return reject(
             new BlError(`could not get localLogin with username "${username}"`)
               .code(702)
-              .add(error)
+              .add(error),
           );
         });
     });
   }
 
   public async createDefaultLocalLoginIfNoneIsFound(
-    username: string
+    username: string,
   ): Promise<boolean> {
     try {
       await this.get(username);
@@ -103,7 +105,7 @@ export class LocalLoginHandler {
 
       const defaultLocalLogin = await this._localLoginCreator.create(
         username,
-        randomPassword
+        randomPassword,
       );
       await this.localLoginStorage.add(defaultLocalLogin, new SystemUser());
 
@@ -111,7 +113,7 @@ export class LocalLoginHandler {
     } catch (e) {
       throw new BlError("could not create default localLogin").store(
         "localLoginCreationError",
-        e
+        e,
       );
     }
   }
@@ -142,7 +144,7 @@ export class LocalLoginHandler {
                       hashedPassword: hashedPasswordAndSalt.hashedPassword,
                       salt: hashedPasswordAndSalt.salt,
                     },
-                    new SystemUser()
+                    new SystemUser(),
                   )
                   .then(() => {
                     resolve(true);
@@ -150,11 +152,11 @@ export class LocalLoginHandler {
                   .catch((updateLocalLoginError) => {
                     reject(
                       new BlError("localLogin could not be updated").add(
-                        updateLocalLoginError
-                      )
+                        updateLocalLoginError,
+                      ),
                     );
                   });
-              }
+              },
             )
             .catch((hashPasswordError) => {
               reject(hashPasswordError);
@@ -164,7 +166,7 @@ export class LocalLoginHandler {
           reject(
             new BlError(`localLogin was not found with username "${username}"`)
               .code(702)
-              .add(getLocalLoginError)
+              .add(getLocalLoginError),
           );
         });
     });
@@ -177,27 +179,27 @@ export class LocalLoginHandler {
         .methodName("add");
       if (!localLogin.username || localLogin.username.length <= 0)
         return reject(
-          blError.msg("username of LocalLogin needs to be provided")
+          blError.msg("username of LocalLogin needs to be provided"),
         );
       if (!localLogin.provider || localLogin.provider.length <= 0)
         return reject(
-          blError.msg("provider of LocalLogin needs to be provided")
+          blError.msg("provider of LocalLogin needs to be provided"),
         );
       if (!localLogin.providerId || localLogin.providerId.length <= 0)
         return reject(
-          blError.msg("providerId of LocalLogin needs to be provided")
+          blError.msg("providerId of LocalLogin needs to be provided"),
         );
       if (!localLogin.hashedPassword || localLogin.hashedPassword.length <= 0)
         return reject(
-          blError.msg("hashedPassword of LocalLogin needs to be provided")
+          blError.msg("hashedPassword of LocalLogin needs to be provided"),
         );
       if (!localLogin.salt || localLogin.salt.length <= 0)
         return reject(blError.msg("salt of LocalLogin needs to be provided"));
       if (!isEmail(localLogin.username))
         return reject(
           blError.msg(
-            'username "' + localLogin.username + '" is not a valid email'
-          )
+            'username "' + localLogin.username + '" is not a valid email',
+          ),
         );
 
       this.localLoginStorage

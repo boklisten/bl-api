@@ -24,7 +24,7 @@ export class DbQueryRegexFilter {
 
     if (searchString.length < 3)
       throw new TypeError(
-        'search string "' + searchString + '" is under 3 chars long'
+        'search string "' + searchString + '" is under 3 chars long',
       );
 
     return this.generateRegexFilters(searchString, validRegexParams);
@@ -44,7 +44,7 @@ export class DbQueryRegexFilter {
 
   private generateRegexFilters(
     searchString: string,
-    validRegexParams: string[]
+    validRegexParams: string[],
   ): RegexFilter[] {
     return validRegexParams.map((validRegexParam) => ({
       fieldName: validRegexParam,

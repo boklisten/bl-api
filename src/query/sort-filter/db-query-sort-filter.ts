@@ -20,11 +20,11 @@ export class DbQuerySortFilter {
   private generateSortFilters(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sort: any,
-    validSortParams: string[]
+    validSortParams: string[],
   ): SortFilter[] {
     if (!Array.isArray(sort) && typeof sort !== "string")
       throw new TypeError(
-        'sort of value "' + sort + '" is not of type Array[string] or string'
+        'sort of value "' + sort + '" is not of type Array[string] or string',
       );
 
     const sortArray = Array.isArray(sort) ? sort : [sort];
@@ -43,13 +43,13 @@ export class DbQuerySortFilter {
 
   private validSortValue(
     sortValue: string,
-    validSortParams: string[]
+    validSortParams: string[],
   ): boolean {
     const sval = this.getBaseSortParam(sortValue);
 
     if (!validSortParams.includes(sval))
       throw ReferenceError(
-        'sort parameter "' + sval + '" is not in validSortParams'
+        'sort parameter "' + sval + '" is not in validSortParams',
       );
 
     return true;

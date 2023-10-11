@@ -1,8 +1,8 @@
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { MessagePostHook } from "./hooks/message-post.hook";
 import { messageSchema } from "./message.schema";
 import { SendgridEventOperation } from "./operations/sendgrid-event.operation";
 import { TwilioSmsEventOperation } from "./operations/twillio-sms-event.operation";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 
 export class MessageCollection implements BlCollection {
   public collectionName = BlCollectionName.Messages;

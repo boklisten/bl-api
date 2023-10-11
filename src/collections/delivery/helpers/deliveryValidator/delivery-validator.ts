@@ -1,7 +1,9 @@
-import { Delivery, BlError, Order } from "@boklisten/bl-model";
-import { DeliveryBranchHandler } from "../deliveryBranch/delivery-branch-handler";
 import { isNullOrUndefined } from "util";
+
+import { Delivery, BlError, Order } from "@boklisten/bl-model";
+
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { DeliveryBranchHandler } from "../deliveryBranch/delivery-branch-handler";
 import { DeliveryBringHandler } from "../deliveryBring/delivery-bring-handler";
 
 export class DeliveryValidator {
@@ -11,7 +13,7 @@ export class DeliveryValidator {
   constructor(
     orderStorage?: BlDocumentStorage<Order>,
     deliveryBranchHandler?: DeliveryBranchHandler,
-    deliveryBringHandler?: DeliveryBringHandler
+    deliveryBringHandler?: DeliveryBringHandler,
   ) {
     this.deliveryBranchHandler = deliveryBranchHandler
       ? deliveryBranchHandler
@@ -31,7 +33,7 @@ export class DeliveryValidator {
 
   private validateBasedOnMethod(
     delivery: Delivery,
-    order: Order
+    order: Order,
   ): Promise<boolean> {
     switch (delivery.method) {
       case "branch":
@@ -41,8 +43,8 @@ export class DeliveryValidator {
       default:
         return Promise.reject(
           new BlError(
-            `delivery.method "${delivery.method}" is not supported`
-          ).store("delivery", delivery)
+            `delivery.method "${delivery.method}" is not supported`,
+          ).store("delivery", delivery),
         );
     }
   }

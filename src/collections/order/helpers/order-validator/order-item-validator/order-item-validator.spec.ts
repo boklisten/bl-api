@@ -17,10 +17,10 @@ chai.use(chaiAsPromised);
 
 describe("OrderItemValidator", () => {
   const branchStorage: BlDocumentStorage<Branch> = new BlDocumentStorage(
-    BlCollectionName.Branches
+    BlCollectionName.Branches,
   );
   const itemStorage: BlDocumentStorage<Item> = new BlDocumentStorage(
-    BlCollectionName.Items
+    BlCollectionName.Items,
   );
   const orderItemFieldValidator = new OrderFieldValidator();
   const orderItemRentValidator = new OrderItemRentValidator();
@@ -33,7 +33,7 @@ describe("OrderItemValidator", () => {
     orderItemFieldValidator,
     orderItemRentValidator,
     orderItemBuyValidator,
-    orderItemExtendValidator
+    orderItemExtendValidator,
   );
 
   let testOrder: Order;
@@ -133,10 +133,10 @@ describe("OrderItemValidator", () => {
           testOrder.orderItems[0].amount = 250;
 
           return expect(
-            orderItemValidator.validate(testBranch, testOrder)
+            orderItemValidator.validate(testBranch, testOrder),
           ).to.be.rejectedWith(
             BlError,
-            /order.amount is "500" but total of orderItems amount is "250"/
+            /order.amount is "500" but total of orderItems amount is "250"/,
           );
         });
 
@@ -145,13 +145,13 @@ describe("OrderItemValidator", () => {
           testOrder.orderItems[0].amount = 780;
 
           return expect(
-            orderItemValidator.validate(testBranch, testOrder)
+            orderItemValidator.validate(testBranch, testOrder),
           ).to.be.rejectedWith(
             BlError,
-            /order.amount is "100" but total of orderItems amount is "780"/
+            /order.amount is "100" but total of orderItems amount is "780"/,
           );
         });
-      }
+      },
     );
 
     it("should reject if amount does not include taxAmount", () => {
@@ -170,10 +170,10 @@ describe("OrderItemValidator", () => {
       testOrder.amount = 100;
 
       return expect(
-        orderItemValidator.validate(testBranch, testOrder)
+        orderItemValidator.validate(testBranch, testOrder),
       ).to.be.rejectedWith(
         BlError,
-        /orderItem.amount "100" is not equal to orderItem.unitPrice "100" \+ orderItem.taxAmount "25"/
+        /orderItem.amount "100" is not equal to orderItem.unitPrice "100" \+ orderItem.taxAmount "25"/,
       );
     });
 
@@ -193,10 +193,10 @@ describe("OrderItemValidator", () => {
       testOrder.amount = 160;
 
       return expect(
-        orderItemValidator.validate(testBranch, testOrder)
+        orderItemValidator.validate(testBranch, testOrder),
       ).to.be.rejectedWith(
         BlError,
-        /orderItem.amount "160" is not equal to orderItem.unitPrice "100" \+ orderItem.taxAmount "25"/
+        /orderItem.amount "160" is not equal to orderItem.unitPrice "100" \+ orderItem.taxAmount "25"/,
       );
     });
 
@@ -216,10 +216,10 @@ describe("OrderItemValidator", () => {
       testOrder.amount = 100;
 
       return expect(
-        orderItemValidator.validate(testBranch, testOrder)
+        orderItemValidator.validate(testBranch, testOrder),
       ).to.be.rejectedWith(
         BlError,
-        /orderItem.taxAmount "0" is not equal to orderItem.unitPrice "100" \* orderItem.taxRate "0.25"/
+        /orderItem.taxAmount "0" is not equal to orderItem.unitPrice "100" \* orderItem.taxRate "0.25"/,
       );
     });
 

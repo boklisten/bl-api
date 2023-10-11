@@ -26,10 +26,10 @@ chai.use(sinonChai);
 describe("MessagePostHook", () => {
   const messengerReminder = new MessengerReminder();
   const messageStorage = new BlDocumentStorage<Message>(
-    BlCollectionName.Messages
+    BlCollectionName.Messages,
   );
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const messageHelper = new MessageHelper(messageStorage);
   const messenger = new Messenger();
@@ -38,13 +38,13 @@ describe("MessagePostHook", () => {
     messageStorage,
     messageHelper,
     messenger,
-    userDetailStorage
+    userDetailStorage,
   );
   const messengerSendStub = sinon.stub(messenger, "send");
 
   const messengerReminderRemindCustomerStub = sinon.stub(
     messengerReminder,
-    "remindCustomer"
+    "remindCustomer",
   );
 
   const userDetailGetStub = sinon.stub(userDetailStorage, "get");
@@ -73,7 +73,7 @@ describe("MessagePostHook", () => {
       messengerReminderRemindCustomerStub.resolves(true);
 
       return expect(
-        messagePostHook.before(body, accessToken)
+        messagePostHook.before(body, accessToken),
       ).to.eventually.be.rejectedWith(BlError, /no permission/);
     });
 
@@ -134,11 +134,11 @@ describe("MessagePostHook", () => {
 
       it("should reject if messengerReminder rejects", () => {
         messengerReminderRemindCustomerStub.rejects(
-          new BlError("something failed")
+          new BlError("something failed"),
         );
 
         expect(
-          messagePostHook.after([message], {} as AccessToken)
+          messagePostHook.after([message], {} as AccessToken),
         ).to.eventually.be.rejectedWith(BlError);
       });
 

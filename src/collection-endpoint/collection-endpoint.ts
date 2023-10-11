@@ -1,23 +1,27 @@
 import { BlDocument, BlError } from "@boklisten/bl-model";
 import { Router } from "express";
-import { BlCollection, BlEndpoint } from "../collections/bl-collection";
-import { BlDocumentStorage } from "../storage/blDocumentStorage";
-import { PermissionService } from "../auth/permission/permission.service";
-import { ApiPath } from "../config/api-path";
+
+import { CollectionEndpointDelete } from "./collection-endpoint-delete/collection-endpoint-delete";
 import { CollectionEndpointGetAll } from "./collection-endpoint-get-all/collection-endpoint-get-all";
 import { CollectionEndpointGetId } from "./collection-endpoint-get-id/collection-endpoint-get-id";
-import { CollectionEndpointPost } from "./collection-endpoint-post/collection-endpoint-post";
-import { CollectionEndpointDelete } from "./collection-endpoint-delete/collection-endpoint-delete";
 import { CollectionEndpointPatch } from "./collection-endpoint-patch/collection-endpoint-patch";
+import { CollectionEndpointPost } from "./collection-endpoint-post/collection-endpoint-post";
+import { PermissionService } from "../auth/permission/permission.service";
+import { BlCollection, BlEndpoint } from "../collections/bl-collection";
+import { ApiPath } from "../config/api-path";
 import { logger } from "../logger/logger";
+import { BlDocumentStorage } from "../storage/blDocumentStorage";
 
 export class CollectionEndpoint<T extends BlDocument> {
   private _documentStorage: BlDocumentStorage<T>;
 
-  constructor(private _router: Router, private _collection: BlCollection) {
+  constructor(
+    private _router: Router,
+    private _collection: BlCollection,
+  ) {
     this._documentStorage = new BlDocumentStorage<T>(
       _collection.collectionName,
-      _collection.mongooseSchema
+      _collection.mongooseSchema,
     );
     new PermissionService();
     new ApiPath();
@@ -43,7 +47,7 @@ export class CollectionEndpoint<T extends BlDocument> {
           break;
         default:
           throw new BlError(
-            `the collection endpoint method "${endpoint.method}" is not supported`
+            `the collection endpoint method "${endpoint.method}" is not supported`,
           );
       }
     }
@@ -89,7 +93,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission
+      this._collection.documentPermission,
     );
     collectionEndpointGetAll.create();
   }
@@ -100,7 +104,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission
+      this._collection.documentPermission,
     );
     collectionEndpointGetId.create();
   }
@@ -111,7 +115,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission
+      this._collection.documentPermission,
     );
     collectionEndpointPost.create();
   }
@@ -122,7 +126,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission
+      this._collection.documentPermission,
     );
     collectionEndpointDelete.create();
   }
@@ -133,7 +137,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission
+      this._collection.documentPermission,
     );
     collectionEndpointPatch.create();
   }

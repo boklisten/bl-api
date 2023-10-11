@@ -1,9 +1,10 @@
 import { CustomerItem } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { customerItemSchema } from "../customer-item.schema";
+
 import { CustomerItemActive } from "./customer-item-active";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { customerItemSchema } from "../customer-item.schema";
 
 export class CustomerItemActiveBlid {
   private customerItemActive: CustomerItemActive;
@@ -14,7 +15,7 @@ export class CustomerItemActiveBlid {
       ? customerItemStorage
       : new BlDocumentStorage<CustomerItem>(
           BlCollectionName.CustomerItems,
-          customerItemSchema
+          customerItemSchema,
         );
     this.customerItemActive = new CustomerItemActive();
     this.dbQueryBuilder = new SEDbQueryBuilder();
@@ -36,7 +37,7 @@ export class CustomerItemActiveBlid {
     const customerItems = await this.customerItemStorage.getByQuery(dbQuery);
 
     const activeCustomerItems = customerItems.filter((customerItem) =>
-      this.customerItemActive.isActive(customerItem)
+      this.customerItemActive.isActive(customerItem),
     );
 
     if (!activeCustomerItems || activeCustomerItems.length <= 0) {

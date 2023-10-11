@@ -1,8 +1,9 @@
-import { Hook } from "../../../hook/hook";
 import { AccessToken, BlError } from "@boklisten/bl-model";
-import { OrderActive } from "../../order/helpers/order-active/order-active";
+
+import { Hook } from "../../../hook/hook";
 import { CustomerHaveActiveCustomerItems } from "../../customer-item/helpers/customer-have-active-customer-items";
 import { CustomerInvoiceActive } from "../../invoice/helpers/customer-invoice-active";
+import { OrderActive } from "../../order/helpers/order-active/order-active";
 import { UserCanDeleteUserDetail } from "../helpers/user-can-delete-user-detail";
 import { UserDeleteAllInfo } from "../helpers/user-delete-all-info";
 
@@ -12,7 +13,7 @@ export class UserDetailDeleteHook extends Hook {
     private customerHaveActiveCustomerItems?: CustomerHaveActiveCustomerItems,
     private customerInvoiceActive?: CustomerInvoiceActive,
     private userCanDeleteUserDetail?: UserCanDeleteUserDetail,
-    private userDeleteAllInfo?: UserDeleteAllInfo
+    private userDeleteAllInfo?: UserDeleteAllInfo,
   ) {
     super();
     this.orderActive = this.orderActive ? this.orderActive : new OrderActive();
@@ -34,7 +35,7 @@ export class UserDetailDeleteHook extends Hook {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any,
     accessToken: AccessToken,
-    id: string
+    id: string,
   ): Promise<boolean> {
     try {
       await this.checkIfUserCanDelete(id, accessToken);
@@ -51,17 +52,17 @@ export class UserDetailDeleteHook extends Hook {
 
   private async checkIfUserCanDelete(
     id: string,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     // eslint-disable-next-line no-useless-catch
     try {
       const canDelete = await this.userCanDeleteUserDetail.canDelete(
         id,
-        accessToken
+        accessToken,
       );
       if (!canDelete) {
         throw new BlError(
-          `user "${accessToken.details}" has no permission to delete user "${id}"`
+          `user "${accessToken.details}" has no permission to delete user "${id}"`,
         );
       }
     } catch (e) {
@@ -90,7 +91,7 @@ export class UserDetailDeleteHook extends Hook {
     try {
       const haveActiveCustomerItems =
         await this.customerHaveActiveCustomerItems.haveActiveCustomerItems(
-          userId
+          userId,
         );
 
       if (haveActiveCustomerItems) {

@@ -21,7 +21,7 @@ chai.use(chaiAsPromised);
 
 describe("OrderToCustomerItemGenerator", () => {
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
 
   const userDetail = {

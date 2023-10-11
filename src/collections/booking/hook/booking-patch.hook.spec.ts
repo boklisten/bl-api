@@ -18,7 +18,7 @@ import { BookingPatchHook } from "./booking-patch.hook";
 import { BlCollectionName } from "../../bl-collection";
 
 const bookingStorage = new BlDocumentStorage<Booking>(
-  BlCollectionName.Bookings
+  BlCollectionName.Bookings,
 );
 
 const testId = "5ea6a45dc39947205e3ecdd8";
@@ -89,10 +89,10 @@ describe("BookingPatchHook", () => {
       };
 
       return expect(
-        bookingPatchHook.before(updateBody, {} as any, "booking1")
+        bookingPatchHook.before(updateBody, {} as any, "booking1"),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /customer is already attached to booking/
+        /customer is already attached to booking/,
       );
     });
 
@@ -107,11 +107,11 @@ describe("BookingPatchHook", () => {
         bookingPatchHook.before(
           updateBody,
           { permission: "customer" } as any,
-          "booking2"
-        )
+          "booking2",
+        ),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /can only update 'customer' and 'booked' fields/
+        /can only update 'customer' and 'booked' fields/,
       );
     });
 
@@ -123,11 +123,11 @@ describe("BookingPatchHook", () => {
         bookingPatchHook.before(
           updateBody,
           { details: "customer4", permission: "customer" } as any,
-          "booking2"
-        )
+          "booking2",
+        ),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /can only update booking with customers own id/
+        /can only update booking with customers own id/,
       );
     });
 
@@ -140,11 +140,11 @@ describe("BookingPatchHook", () => {
         bookingPatchHook.before(
           updateBody,
           { permission: "customer", details: testId } as any,
-          "booking2"
-        )
+          "booking2",
+        ),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /customer already has an active booking/
+        /customer already has an active booking/,
       );
     });
 
@@ -158,10 +158,10 @@ describe("BookingPatchHook", () => {
         permission: "customer",
       };
       return expect(
-        bookingPatchHook.before(updateBody, accessToken as any, "testBooking4")
+        bookingPatchHook.before(updateBody, accessToken as any, "testBooking4"),
       ).to.eventually.be.rejectedWith(
         BlError,
-        `user "${testId}" has no permission to cancel booking "testBooking4"`
+        `user "${testId}" has no permission to cancel booking "testBooking4"`,
       );
     });
 
@@ -175,7 +175,7 @@ describe("BookingPatchHook", () => {
         permission: "admin",
       };
       return expect(
-        bookingPatchHook.before(updateBody, accessToken as any, "testBooking4")
+        bookingPatchHook.before(updateBody, accessToken as any, "testBooking4"),
       ).to.eventually.be.true;
     });
 
@@ -188,15 +188,15 @@ describe("BookingPatchHook", () => {
         bookingPatchHook.before(
           updateBody,
           { permission: "customer", details: testId2 } as any,
-          "booking2"
-        )
+          "booking2",
+        ),
       ).to.eventually.be.true;
     });
   });
 
   describe("#after", () => {
     const bookingStorage = new BlDocumentStorage<Booking>(
-      BlCollectionName.Bookings
+      BlCollectionName.Bookings,
     );
     const bookingPatchHook = new BookingPatchHook(bookingStorage);
     const testId3 = "5ea6a45dc39947205e3ecdd3";
@@ -221,10 +221,10 @@ describe("BookingPatchHook", () => {
         bookingPatchHook.after([booking as Booking], {
           permission: "customer",
           details: testId3,
-        } as any)
+        } as any),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /booking.customer is set but booked is false/
+        /booking.customer is set but booked is false/,
       );
       /*
       let bookingStorageSpy = sinon.spy(bookingStorage, "update");
@@ -251,10 +251,10 @@ describe("BookingPatchHook", () => {
         bookingPatchHook.after([booking as Booking], {
           permission: "customer",
           details: testId3,
-        } as any)
+        } as any),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /booking.booked is set but customer is null or undefined/
+        /booking.booked is set but customer is null or undefined/,
       );
     });
   });

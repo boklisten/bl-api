@@ -1,5 +1,7 @@
 import { BlError } from "@boklisten/bl-model";
+
 import { SeCrypto } from "../../../crypto/se.crypto";
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const crypto = require("crypto");
 
@@ -25,10 +27,10 @@ export class ProviderIdGenerator {
           (error: BlError) => {
             reject(
               error.add(
-                blError.msg("could not hash the provided username and salt")
-              )
+                blError.msg("could not hash the provided username and salt"),
+              ),
             );
-          }
+          },
         );
       });
     });

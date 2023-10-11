@@ -1,17 +1,17 @@
+import { OrderPatchHook } from "./hooks/order.patch.hook";
+import { OrderPostHook } from "./hooks/order.post.hook";
+import { OrderConfirmOperation } from "./operations/confirm/order-confirm.operation";
+import { OrderAgreementPdfOperation } from "./operations/order-agreement-pdf.operation";
+import { OrderReceiptPdfOperation } from "./operations/order-receipt-pdf.operation";
+import { OrderPlaceOperation } from "./operations/place/order-place.operation";
+import { orderSchema } from "./order.schema";
 import {
   BlCollection,
   BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
 } from "../bl-collection";
-import { orderSchema } from "./order.schema";
-import { OrderPatchHook } from "./hooks/order.patch.hook";
-import { OrderPostHook } from "./hooks/order.post.hook";
-import { OrderReceiptPdfOperation } from "./operations/order-receipt-pdf.operation";
-import { OrderAgreementPdfOperation } from "./operations/order-agreement-pdf.operation";
 import { userDetailSchema } from "../user-detail/user-detail.schema";
-import { OrderPlaceOperation } from "./operations/place/order-place.operation";
-import { OrderConfirmOperation } from "./operations/confirm/order-confirm.operation";
 
 export class OrderCollection implements BlCollection {
   collectionName = BlCollectionName.Orders;

@@ -1,7 +1,8 @@
 import { BlDocument, BlError } from "@boklisten/bl-model";
+
+import { BlApiRequest } from "../../request/bl-api-request";
 import { CollectionEndpointMethod } from "../collection-endpoint-method";
 import { CollectionEndpointOnRequest } from "../collection-endpoint-on-request";
-import { BlApiRequest } from "../../request/bl-api-request";
 
 export class CollectionEndpointGetId<T extends BlDocument>
   extends CollectionEndpointMethod<T>

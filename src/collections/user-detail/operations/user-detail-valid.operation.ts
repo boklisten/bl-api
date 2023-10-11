@@ -1,12 +1,13 @@
+import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
+import { NextFunction, Request, Response } from "express";
+
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
-import { NextFunction, Request, Response } from "express";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
-import { userDetailSchema } from "../user-detail.schema";
 import { SEResponseHandler } from "../../../response/se.response.handler";
-import { UserDetailHelper } from "../helpers/user-detail.helper";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { UserDetailHelper } from "../helpers/user-detail.helper";
+import { userDetailSchema } from "../user-detail.schema";
 
 export class UserDetailValidOperation implements Operation {
   private _userDetailStorage: BlDocumentStorage<UserDetail>;
@@ -17,7 +18,7 @@ export class UserDetailValidOperation implements Operation {
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     resHandler?: SEResponseHandler,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    userDetailHelper?: UserDetailHelper
+    userDetailHelper?: UserDetailHelper,
   ) {
     this._userDetailStorage = userDetailStorage
       ? userDetailStorage
@@ -31,11 +32,11 @@ export class UserDetailValidOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     try {
       const userDetail = await this._userDetailStorage.get(
-        blApiRequest.documentId
+        blApiRequest.documentId,
       );
 
       const invalidUserDetailFields =
@@ -44,21 +45,21 @@ export class UserDetailValidOperation implements Operation {
       if (invalidUserDetailFields.length <= 0) {
         this._resHandler.sendResponse(
           res,
-          new BlapiResponse([{ valid: true }])
+          new BlapiResponse([{ valid: true }]),
         );
       } else {
         this._resHandler.sendResponse(
           res,
           new BlapiResponse([
             { valid: false, invalidFields: invalidUserDetailFields },
-          ])
+          ]),
         );
       }
 
       return true;
     } catch (err) {
       const responseError: BlError = new BlError(
-        "userDetail could not be validated"
+        "userDetail could not be validated",
       );
 
       if (err instanceof BlError) {

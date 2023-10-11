@@ -59,12 +59,12 @@ describe("SeCrypto", () => {
               },
               (error: any) => {
                 reject(error);
-              }
+              },
             );
           },
           (error: any) => {
             reject(error);
-          }
+          },
         );
       }).should.eventually.be.fulfilled;
     });

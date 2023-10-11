@@ -31,13 +31,13 @@ export function sortUsersNumberOfItemsDescending(users: MatchableUser[]) {
  */
 export function sortUsersForPartialMatching(
   users: MatchableUser[],
-  matches: CandidateMatch[]
+  matches: CandidateMatch[],
 ) {
   const hasStandMatch = (user: MatchableUser) =>
     matches.some(
       (match) =>
         match.variant === CandidateMatchVariant.StandMatch &&
-        match.userId === user.id
+        match.userId === user.id,
     );
 
   users.sort((a, b) => {
@@ -64,11 +64,11 @@ export function sortUsersForPartialMatching(
  * @param users
  */
 export function groupUsersByNumberOfItems(
-  users: MatchableUser[]
+  users: MatchableUser[],
 ): MatchableUser[][] {
   const maxNumberOfItems = users.reduce(
     (currentMax, nextUser) => Math.max(currentMax, nextUser.items.size),
-    0
+    0,
   );
 
   const sortedUserGroups: MatchableUser[][] = [
@@ -80,7 +80,7 @@ export function groupUsersByNumberOfItems(
       const userGroup = sortedUserGroups[user.items.size];
       if (userGroup === undefined) {
         throw new Error(
-          "SortedSenderGroups should have as many entries as the maximum number of sender items"
+          "SortedSenderGroups should have as many entries as the maximum number of sender items",
         );
       }
       userGroup.push(user);
@@ -97,7 +97,7 @@ export function groupUsersByNumberOfItems(
  * @returns a shallow copy of the users list without the fully matched users
  */
 export function removeFullyMatchedUsers(
-  users: MatchableUser[]
+  users: MatchableUser[],
 ): MatchableUser[] {
   return users.filter((user) => user.items.size > 0);
 }
@@ -111,7 +111,7 @@ export function removeFullyMatchedUsers(
  */
 export function tryFindOneWayMatch(
   sender: MatchableUser,
-  receivers: MatchableUser[]
+  receivers: MatchableUser[],
 ): MatchableUser | null {
   return receivers.reduce((best: MatchableUser | null, next) => {
     return !hasDifference(sender.items, next.items) &&
@@ -130,13 +130,13 @@ export function tryFindOneWayMatch(
  */
 export function tryFindTwoWayMatch(
   sender: MatchableUser,
-  receivers: MatchableUser[]
+  receivers: MatchableUser[],
 ): MatchableUser | null {
   return (
     receivers.find(
       (receiver) =>
         !hasDifference(sender.items, receiver.items) &&
-        !hasDifference(receiver.items, sender.items)
+        !hasDifference(receiver.items, sender.items),
     ) ?? null
   );
 }
@@ -149,14 +149,14 @@ export function tryFindTwoWayMatch(
  */
 export function tryFindPartialMatch(
   sender: MatchableUser,
-  receivers: MatchableUser[]
+  receivers: MatchableUser[],
 ): MatchableUser | null {
   let bestReceiver: MatchableUser | null = null;
   for (const receiver of receivers) {
     const matchableItems = intersect(sender.items, receiver.items);
     const bestMatchableItems = intersect(
       sender.items,
-      bestReceiver?.items ?? new Set()
+      bestReceiver?.items ?? new Set(),
     );
 
     if (matchableItems.size > bestMatchableItems.size) {
@@ -186,7 +186,7 @@ export function countItemOccurrences(users: MatchableUser[]): {
         ...acc,
         [next]: next in acc ? acc[next] + 1 : 1,
       }),
-      {}
+      {},
     );
 }
 
@@ -201,7 +201,7 @@ export function countItemOccurrences(users: MatchableUser[]): {
  */
 export function calculateItemImbalances(
   groupedSenderItems: { [item: string]: number },
-  groupedReceiverItems: { [item: string]: number }
+  groupedReceiverItems: { [item: string]: number },
 ): { [item: string]: number } {
   return Object.keys({ ...groupedReceiverItems, ...groupedSenderItems }).reduce(
     (diffs, item) => {
@@ -213,7 +213,7 @@ export function calculateItemImbalances(
         [item]: senderItemCount - receiverItemCount,
       };
     },
-    {}
+    {},
   );
 }
 
@@ -230,7 +230,7 @@ export function calculateItemImbalances(
 export function canMatchPerfectlyWithStand(
   user: MatchableUser,
   itemImbalances: { [key: string]: number },
-  userIsSender: boolean
+  userIsSender: boolean,
 ): boolean {
   return Array.from(user.items).every((item) => {
     return userIsSender
@@ -249,7 +249,7 @@ export function canMatchPerfectlyWithStand(
 export function updateItemImbalances(
   items: Set<string>,
   itemImbalances: { [key: string]: number },
-  userIsSender: boolean
+  userIsSender: boolean,
 ): void {
   const modifier = userIsSender ? -1 : 1;
 
@@ -266,24 +266,24 @@ export function updateItemImbalances(
  */
 export function calculateUnmatchableItems(
   senders: MatchableUser[],
-  receivers: MatchableUser[]
+  receivers: MatchableUser[],
 ): {
   unmatchableSenderItems: Set<string>;
   unmatchableReceiverItems: Set<string>;
 } {
   const requiredSenderItems = new Set(
-    senders.flatMap((user) => [...user.items])
+    senders.flatMap((user) => [...user.items]),
   );
   const requiredReceiverItems = new Set(
-    receivers.flatMap((user) => [...user.items])
+    receivers.flatMap((user) => [...user.items]),
   );
   const unmatchableSenderItems = difference(
     requiredSenderItems,
-    requiredReceiverItems
+    requiredReceiverItems,
   );
   const unmatchableReceiverItems = difference(
     requiredReceiverItems,
-    requiredSenderItems
+    requiredSenderItems,
   );
 
   return { unmatchableSenderItems, unmatchableReceiverItems };

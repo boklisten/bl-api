@@ -18,14 +18,14 @@ describe("ApiPath", () => {
     it("should return null if path does not include our basePath", () => {
       const apiPath = new ApiPath();
       return expect(
-        apiPath.retrieveRefererPath({ referer: "https://www.m.facebook.com" })
+        apiPath.retrieveRefererPath({ referer: "https://www.m.facebook.com" }),
       ).to.be.eq(null);
     });
 
     it("should return null if path does not include our basePath", () => {
       const apiPath = new ApiPath();
       return expect(
-        apiPath.retrieveRefererPath({ refferer: "https://google.com" })
+        apiPath.retrieveRefererPath({ refferer: "https://google.com" }),
       ).to.be.eq(null);
     });
 
@@ -35,7 +35,7 @@ describe("ApiPath", () => {
       return expect(
         apiPath.retrieveRefererPath({
           referer: "https://www.boklisten.no/auth/login",
-        })
+        }),
       ).to.be.eq("https://www.boklisten.no/");
     });
 
@@ -45,7 +45,7 @@ describe("ApiPath", () => {
       return expect(
         apiPath.retrieveRefererPath({
           referer: "https://bladmin.boklisten.no/auth/login",
-        })
+        }),
       ).to.be.eq("https://bladmin.boklisten.no/");
     });
 
@@ -55,7 +55,7 @@ describe("ApiPath", () => {
       return expect(
         apiPath.retrieveRefererPath({
           referer: "https://api.boklisten.no/auth/login",
-        })
+        }),
       ).to.be.eq("https://api.boklisten.no/");
     });
 
@@ -65,7 +65,7 @@ describe("ApiPath", () => {
       return expect(
         apiPath.retrieveRefererPath({
           referer: "http://web.test.boklisten.no/auth/login",
-        })
+        }),
       ).to.be.eq("http://web.test.boklisten.no/");
     });
 
@@ -75,7 +75,7 @@ describe("ApiPath", () => {
       return expect(
         apiPath.retrieveRefererPath({
           referer: "http://bladmin.test.boklisten.no/auth/login",
-        })
+        }),
       ).to.be.eq("http://bladmin.test.boklisten.no/");
     });
 
@@ -85,7 +85,7 @@ describe("ApiPath", () => {
       return expect(
         apiPath.retrieveRefererPath({
           referer: "http://localhost:4200/auth/login",
-        })
+        }),
       ).to.be.eq("http://localhost:4200/");
     });
   });

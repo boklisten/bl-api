@@ -1,16 +1,17 @@
-import { Operation } from "../../../operation/operation";
-import { BlApiRequest } from "../../../request/bl-api-request";
 import {
   Message,
   BlError,
   BlapiResponse,
   SendgridEvent,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { messageSchema } from "../message.schema";
 import { Request, Response, NextFunction } from "express";
+
 import { logger } from "../../../logger/logger";
+import { Operation } from "../../../operation/operation";
+import { BlApiRequest } from "../../../request/bl-api-request";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { messageSchema } from "../message.schema";
 
 export class SendgridEventOperation implements Operation {
   private _messageStorage: BlDocumentStorage<Message>;
@@ -20,7 +21,7 @@ export class SendgridEventOperation implements Operation {
       ? messageStorage
       : new BlDocumentStorage<Message>(
           BlCollectionName.Messages,
-          messageSchema
+          messageSchema,
         );
   }
 
@@ -31,7 +32,7 @@ export class SendgridEventOperation implements Operation {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<BlapiResponse> {
     if (!blApiRequest.data || Object.keys(blApiRequest.data).length === 0) {
       throw new BlError("blApiRequest.data is empty").code(701);
@@ -77,7 +78,7 @@ export class SendgridEventOperation implements Operation {
 
   private async updateMessageWithSendgridEvent(
     message: Message,
-    sendgridEvent: SendgridEvent
+    sendgridEvent: SendgridEvent,
   ): Promise<boolean> {
     const newSendgridEvents =
       message.events && message.events.length > 0 ? message.events : [];
@@ -87,11 +88,11 @@ export class SendgridEventOperation implements Operation {
     await this._messageStorage.update(
       message.id,
       { events: newSendgridEvents },
-      { id: "SYSTEM", permission: "admin" }
+      { id: "SYSTEM", permission: "admin" },
     );
 
     logger.silly(
-      `updated message "${message.id}" with sendgrid event: "${sendgridEvent["event"]}"`
+      `updated message "${message.id}" with sendgrid event: "${sendgridEvent["event"]}"`,
     );
 
     return true;

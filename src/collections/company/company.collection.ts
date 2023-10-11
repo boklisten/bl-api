@@ -1,6 +1,5 @@
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
-
 import { companySchema } from "./company.schema";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 
 export class CompanyCollection implements BlCollection {
   collectionName = BlCollectionName.Companies;

@@ -49,14 +49,14 @@ describe("CollectionEndpointDocumentAuth", () => {
       collectionEndpointDocumentAuth.validate(
         testRestriction,
         [],
-        testBlApiRequest
-      )
+        testBlApiRequest,
+      ),
     ).to.be.rejectedWith(BlError, /docs is empty or undefined/);
   });
 
   it("should reject if blApiRequest is null or undefined", () => {
     return expect(
-      collectionEndpointDocumentAuth.validate(testRestriction, testDocs, null)
+      collectionEndpointDocumentAuth.validate(testRestriction, testDocs, null),
     ).to.be.rejectedWith(BlError, /blApiRequest is null or undefined/);
   });
 
@@ -68,8 +68,8 @@ describe("CollectionEndpointDocumentAuth", () => {
       collectionEndpointDocumentAuth.validate(
         testRestriction,
         testDocs,
-        testBlApiRequest
-      )
+        testBlApiRequest,
+      ),
     ).to.be.fulfilled;
   });
 
@@ -95,11 +95,11 @@ describe("CollectionEndpointDocumentAuth", () => {
                 testRestriction,
                 testDocs,
                 testBlApiRequest,
-                documentPermission
-              )
+                documentPermission,
+              ),
             ).to.be.rejectedWith(
               BlError,
-              /lacking restricted permission to view or edit the document/
+              /lacking restricted permission to view or edit the document/,
             );
           });
 
@@ -115,11 +115,11 @@ describe("CollectionEndpointDocumentAuth", () => {
                 testRestriction,
                 testDocs,
                 testBlApiRequest,
-                documentPermission
-              )
+                documentPermission,
+              ),
             ).to.be.fulfilled;
           });
-        }
+        },
       );
 
       it("should reject if blApiRequest.user.permission is equal or lower to document.user.permission", () => {
@@ -130,11 +130,11 @@ describe("CollectionEndpointDocumentAuth", () => {
           collectionEndpointDocumentAuth.validate(
             testRestriction,
             testDocs,
-            testBlApiRequest
-          )
+            testBlApiRequest,
+          ),
         ).to.be.rejectedWith(
           BlError,
-          /lacking restricted permission to view or edit the document/
+          /lacking restricted permission to view or edit the document/,
         );
       });
 
@@ -146,8 +146,8 @@ describe("CollectionEndpointDocumentAuth", () => {
           collectionEndpointDocumentAuth.validate(
             testRestriction,
             testDocs,
-            testBlApiRequest
-          )
+            testBlApiRequest,
+          ),
         ).to.be.fulfilled;
       });
     });
@@ -175,8 +175,8 @@ describe("CollectionEndpointDocumentAuth", () => {
               collectionEndpointDocumentAuth.validate(
                 testRestriction,
                 testDocs,
-                testBlApiRequest
-              )
+                testBlApiRequest,
+              ),
             ).to.be.rejectedWith(BlError, /document is not viewable for user/);
           });
 
@@ -188,11 +188,11 @@ describe("CollectionEndpointDocumentAuth", () => {
               collectionEndpointDocumentAuth.validate(
                 testRestriction,
                 testDocs,
-                testBlApiRequest
-              )
+                testBlApiRequest,
+              ),
             ).to.be.fulfilled;
           });
-        }
+        },
       );
     });
   });

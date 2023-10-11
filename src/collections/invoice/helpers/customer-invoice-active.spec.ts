@@ -13,7 +13,7 @@ chai.use(chaiAsPromised);
 
 describe("CustomerInvoiceActive", () => {
   const invoiceStorage = new BlDocumentStorage<Invoice>(
-    BlCollectionName.Invoices
+    BlCollectionName.Invoices,
   );
   const getInvoicesByQueryStub = sinon.stub(invoiceStorage, "getByQuery");
   const customerInvoiceActive = new CustomerInvoiceActive(invoiceStorage);

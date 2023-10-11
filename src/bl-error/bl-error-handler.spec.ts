@@ -33,7 +33,7 @@ describe("BlErrorHandler", () => {
       blErrorHandler.storeError(blError);
 
       return expect(errorLogStorageAddSpy.lastCall.args[0]).to.eql(
-        expectedStoredErrorLog
+        expectedStoredErrorLog,
       );
     });
 

@@ -1,4 +1,3 @@
-import { EmailService } from "./email/email-service";
 import {
   Delivery,
   Order,
@@ -6,14 +5,16 @@ import {
   CustomerItem,
   Message,
 } from "@boklisten/bl-model";
+
+import { EmailService } from "./email/email-service";
 import {
   MessengerService,
   CustomerDetailWithCustomerItem,
 } from "./messenger-service";
-import { BlDocumentStorage } from "../storage/blDocumentStorage";
-import { deliverySchema } from "../collections/delivery/delivery.schema";
 import { PdfService } from "./pdf/pdf-service";
 import { BlCollectionName } from "../collections/bl-collection";
+import { deliverySchema } from "../collections/delivery/delivery.schema";
+import { BlDocumentStorage } from "../storage/blDocumentStorage";
 
 export class Messenger implements MessengerService {
   private _emailService: EmailService;
@@ -24,7 +25,7 @@ export class Messenger implements MessengerService {
     this._emailService = new EmailService();
     this._deliveryStorage = new BlDocumentStorage<Delivery>(
       BlCollectionName.Deliveries,
-      deliverySchema
+      deliverySchema,
     );
     this._pdfService = new PdfService();
   }
@@ -55,7 +56,7 @@ export class Messenger implements MessengerService {
   public remind(
     message: Message,
     customerDetail: UserDetail,
-    customerItems: CustomerItem[]
+    customerItems: CustomerItem[],
   ) {
     this._emailService.remind(message, customerDetail, customerItems);
   }
@@ -65,7 +66,7 @@ export class Messenger implements MessengerService {
    * @param {CustomerDetailWithCustomerItem[]} customerDetails with customerItems to remind about
    */
   public remindMany(
-    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[]
+    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[],
   ) {
     this._emailService.remindMany(customerDetailsWithCustomerItems);
   }
@@ -115,7 +116,7 @@ export class Messenger implements MessengerService {
    */
   public emailConfirmation(
     customerDetail: UserDetail,
-    confirmationCode: string
+    confirmationCode: string,
   ) {
     this._emailService.emailConfirmation(customerDetail, confirmationCode);
   }

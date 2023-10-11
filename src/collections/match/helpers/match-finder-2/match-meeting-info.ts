@@ -21,12 +21,12 @@ interface SenderWithMatches {
  * @param userMatches unassigned UserMatches
  */
 function groupMatchesBySender(
-  userMatches: CandidateUserMatch[]
+  userMatches: CandidateUserMatch[],
 ): SenderWithMatches[] {
   return userMatches
     .reduce((acc, match) => {
       const foundSender = acc.find(
-        (sender) => sender.senderId === match.senderId
+        (sender) => sender.senderId === match.senderId,
       );
       if (foundSender) {
         foundSender.matches.push(match);
@@ -46,7 +46,7 @@ function groupMatchesBySender(
 function findEarliestLocationTime(
   location: MatchLocation,
   existingMeetingTimes: Date[],
-  startTime: Date
+  startTime: Date,
 ): Date {
   if (
     !location.simultaneousMatchLimit ||
@@ -56,7 +56,7 @@ function findEarliestLocationTime(
   }
   const prevMeetingTime = existingMeetingTimes?.at(-1);
   const simultaneousMatches = existingMeetingTimes.filter(
-    (meetingTime) => meetingTime.getTime() === prevMeetingTime.getTime()
+    (meetingTime) => meetingTime.getTime() === prevMeetingTime.getTime(),
   );
 
   if (simultaneousMatches.length < location.simultaneousMatchLimit) {
@@ -75,14 +75,14 @@ function findEarliestLocationTime(
 function findEarliestPossibleMeetingTime(
   users: string[],
   startTime: Date,
-  userMeetingTimes: { [userId: string]: Date[] }
+  userMeetingTimes: { [userId: string]: Date[] },
 ): Date {
   let earliestPossibleTime = startTime;
   for (const user of users) {
     const prevUserTime = userMeetingTimes[user]?.at(-1);
     if (prevUserTime && prevUserTime >= earliestPossibleTime) {
       earliestPossibleTime = new Date(
-        prevUserTime.getTime() + MEETING_DURATION_IN_MS
+        prevUserTime.getTime() + MEETING_DURATION_IN_MS,
       );
     }
   }
@@ -96,17 +96,17 @@ function findEarliestPossibleMeetingTime(
  */
 function verifyStandMatches(
   standMatches: StandMatchWithMeetingInfo[],
-  standLocation: string
+  standLocation: string,
 ) {
   if (
     standMatches.some(
       (match) =>
         match.meetingInfo.date !== null ||
-        match.meetingInfo.location !== standLocation
+        match.meetingInfo.location !== standLocation,
     )
   ) {
     throw new Error(
-      "All stand matches must have correct location and no assigned time slot"
+      "All stand matches must have correct location and no assigned time slot",
     );
   }
 }
@@ -125,7 +125,7 @@ function verifyUserMatches(
   userMatches: CandidateUserMatch[],
   userMatchesWithMeetingInfo: UserMatchWithMeetingInfo[],
   startTime: Date,
-  userMatchLocations: MatchLocation[]
+  userMatchLocations: MatchLocation[],
 ) {
   if (
     userMatches.length !== userMatchesWithMeetingInfo.length ||
@@ -134,7 +134,7 @@ function verifyUserMatches(
         (userMatchWithInfo) =>
           userMatch.senderId === userMatchWithInfo.senderId &&
           userMatch.receiverId === userMatchWithInfo.receiverId &&
-          userMatch.items === userMatchWithInfo.items
+          userMatch.items === userMatchWithInfo.items,
       );
       if (createdMeetingInfoMatch === undefined) {
         return false;
@@ -148,7 +148,7 @@ function verifyUserMatches(
     })
   ) {
     throw new Error(
-      "Every user match must have a corresponding match with assigned meeting info"
+      "Every user match must have a corresponding match with assigned meeting info",
     );
   }
 
@@ -160,7 +160,7 @@ function verifyUserMatches(
         match.meetingInfo.date.getTime() ===
           userMatchWithMeetingInfo.meetingInfo.date.getTime() &&
         match.meetingInfo.location !==
-          userMatchWithMeetingInfo.meetingInfo.location
+          userMatchWithMeetingInfo.meetingInfo.location,
     );
     const crashingReceiverMatch = userMatchesWithMeetingInfo.find(
       (match) =>
@@ -169,12 +169,12 @@ function verifyUserMatches(
         match.meetingInfo.date.getTime() ===
           userMatchWithMeetingInfo.meetingInfo.date.getTime() &&
         match.meetingInfo.location !==
-          userMatchWithMeetingInfo.meetingInfo.location
+          userMatchWithMeetingInfo.meetingInfo.location,
     );
 
     if (crashingSenderMatch || crashingReceiverMatch) {
       throw new Error(
-        "A sender or receiver has two simultaneous matches at different locations!"
+        "A sender or receiver has two simultaneous matches at different locations!",
       );
     }
   }
@@ -191,7 +191,7 @@ function assignMeetingInfoToMatches(
   matches: CandidateMatch[],
   standLocation: string,
   userMatchLocations: MatchLocation[],
-  startTime: Date
+  startTime: Date,
 ): MatchWithMeetingInfo[] {
   const standMatches: CandidateStandMatch[] = matches
     .filter((match) => match.variant === CandidateMatchVariant.StandMatch)
@@ -218,7 +218,7 @@ function assignMeetingInfoToMatches(
       [userMatch.senderId]: [],
       [userMatch.receiverId]: [],
     }),
-    {}
+    {},
   );
 
   const locationMeetingTimes: { [location: string]: Date[] } =
@@ -227,7 +227,7 @@ function assignMeetingInfoToMatches(
         ...acc,
         [location.name]: [],
       }),
-      {}
+      {},
     );
 
   let locationIndex = 0;
@@ -240,16 +240,16 @@ function assignMeetingInfoToMatches(
     const earliestLocationTime = findEarliestLocationTime(
       location,
       locationMeetingTimes[location.name],
-      startTime
+      startTime,
     );
 
     const receivers = senderWithMatches.matches.map(
-      (match) => match.receiverId
+      (match) => match.receiverId,
     );
     const earliestPossibleTime = findEarliestPossibleMeetingTime(
       [senderWithMatches.senderId, ...receivers],
       earliestLocationTime,
-      userMeetingTimes
+      userMeetingTimes,
     );
 
     userMeetingTimes[senderWithMatches.senderId].push(earliestPossibleTime);
@@ -272,7 +272,7 @@ function assignMeetingInfoToMatches(
     userMatches,
     userMatchesWithMeetingInfo,
     startTime,
-    userMatchLocations
+    userMatchLocations,
   );
 
   return [...userMatchesWithMeetingInfo, ...standMatchesWithMeetingInfo];

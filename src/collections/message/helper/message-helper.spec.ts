@@ -22,7 +22,7 @@ chai.use(sinonChai);
 
 describe("MessageHelper", () => {
   const messageStorage = new BlDocumentStorage<Message>(
-    BlCollectionName.Messages
+    BlCollectionName.Messages,
   );
   const messageHelper = new MessageHelper(messageStorage);
 

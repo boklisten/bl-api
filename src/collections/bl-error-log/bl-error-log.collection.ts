@@ -1,5 +1,5 @@
-import { BlCollection, BlEndpoint, BlCollectionName } from "../bl-collection";
 import { blErrorLogSchema } from "./bl-error-log.schema";
+import { BlCollection, BlEndpoint, BlCollectionName } from "../bl-collection";
 
 export class BlErrorLogCollection implements BlCollection {
   collectionName = BlCollectionName.BlErrorLogs;

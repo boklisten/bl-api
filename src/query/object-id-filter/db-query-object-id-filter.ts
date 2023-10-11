@@ -10,7 +10,7 @@ export class DbQueryObjectIdFilter {
   getObjectIdFilters(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
-    validStringParams: string[]
+    validStringParams: string[],
   ): ObjectIdFilter[] {
     if (
       !query ||
@@ -53,13 +53,13 @@ export class DbQueryObjectIdFilter {
       if (error instanceof TypeError) {
         throw new TypeError(
           "query includes bad object-id parameter data, reason: " +
-            error.message
+            error.message,
         );
       }
 
       throw new Error(
         "could not parse the object-id parameters in query, reason: " +
-          error.message
+          error.message,
       );
     }
   }
@@ -69,7 +69,7 @@ export class DbQueryObjectIdFilter {
       return new Types.ObjectId(param);
     }
     throw new TypeError(
-      'the paramterer of value "' + param + '" is not a valid string'
+      'the paramterer of value "' + param + '" is not a valid string',
     );
   }
 
@@ -78,7 +78,7 @@ export class DbQueryObjectIdFilter {
       return param;
     }
     throw new TypeError(
-      'the paramterer of value "' + param + '" is not a valid string'
+      'the paramterer of value "' + param + '" is not a valid string',
     );
   }
 

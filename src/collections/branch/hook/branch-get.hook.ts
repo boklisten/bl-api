@@ -1,6 +1,7 @@
-import { Hook } from "../../../hook/hook";
 import { Branch, AccessToken } from "@boklisten/bl-model";
+
 import { PermissionService } from "../../../auth/permission/permission.service";
+import { Hook } from "../../../hook/hook";
 
 export class BranchGetHook extends Hook {
   private permissionService: PermissionService;
@@ -12,7 +13,7 @@ export class BranchGetHook extends Hook {
 
   public override after(
     branches: Branch[],
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Branch[]> {
     branches.forEach((branch) => this.resolveBranchItems(branch, accessToken));
 
@@ -34,7 +35,7 @@ export class BranchGetHook extends Hook {
         if (
           this.permissionService.isPermissionEqualOrOver(
             accessToken.permission,
-            "admin"
+            "admin",
           )
         ) {
           return; // admin should always get the branchItems
@@ -44,7 +45,7 @@ export class BranchGetHook extends Hook {
         if (
           !this.permissionService.isPermissionEqualOrOver(
             accessToken.permission,
-            "employee"
+            "employee",
           )
         ) {
           // user is customer

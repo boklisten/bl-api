@@ -20,7 +20,7 @@ describe("DbQueryValidParams", () => {
       validParams.push({ fieldName: "age", type: "number" });
       validParams.push({ fieldName: "price", type: "number" });
       const dbQueryValidParams: DbQueryValidParams = new DbQueryValidParams(
-        validParams
+        validParams,
       );
       const result = ["age", "price"];
 
@@ -30,7 +30,7 @@ describe("DbQueryValidParams", () => {
     it("should return empty array if none of the validParams are of type number", () => {
       const validParams: ValidParam[] = [{ fieldName: "name", type: "string" }];
       const dbQueryValidParams: DbQueryValidParams = new DbQueryValidParams(
-        validParams
+        validParams,
       );
       expect(dbQueryValidParams.getValidNumberParams()).to.eql([]);
     });
@@ -43,7 +43,7 @@ describe("DbQueryValidParams", () => {
         { fieldName: "desc", type: "string" },
       ];
       const dbQuertyValidParams: DbQueryValidParams = new DbQueryValidParams(
-        validParams
+        validParams,
       );
       const result = ["name", "desc"];
 
@@ -54,7 +54,7 @@ describe("DbQueryValidParams", () => {
       const validParams: ValidParam[] = [{ fieldName: "age", type: "number" }];
 
       const dbQueryValidParams: DbQueryValidParams = new DbQueryValidParams(
-        validParams
+        validParams,
       );
 
       expect(dbQueryValidParams.getValidStringParams()).to.eql([]);

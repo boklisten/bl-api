@@ -1,15 +1,17 @@
+import { isNullOrUndefined } from "util";
+
+import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
+import { NextFunction, Request, Response } from "express";
+
+import { PermissionService } from "../../../../auth/permission/permission.service";
 import { Operation } from "../../../../operation/operation";
 import { BlApiRequest } from "../../../../request/bl-api-request";
-import { NextFunction, Request, Response } from "express";
-import { UserSchema } from "../../../user/user.schema";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { User } from "../../../user/user";
-import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
-import { userDetailSchema } from "../../user-detail.schema";
-import { PermissionService } from "../../../../auth/permission/permission.service";
-import { isNullOrUndefined } from "util";
 import { SEResponseHandler } from "../../../../response/se.response.handler";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../bl-collection";
+import { User } from "../../../user/user";
+import { UserSchema } from "../../../user/user.schema";
+import { userDetailSchema } from "../../user-detail.schema";
 
 export class UserDetailPermissionOperation implements Operation {
   private _permissionService: PermissionService;
@@ -17,7 +19,7 @@ export class UserDetailPermissionOperation implements Operation {
   constructor(
     private _userDetailStorage?: BlDocumentStorage<UserDetail>,
     private _userStorage?: BlDocumentStorage<User>,
-    private _resHandler?: SEResponseHandler
+    private _resHandler?: SEResponseHandler,
   ) {
     this._userDetailStorage = _userDetailStorage
       ? _userDetailStorage
@@ -37,7 +39,7 @@ export class UserDetailPermissionOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     if (
       isNullOrUndefined(blApiRequest.data) ||
@@ -78,11 +80,11 @@ export class UserDetailPermissionOperation implements Operation {
       !this._permissionService.isAdmin(blApiRequest.user.permission) ||
       !this._permissionService.isPermissionOver(
         blApiRequest.user.permission,
-        user.permission
+        user.permission,
       ) ||
       !this._permissionService.isPermissionOver(
         blApiRequest.user.permission,
-        permissionChange
+        permissionChange,
       )
     ) {
       throw new BlError("no access to change permission").code(904);
@@ -93,7 +95,7 @@ export class UserDetailPermissionOperation implements Operation {
       await this._userStorage.update(
         user["_id"],
         { permission: permissionChange },
-        blApiRequest.user
+        blApiRequest.user,
       );
     } catch (e) {
       throw e;

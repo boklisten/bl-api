@@ -5,18 +5,19 @@ import {
   Match,
   UserDetail,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { matchSchema } from "../match.schema";
-import { BlCollectionName } from "../../bl-collection";
-import { Operation } from "../../../operation/operation";
-import { BlApiRequest } from "../../../request/bl-api-request";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { User } from "../../user/user";
-import { UserSchema } from "../../user/user.schema";
-import { customerItemSchema } from "../../customer-item/customer-item.schema";
-import { itemSchema } from "../../item/item.schema";
+
 import { addDetailsToAllMatches } from "./match-getall-me-operation-helper";
 import { getAllMatchesForUser } from "./match-operation-utils";
+import { Operation } from "../../../operation/operation";
+import { BlApiRequest } from "../../../request/bl-api-request";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
+import { customerItemSchema } from "../../customer-item/customer-item.schema";
+import { itemSchema } from "../../item/item.schema";
+import { User } from "../../user/user";
+import { UserSchema } from "../../user/user.schema";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { matchSchema } from "../match.schema";
 
 export class GetMyMatchesOperation implements Operation {
   constructor(
@@ -24,27 +25,27 @@ export class GetMyMatchesOperation implements Operation {
     private userDetailStorage?: BlDocumentStorage<UserDetail>,
     private matchStorage?: BlDocumentStorage<Match>,
     private customerItemStorage?: BlDocumentStorage<CustomerItem>,
-    private itemStorage?: BlDocumentStorage<Item>
+    private itemStorage?: BlDocumentStorage<Item>,
   ) {
     this.userStorage ??= new BlDocumentStorage(
       BlCollectionName.Users,
-      UserSchema
+      UserSchema,
     );
     this.userDetailStorage ??= new BlDocumentStorage(
       BlCollectionName.UserDetails,
-      userDetailSchema
+      userDetailSchema,
     );
     this.matchStorage ??= new BlDocumentStorage(
       BlCollectionName.Matches,
-      matchSchema
+      matchSchema,
     );
     this.customerItemStorage ??= new BlDocumentStorage(
       BlCollectionName.CustomerItems,
-      customerItemSchema
+      customerItemSchema,
     );
     this.itemStorage ??= new BlDocumentStorage(
       BlCollectionName.Items,
-      itemSchema
+      itemSchema,
     );
   }
 
@@ -59,7 +60,7 @@ export class GetMyMatchesOperation implements Operation {
       matches,
       this.userDetailStorage,
       this.itemStorage,
-      this.customerItemStorage
+      this.customerItemStorage,
     );
 
     return new BlapiResponse(matchesWithDetails);

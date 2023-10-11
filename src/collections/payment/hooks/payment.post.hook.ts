@@ -1,10 +1,11 @@
-import { Hook } from "../../../hook/hook";
 import { BlError, Order, Payment, AccessToken } from "@boklisten/bl-model";
+
+import { Hook } from "../../../hook/hook";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { orderSchema } from "../../order/order.schema";
-import { PaymentValidator } from "../helpers/payment.validator";
-import { PaymentDibsHandler } from "../helpers/dibs/payment-dibs-handler";
 import { BlCollectionName } from "../../bl-collection";
+import { orderSchema } from "../../order/order.schema";
+import { PaymentDibsHandler } from "../helpers/dibs/payment-dibs-handler";
+import { PaymentValidator } from "../helpers/payment.validator";
 
 export class PaymentPostHook extends Hook {
   private orderStorage: BlDocumentStorage<Order>;
@@ -15,7 +16,7 @@ export class PaymentPostHook extends Hook {
     paymentStorage?: BlDocumentStorage<Payment>,
     orderStorage?: BlDocumentStorage<Order>,
     paymentValidator?: PaymentValidator,
-    paymentDibsHandler?: PaymentDibsHandler
+    paymentDibsHandler?: PaymentDibsHandler,
   ) {
     super();
     this.paymentValidator = paymentValidator ?? new PaymentValidator();
@@ -33,7 +34,7 @@ export class PaymentPostHook extends Hook {
 
   public override after(
     payments: Payment[],
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Payment[]> {
     return new Promise((resolve, reject) => {
       if (!payments || payments.length != 1) {
@@ -58,8 +59,8 @@ export class PaymentPostHook extends Hook {
                 .catch((updateOrderError: BlError) => {
                   reject(
                     new BlError(
-                      "order could not be updated with paymentId"
-                    ).add(updateOrderError)
+                      "order could not be updated with paymentId",
+                    ).add(updateOrderError),
                   );
                 });
             })
@@ -75,7 +76,7 @@ export class PaymentPostHook extends Hook {
 
   private handlePaymentBasedOnMethod(
     payment: Payment,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Payment> {
     return new Promise((resolve, reject) => {
       switch (payment.method) {
@@ -98,7 +99,7 @@ export class PaymentPostHook extends Hook {
 
   private updateOrderWithPayment(
     payment: Payment,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Payment> {
     return new Promise((resolve, reject) => {
       this.orderStorage
@@ -111,8 +112,8 @@ export class PaymentPostHook extends Hook {
           if (paymentIds.indexOf(payment.id) > -1) {
             reject(
               new BlError(
-                `order.payments already includes payment "${payment.id}"`
-              )
+                `order.payments already includes payment "${payment.id}"`,
+              ),
             );
           } else {
             paymentIds.push(payment.id);
@@ -121,7 +122,7 @@ export class PaymentPostHook extends Hook {
             .update(
               order.id,
               { payments: paymentIds },
-              { id: accessToken.sub, permission: accessToken.permission }
+              { id: accessToken.sub, permission: accessToken.permission },
             )
             .then(() => {
               resolve(payment);

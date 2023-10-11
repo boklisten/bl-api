@@ -1,4 +1,5 @@
 import { JsonMember, JsonObject } from "typedjson-npm";
+
 import { DibsEasyPaymentRefundOrderItem } from "./dibs-easy-payment-refund-order-item";
 
 @JsonObject

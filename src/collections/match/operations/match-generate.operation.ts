@@ -5,33 +5,34 @@ import {
   Match,
   Order,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { matchSchema } from "../match.schema";
-import { customerItemSchema } from "../../customer-item/customer-item.schema";
-import { BlCollectionName } from "../../bl-collection";
-import { MatchFinder } from "../helpers/match-finder-2/match-finder";
+
 import {
   candidateMatchToMatch,
   getMatchableReceivers,
   getMatchableSenders,
   verifyMatcherSpec,
 } from "./match-generate-operation-helper";
-import { orderSchema } from "../../order/order.schema";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
+import { customerItemSchema } from "../../customer-item/customer-item.schema";
+import { orderSchema } from "../../order/order.schema";
+import { MatchFinder } from "../helpers/match-finder-2/match-finder";
 import assignMeetingInfoToMatches from "../helpers/match-finder-2/match-meeting-info";
+import { matchSchema } from "../match.schema";
 
 export class MatchGenerateOperation implements Operation {
   constructor(
     private customerItemStorage?: BlDocumentStorage<CustomerItem>,
     private matchStorage?: BlDocumentStorage<Match>,
-    private orderStorage?: BlDocumentStorage<Order>
+    private orderStorage?: BlDocumentStorage<Order>,
   ) {
     this.customerItemStorage = customerItemStorage
       ? customerItemStorage
       : new BlDocumentStorage(
           BlCollectionName.CustomerItems,
-          customerItemSchema
+          customerItemSchema,
         );
     this.matchStorage = matchStorage
       ? matchStorage
@@ -50,7 +51,7 @@ export class MatchGenerateOperation implements Operation {
       getMatchableSenders(
         matcherSpec.senderBranches,
         matcherSpec.deadlineBefore,
-        this.customerItemStorage
+        this.customerItemStorage,
       ),
       getMatchableReceivers(matcherSpec.receiverBranches, this.orderStorage),
     ]);
@@ -61,7 +62,7 @@ export class MatchGenerateOperation implements Operation {
       new MatchFinder(senders, receivers).generateMatches(),
       matcherSpec.standLocation,
       matcherSpec.userMatchLocations,
-      new Date(matcherSpec.startTime)
+      new Date(matcherSpec.startTime),
     ).map((candidate) => candidateMatchToMatch(candidate));
     if (matches.length === 0) {
       throw new BlError("No matches generated");

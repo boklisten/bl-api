@@ -16,7 +16,7 @@ describe("DbQueryBuilder", () => {
 
     it("should throw return empty SeDbQuery object if no query is given", () => {
       expect(
-        dbQueryBuilder.getDbQuery({}, [{ fieldName: "name", type: "string" }])
+        dbQueryBuilder.getDbQuery({}, [{ fieldName: "name", type: "string" }]),
       ).to.eql(new SEDbQuery());
     });
 
@@ -52,8 +52,8 @@ describe("DbQueryBuilder", () => {
       expect(
         dbQueryBuilder.getDbQuery(
           { age: [">12", "<60"], price: "120", limit: 3, og: "name" },
-          validParams
-        )
+          validParams,
+        ),
       ).to.eql(result);
     });
 

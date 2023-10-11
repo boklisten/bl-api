@@ -46,8 +46,8 @@ describe("OrderItemPartlyPaymentValidator", () => {
         orderItemPartlyPaymentValidator.validate(
           orderItem,
           item as Item,
-          branch as Branch
-        )
+          branch as Branch,
+        ),
       ).to.eventually.be.rejectedWith(BlError);
     });
 
@@ -63,11 +63,11 @@ describe("OrderItemPartlyPaymentValidator", () => {
         orderItemPartlyPaymentValidator.validate(
           orderItem as OrderItem,
           {} as Item,
-          {} as Branch
-        )
+          {} as Branch,
+        ),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /orderItem.info.to not specified/
+        /orderItem.info.to not specified/,
       );
     });
 
@@ -84,11 +84,11 @@ describe("OrderItemPartlyPaymentValidator", () => {
         orderItemPartlyPaymentValidator.validate(
           orderItem as OrderItem,
           {} as Item,
-          {} as Branch
-        )
+          {} as Branch,
+        ),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /orderItem.info.amountLeftToPay not specified/
+        /orderItem.info.amountLeftToPay not specified/,
       );
     });
 
@@ -101,8 +101,8 @@ describe("OrderItemPartlyPaymentValidator", () => {
         orderItemPartlyPaymentValidator.validate(
           orderItem as OrderItem,
           {} as Item,
-          {} as Branch
-        )
+          {} as Branch,
+        ),
       ).to.eventually.be.rejectedWith(BlError, /orderItem.info not specified/);
     });
 
@@ -136,11 +136,11 @@ describe("OrderItemPartlyPaymentValidator", () => {
         orderItemPartlyPaymentValidator.validate(
           orderItem as OrderItem,
           {} as Item,
-          {} as Branch
-        )
+          {} as Branch,
+        ),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /partly-payment period \"year\" not supported on branch/
+        /partly-payment period \"year\" not supported on branch/,
       );
     });
   });

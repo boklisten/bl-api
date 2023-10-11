@@ -23,7 +23,7 @@ describe("DeliveryValidator", () => {
   const deliveryValidator = new DeliveryValidator(
     orderStorage,
     deliveryBranchHandler,
-    deliveryBringHandler
+    deliveryBringHandler,
   );
 
   let deliveryBranchValidation = true;
@@ -41,7 +41,7 @@ describe("DeliveryValidator", () => {
     .callsFake((delivery: Delivery, order: Order) => {
       if (!deliveryBranchValidation) {
         return Promise.reject(
-          new BlError('validation of delivery.method "branch" failed')
+          new BlError('validation of delivery.method "branch" failed'),
         );
       }
       return Promise.resolve(true);
@@ -52,7 +52,7 @@ describe("DeliveryValidator", () => {
     .callsFake((delivery: Delivery, order: Order) => {
       if (!deliveryBringValidation) {
         return Promise.reject(
-          new BlError('validation of delivery.method "bring" failed')
+          new BlError('validation of delivery.method "bring" failed'),
         );
       }
       return Promise.resolve(true);
@@ -83,7 +83,7 @@ describe("DeliveryValidator", () => {
       testDelivery.method = null;
 
       return expect(
-        deliveryValidator.validate(testDelivery, testOrder)
+        deliveryValidator.validate(testDelivery, testOrder),
       ).to.be.rejectedWith(BlError, /delivery.method not defined/);
     });
 
@@ -92,10 +92,10 @@ describe("DeliveryValidator", () => {
       testDelivery.method = "branch";
 
       return expect(
-        deliveryValidator.validate(testDelivery, testOrder)
+        deliveryValidator.validate(testDelivery, testOrder),
       ).to.be.rejectedWith(
         BlError,
-        /validation of delivery.method "branch" failed/
+        /validation of delivery.method "branch" failed/,
       );
     });
 
@@ -104,10 +104,10 @@ describe("DeliveryValidator", () => {
       testDelivery.method = "bring";
 
       return expect(
-        deliveryValidator.validate(testDelivery, testOrder)
+        deliveryValidator.validate(testDelivery, testOrder),
       ).to.be.rejectedWith(
         BlError,
-        /validation of delivery.method "bring" failed/
+        /validation of delivery.method "bring" failed/,
       );
     });
   });

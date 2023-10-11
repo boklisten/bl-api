@@ -1,10 +1,11 @@
-import { SEToken } from "../se.token";
 import passport from "passport";
 import { Strategy, ExtractJwt } from "passport-jwt";
-import { UserHandler } from "../../user/user.handler";
-import { AccessTokenSecret } from "./access-token.secret";
-import { TokenConfig } from "../token.config";
+
 import { AccessToken } from "./access-token";
+import { AccessTokenSecret } from "./access-token.secret";
+import { UserHandler } from "../../user/user.handler";
+import { SEToken } from "../se.token";
+import { TokenConfig } from "../token.config";
 
 export class AccessTokenAuth {
   private accessTokenSecret: AccessTokenSecret;
@@ -19,13 +20,13 @@ export class AccessTokenAuth {
       .token;
     this.tokenConfig = new TokenConfig(
       appTokenConfig.access,
-      appTokenConfig.refresh
+      appTokenConfig.refresh,
     );
 
     passport.use(
       new Strategy(this.getOptions(), (accessToken: AccessToken, done) => {
         done(null, { accessToken: accessToken });
-      })
+      }),
     );
   }
 

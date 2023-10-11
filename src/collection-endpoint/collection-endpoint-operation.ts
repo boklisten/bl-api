@@ -1,14 +1,13 @@
+import { AccessToken, BlError, BlapiResponse } from "@boklisten/bl-model";
 import { NextFunction, Request, Response, Router } from "express";
+
+import { CollectionEndpointAuth } from "./collection-endpoint-auth/collection-endpoint-auth";
 import {
   BlEndpointMethod,
   BlEndpointOperation,
 } from "../collections/bl-collection";
-import { CollectionEndpointAuth } from "./collection-endpoint-auth/collection-endpoint-auth";
-
-import { SEResponseHandler } from "../response/se.response.handler";
-import { AccessToken, BlError } from "@boklisten/bl-model";
 import { BlApiRequest } from "../request/bl-api-request";
-import { BlapiResponse } from "@boklisten/bl-model";
+import { SEResponseHandler } from "../response/se.response.handler";
 
 export class CollectionEndpointOperation {
   private _collectionEndpointAuth: CollectionEndpointAuth;
@@ -18,7 +17,7 @@ export class CollectionEndpointOperation {
     protected _router: Router,
     private collectionUri: string,
     private _method: BlEndpointMethod,
-    protected _operation: BlEndpointOperation
+    protected _operation: BlEndpointOperation,
   ) {
     this.createUri(this.collectionUri, this._operation.name, _method);
     this._collectionEndpointAuth = new CollectionEndpointAuth();
@@ -29,7 +28,7 @@ export class CollectionEndpointOperation {
     const uri = this.createUri(
       this.collectionUri,
       this._operation.name,
-      this._method
+      this._method,
     );
     switch (this._method) {
       case "getId":
@@ -46,7 +45,7 @@ export class CollectionEndpointOperation {
         break;
       default:
         throw new Error(
-          `endpoint operation method "${this._method}" is currently not supported`
+          `endpoint operation method "${this._method}" is currently not supported`,
         );
     }
   }
@@ -54,7 +53,7 @@ export class CollectionEndpointOperation {
   private createUri(
     collectionUri: string,
     operationName: string,
-    operationMethod: BlEndpointMethod
+    operationMethod: BlEndpointMethod,
   ): string {
     let uri = collectionUri;
     if (
@@ -99,7 +98,7 @@ export class CollectionEndpointOperation {
           });
       })
       .catch((blError: BlError) =>
-        this._responseHandler.sendErrorResponse(res, blError)
+        this._responseHandler.sendErrorResponse(res, blError),
       );
   }
 }

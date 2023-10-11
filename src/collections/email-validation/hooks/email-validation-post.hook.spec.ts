@@ -15,7 +15,7 @@ chai.use(chaiAsPromised);
 describe("EmailValidationPostHook", () => {
   const emailValidationHelper = new EmailValidationHelper();
   const emailValidationPostHook = new EmailValidationPostHook(
-    emailValidationHelper
+    emailValidationHelper,
   );
 
   let emailValidationHelperSuccess: boolean;
@@ -33,7 +33,7 @@ describe("EmailValidationPostHook", () => {
   sinon.stub(emailValidationHelper, "sendEmailValidationLink").callsFake(() => {
     if (!emailValidationHelperSuccess) {
       return Promise.reject(
-        new BlError("could not send email validation link")
+        new BlError("could not send email validation link"),
       );
     }
 
@@ -48,7 +48,7 @@ describe("EmailValidationPostHook", () => {
         .after([testEmailValidation])
         .catch((blErr: BlError) => {
           expect(blErr.errorStack[0].getMsg()).to.be.eql(
-            "could not send email validation link"
+            "could not send email validation link",
           );
           done();
         });

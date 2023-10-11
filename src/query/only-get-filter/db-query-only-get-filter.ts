@@ -7,7 +7,7 @@ export class DbQueryOnlyGetFilter {
   public getOnlyGetFilters(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
-    validOnlyGetParams: string[]
+    validOnlyGetParams: string[],
   ): OnlyGetFilter[] {
     if (
       !query ||
@@ -24,14 +24,14 @@ export class DbQueryOnlyGetFilter {
   private generateOnlyGetFilters(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     og: any,
-    validOnlyGetParams: string[]
+    validOnlyGetParams: string[],
   ): OnlyGetFilter[] {
     const onlyGetParamArray = Array.isArray(og) ? og : [og];
 
     return onlyGetParamArray.map((onlyGetParam) => {
       if (!validOnlyGetParams.includes(onlyGetParam))
         throw ReferenceError(
-          'the parameter "' + onlyGetParam + '" is not in validOnlyGetParams'
+          'the parameter "' + onlyGetParam + '" is not in validOnlyGetParams',
         );
       return { fieldName: onlyGetParam, value: 1 };
     });

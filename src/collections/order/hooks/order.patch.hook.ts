@@ -1,10 +1,11 @@
-import { Hook } from "../../../hook/hook";
 import { AccessToken, BlError, Order, UserDetail } from "@boklisten/bl-model";
+
+import { Hook } from "../../../hook/hook";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
+import { OrderPlacedHandler } from "../helpers/order-placed-handler/order-placed-handler";
 import { OrderValidator } from "../helpers/order-validator/order-validator";
 import { orderSchema } from "../order.schema";
-import { OrderPlacedHandler } from "../helpers/order-placed-handler/order-placed-handler";
-import { BlCollectionName } from "../../bl-collection";
 
 export class OrderPatchHook extends Hook {
   private orderValidator: OrderValidator;
@@ -15,7 +16,7 @@ export class OrderPatchHook extends Hook {
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     orderStorage?: BlDocumentStorage<Order>,
     orderValidator?: OrderValidator,
-    orderPlacedHandler?: OrderPlacedHandler
+    orderPlacedHandler?: OrderPlacedHandler,
   ) {
     super();
     this.orderStorage =
@@ -29,7 +30,7 @@ export class OrderPatchHook extends Hook {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any,
     accessToken: AccessToken,
-    id: string
+    id: string,
   ): Promise<boolean> {
     if (!body) {
       return Promise.reject(new BlError("body not defined"));
@@ -66,7 +67,7 @@ export class OrderPatchHook extends Hook {
           })
           .catch((orderPlacedError: BlError) => {
             reject(
-              new BlError("order could not be placed").add(orderPlacedError)
+              new BlError("order could not be placed").add(orderPlacedError),
             );
           });
       } else {
@@ -84,29 +85,29 @@ export class OrderPatchHook extends Hook {
                   {
                     id: accessToken.sub,
                     permission: accessToken.permission,
-                  }
+                  },
                 )
                 .then(() => {
                   return reject(
                     new BlError(
-                      "validation of patch of order failed, order.placed is set to false"
-                    ).add(validationError)
+                      "validation of patch of order failed, order.placed is set to false",
+                    ).add(validationError),
                   );
                 })
                 .catch((updateError: BlError) => {
                   return reject(
                     new BlError(
-                      "could not set order.placed to false when order validation failed"
+                      "could not set order.placed to false when order validation failed",
                     )
                       .add(updateError)
-                      .add(validationError)
+                      .add(validationError),
                   );
                 });
             } else {
               return reject(
                 new BlError("patch of order could not be validated").add(
-                  validationError
-                )
+                  validationError,
+                ),
               );
             }
           });

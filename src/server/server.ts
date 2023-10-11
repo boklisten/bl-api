@@ -1,19 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import dotenv from "dotenv";
 // IMPORTANT TO KEEP THIS ON TOP
+// eslint-disable-next-line import/order
+import dotenv from "dotenv";
 dotenv.config(); //adds the .env file to environment variables
 
-import express from "express";
-import { Application, Request, Response, Router } from "express";
+import path from "path";
+
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import express, { Application, json, Request, Response, Router } from "express";
+import mongoose from "mongoose";
 import passport from "passport";
+
+import * as packageJson from "../../package.json";
 import { BlAuth } from "../auth/bl.auth";
 import { CollectionEndpointCreator } from "../collection-endpoint/collection-endpoint-creator";
-import path from "path";
 import { logger } from "../logger/logger";
-import * as packageJson from "../../package.json";
-import mongoose from "mongoose";
-import cors from "cors";
-import cookieParser from "cookie-parser";
 
 export class Server {
   public app: Application;
@@ -43,7 +44,7 @@ export class Server {
         ) {
           const interval = 5000;
           logger.error(
-            `failed to connect to mongodb, will try again in ${interval} sec`
+            `failed to connect to mongodb, will try again in ${interval} sec`,
           );
 
           setTimeout(() => {
@@ -56,7 +57,7 @@ export class Server {
   private connectToMongoDb(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       logger.verbose(
-        `trying to connect to mongodb: ${process.env.MONGODB_URI}`
+        `trying to connect to mongodb: ${process.env.MONGODB_URI}`,
       );
 
       mongoose.connection.on("disconnected", () => {
@@ -92,7 +93,7 @@ export class Server {
 
   private initialServerConfig() {
     this.app = express();
-    this.app.use(express.json());
+    this.app.use(json());
 
     process.on("unhandledRejection", (reason, p) => {
       logger.error(`unhandeled rejection at: ${p}, reason: ${reason}`);
@@ -157,16 +158,18 @@ export class Server {
 
   private generateEndpoints() {
     const collectionEndpointCreator = new CollectionEndpointCreator(
-      this.router
+      this.router,
     );
     collectionEndpointCreator.create();
   }
 
   private initialPassportConfig() {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     passport.serializeUser((user: any, done: any) => {
       done(null, user);
     });
 
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     passport.deserializeUser((user: any, done: any) => {
       done(null, user);
     });
@@ -175,6 +178,7 @@ export class Server {
   private serverStart() {
     this.app.set("port", process.env.PORT || 1337);
 
+    // eslint-disable-next-line import/no-named-as-default-member
     this.app.use(express.static(path.join(__dirname, "../public")));
 
     this.app.listen(this.app.get("port"), () => {
@@ -211,7 +215,7 @@ export class Server {
       "server url:\t" +
         process.env.SERVER_HOST +
         process.env.SERVER_PORT +
-        process.env.SERVER_PATH
+        process.env.SERVER_PATH,
     );
     logger.verbose("mongoDB path:\t" + process.env.MONGODB_URI);
   }

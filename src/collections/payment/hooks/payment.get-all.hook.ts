@@ -1,6 +1,7 @@
-import { Hook } from "../../../hook/hook";
 import { BlError, Payment, AccessToken } from "@boklisten/bl-model";
+
 import { PermissionService } from "../../../auth/permission/permission.service";
+import { Hook } from "../../../hook/hook";
 
 export class PaymentGetAllHook extends Hook {
   private _permissionService: PermissionService;
@@ -16,12 +17,12 @@ export class PaymentGetAllHook extends Hook {
     accessToken?: AccessToken,
     id?: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    query?: any
+    query?: any,
   ): Promise<boolean> {
     if (
       !this._permissionService.isPermissionOver(
         accessToken.permission,
-        "customer"
+        "customer",
       )
     ) {
       if (!query || !query["info.paymentId"]) {

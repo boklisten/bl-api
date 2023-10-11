@@ -20,12 +20,12 @@ describe("UniqueItemActiveOperation", () => {
   describe("run()", () => {
     const customerItemActiveBlid = new CustomerItemActiveBlid();
     const uniqueItemStorage = new BlDocumentStorage<UniqueItem>(
-      BlCollectionName.UniqueItems
+      BlCollectionName.UniqueItems,
     );
 
     const getActiveCustomerItemsStub = sinon.stub(
       customerItemActiveBlid,
-      "getActiveCustomerItems"
+      "getActiveCustomerItems",
     );
 
     const getUniqueItemStub = sinon.stub(uniqueItemStorage, "get");
@@ -35,7 +35,7 @@ describe("UniqueItemActiveOperation", () => {
     const uniqueItemActiveOperation = new UniqueItemActiveOperation(
       customerItemActiveBlid,
       uniqueItemStorage,
-      resHandler
+      resHandler,
     );
 
     sinon.stub(resHandler, "sendResponse").resolves(true);
@@ -50,7 +50,7 @@ describe("UniqueItemActiveOperation", () => {
       getActiveCustomerItemsStub.resolves([]);
 
       return expect(
-        uniqueItemActiveOperation.run({ documentId: "uniqueItem1" })
+        uniqueItemActiveOperation.run({ documentId: "uniqueItem1" }),
       ).to.eventually.be.true;
     });
   });

@@ -1,13 +1,13 @@
 import { User } from "../../../collections/user/user";
-import { UserHandler } from "../user.handler";
 import { LocalLoginHandler } from "../../local/local-login.handler";
 import { TokenHandler } from "../../token/token.handler";
+import { UserHandler } from "../user.handler";
 
 export class UserProvider {
   constructor(
     private _userHandler?: UserHandler,
     private _localLoginHandler?: LocalLoginHandler,
-    private _tokenHandler?: TokenHandler
+    private _tokenHandler?: TokenHandler,
   ) {
     this._userHandler = _userHandler ? _userHandler : new UserHandler();
 
@@ -23,7 +23,7 @@ export class UserProvider {
   public async loginOrCreate(
     username: string,
     provider: string,
-    providerId: string
+    providerId: string,
   ): Promise<{
     user: User;
     tokens: { accessToken: string; refreshToken: string };
@@ -36,7 +36,7 @@ export class UserProvider {
       user = await this.getUser(username, provider, providerId);
       await this._userHandler.valid(username);
       await this._localLoginHandler.createDefaultLocalLoginIfNoneIsFound(
-        username
+        username,
       );
       tokens = await this._tokenHandler.createTokens(username);
     } catch (e) {
@@ -49,7 +49,7 @@ export class UserProvider {
   private async getUser(
     username: string,
     provider: string,
-    providerId: string
+    providerId: string,
   ): Promise<User> {
     let user;
     try {

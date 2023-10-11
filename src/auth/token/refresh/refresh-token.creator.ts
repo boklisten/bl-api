@@ -1,5 +1,6 @@
 import { BlError } from "@boklisten/bl-model";
 import isEmail from "validator/lib/isEmail";
+
 import { RefreshTokenSecret } from "./refresh-token.secret";
 import { TokenConfig } from "../token.config";
 
@@ -21,7 +22,7 @@ export class RefreshTokenCreator {
 
       if (!username || !isEmail(username))
         return reject(
-          blError.msg("username is undefined or not an email").code(103)
+          blError.msg("username is undefined or not an email").code(103),
         );
       if (!userid || userid.length <= 0)
         return reject(blError.msg("userid is empty or undefined").code(103));
@@ -34,10 +35,10 @@ export class RefreshTokenCreator {
         (error: any, refreshToken: string) => {
           if (error)
             return reject(
-              blError.msg("could not create refreshToken").code(906)
+              blError.msg("could not create refreshToken").code(906),
             );
           resolve(refreshToken);
-        }
+        },
       );
     });
   }

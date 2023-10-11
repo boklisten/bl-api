@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { BlError } from "@boklisten/bl-model";
 import { Router } from "express";
-
-import { OAuth2Strategy } from "passport-google-oauth";
 import passport from "passport";
+import { OAuth2Strategy } from "passport-google-oauth";
+
+import { APP_CONFIG } from "../../application-config";
 import { ApiPath } from "../../config/api-path";
 import { SEResponseHandler } from "../../response/se.response.handler";
-import { BlError } from "@boklisten/bl-model";
-import { APP_CONFIG } from "../../application-config";
 import { UserProvider } from "../user/user-provider/user-provider";
 
 export class GoogleAuth {
@@ -14,7 +14,10 @@ export class GoogleAuth {
   private _userProvider: UserProvider;
   private _googlePassportStrategySettings;
 
-  constructor(private router: Router, private resHandler: SEResponseHandler) {
+  constructor(
+    private router: Router,
+    private resHandler: SEResponseHandler,
+  ) {
     this.apiPath = new ApiPath();
     this.createAuthGet(router);
     this.createCallbackGet(router);
@@ -41,7 +44,7 @@ export class GoogleAuth {
           accessToken: any,
           refreshToken: any,
           profile: any,
-          done: any
+          done: any,
         ) => {
           const provider = APP_CONFIG.login.google.name;
           const providerId = profile.id;
@@ -64,19 +67,19 @@ export class GoogleAuth {
             userAndTokens = await this._userProvider.loginOrCreate(
               username,
               provider,
-              providerId
+              providerId,
             );
           } catch (e) {
             return done(
               null,
               null,
-              new BlError("could not create user").code(902)
+              new BlError("could not create user").code(902),
             );
           }
 
           done(null, userAndTokens.tokens);
-        }
-      )
+        },
+      ),
     );
   }
 
@@ -95,7 +98,7 @@ export class GoogleAuth {
       this.apiPath.createPath("auth/google"),
       passport.authenticate(APP_CONFIG.login.google.name, {
         scope: ["profile", "email"],
-      })
+      }),
     );
   }
 
@@ -109,7 +112,7 @@ export class GoogleAuth {
           if (!tokens && (err || blError)) {
             return res.redirect(
               process.env.CLIENT_URI +
-                APP_CONFIG.path.client.auth.socialLoginFailure
+                APP_CONFIG.path.client.auth.socialLoginFailure,
             );
           }
 
@@ -118,10 +121,10 @@ export class GoogleAuth {
               res,
               tokens.accessToken,
               tokens.refreshToken,
-              this.apiPath.retrieveRefererPath(req.headers)
+              this.apiPath.retrieveRefererPath(req.headers),
             );
           }
-        }
+        },
       )(req, res);
     });
   }

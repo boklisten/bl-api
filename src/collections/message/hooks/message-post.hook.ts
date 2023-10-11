@@ -1,13 +1,15 @@
-import { Hook } from "../../../hook/hook";
-import { AccessToken, Message, BlError, UserDetail } from "@boklisten/bl-model";
 import { isNullOrUndefined } from "util";
-import { MessengerReminder } from "../../../messenger/reminder/messenger-reminder";
+
+import { AccessToken, Message, BlError, UserDetail } from "@boklisten/bl-model";
+
 import { PermissionService } from "../../../auth/permission/permission.service";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { MessageHelper } from "../helper/message-helper";
+import { Hook } from "../../../hook/hook";
 import { Messenger } from "../../../messenger/messenger";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { MessengerReminder } from "../../../messenger/reminder/messenger-reminder";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { MessageHelper } from "../helper/message-helper";
 
 export class MessagePostHook implements Hook {
   private messengerReminder: MessengerReminder;
@@ -20,7 +22,7 @@ export class MessagePostHook implements Hook {
     messageStorage?: BlDocumentStorage<Message>,
     messageHelper?: MessageHelper,
     messenger?: Messenger,
-    userDetailStorage?: BlDocumentStorage<UserDetail>
+    userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
     this.messengerReminder = messengerReminder
       ? messengerReminder
@@ -36,7 +38,7 @@ export class MessagePostHook implements Hook {
     message: Message,
     accessToken: AccessToken,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    id?: string
+    id?: string,
   ): Promise<boolean> {
     if (typeof message.messageType === "undefined" || !message.messageType) {
       throw new BlError("messageType is not defined").code(701);
@@ -53,7 +55,7 @@ export class MessagePostHook implements Hook {
       if (
         !this.permissionService.isPermissionEqualOrOver(
           accessToken.permission,
-          "admin"
+          "admin",
         )
       ) {
         throw new BlError("no permission").code(904);
@@ -83,7 +85,7 @@ export class MessagePostHook implements Hook {
   async after(
     messages: Message[],
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Message[]> {
     if (isNullOrUndefined(messages) || messages.length <= 0) {
       throw new BlError("no messages provided");
@@ -100,7 +102,7 @@ export class MessagePostHook implements Hook {
         return await this.onMatch(message);
       default:
         throw new BlError(
-          `MessageType "${message.messageType}" is not supported`
+          `MessageType "${message.messageType}" is not supported`,
         );
     }
   }

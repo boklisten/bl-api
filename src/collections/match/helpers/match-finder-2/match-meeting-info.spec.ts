@@ -22,7 +22,7 @@ const siri = createFakeMatchableUser("siri", "Mykhetens leksikon", "Sykling 2");
 const kristine = createFakeMatchableUser(
   "kristine",
   "Mykhetens leksikon",
-  "Spirituell Spire"
+  "Spirituell Spire",
 );
 const elRi = createFakeMatchableUser("elRi", "Spirituell Spire");
 
@@ -61,7 +61,7 @@ describe("Simple Matches", () => {
       matches,
       standLocation,
       [{ name: "Sal 1" }, { name: "Sal 2" }],
-      new Date("2023-02-02T12:00:00+0100")
+      new Date("2023-02-02T12:00:00+0100"),
     );
   });
 
@@ -77,19 +77,20 @@ describe("Simple Matches", () => {
       matches,
       standLocation,
       [{ name: "Sal 1", simultaneousMatchLimit }, { name: "Sal 2" }],
-      new Date("2023-02-02T12:00:00+0100")
+      new Date("2023-02-02T12:00:00+0100"),
     );
     const meetingTimes = updatedMatches
       .filter((match) => match.meetingInfo.location === "Sal 1")
       .map((match) => match.meetingInfo.date);
 
     const distinctMeetingTimes = Array.from(
-      new Set(meetingTimes.map((d) => d.getTime()))
+      new Set(meetingTimes.map((d) => d.getTime())),
     ).map((t) => new Date(t));
 
     for (const distinctMeetingTime of distinctMeetingTimes) {
       const simultaneousMatches = meetingTimes.filter(
-        (meetingTime) => meetingTime.getTime() === distinctMeetingTime.getTime()
+        (meetingTime) =>
+          meetingTime.getTime() === distinctMeetingTime.getTime(),
       ).length;
 
       expect(simultaneousMatches).to.be.lessThanOrEqual(simultaneousMatchLimit);
@@ -101,15 +102,15 @@ describe("Large User Groups", () => {
   it("should be able to assign non overlapping time with the Otto Treider test data", () => {
     const shuffle = shuffler(seededRandom(123982));
     const testUsersYear0: MatchableUser[] = otto_treider_test_users_year_0.map(
-      ({ items, id }) => ({ items: new Set(items), id })
+      ({ items, id }) => ({ items: new Set(items), id }),
     );
     const testUsersYear1: MatchableUser[] = otto_treider_test_users_year_1.map(
-      ({ items, id }) => ({ items: new Set(items), id })
+      ({ items, id }) => ({ items: new Set(items), id }),
     );
 
     const matchFinder = new MatchFinder(
       shuffle(testUsersYear0),
-      shuffle(testUsersYear1)
+      shuffle(testUsersYear1),
     );
 
     const matches = matchFinder.generateMatches();
@@ -123,7 +124,7 @@ describe("Large User Groups", () => {
         { name: "Kantina", simultaneousMatchLimit: 20 },
         { name: "Fysikk-labben", simultaneousMatchLimit: 5 },
       ],
-      new Date("2023-02-02T12:00:00+0100")
+      new Date("2023-02-02T12:00:00+0100"),
     );
   });
 });

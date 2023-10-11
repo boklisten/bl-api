@@ -1,5 +1,6 @@
-import { Hook } from "../../../hook/hook";
 import { AccessToken, Item } from "@boklisten/bl-model";
+
+import { Hook } from "../../../hook/hook";
 
 export class ItemPostHook extends Hook {
   constructor() {
@@ -10,7 +11,7 @@ export class ItemPostHook extends Hook {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     body: Item,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     return Promise.resolve(true);
   }
@@ -18,7 +19,7 @@ export class ItemPostHook extends Hook {
   public override after(
     items: Item[],
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Item[]> {
     return Promise.resolve(items);
   }

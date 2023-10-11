@@ -28,7 +28,7 @@ describe("OrderConfirmOperation", () => {
   const orderConfirmOperation = new OrderConfirmOperation(
     resHandler,
     orderStorage,
-    orderPlacedHandler
+    orderPlacedHandler,
   );
 
   beforeEach(() => {
@@ -45,7 +45,7 @@ describe("OrderConfirmOperation", () => {
         orderConfirmOperation.run({
           documentId: "order1",
           user: { id: "user1", permission: "customer" },
-        })
+        }),
       ).to.eventually.be.rejectedWith(BlError, /order "order1" not found/);
     });
 

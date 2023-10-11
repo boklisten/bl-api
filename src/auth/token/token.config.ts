@@ -1,10 +1,10 @@
-import { RefreshToken } from "./refresh/refresh-token";
 import { AccessToken } from "./access-token/access-token";
+import { RefreshToken } from "./refresh/refresh-token";
 
 export class TokenConfig {
   constructor(
     private _accessToken: AccessToken,
-    private _refreshToken: RefreshToken
+    private _refreshToken: RefreshToken,
   ) {}
 
   set refreshToken(refreshToken: RefreshToken) {

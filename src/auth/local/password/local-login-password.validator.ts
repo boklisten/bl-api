@@ -1,5 +1,6 @@
-import { SeCrypto } from "../../../crypto/se.crypto";
 import { BlError } from "@boklisten/bl-model";
+
+import { SeCrypto } from "../../../crypto/se.crypto";
 
 export class LocalLoginPasswordValidator {
   constructor(private seCrypto: SeCrypto) {}
@@ -7,7 +8,7 @@ export class LocalLoginPasswordValidator {
   public validate(
     password: string,
     salt: string,
-    hashedPassword: string
+    hashedPassword: string,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const blError = new BlError("")
@@ -30,9 +31,9 @@ export class LocalLoginPasswordValidator {
           reject(
             blError
               .msg(
-                "password and salt does not hash into the given hashedPassword"
+                "password and salt does not hash into the given hashedPassword",
               )
-              .code(901)
+              .code(901),
           );
         },
         (error: BlError) => {
@@ -40,10 +41,10 @@ export class LocalLoginPasswordValidator {
             error.add(
               blError
                 .msg("could not hash the provided password and salt")
-                .code(901)
-            )
+                .code(901),
+            ),
           );
-        }
+        },
       );
     });
   }

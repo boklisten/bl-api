@@ -21,7 +21,7 @@ describe("DbQueryOnlyGetFilter", () => {
 
     it("should return empty array if validOnlyGetParams is empty", () => {
       expect(dbQueryOnlyGetFilter.getOnlyGetFilters({ og: "name" }, [])).to.eql(
-        []
+        [],
       );
     });
 
@@ -36,7 +36,7 @@ describe("DbQueryOnlyGetFilter", () => {
           "name",
           "age",
           "desc",
-        ])
+        ]),
       ).to.eql(result);
     });
 

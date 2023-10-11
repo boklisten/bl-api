@@ -1,6 +1,7 @@
 import { BlError } from "@boklisten/bl-model";
-import { AccessTokenSecret } from "./access-token.secret";
+
 import { AccessToken } from "./access-token";
+import { AccessTokenSecret } from "./access-token.secret";
 
 export class AccessTokenValidator {
   private accessTokenSecret: AccessTokenSecret;
@@ -24,11 +25,11 @@ export class AccessTokenValidator {
               return reject(
                 new BlError("could not verify jwt")
                   .store("accessToken", accessToken)
-                  .code(910)
+                  .code(910),
               );
 
             resolve(payload);
-          }
+          },
         );
       } catch (error) {
         return reject(new BlError("could not verify accessToken").code(910));

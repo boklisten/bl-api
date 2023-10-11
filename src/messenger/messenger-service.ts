@@ -12,10 +12,10 @@ export interface MessengerService {
   remind(
     message: Message,
     customerDetail: UserDetail,
-    customerItems: CustomerItem[]
+    customerItems: CustomerItem[],
   ): void;
   remindMany(
-    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[]
+    customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[],
   ): void;
 
   orderPlaced(customerDetail: UserDetail, order: Order): void;

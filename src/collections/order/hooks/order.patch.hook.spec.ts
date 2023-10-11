@@ -16,7 +16,7 @@ chai.use(chaiAsPromised);
 
 describe("OrderPatchHook", () => {
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const orderValidator = new OrderValidator();
@@ -25,7 +25,7 @@ describe("OrderPatchHook", () => {
     userDetailStorage,
     orderStorage,
     orderValidator,
-    orderPlacedHandler
+    orderPlacedHandler,
   );
 
   let testAccessToken: AccessToken;
@@ -139,19 +139,19 @@ describe("OrderPatchHook", () => {
   describe("before()", () => {
     it("should reject if body is empty or undefined", () => {
       return expect(
-        orderPatchHook.before(undefined, testAccessToken, "order1")
+        orderPatchHook.before(undefined, testAccessToken, "order1"),
       ).to.be.rejectedWith(BlError, /body not defined/);
     });
 
     it("should reject if accessToken is empty or undefined", () => {
       return expect(
-        orderPatchHook.before({ placed: true }, undefined, "order1")
+        orderPatchHook.before({ placed: true }, undefined, "order1"),
       ).to.be.rejectedWith(BlError, /accessToken not defined/);
     });
 
     it("should reject if id is not defined", () => {
       return expect(
-        orderPatchHook.before(testRequestBody, testAccessToken, null)
+        orderPatchHook.before(testRequestBody, testAccessToken, null),
       ).to.be.rejectedWith(BlError, /id not defined/);
     });
   });
@@ -159,7 +159,7 @@ describe("OrderPatchHook", () => {
   describe("after()", () => {
     it("should reject if accessToken is not defined", () => {
       return expect(
-        orderPatchHook.after([testOrder], undefined)
+        orderPatchHook.after([testOrder], undefined),
       ).to.be.rejectedWith(BlError, /accessToken not defined/);
     });
 
@@ -172,7 +172,7 @@ describe("OrderPatchHook", () => {
         orderPlacedConfirmed = false;
 
         return expect(
-          orderPatchHook.after([testOrder], testAccessToken)
+          orderPatchHook.after([testOrder], testAccessToken),
         ).to.be.rejectedWith(BlError, /order could not be placed/);
       });
     });

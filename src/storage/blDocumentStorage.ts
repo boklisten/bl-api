@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
+
 import { BlStorageHandler } from "./blStorageHandler";
 import { MongoDbBlStorageHandler } from "./mongoDb/mongoDb.blStorageHandler";
-import { SEDbQuery } from "../query/se.db-query";
 import { NestedDocument } from "./nested-document";
 import { BlCollectionName } from "../collections/bl-collection";
+import { SEDbQuery } from "../query/se.db-query";
 
 export class BlDocumentStorage<T extends BlDocument>
   implements BlStorageHandler<T>
@@ -14,12 +15,12 @@ export class BlDocumentStorage<T extends BlDocument>
 
   constructor(
     private collectionName: BlCollectionName,
-    private mongooseSchema?: any
+    private mongooseSchema?: any,
   ) {
     if (mongooseSchema) {
       this.mongoDbHandler = new MongoDbBlStorageHandler(
         collectionName,
-        mongooseSchema
+        mongooseSchema,
       );
     }
   }
@@ -39,7 +40,7 @@ export class BlDocumentStorage<T extends BlDocument>
 
   getByQuery(
     dbQuery: SEDbQuery,
-    nestedDocuments?: NestedDocument[]
+    nestedDocuments?: NestedDocument[],
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this.mongoDbHandler
@@ -56,7 +57,7 @@ export class BlDocumentStorage<T extends BlDocument>
   getMany(
     ids: string[],
     userPermission?: UserPermission,
-    nestedDocuments?: NestedDocument[]
+    nestedDocuments?: NestedDocument[],
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this.mongoDbHandler
@@ -72,7 +73,7 @@ export class BlDocumentStorage<T extends BlDocument>
 
   getAll(
     userPermission?: UserPermission,
-    nestedDocuments?: NestedDocument[]
+    nestedDocuments?: NestedDocument[],
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this.mongoDbHandler
@@ -106,7 +107,7 @@ export class BlDocumentStorage<T extends BlDocument>
   update(
     id: string,
     data: any,
-    user: { id: string; permission: UserPermission }
+    user: { id: string; permission: UserPermission },
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       this.mongoDbHandler
@@ -128,7 +129,7 @@ export class BlDocumentStorage<T extends BlDocument>
 
   remove(
     id: string,
-    user: { id: string; permission: UserPermission }
+    user: { id: string; permission: UserPermission },
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       this.mongoDbHandler

@@ -1,10 +1,11 @@
+import { BlapiResponse, BlError } from "@boklisten/bl-model";
 import { Router } from "express";
-import { ApiPath } from "../../config/api-path";
-import { SEResponseHandler } from "../../response/se.response.handler";
+
+import { RefreshToken } from "./refresh/refresh-token";
 import { RefreshTokenValidator } from "./refresh/refresh-token.validator";
 import { TokenHandler } from "./token.handler";
-import { RefreshToken } from "./refresh/refresh-token";
-import { BlapiResponse, BlError } from "@boklisten/bl-model";
+import { ApiPath } from "../../config/api-path";
+import { SEResponseHandler } from "../../response/se.response.handler";
 
 export class TokenEndpoint {
   private apiPath: ApiPath;
@@ -13,7 +14,7 @@ export class TokenEndpoint {
   constructor(
     private router: Router,
     private resHandler: SEResponseHandler,
-    private tokenHandler: TokenHandler
+    private tokenHandler: TokenHandler,
   ) {
     this.apiPath = new ApiPath();
     this.createPostEndpoint();
@@ -32,7 +33,7 @@ export class TokenEndpoint {
                   new BlapiResponse([
                     { accessToken: jwTokens.accessToken },
                     { refreshToken: jwTokens.refreshToken },
-                  ])
+                  ]),
                 );
               },
               (createTokenError: BlError) => {
@@ -41,9 +42,9 @@ export class TokenEndpoint {
                   new BlError("could not create tokens")
                     .store("oldRefreshToken", req.body["refreshToken"])
                     .code(906)
-                    .add(createTokenError)
+                    .add(createTokenError),
                 );
-              }
+              },
             );
           },
           (refreshTokenValidationError: BlError) => {
@@ -51,14 +52,14 @@ export class TokenEndpoint {
               res,
               new BlError("refreshToken not valid")
                 .code(909)
-                .add(refreshTokenValidationError)
+                .add(refreshTokenValidationError),
             );
-          }
+          },
         );
       } else {
         this.resHandler.sendErrorResponse(
           res,
-          new BlError("bad format").code(701)
+          new BlError("bad format").code(701),
         );
       }
     });

@@ -43,12 +43,12 @@ describe("SeToken", () => {
               },
               (error) => {
                 //no need
-              }
+              },
             );
           },
           (error) => {
             //no need for error handling in a test for resolve
-          }
+          },
         );
       }).should.eventually.be.equal("albert");
     });
@@ -65,10 +65,10 @@ describe("SeToken", () => {
                 (decodedToken: JwtPayload) => {},
                 (error: any) => {
                   reject(new Error(error));
-                }
+                },
               );
           },
-          (error: any) => {}
+          (error: any) => {},
         );
       }).should.be.rejectedWith(Error);
     });

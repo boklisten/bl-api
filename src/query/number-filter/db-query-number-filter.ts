@@ -18,7 +18,7 @@ export class DbQueryNumberFilter {
   public getNumberFilters(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
-    validNumberParams: string[]
+    validNumberParams: string[],
   ): NumberFilter[] {
     const numberFilters: NumberFilter[] = [];
 
@@ -37,12 +37,12 @@ export class DbQueryNumberFilter {
           if (Array.isArray(query[param])) {
             numberFilter = this.generateNumberFilterForParamWithMultipleValues(
               param,
-              query[param]
+              query[param],
             );
           } else {
             numberFilter = this.generateNumberFilterForParamWithSingleValue(
               param,
-              query[param]
+              query[param],
             );
           }
 
@@ -54,25 +54,25 @@ export class DbQueryNumberFilter {
     } catch (error) {
       if (error instanceof TypeError)
         throw new TypeError(
-          "query includes bad number data, reason: " + error.message
+          "query includes bad number data, reason: " + error.message,
         );
       if (error instanceof SyntaxError)
         throw new SyntaxError(
-          "query includes syntax errors, reason: " + error.message
+          "query includes syntax errors, reason: " + error.message,
         );
       throw new Error(
-        "failure when parsing query for number operations" + error.message
+        "failure when parsing query for number operations" + error.message,
       );
     }
   }
 
   private generateNumberFilterForParamWithSingleValue(
     fieldName: string,
-    value: string
+    value: string,
   ): NumberFilter {
     if (!value)
       throw new Error(
-        "QueryBuilderNumberFilter.generateNumberFilter(): value is not defined"
+        "QueryBuilderNumberFilter.generateNumberFilter(): value is not defined",
       );
 
     if (this.valueHasOperationIdentifier(value)) {
@@ -93,7 +93,7 @@ export class DbQueryNumberFilter {
 
   private generateNumberFilterForParamWithMultipleValues(
     fieldName: string,
-    values: string[]
+    values: string[],
   ): NumberFilter {
     if (values.length <= 0) throw new RangeError("the supplied array is empty");
 
@@ -112,7 +112,7 @@ export class DbQueryNumberFilter {
     if (numberFilter.op.$eq) {
       if (numberFilter.op.$gt || numberFilter.op.$lt)
         throw new SyntaxError(
-          "numberFilter cannot combine eq operation with other operations"
+          "numberFilter cannot combine eq operation with other operations",
         );
     }
 
@@ -123,7 +123,7 @@ export class DbQueryNumberFilter {
     return this.operationIdentifiers.some(
       (operationIdentifier) =>
         value.length >= operationIdentifier.atIndex &&
-        operationIdentifier.opIdentifier === value[operationIdentifier.atIndex]
+        operationIdentifier.opIdentifier === value[operationIdentifier.atIndex],
     );
   }
 
@@ -133,7 +133,7 @@ export class DbQueryNumberFilter {
   } {
     const operation = this.getOperation(value);
     const number: number = this.extractNumberFromQueryString(
-      operation === this.equalOperation ? value : value.slice(1)
+      operation === this.equalOperation ? value : value.slice(1),
     );
 
     return {
@@ -146,7 +146,7 @@ export class DbQueryNumberFilter {
     const foundOperation = this.operationIdentifiers.find(
       (operationIdentifier) =>
         value.length >= operationIdentifier.atIndex &&
-        operationIdentifier.opIdentifier === value[operationIdentifier.atIndex]
+        operationIdentifier.opIdentifier === value[operationIdentifier.atIndex],
     )?.op;
 
     return foundOperation ?? this.equalOperation;

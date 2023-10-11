@@ -18,8 +18,8 @@ describe("DbQueryObjectIdFilter", () => {
       expect(
         dbQueryObjectIdFilter.getObjectIdFilters(
           { name: "5c2e0e5bb311ba0701f15967" },
-          []
-        )
+          [],
+        ),
       ).to.eql([]);
     });
 
@@ -54,8 +54,8 @@ describe("DbQueryObjectIdFilter", () => {
       expect(
         dbQueryObjectIdFilter.getObjectIdFilters(
           { id: "5c2e0e5bb311ba0701f15967" },
-          ["id"]
-        )
+          ["id"],
+        ),
       ).to.eql(result);
     });
 
@@ -96,7 +96,7 @@ describe("DbQueryObjectIdFilter", () => {
           "id",
           "customer",
           "branch",
-        ])
+        ]),
       ).to.eql(result);
     });
   });

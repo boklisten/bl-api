@@ -1,20 +1,21 @@
-import { BlApiRequest } from "../../../../request/bl-api-request";
-import { NextFunction, Request, Response } from "express";
-import { UserSchema } from "../../../user/user.schema";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { User } from "../../../user/user";
 import { BlapiResponse, UserDetail } from "@boklisten/bl-model";
-import { userDetailSchema } from "../../user-detail.schema";
+import { NextFunction, Request, Response } from "express";
+
 import { PermissionService } from "../../../../auth/permission/permission.service";
-import { SEResponseHandler } from "../../../../response/se.response.handler";
 import { Operation } from "../../../../operation/operation";
+import { BlApiRequest } from "../../../../request/bl-api-request";
+import { SEResponseHandler } from "../../../../response/se.response.handler";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../bl-collection";
+import { User } from "../../../user/user";
+import { UserSchema } from "../../../user/user.schema";
+import { userDetailSchema } from "../../user-detail.schema";
 
 export class UserDetailReadPermissionOperation implements Operation {
   constructor(
     private _userDetailStorage?: BlDocumentStorage<UserDetail>,
     private _userStorage?: BlDocumentStorage<User>,
-    private _resHandler?: SEResponseHandler
+    private _resHandler?: SEResponseHandler,
   ) {
     this._userDetailStorage = _userDetailStorage
       ? _userDetailStorage
@@ -34,7 +35,7 @@ export class UserDetailReadPermissionOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     let userDetail;
 
@@ -59,7 +60,7 @@ export class UserDetailReadPermissionOperation implements Operation {
 
     this._resHandler.sendResponse(
       res,
-      new BlapiResponse([{ permission: user.permission }])
+      new BlapiResponse([{ permission: user.permission }]),
     );
     return true;
   }

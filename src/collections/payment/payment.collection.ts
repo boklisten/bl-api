@@ -1,13 +1,13 @@
+import { PaymentGetAllHook } from "./hooks/payment.get-all.hook";
+import { PaymentPatchHook } from "./hooks/payment.patch.hook";
+import { PaymentPostHook } from "./hooks/payment.post.hook";
+import { paymentSchema } from "./payment.schema";
 import {
   BlCollection,
   BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
 } from "../bl-collection";
-import { paymentSchema } from "./payment.schema";
-import { PaymentPostHook } from "./hooks/payment.post.hook";
-import { PaymentPatchHook } from "./hooks/payment.patch.hook";
-import { PaymentGetAllHook } from "./hooks/payment.get-all.hook";
 
 export class PaymentCollection implements BlCollection {
   public collectionName = BlCollectionName.Payments;

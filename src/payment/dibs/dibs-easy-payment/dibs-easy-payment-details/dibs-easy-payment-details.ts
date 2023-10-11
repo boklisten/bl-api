@@ -1,6 +1,7 @@
 import { JsonMember, JsonObject } from "typedjson-npm";
-import { DibsEasyPaymentDetailsInvoiceDetail } from "./dibs-easy-payment-details-invoice-detail";
+
 import { DibsEasyPaymentDetailsCard } from "./dibs-easy-payment-details-card";
+import { DibsEasyPaymentDetailsInvoiceDetail } from "./dibs-easy-payment-details-invoice-detail";
 
 @JsonObject
 export class DibsEasyPaymentDetails {

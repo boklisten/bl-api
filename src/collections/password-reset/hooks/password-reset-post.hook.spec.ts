@@ -20,7 +20,7 @@ chai.use(chaiAsPromised);
 
 describe("PasswordResetPostHook", () => {
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const userHandler = new UserHandler();
   const seCrypto = new SeCrypto();
@@ -29,7 +29,7 @@ describe("PasswordResetPostHook", () => {
     userDetailStorage,
     userHandler,
     seCrypto,
-    messenger
+    messenger,
   );
 
   let testUsername: string;
@@ -66,7 +66,7 @@ describe("PasswordResetPostHook", () => {
     it("should reject if passwordReset is empty or undefined", () => {
       return expect(passwordResetPostHook.before(undefined)).to.be.rejectedWith(
         BlError,
-        /passwordReset is empty or undefined/
+        /passwordReset is empty or undefined/,
       );
     });
 
@@ -78,7 +78,7 @@ describe("PasswordResetPostHook", () => {
         passwordReset.email = "b.com";
 
         return expect(
-          passwordResetPostHook.before(passwordReset)
+          passwordResetPostHook.before(passwordReset),
         ).to.be.rejectedWith(BlError, expectedError);
       });
 
@@ -87,7 +87,7 @@ describe("PasswordResetPostHook", () => {
         passwordReset.email = "jonman";
 
         return expect(
-          passwordResetPostHook.before(passwordReset)
+          passwordResetPostHook.before(passwordReset),
         ).to.be.rejectedWith(BlError, expectedError);
       });
 
@@ -96,7 +96,7 @@ describe("PasswordResetPostHook", () => {
         passwordReset.email = undefined;
 
         return expect(
-          passwordResetPostHook.before(passwordReset)
+          passwordResetPostHook.before(passwordReset),
         ).to.be.rejectedWith(BlError, expectedError);
       });
     });
@@ -114,7 +114,7 @@ describe("PasswordResetPostHook", () => {
       passwordReset.email = "notFound@mail.com";
 
       return expect(
-        passwordResetPostHook.before(passwordReset)
+        passwordResetPostHook.before(passwordReset),
       ).to.be.rejectedWith(BlError, /user "notFound@mail.com" not found/);
     });
 
@@ -123,7 +123,7 @@ describe("PasswordResetPostHook", () => {
         testUser.active = false;
 
         return expect(
-          passwordResetPostHook.before(testPasswordReset)
+          passwordResetPostHook.before(testPasswordReset),
         ).to.be.rejectedWith(BlError, /user.active is false/);
       });
     });
@@ -186,7 +186,7 @@ describe("PasswordResetPostHook", () => {
       testPasswordReset.userDetail = "notFound@mail.com";
 
       return expect(
-        passwordResetPostHook.after([testPasswordReset])
+        passwordResetPostHook.after([testPasswordReset]),
       ).to.be.rejectedWith(BlError, /userDetail "notFound@mail.com" not found/);
     });
 
@@ -197,8 +197,8 @@ describe("PasswordResetPostHook", () => {
         expect(
           messengerPasswordResetStub.calledWithExactly(
             testUserDetail,
-            testPasswordReset.id
-          )
+            testPasswordReset.id,
+          ),
         ).to.be.true;
 
         done();

@@ -5,18 +5,19 @@ import {
   MatchVariant,
   UserDetail,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { matchSchema } from "../match.schema";
-import { BlCollectionName } from "../../bl-collection";
-import { Operation } from "../../../operation/operation";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
+
 import { massSendSMS } from "../../../messenger/sms/sms-service";
+import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { matchSchema } from "../match.schema";
 
 export class MatchNotifyOperation implements Operation {
   constructor(
     private matchStorage?: BlDocumentStorage<Match>,
-    private userDetailStorage?: BlDocumentStorage<UserDetail>
+    private userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
     this.matchStorage =
       matchStorage ??
@@ -42,9 +43,9 @@ export class MatchNotifyOperation implements Operation {
         matches.flatMap((match) =>
           match._variant === MatchVariant.UserMatch
             ? [match.sender, match.receiver]
-            : match.customer
-        )
-      )
+            : match.customer,
+        ),
+      ),
     );
 
     const customerPhoneNumbers = (

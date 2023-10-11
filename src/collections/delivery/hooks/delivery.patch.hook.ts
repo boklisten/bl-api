@@ -1,11 +1,12 @@
 import { Delivery, Order, BlError, AccessToken } from "@boklisten/bl-model";
+
 import { Hook } from "../../../hook/hook";
-import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { orderSchema } from "../../order/order.schema";
-import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
-import { deliverySchema } from "../delivery.schema";
 import { BlCollectionName } from "../../bl-collection";
+import { orderSchema } from "../../order/order.schema";
+import { deliverySchema } from "../delivery.schema";
+import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
+import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
 
 export class DeliveryPatchHook extends Hook {
   private deliveryValidator?: DeliveryValidator;
@@ -17,7 +18,7 @@ export class DeliveryPatchHook extends Hook {
     deliveryValidator?: DeliveryValidator,
     deliveryStorage?: BlDocumentStorage<Delivery>,
     orderStorage?: BlDocumentStorage<Order>,
-    deliveryHandler?: DeliveryHandler
+    deliveryHandler?: DeliveryHandler,
   ) {
     super();
     this.deliveryValidator = deliveryValidator ?? new DeliveryValidator();
@@ -25,7 +26,7 @@ export class DeliveryPatchHook extends Hook {
       deliveryStorage ??
       new BlDocumentStorage<Delivery>(
         BlCollectionName.Deliveries,
-        deliverySchema
+        deliverySchema,
       );
     this.orderStorage =
       orderStorage ??
@@ -37,7 +38,7 @@ export class DeliveryPatchHook extends Hook {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any,
     accessToken?: AccessToken,
-    id?: string
+    id?: string,
   ): Promise<boolean> {
     if (!body) {
       return Promise.reject(new BlError("body is undefined"));
@@ -62,7 +63,7 @@ export class DeliveryPatchHook extends Hook {
 
   override after(
     deliveries: Delivery[],
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<Delivery[]> {
     const delivery = deliveries[0];
 
@@ -96,7 +97,7 @@ export class DeliveryPatchHook extends Hook {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any,
     accessToken: AccessToken,
-    id: string
+    id: string,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.deliveryStorage
@@ -129,13 +130,13 @@ export class DeliveryPatchHook extends Hook {
                   return reject(
                     new BlError("patched delivery could not be validated")
                       .add(blError)
-                      .store("delivery", delivery)
+                      .store("delivery", delivery),
                   );
                 });
             })
             .catch((blError: BlError) => {
               return reject(
-                new BlError(`order "${delivery.order}" not found`).add(blError)
+                new BlError(`order "${delivery.order}" not found`).add(blError),
               );
             });
         })

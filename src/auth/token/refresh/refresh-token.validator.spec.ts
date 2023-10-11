@@ -57,7 +57,7 @@ describe("RefreshTokenValidator", () => {
         (error: BlError) => {
           error.getCode().should.be.eq(909);
           done();
-        }
+        },
       );
     });
 
@@ -76,7 +76,7 @@ describe("RefreshTokenValidator", () => {
                 rtokenError.getCode().should.be.eql(909);
                 done();
               });
-          }
+          },
         );
       });
     });
@@ -98,13 +98,13 @@ describe("RefreshTokenValidator", () => {
               (error) => {
                 error.should.not.be.fulfilled;
                 done();
-              }
+              },
             );
           },
           (error) => {
             error.should.not.be.fulfilled;
             done();
-          }
+          },
         );
       });
     });

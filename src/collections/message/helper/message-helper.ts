@@ -1,6 +1,7 @@
 import { Message, BlError } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 
 export class MessageHelper {
   private queryBuilder: SEDbQueryBuilder;
@@ -24,7 +25,7 @@ export class MessageHelper {
         { fieldName: "messageMethod", type: "string" },
         { fieldName: "customerId", type: "string" },
         { fieldName: "sequenceNumber", type: "number" },
-      ]
+      ],
     );
 
     try {

@@ -1,8 +1,8 @@
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 import { branchSchema } from "./branch.schema";
-import { BranchPostHook } from "./hook/branch-post.hook";
 import { BranchGetHook } from "./hook/branch-get.hook";
+import { BranchPostHook } from "./hook/branch-post.hook";
 import { BranchBookingTimesOperation } from "./operations/branch-booking-times.operation";
+import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 
 export class BranchCollection implements BlCollection {
   collectionName = BlCollectionName.Branches;

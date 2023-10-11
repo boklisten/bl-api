@@ -18,7 +18,7 @@ describe("PermissionSerivice", () => {
       const permissions: UserPermission[] = ["customer", "admin"];
 
       expect(permissionService.getLowestPermission(permissions)).to.eql(
-        "customer"
+        "customer",
       );
     });
 
@@ -26,7 +26,7 @@ describe("PermissionSerivice", () => {
       const permissions: UserPermission[] = ["admin", "employee", "customer"];
 
       expect(permissionService.getLowestPermission(permissions)).to.eql(
-        "customer"
+        "customer",
       );
     });
 
@@ -34,7 +34,7 @@ describe("PermissionSerivice", () => {
       const permissions: UserPermission[] = ["admin", "employee"];
 
       expect(permissionService.getLowestPermission(permissions)).to.eql(
-        "employee"
+        "employee",
       );
     });
 
@@ -57,8 +57,8 @@ describe("PermissionSerivice", () => {
           userId,
           "customer",
           doc,
-          endpointRestriction
-        )
+          endpointRestriction,
+        ),
       ).to.be.true;
     });
 
@@ -75,8 +75,8 @@ describe("PermissionSerivice", () => {
           userId,
           "employee",
           doc,
-          endpointRestriction
-        )
+          endpointRestriction,
+        ),
       ).to.be.false;
     });
 
@@ -92,8 +92,8 @@ describe("PermissionSerivice", () => {
           userId,
           "employee",
           doc,
-          endpointRestriction
-        )
+          endpointRestriction,
+        ),
       ).to.be.false;
     });
 
@@ -110,8 +110,8 @@ describe("PermissionSerivice", () => {
           userId,
           "admin",
           doc,
-          endpointRestriction
-        )
+          endpointRestriction,
+        ),
       ).to.be.true;
     });
   });

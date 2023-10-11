@@ -18,12 +18,12 @@ import { BlCollectionName } from "../../bl-collection";
 
 describe("UserDetailDeleteHook", () => {
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const customerHaveActiveCustomerItems = new CustomerHaveActiveCustomerItems();
   const haveActiveCustomerItemsStub = sinon.stub(
     customerHaveActiveCustomerItems,
-    "haveActiveCustomerItems"
+    "haveActiveCustomerItems",
   );
 
   const testUserId = "5c88070b83d0da001a4ea01d";
@@ -33,7 +33,7 @@ describe("UserDetailDeleteHook", () => {
   const customerInvoiceActive = new CustomerInvoiceActive();
   const haveActiveInvoicesStub = sinon.stub(
     customerInvoiceActive,
-    "haveActiveInvoices"
+    "haveActiveInvoices",
   );
   const userCanDeleteUserDetail = new UserCanDeleteUserDetail();
   const canDeleteStub = sinon.stub(userCanDeleteUserDetail, "canDelete");
@@ -45,7 +45,7 @@ describe("UserDetailDeleteHook", () => {
     customerHaveActiveCustomerItems,
     customerInvoiceActive,
     userCanDeleteUserDetail,
-    userDeleteAllInfo
+    userDeleteAllInfo,
   );
 
   beforeEach(() => {
@@ -68,7 +68,7 @@ describe("UserDetailDeleteHook", () => {
       } as AccessToken;
 
       return expect(
-        userDetailDeleteHook.before({}, accessToken, testUserId)
+        userDetailDeleteHook.before({}, accessToken, testUserId),
       ).to.eventually.be.rejectedWith(BlError, /have active orders/);
     });
 
@@ -84,7 +84,7 @@ describe("UserDetailDeleteHook", () => {
       } as AccessToken;
 
       return expect(
-        userDetailDeleteHook.before({}, accessToken, testUserId)
+        userDetailDeleteHook.before({}, accessToken, testUserId),
       ).to.eventually.be.rejectedWith(BlError, /have active customer-items/);
     });
 
@@ -101,7 +101,7 @@ describe("UserDetailDeleteHook", () => {
       } as AccessToken;
 
       return expect(
-        userDetailDeleteHook.before({}, accessToken, testUserId)
+        userDetailDeleteHook.before({}, accessToken, testUserId),
       ).to.eventually.be.rejectedWith(BlError, /have active invoices/);
     });
 
@@ -118,7 +118,7 @@ describe("UserDetailDeleteHook", () => {
       } as AccessToken;
 
       return expect(
-        userDetailDeleteHook.before({}, accessToken, testUserId)
+        userDetailDeleteHook.before({}, accessToken, testUserId),
       ).to.eventually.be.rejectedWith(BlError, /no permission to delete user/);
     });
 
@@ -136,10 +136,10 @@ describe("UserDetailDeleteHook", () => {
       } as AccessToken;
 
       return expect(
-        userDetailDeleteHook.before({}, accessToken, testUserId)
+        userDetailDeleteHook.before({}, accessToken, testUserId),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /user info could not be deleted/
+        /user info could not be deleted/,
       );
     });
 
@@ -168,7 +168,7 @@ describe("UserDetailDeleteHook", () => {
       } as AccessToken;
 
       return expect(
-        userDetailDeleteHook.after([], accessToken)
+        userDetailDeleteHook.after([], accessToken),
       ).to.eventually.be.eql([]);
     });
   });

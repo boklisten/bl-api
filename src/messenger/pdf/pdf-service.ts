@@ -1,10 +1,12 @@
+import { isNullOrUndefined } from "util";
+
 import { EmailAttachment, EmailHandler, PdfHandler } from "@boklisten/bl-email";
-import { Order, UserDetail } from "@boklisten/bl-model";
+import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
 import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
 import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
-import { isNullOrUndefined } from "util";
+import { Order, UserDetail } from "@boklisten/bl-model";
 import moment = require("moment");
-import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
+
 import { OrderEmailHandler } from "../email/order-email/order-email-handler";
 
 export class PdfService {
@@ -23,7 +25,7 @@ export class PdfService {
 
   async getOrderReceiptPdf(
     customerDetail: UserDetail,
-    order: Order
+    order: Order,
   ): Promise<EmailAttachment> {
     const emailSetting = {} as EmailSetting;
 
@@ -45,13 +47,13 @@ export class PdfService {
     return await this._pdfHandler.getOrderReceipt(
       emailSetting,
       emailOrder,
-      emailUser
+      emailUser,
     );
   }
 
   async getOrderAgreementPdf(
     customerDetail: UserDetail,
-    order: Order
+    order: Order,
   ): Promise<EmailAttachment> {
     const emailSetting = {} as EmailSetting;
 
@@ -72,7 +74,7 @@ export class PdfService {
     return await this._pdfHandler.getRentAgreement(
       emailSetting,
       emailOrder,
-      emailUser
+      emailUser,
     );
   }
 }

@@ -1,11 +1,12 @@
+import { Message, BlError, BlapiResponse } from "@boklisten/bl-model";
+import { Request, Response, NextFunction } from "express";
+
+import { logger } from "../../../logger/logger";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
-import { Message, BlError, BlapiResponse } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { messageSchema } from "../message.schema";
-import { Request, Response, NextFunction } from "express";
-import { logger } from "../../../logger/logger";
 import { BlCollectionName } from "../../bl-collection";
+import { messageSchema } from "../message.schema";
 
 export class TwilioSmsEventOperation implements Operation {
   private _messageStorage: BlDocumentStorage<Message>;
@@ -15,7 +16,7 @@ export class TwilioSmsEventOperation implements Operation {
       ? messageStorage
       : new BlDocumentStorage<Message>(
           BlCollectionName.Messages,
-          messageSchema
+          messageSchema,
         );
   }
 
@@ -26,7 +27,7 @@ export class TwilioSmsEventOperation implements Operation {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<BlapiResponse> {
     //logger.info('message_id::' + blApiRequest.query['bl_message_id']);
 
@@ -76,7 +77,7 @@ export class TwilioSmsEventOperation implements Operation {
   private async updateMessageWithTwilioSmsEvent(
     message: Message,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    smsEvent: any
+    smsEvent: any,
   ): Promise<boolean> {
     const newSmsEvents =
       message.smsEvents && message.smsEvents.length > 0
@@ -88,11 +89,11 @@ export class TwilioSmsEventOperation implements Operation {
     await this._messageStorage.update(
       message.id,
       { smsEvents: newSmsEvents },
-      { id: "SYSTEM", permission: "admin" }
+      { id: "SYSTEM", permission: "admin" },
     );
 
     logger.silly(
-      `updated message "${message.id}" with sms event: "${smsEvent["status"]}"`
+      `updated message "${message.id}" with sms event: "${smsEvent["status"]}"`,
     );
 
     return true;

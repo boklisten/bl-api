@@ -1,8 +1,9 @@
-import { openingHourSchema } from "../opening-hour.schema";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { OpeningHour, Branch, BlError } from "@boklisten/bl-model";
 import moment from "moment-timezone";
+
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { openingHourSchema } from "../opening-hour.schema";
 
 export class OpeningHourHelper {
   constructor(private openingHourStorage?: BlDocumentStorage<OpeningHour>) {
@@ -10,13 +11,13 @@ export class OpeningHourHelper {
       ? this.openingHourStorage
       : new BlDocumentStorage<OpeningHour>(
           BlCollectionName.OpeningHours,
-          openingHourSchema
+          openingHourSchema,
         );
   }
 
   public async getNextAvailableOpeningHour(
     branch: Branch,
-    after?: Date
+    after?: Date,
   ): Promise<OpeningHour> {
     if (!branch.openingHours || branch.openingHours.length <= 0) {
       throw new BlError("no opening hours found at branch");
@@ -27,12 +28,12 @@ export class OpeningHourHelper {
     // eslint-disable-next-line no-useless-catch
     try {
       const openingHours = await this.openingHourStorage.getMany(
-        branch.openingHours as string[]
+        branch.openingHours as string[],
       );
 
       firstAvailableOpeningHour = this.getFirstAvailableOpeningHour(
         openingHours,
-        after
+        after,
       );
     } catch (e) {
       throw e;
@@ -43,7 +44,7 @@ export class OpeningHourHelper {
 
   private getFirstAvailableOpeningHour(
     openingHours: OpeningHour[],
-    after?: Date
+    after?: Date,
   ): OpeningHour {
     let firstAvailableOpeningHour;
 

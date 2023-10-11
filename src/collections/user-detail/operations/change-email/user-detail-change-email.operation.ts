@@ -1,18 +1,21 @@
+import { isNullOrUndefined } from "util";
+
+import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
+import { NextFunction, Request, Response } from "express";
+
+import { PermissionService } from "../../../../auth/permission/permission.service";
+import { UserHandler } from "../../../../auth/user/user.handler";
 import { Operation } from "../../../../operation/operation";
 import { BlApiRequest } from "../../../../request/bl-api-request";
-import { NextFunction, Request, Response } from "express";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { User } from "../../../user/user";
-import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
-import { userDetailSchema } from "../../user-detail.schema";
-import { PermissionService } from "../../../../auth/permission/permission.service";
-import { isNullOrUndefined } from "util";
 import { SEResponseHandler } from "../../../../response/se.response.handler";
-import { UserSchema } from "../../../user/user.schema";
+import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../../bl-collection";
 import { LocalLogin } from "../../../local-login/local-login";
 import { localLoginSchema } from "../../../local-login/local-login.schema";
-import { UserHandler } from "../../../../auth/user/user.handler";
-import { BlCollectionName } from "../../../bl-collection";
+import { User } from "../../../user/user";
+import { UserSchema } from "../../../user/user.schema";
+import { userDetailSchema } from "../../user-detail.schema";
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const emailValidator = require("validator");
 
@@ -24,7 +27,7 @@ export class UserDetailChangeEmailOperation implements Operation {
     private _userStorage?: BlDocumentStorage<User>,
     private _localLoginStorage?: BlDocumentStorage<LocalLogin>,
     private _userHandler?: UserHandler,
-    private _resHandler?: SEResponseHandler
+    private _resHandler?: SEResponseHandler,
   ) {
     this._userDetailStorage = _userDetailStorage
       ? _userDetailStorage
@@ -45,7 +48,7 @@ export class UserDetailChangeEmailOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     let userDetail: UserDetail;
     let user: User;
@@ -70,17 +73,17 @@ export class UserDetailChangeEmailOperation implements Operation {
       await this._userDetailStorage.update(
         userDetail["_id"],
         { email: emailChange },
-        blApiRequest.user
+        blApiRequest.user,
       );
       await this._userStorage.update(
         user["_id"],
         { username: emailChange },
-        blApiRequest.user
+        blApiRequest.user,
       );
       await this._localLoginStorage.update(
         localLogin["_id"],
         { username: emailChange },
-        blApiRequest.user
+        blApiRequest.user,
       );
     } catch (e) {
       throw e;
@@ -107,12 +110,12 @@ export class UserDetailChangeEmailOperation implements Operation {
 
   private validatePermission(
     userPermission,
-    permissionToEmailChangeUser
+    permissionToEmailChangeUser,
   ): boolean {
     if (
       !this._permissionService.isPermissionOver(
         userPermission,
-        permissionToEmailChangeUser
+        permissionToEmailChangeUser,
       )
     ) {
       throw new BlError("no access to change email");

@@ -1,6 +1,8 @@
-import { BlError, CustomerItem } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { isNullOrUndefined } from "util";
+
+import { BlError, CustomerItem } from "@boklisten/bl-model";
+
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 
 export class CustomerItemValidator {
   // eslint-disable-next-line

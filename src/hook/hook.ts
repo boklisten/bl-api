@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { IHook } from "./IHook";
 import { BlDocument, AccessToken } from "@boklisten/bl-model";
+
+import { IHook } from "./IHook";
 
 export class Hook implements IHook {
   public before(
@@ -9,7 +10,7 @@ export class Hook implements IHook {
     accessToken?: AccessToken,
     id?: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    query?: any
+    query?: any,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<boolean | any> {
     return Promise.resolve(true);
@@ -17,7 +18,7 @@ export class Hook implements IHook {
 
   public after(
     docs: BlDocument[],
-    accessToken?: AccessToken
+    accessToken?: AccessToken,
   ): Promise<BlDocument[]> {
     return Promise.resolve(docs ? docs : []);
   }

@@ -24,13 +24,13 @@ describe("DbQueryDateFilter", () => {
 
     it("should return empty array if valid params is empty", () => {
       return expect(
-        dbQueryDateFilter.getDateFilters({ something: "aas" }, [])
+        dbQueryDateFilter.getDateFilters({ something: "aas" }, []),
       ).to.eql([]);
     });
 
     it("should return empty array if query does not include any of the valid params", () => {
       return expect(
-        dbQueryDateFilter.getDateFilters({ something: "" }, ["creationTime"])
+        dbQueryDateFilter.getDateFilters({ something: "" }, ["creationTime"]),
       ).to.eql([]);
     });
 
@@ -40,11 +40,11 @@ describe("DbQueryDateFilter", () => {
       const momentDate = moment(
         query.creationDate,
         validDateFormat,
-        true
+        true,
       ).toDate();
 
       return expect(
-        dbQueryDateFilter.getDateFilters(query, [fieldName])
+        dbQueryDateFilter.getDateFilters(query, [fieldName]),
       ).to.eql([{ fieldName: fieldName, op: { $eq: momentDate } }]);
     });
 
@@ -85,7 +85,7 @@ describe("DbQueryDateFilter", () => {
           const isoDate = moment(dateString, validDateFormat, true).toDate();
 
           return expect(
-            dbQueryDateFilter.getDateFilters(validQuery, validDateParams)
+            dbQueryDateFilter.getDateFilters(validQuery, validDateParams),
           ).to.eql([{ fieldName: "creationTime", op: { $eq: isoDate } }]);
         });
       }
@@ -102,7 +102,7 @@ describe("DbQueryDateFilter", () => {
         it("should resolve with correct date filter", () => {
           const creationTime = validQuery.creationTime.slice(
             1,
-            validQuery.creationTime.length
+            validQuery.creationTime.length,
           );
           const dateString = creationTime;
           const isoDate = moment(dateString, validDateFormat, true).toDate();
@@ -111,7 +111,7 @@ describe("DbQueryDateFilter", () => {
           expectedOp[validQuery.op] = isoDate;
 
           return expect(
-            dbQueryDateFilter.getDateFilters(validQuery, validDateParams)
+            dbQueryDateFilter.getDateFilters(validQuery, validDateParams),
           ).to.eql([{ fieldName: "creationTime", op: expectedOp }]);
         });
       }
@@ -134,16 +134,16 @@ describe("DbQueryDateFilter", () => {
           const gtIsoDate = moment(
             gtDateString,
             validDateFormat,
-            true
+            true,
           ).toDate();
           const ltIsoDate = moment(
             ltDateString,
             validDateFormat,
-            true
+            true,
           ).toDate();
 
           return expect(
-            dbQueryDateFilter.getDateFilters(validQuery, validDateParams)
+            dbQueryDateFilter.getDateFilters(validQuery, validDateParams),
           ).to.eql([
             {
               fieldName: "creationTime",

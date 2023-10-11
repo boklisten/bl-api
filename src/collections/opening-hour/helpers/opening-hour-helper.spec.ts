@@ -16,7 +16,7 @@ chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 const openingHourStorage = new BlDocumentStorage<OpeningHour>(
-  BlCollectionName.OpeningHours
+  BlCollectionName.OpeningHours,
 );
 const openingHourHelper = new OpeningHourHelper(openingHourStorage);
 const openingHourStorageGetMany = sinon.stub(openingHourStorage, "getMany");
@@ -31,7 +31,7 @@ describe("getNextAvailableOpeningHour()", () => {
       .getNextAvailableOpeningHour(branch)
       .should.eventually.be.rejectedWith(
         BlError,
-        /no opening hours found at branch/
+        /no opening hours found at branch/,
       );
   });
 
@@ -59,7 +59,7 @@ describe("getNextAvailableOpeningHour()", () => {
       .getNextAvailableOpeningHour(branch)
       .should.eventually.be.rejectedWith(
         BlError,
-        /no opening hours are found to be valid/
+        /no opening hours are found to be valid/,
       );
   });
 
@@ -153,7 +153,7 @@ describe("getNextAvailableOpeningHour()", () => {
       return openingHourHelper
         .getNextAvailableOpeningHour(
           branch,
-          moment().add(2, "day").add(1, "hour").toDate()
+          moment().add(2, "day").add(1, "hour").toDate(),
         )
         .should.eventually.deep.equal(openingHours[0]);
     });
@@ -221,7 +221,7 @@ describe("getNextAvailableOpeningHour()", () => {
         .getNextAvailableOpeningHour(branch, moment().add(5, "day").toDate())
         .should.eventually.be.rejectedWith(
           BlError,
-          /no opening hours are found to be valid/
+          /no opening hours are found to be valid/,
         );
     });
   });

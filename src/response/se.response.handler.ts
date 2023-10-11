@@ -1,9 +1,10 @@
-import { Response } from "express";
 import {
   BlapiResponse,
   BlapiErrorResponse,
   BlError,
 } from "@boklisten/bl-model";
+import { Response } from "express";
+
 import { BlErrorHandler } from "../bl-error/bl-error-handler";
 import { logger } from "../logger/logger";
 
@@ -25,7 +26,7 @@ export class SEResponseHandler {
     res: Response,
     accessToken: string,
     refreshToken: string,
-    referer?: string
+    referer?: string,
   ) {
     const redirectUrl = `${
       referer ?? process.env.CLIENT_URI

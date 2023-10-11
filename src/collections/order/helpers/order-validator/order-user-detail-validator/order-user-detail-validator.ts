@@ -1,7 +1,8 @@
 import { BlError, Order, UserDetail } from "@boklisten/bl-model";
+
 import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
-import { userDetailSchema } from "../../../../user-detail/user-detail.schema";
 import { BlCollectionName } from "../../../../bl-collection";
+import { userDetailSchema } from "../../../../user-detail/user-detail.schema";
 
 export class OrderUserDetailValidator {
   private _userDetailStorage: BlDocumentStorage<UserDetail>;
@@ -28,7 +29,7 @@ export class OrderUserDetailValidator {
         })
         .catch((userDetailValidateError: BlError) => {
           throw new BlError("userDetail could not be validated").add(
-            userDetailValidateError
+            userDetailValidateError,
           );
         })
     );

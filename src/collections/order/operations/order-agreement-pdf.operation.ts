@@ -1,13 +1,14 @@
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlapiResponse, Order, UserDetail } from "@boklisten/bl-model";
-import { Messenger } from "../../../messenger/messenger";
-import { SEResponseHandler } from "../../../response/se.response.handler";
-import { BlApiRequest } from "../../../request/bl-api-request";
 import { NextFunction, Request, Response } from "express";
+
+import { Messenger } from "../../../messenger/messenger";
 import { Operation } from "../../../operation/operation";
-import { orderSchema } from "../order.schema";
+import { BlApiRequest } from "../../../request/bl-api-request";
+import { SEResponseHandler } from "../../../response/se.response.handler";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { orderSchema } from "../order.schema";
 
 export class OrderAgreementPdfOperation implements Operation {
   private _messenger: Messenger;
@@ -18,7 +19,7 @@ export class OrderAgreementPdfOperation implements Operation {
   constructor(
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     resHandler?: SEResponseHandler,
-    orderStorage?: BlDocumentStorage<Order>
+    orderStorage?: BlDocumentStorage<Order>,
   ) {
     this._messenger = new Messenger();
     this._userDetailStorage = userDetailStorage
@@ -35,16 +36,16 @@ export class OrderAgreementPdfOperation implements Operation {
     req?: Request,
     res?: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction
+    next?: NextFunction,
   ): Promise<boolean> {
     const order = await this._orderStorage.get(blApiRequest.documentId);
     const customerDetail = await this._userDetailStorage.get(
-      order.customer as string
+      order.customer as string,
     );
 
     const orderReceiptPdf = await this._messenger.getOrderAgreementPdf(
       customerDetail,
-      order
+      order,
     );
 
     this._resHandler.sendResponse(res, new BlapiResponse([orderReceiptPdf]));

@@ -34,7 +34,7 @@ const testUser = {
 describe("UserHandler", () => {
   const userStorage: BlDocumentStorage<User> = new BlDocumentStorage(
     BlCollectionName.Users,
-    UserSchema
+    UserSchema,
   );
   const emailValidationHelper: EmailValidationHelper =
     new EmailValidationHelper();
@@ -45,7 +45,7 @@ describe("UserHandler", () => {
     userDetailStorage,
     userStorage,
     emailValidationHelper,
-    localLoginHandler
+    localLoginHandler,
   );
   let testProvider = "";
   let testProviderId = "";
@@ -64,7 +64,7 @@ describe("UserHandler", () => {
     .callsFake((userDetailId: string) => {
       if (!emailValidationLinkSuccess) {
         return Promise.reject(
-          new BlError("could not create and send email validation")
+          new BlError("could not create and send email validation"),
         );
       }
 
@@ -177,7 +177,7 @@ describe("UserHandler", () => {
         userStorageGetByQueryStub.withArgs(dbQuery).resolves(testUsers);
 
         return expect(userHandler.getByUsername(username)).to.eventually.be.eql(
-          { username: username, primary: true }
+          { username: username, primary: true },
         );
       });
     });
@@ -227,7 +227,7 @@ describe("UserHandler", () => {
         .create(testUsername, "local", "someProviderId")
         .catch((blError: BlError) => {
           expect(blError.getMsg()).to.be.eq(
-            `username "${testUsername}" already exists, but trying to create new user with provider "local"`
+            `username "${testUsername}" already exists, but trying to create new user with provider "local"`,
           );
 
           expect(blError.getCode()).to.be.eq(903);
@@ -254,7 +254,7 @@ describe("UserHandler", () => {
       userStorageGetByQueryStub.withArgs(dbQuery).resolves([testUser]);
 
       return expect(
-        userHandler.create(testUsername, "facebook", "someFacebookId")
+        userHandler.create(testUsername, "facebook", "someFacebookId"),
       ).to.be.fulfilled;
     });
 
@@ -267,7 +267,7 @@ describe("UserHandler", () => {
           expect(blError.errorStack.length).to.be.gte(1);
 
           expect(blError.errorStack[0].getMsg()).to.be.eq(
-            "could not send out email validation link"
+            "could not send out email validation link",
           );
 
           expect(blError.getCode()).to.eq(903);
@@ -284,7 +284,7 @@ describe("UserHandler", () => {
         .create(testUsername, testProvider, testProviderId)
         .then(() => {
           expect(emailValidationHelperSendLinkStub).to.have.been.calledWith(
-            testUser.userDetail
+            testUser.userDetail,
           );
 
           done();
@@ -316,7 +316,7 @@ describe("UserHandler", () => {
 
       return expect(userHandler.valid(testUsername)).to.be.rejectedWith(
         BlError,
-        /user.active is false/
+        /user.active is false/,
       );
     });
   });

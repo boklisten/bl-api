@@ -4,9 +4,10 @@ import {
   OrderItem,
   UserDetail,
 } from "@boklisten/bl-model";
+
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
 
 export class OrderToCustomerItemGenerator {
   constructor(private _userDetailStorage?: BlDocumentStorage<UserDetail>) {
@@ -26,7 +27,7 @@ export class OrderToCustomerItemGenerator {
     // eslint-disable-next-line no-useless-catch
     try {
       customerDetail = await this._userDetailStorage.get(
-        order.customer as string
+        order.customer as string,
       );
     } catch (e) {
       throw e;
@@ -37,7 +38,7 @@ export class OrderToCustomerItemGenerator {
         const customerItem = this.convertOrderItemToCustomerItem(
           customerDetail,
           order,
-          orderItem
+          orderItem,
         );
         customerItem.viewableFor = [customerDetail.blid];
         customerItems.push(customerItem);
@@ -61,13 +62,13 @@ export class OrderToCustomerItemGenerator {
   private convertOrderItemToCustomerItem(
     customerDetail: UserDetail,
     order: Order,
-    orderItem: OrderItem
+    orderItem: OrderItem,
   ): CustomerItem {
     if (orderItem.type === "partly-payment") {
       return this.createPartlyPaymentCustomerItem(
         customerDetail,
         order,
-        orderItem
+        orderItem,
       );
     } else if (
       orderItem.type === "rent" ||
@@ -86,7 +87,7 @@ export class OrderToCustomerItemGenerator {
   private createPartlyPaymentCustomerItem(
     customerDetail: UserDetail,
     order: Order,
-    orderItem: OrderItem
+    orderItem: OrderItem,
   ): CustomerItem {
     return {
       id: null,
@@ -109,7 +110,7 @@ export class OrderToCustomerItemGenerator {
   private createRentCustomerItem(
     customerDetail: UserDetail,
     order: Order,
-    orderItem: OrderItem
+    orderItem: OrderItem,
   ): CustomerItem {
     return {
       id: null,
@@ -131,7 +132,7 @@ export class OrderToCustomerItemGenerator {
   private createLoanCustomerItem(
     customerDetail: UserDetail,
     order: Order,
-    orderItem: OrderItem
+    orderItem: OrderItem,
   ): CustomerItem {
     return {
       id: null,

@@ -17,20 +17,20 @@ chai.use(chaiAsPromised);
 
 describe("CustomerItemHandler", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    BlCollectionName.CustomerItems
+    BlCollectionName.CustomerItems,
   );
   const branchStorage = new BlDocumentStorage<Branch>(
-    BlCollectionName.Branches
+    BlCollectionName.Branches,
   );
   const customerItemHandler = new CustomerItemHandler(
     customerItemStorage,
-    branchStorage
+    branchStorage,
   );
 
   const getCustomerItemStub = sinon.stub(customerItemStorage, "get");
   const getByQueryCustomerItemStub = sinon.stub(
     customerItemStorage,
-    "getByQuery"
+    "getByQuery",
   );
   const updateCustomerItemStub = sinon.stub(customerItemStorage, "update");
   const getBranchStub = sinon.stub(branchStorage, "get");
@@ -56,8 +56,8 @@ describe("CustomerItemHandler", () => {
           "customerItem1",
           orderItem,
           "branch1",
-          "order1"
-        )
+          "order1",
+        ),
       ).to.be.rejectedWith(BlError, /can not extend when returned is true/);
     });
 
@@ -79,8 +79,8 @@ describe("CustomerItemHandler", () => {
           "customerItem1",
           orderItem,
           "branch1",
-          "order1"
-        )
+          "order1",
+        ),
       ).to.be.rejectedWith(BlError, /orderItem.type is not "extend"/);
     });
 
@@ -124,11 +124,11 @@ describe("CustomerItemHandler", () => {
           "customerItem1",
           orderItem,
           "branch1",
-          "order1"
-        )
+          "order1",
+        ),
       ).to.be.rejectedWith(
         BlError,
-        /extend period "year" is not present on branch/
+        /extend period "year" is not present on branch/,
       );
     });
   });
@@ -142,7 +142,7 @@ describe("CustomerItemHandler", () => {
       const customerItem = {} as CustomerItem;
 
       return expect(
-        customerItemHandler.buyout("customerItem1", "order1", orderItem)
+        customerItemHandler.buyout("customerItem1", "order1", orderItem),
       ).to.be.rejectedWith('orderItem.type is not "buyout"');
     });
   });
@@ -161,8 +161,8 @@ describe("CustomerItemHandler", () => {
           "order1",
           orderItem,
           "branch1",
-          "employee1"
-        )
+          "employee1",
+        ),
       ).to.be.rejectedWith('orderItem.type is not "return"');
     });
   });
@@ -176,7 +176,7 @@ describe("CustomerItemHandler", () => {
       const customerItem = {} as CustomerItem;
 
       return expect(
-        customerItemHandler.buyback("customerItem1", "order1", orderItem)
+        customerItemHandler.buyback("customerItem1", "order1", orderItem),
       ).to.be.rejectedWith('orderItem.type is not "buyback"');
     });
   });
@@ -237,11 +237,11 @@ describe("CustomerItemHandler", () => {
           const queryArg = getByQueryCustomerItemStub.getCall(0).args[0];
 
           expect(queryArg.booleanFilters).to.be.eql(
-            expectedQuery.booleanFilters
+            expectedQuery.booleanFilters,
           );
 
           expect(queryArg.objectIdFilters).to.be.eql(
-            expectedQuery.objectIdFilters
+            expectedQuery.objectIdFilters,
           );
           done();
         })
@@ -286,8 +286,8 @@ describe("CustomerItemHandler", () => {
       expect(
         customerItemHandler.getNotReturned(
           "5c33b6137eab87644f7e75e2",
-          new Date()
-        )
+          new Date(),
+        ),
       ).to.be.rejectedWith(BlError);
     });
   });

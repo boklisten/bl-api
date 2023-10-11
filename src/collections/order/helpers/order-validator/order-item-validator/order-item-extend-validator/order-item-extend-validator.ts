@@ -1,7 +1,8 @@
 import { OrderItem, CustomerItem, BlError, Branch } from "@boklisten/bl-model";
+
 import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
-import { customerItemSchema } from "../../../../../customer-item/customer-item.schema";
 import { BlCollectionName } from "../../../../../bl-collection";
+import { customerItemSchema } from "../../../../../customer-item/customer-item.schema";
 
 export class OrderItemExtendValidator {
   private customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -11,13 +12,13 @@ export class OrderItemExtendValidator {
       ? customerItemStorage
       : new BlDocumentStorage(
           BlCollectionName.CustomerItems,
-          customerItemSchema
+          customerItemSchema,
         );
   }
 
   public async validate(
     branch: Branch,
-    orderItem: OrderItem
+    orderItem: OrderItem,
   ): Promise<boolean> {
     try {
       this.validateFields(orderItem);
@@ -29,8 +30,8 @@ export class OrderItemExtendValidator {
       }
       return Promise.reject(
         new BlError(
-          'unknown error, could not validate orderItem.type "extend"'
-        ).store("error", e)
+          'unknown error, could not validate orderItem.type "extend"',
+        ).store("error", e),
       );
     }
 
@@ -55,7 +56,7 @@ export class OrderItemExtendValidator {
 
   private validateCustomerItem(
     branch: Branch,
-    orderItem: OrderItem
+    orderItem: OrderItem,
   ): Promise<boolean> {
     return this.customerItemStorage
       .get(orderItem.info.customerItem as string)
@@ -72,7 +73,7 @@ export class OrderItemExtendValidator {
             if (extendPeriod.type === orderItem.info.periodType) {
               if (totalOfSelectedPeriod > extendPeriod.maxNumberOfPeriods) {
                 throw new BlError(
-                  "orderItem can not be extended any more times"
+                  "orderItem can not be extended any more times",
                 );
               }
             }
@@ -99,7 +100,7 @@ export class OrderItemExtendValidator {
     }
 
     throw new BlError(
-      `orderItem.info.periodType is "${orderItem.info.periodType}" but it is not allowed by branch`
+      `orderItem.info.periodType is "${orderItem.info.periodType}" but it is not allowed by branch`,
     );
   }
 }

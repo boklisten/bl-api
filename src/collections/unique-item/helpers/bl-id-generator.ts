@@ -1,7 +1,7 @@
 import { Canvas } from "canvas";
 import JsBarcode from "jsbarcode";
 import PDFDocument from "pdfkit";
-import QRCode from "qrcode";
+import { toCanvas } from "qrcode";
 
 const BL_ID_LENGTH = 12;
 const VALID_BL_ID_CHARACTERS =
@@ -39,15 +39,15 @@ function generateBlIds(numberOfIds: number): string[] {
       () =>
         VALID_BL_ID_CHARACTERS[
           Math.floor(Math.random() * VALID_BL_ID_CHARACTERS.length)
-        ]
-    ).join("")
+        ],
+    ).join(""),
   );
 }
 
 function createBarcodeCanvas(id: string): Canvas {
   const canvas = new Canvas(
     PRINTER_DIMENSIONS.barcode.width,
-    PRINTER_DIMENSIONS.barcode.height
+    PRINTER_DIMENSIONS.barcode.height,
   );
   JsBarcode(canvas, id, {
     fontSize: PRINTER_DIMENSIONS.barcode.fontSize,
@@ -63,9 +63,9 @@ function createBarcodeCanvas(id: string): Canvas {
 function createQRCodeCanvas(id: string): Canvas {
   const canvas = new Canvas(
     PRINTER_DIMENSIONS.qrcode.width,
-    PRINTER_DIMENSIONS.qrcode.height
+    PRINTER_DIMENSIONS.qrcode.height,
   );
-  QRCode.toCanvas(
+  toCanvas(
     canvas,
     id,
     {
@@ -77,7 +77,7 @@ function createQRCodeCanvas(id: string): Canvas {
       if (error) {
         throw error;
       }
-    }
+    },
   );
   return canvas;
 }
@@ -98,7 +98,7 @@ function createBlIdCanvas(id: string): Canvas {
   printCtx.drawImage(
     barcodeCanvas,
     qrcodeCanvas.width + PRINTER_DIMENSIONS.label.spaceBetween,
-    0
+    0,
   );
 
   return blIdCanvas;
@@ -106,7 +106,7 @@ function createBlIdCanvas(id: string): Canvas {
 
 async function addIdPagesToDoc(
   id: string,
-  doc: PDFKit.PDFDocument
+  doc: PDFKit.PDFDocument,
 ): Promise<void> {
   const canvas = createBlIdCanvas(id);
   const pngBuffers: Buffer[] = [];

@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from "mongoose";
+
 import { BlCollectionName } from "../../collections/bl-collection";
 
 export class MongooseModelCreator {
-  constructor(private collectionName: BlCollectionName, private schema: any) {}
+  constructor(
+    private collectionName: BlCollectionName,
+    private schema: any,
+  ) {}
 
   create(): any {
     const mongooseSchema = this.createMongooseSchema(this.schema);

@@ -18,14 +18,14 @@ describe("PaymentDibsConfirmer", () => {
   const dibsPaymentService = new DibsPaymentService();
   const dibsPaymentFetchStub = sinon.stub(
     dibsPaymentService,
-    "fetchDibsPaymentData"
+    "fetchDibsPaymentData",
   );
   const paymentStorage = new BlDocumentStorage<Payment>(
-    BlCollectionName.Payments
+    BlCollectionName.Payments,
   );
   const paymentDibsConfirmer = new PaymentDibsConfirmer(
     dibsPaymentService,
-    paymentStorage
+    paymentStorage,
   );
 
   const updatePaymentStub = sinon.stub(paymentStorage, "update");
@@ -109,10 +109,10 @@ describe("PaymentDibsConfirmer", () => {
       updatePaymentStub.rejects(new BlError("could not update payment"));
 
       return expect(
-        paymentDibsConfirmer.confirm(order, payment, accessToken)
+        paymentDibsConfirmer.confirm(order, payment, accessToken),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /payment could not be updated with dibs information/
+        /payment could not be updated with dibs information/,
       );
     });
 
@@ -135,10 +135,10 @@ describe("PaymentDibsConfirmer", () => {
       } as Order;
 
       return expect(
-        paymentDibsConfirmer.confirm(order, payment, accessToken)
+        paymentDibsConfirmer.confirm(order, payment, accessToken),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /dibsEasyPaymentDetails.summary.reservedAmount "10000" is not equal to payment.amount "11000"/
+        /dibsEasyPaymentDetails.summary.reservedAmount "10000" is not equal to payment.amount "11000"/,
       );
     });
 

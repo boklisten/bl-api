@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Payment, Order, BlError, Delivery } from "@boklisten/bl-model";
+
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { orderSchema } from "../../order/order.schema";
-import { deliverySchema } from "../../delivery/delivery.schema";
 import { BlCollectionName } from "../../bl-collection";
+import { deliverySchema } from "../../delivery/delivery.schema";
+import { orderSchema } from "../../order/order.schema";
 
 export class PaymentValidator {
   private orderStorage?: BlDocumentStorage<Order>;
@@ -12,7 +13,7 @@ export class PaymentValidator {
   constructor(
     orderStorage?: BlDocumentStorage<Order>,
     paymentStorage?: BlDocumentStorage<Payment>,
-    deliveryStorage?: BlDocumentStorage<Delivery>
+    deliveryStorage?: BlDocumentStorage<Delivery>,
   ) {
     this.orderStorage = orderStorage
       ? orderStorage
@@ -21,7 +22,7 @@ export class PaymentValidator {
       ? deliveryStorage
       : new BlDocumentStorage<Delivery>(
           BlCollectionName.Deliveries,
-          deliverySchema
+          deliverySchema,
         );
   }
 
@@ -47,14 +48,14 @@ export class PaymentValidator {
         }
         throw new BlError("could not validate payment, unknown error").store(
           "error",
-          validatePaymentError
+          validatePaymentError,
         );
       });
   }
 
   private validateIfOrderHasDelivery(
     payment: Payment,
-    order: Order
+    order: Order,
   ): Promise<boolean> {
     if (!order.delivery) {
       return Promise.resolve(true);
@@ -67,7 +68,7 @@ export class PaymentValidator {
 
         if (payment.amount !== expectedAmount) {
           throw new BlError(
-            `payment.amount "${payment.amount}" is not equal to (order.amount + delivery.amount) "${expectedAmount}"`
+            `payment.amount "${payment.amount}" is not equal to (order.amount + delivery.amount) "${expectedAmount}"`,
           );
         }
         return true;
@@ -76,7 +77,7 @@ export class PaymentValidator {
 
   private validatePaymentBasedOnMethod(
     payment: Payment,
-    order: Order
+    order: Order,
   ): Promise<boolean> {
     switch (payment.method) {
       case "dibs":
@@ -94,28 +95,28 @@ export class PaymentValidator {
 
   private validatePaymentDibs(
     payment: Payment,
-    order: Order
+    order: Order,
   ): Promise<boolean> {
     return Promise.resolve(true);
   }
 
   private validatePaymentCard(
     payment: Payment,
-    order: Order
+    order: Order,
   ): Promise<boolean> {
     return Promise.resolve(true);
   }
 
   private validatePaymentVipps(
     payment: Payment,
-    order: Order
+    order: Order,
   ): Promise<boolean> {
     return Promise.resolve(true);
   }
 
   private validatePaymentCash(
     payment: Payment,
-    order: Order
+    order: Order,
   ): Promise<boolean> {
     return Promise.resolve(true);
   }

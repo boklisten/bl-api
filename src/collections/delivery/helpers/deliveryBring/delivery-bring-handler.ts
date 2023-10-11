@@ -1,6 +1,6 @@
-import { Delivery, Order, BlError } from "@boklisten/bl-model";
-
 import { isNullOrUndefined } from "util";
+
+import { Delivery, Order, BlError } from "@boklisten/bl-model";
 
 export class DeliveryBringHandler {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

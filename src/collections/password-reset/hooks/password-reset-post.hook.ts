@@ -1,14 +1,15 @@
-import { Hook } from "../../../hook/hook";
 import { AccessToken, BlError, UserDetail } from "@boklisten/bl-model";
-import { PasswordReset } from "../password-reset";
 import isEmail from "validator/lib/isEmail";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+
 import { UserHandler } from "../../../auth/user/user.handler";
-import { User } from "../../user/user";
 import { SeCrypto } from "../../../crypto/se.crypto";
+import { Hook } from "../../../hook/hook";
 import { Messenger } from "../../../messenger/messenger";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { User } from "../../user/user";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { PasswordReset } from "../password-reset";
 
 export class PasswordResetPostHook extends Hook {
   private _userDetailStorage: BlDocumentStorage<UserDetail>;
@@ -20,7 +21,7 @@ export class PasswordResetPostHook extends Hook {
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     userHandler?: UserHandler,
     seCrypto?: SeCrypto,
-    messenger?: Messenger
+    messenger?: Messenger,
   ) {
     super();
     this._userDetailStorage =
@@ -34,7 +35,7 @@ export class PasswordResetPostHook extends Hook {
   override before(
     passwordReset: PasswordReset,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    accessToken?: AccessToken
+    accessToken?: AccessToken,
   ): Promise<PasswordReset> {
     if (!passwordReset) {
       return Promise.reject(new BlError("passwordReset is empty or undefined"));
@@ -42,7 +43,7 @@ export class PasswordResetPostHook extends Hook {
 
     if (!passwordReset.email || !isEmail(passwordReset.email)) {
       return Promise.reject(
-        new BlError(`passwordReset.email is not a valid email`)
+        new BlError(`passwordReset.email is not a valid email`),
       );
     }
 
@@ -62,8 +63,8 @@ export class PasswordResetPostHook extends Hook {
         .catch((getUserError: BlError) => {
           reject(
             new BlError(`user "${passwordReset.email}" not found`).add(
-              getUserError
-            )
+              getUserError,
+            ),
           );
         });
     });
@@ -72,7 +73,7 @@ export class PasswordResetPostHook extends Hook {
   override after(
     passwordResets: PasswordReset[],
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    accessToken?: AccessToken
+    accessToken?: AccessToken,
   ): Promise<PasswordReset[]> {
     return new Promise((resolve, reject) => {
       const passwordReset = passwordResets[0];
@@ -87,8 +88,8 @@ export class PasswordResetPostHook extends Hook {
         .catch((getUserDetailError: BlError) => {
           reject(
             new BlError(
-              `userDetail "${passwordReset.userDetail}" not found`
-            ).add(getUserDetailError)
+              `userDetail "${passwordReset.userDetail}" not found`,
+            ).add(getUserDetailError),
           );
         });
     });

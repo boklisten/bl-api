@@ -1,5 +1,6 @@
-import { Order, OrderItem, BlError } from "@boklisten/bl-model";
 import { isNullOrUndefined, isNumber } from "util";
+
+import { Order, OrderItem, BlError } from "@boklisten/bl-model";
 
 export class OrderFieldValidator {
   validate(order: Order): Promise<boolean> {
@@ -16,8 +17,8 @@ export class OrderFieldValidator {
       return Promise.reject(
         new BlError("unknown error, orderItem could not be validated").store(
           "error",
-          e
-        )
+          e,
+        ),
       );
     }
 

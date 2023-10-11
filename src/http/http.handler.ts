@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlError } from "@boklisten/bl-model";
-import qs from "qs";
+import { stringify } from "qs";
+
+import { logger } from "../logger/logger";
+
 const request = require("request");
 const rp = require("request-promise");
-import { logger } from "../logger/logger";
 
 export class HttpHandler {
   post(url: string, data: any, authorization?: string): Promise<string> {
@@ -36,8 +38,8 @@ export class HttpHandler {
 
           return reject(
             new BlError(
-              `the request to "${url}" responded with status ${res.statusCode}`
-            ).store("body", body)
+              `the request to "${url}" responded with status ${res.statusCode}`,
+            ).store("body", body),
           );
         }
       });
@@ -47,7 +49,7 @@ export class HttpHandler {
   public getWithQuery(
     url: string,
     queryString: string,
-    headers?: object
+    headers?: object,
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       const options = {
@@ -68,7 +70,7 @@ export class HttpHandler {
           reject(
             new BlError("could not get page with query")
               .store("responseError", error)
-              .store("uri", url + "?" + queryString)
+              .store("uri", url + "?" + queryString),
           );
         });
     });
@@ -97,14 +99,14 @@ export class HttpHandler {
 
           reject(
             new BlError(
-              `could not get the requested resource at "${url}"`
-            ).store("error", error)
+              `could not get the requested resource at "${url}"`,
+            ).store("error", error),
           );
         });
     });
   }
 
   public createQueryString(data: any): string {
-    return qs.stringify(data);
+    return stringify(data);
   }
 }

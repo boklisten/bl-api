@@ -28,7 +28,7 @@ const dummyLocalLogin = {
 describe("LocalLoginHandler", () => {
   const localLoginStorage = new BlDocumentStorage<LocalLogin>(
     BlCollectionName.LocalLogins,
-    localLoginSchema
+    localLoginSchema,
   );
   const baseLocalLogin = {
     id: "1",
@@ -195,10 +195,10 @@ describe("LocalLoginHandler", () => {
       const testUsername = "notFound@mail.com";
 
       return expect(
-        localLoginHandler.setPassword(testUsername, "password")
+        localLoginHandler.setPassword(testUsername, "password"),
       ).to.be.rejectedWith(
         BlError,
-        /localLogin was not found with username "notFound@mail.com/
+        /localLogin was not found with username "notFound@mail.com/,
       );
     });
 
@@ -206,7 +206,7 @@ describe("LocalLoginHandler", () => {
       const testPassword = "short";
 
       return expect(
-        localLoginHandler.setPassword(testUsername, testPassword)
+        localLoginHandler.setPassword(testUsername, testPassword),
       ).to.be.rejectedWith(BlError, /localLogin password to short/);
     });
 
@@ -214,10 +214,10 @@ describe("LocalLoginHandler", () => {
       const notFoundUsername = "notFound@mail.com";
 
       return expect(
-        localLoginHandler.setPassword(notFoundUsername, "password")
+        localLoginHandler.setPassword(notFoundUsername, "password"),
       ).to.be.rejectedWith(
         BlError,
-        /localLogin was not found with username "notFound@mail.com"/
+        /localLogin was not found with username "notFound@mail.com"/,
       );
     });
 
@@ -225,7 +225,7 @@ describe("LocalLoginHandler", () => {
       updateSuccess = false;
 
       return expect(
-        localLoginHandler.setPassword(testUsername, "password")
+        localLoginHandler.setPassword(testUsername, "password"),
       ).to.be.rejectedWith(BlError, /localLogin could not be updated/);
     });
 

@@ -1,21 +1,28 @@
-import { BlError, Match } from "@boklisten/bl-model";
-import { Branch, CustomerItem, Item, Order } from "@boklisten/bl-model";
+import {
+  BlError,
+  Match,
+  Branch,
+  CustomerItem,
+  Item,
+  Order,
+} from "@boklisten/bl-model";
+
 import { SEDbQuery } from "../../../query/se.db-query";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
-import { matchSchema } from "../match.schema";
-import { itemSchema } from "../../item/item.schema";
 import { branchSchema } from "../../branch/branch.schema";
+import { itemSchema } from "../../item/item.schema";
 import { OrderActive } from "../../order/helpers/order-active/order-active";
+import { matchSchema } from "../match.schema";
 
 export async function createMatchOrder(
   customerItem: CustomerItem,
   userDetailId: string,
-  isSender: boolean
+  isSender: boolean,
 ): Promise<Order> {
   const itemStorage = new BlDocumentStorage<Item>(
     BlCollectionName.Items,
-    itemSchema
+    itemSchema,
   );
   const item = await itemStorage.get(String(customerItem.item));
 
@@ -25,10 +32,10 @@ export async function createMatchOrder(
 
   const branchStorage = new BlDocumentStorage<Branch>(
     BlCollectionName.Branches,
-    branchSchema
+    branchSchema,
   );
   const branch = await branchStorage.get(
-    String(customerItem.handoutInfo.handoutById)
+    String(customerItem.handoutInfo.handoutById),
   );
 
   const newRentPeriod = branch?.paymentInfo?.rentPeriods?.[0];
@@ -45,22 +52,21 @@ export async function createMatchOrder(
 
   if (!isSender) {
     const orderActive = new OrderActive();
-    const activeReceiverOrders = await orderActive.getActiveOrders(
-      userDetailId
-    );
+    const activeReceiverOrders =
+      await orderActive.getActiveOrders(userDetailId);
     console.log(
       activeReceiverOrders.map((order) =>
         order.orderItems.filter((orderItem) =>
-          orderActive.isOrderItemActive(orderItem)
-        )
-      )
+          orderActive.isOrderItemActive(orderItem),
+        ),
+      ),
     );
     const originalReceiverOrder = activeReceiverOrders.find((order) =>
       order.orderItems
         .filter((orderItem) => orderActive.isOrderItemActive(orderItem))
         .some(
-          (orderItem) => String(orderItem.item) === String(customerItem.item)
-        )
+          (orderItem) => String(orderItem.item) === String(customerItem.item),
+        ),
     );
     if (!originalReceiverOrder) {
       throw new BlError("Could not find original receiver order");
@@ -103,7 +109,7 @@ export async function createMatchOrder(
 }
 
 export async function getAllMatchesForUser(
-  userDetailId: string
+  userDetailId: string,
 ): Promise<Match[]> {
   const query = new SEDbQuery();
   query.objectIdFilters = [
@@ -115,7 +121,7 @@ export async function getAllMatchesForUser(
 
   const matchStorage = new BlDocumentStorage(
     BlCollectionName.Matches,
-    matchSchema
+    matchSchema,
   );
   try {
     return (await matchStorage.getByQuery(query)) as Match[];

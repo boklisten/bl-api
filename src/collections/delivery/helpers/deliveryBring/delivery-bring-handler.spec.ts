@@ -45,7 +45,7 @@ describe("DeliveryBringHandler", () => {
       testDelivery.info = undefined;
 
       return expect(
-        deliveryBringHandler.validate(testDelivery, testOrder)
+        deliveryBringHandler.validate(testDelivery, testOrder),
       ).to.be.rejectedWith(BlError, /delivery.info not defined/);
     });
 
@@ -59,7 +59,7 @@ describe("DeliveryBringHandler", () => {
       };
 
       return expect(
-        deliveryBringHandler.validate(testDelivery, testOrder)
+        deliveryBringHandler.validate(testDelivery, testOrder),
       ).to.be.rejectedWith(BlError, /delivery.info.from not defined/);
     });
 
@@ -73,7 +73,7 @@ describe("DeliveryBringHandler", () => {
       };
 
       return expect(
-        deliveryBringHandler.validate(testDelivery, testOrder)
+        deliveryBringHandler.validate(testDelivery, testOrder),
       ).to.be.rejectedWith(BlError, /delivery.info.to not defined/);
     });
   });

@@ -1,9 +1,11 @@
-import { BlError, DeliveryInfoBring, Item } from "@boklisten/bl-model";
-import { HttpHandler } from "../../../../http/http.handler";
-import { BringDelivery } from "./bringDelivery";
-import moment = require("moment");
-import { APP_CONFIG } from "../../../../application-config";
 import { isNullOrUndefined } from "util";
+
+import { BlError, DeliveryInfoBring, Item } from "@boklisten/bl-model";
+import moment = require("moment");
+
+import { BringDelivery } from "./bringDelivery";
+import { APP_CONFIG } from "../../../../application-config";
+import { HttpHandler } from "../../../../http/http.handler";
 
 export type ShipmentAddress = {
   name: string;
@@ -33,7 +35,7 @@ export class BringDeliveryService {
     facilityAddress: FacilityAddress,
     shipmentAddress: ShipmentAddress,
     items: Item[],
-    freeDelivery: boolean
+    freeDelivery: boolean,
   ): Promise<DeliveryInfoBring> {
     if (
       isNullOrUndefined(facilityAddress) ||
@@ -41,8 +43,8 @@ export class BringDeliveryService {
     ) {
       return Promise.reject(
         new BlError(
-          "required fields facilityAddress or shipmentAddress are null or undefined"
-        )
+          "required fields facilityAddress or shipmentAddress are null or undefined",
+        ),
       );
     }
     if (!items || items.length <= 0) {
@@ -51,7 +53,7 @@ export class BringDeliveryService {
 
     if (!facilityAddress.postalCode || facilityAddress.postalCode.length <= 0) {
       return Promise.reject(
-        new BlError("fromPostalCode is empty or undefined")
+        new BlError("fromPostalCode is empty or undefined"),
       );
     }
 
@@ -69,7 +71,7 @@ export class BringDeliveryService {
       const postalInfo = await this.httpHandler.getWithQuery(
         postalInfoUrl,
         "",
-        bringAuthHeaders
+        bringAuthHeaders,
       );
       shipmentAddress.postalCity = postalInfo.postalCode.city;
     } catch (e) {
@@ -95,7 +97,7 @@ export class BringDeliveryService {
         facilityAddress,
         shipmentAddress,
         items,
-        product
+        product,
       );
       const queryString = this.httpHandler.createQueryString(bringDelivery);
 
@@ -109,7 +111,7 @@ export class BringDeliveryService {
               facilityAddress,
               shipmentAddress,
               responseData,
-              product
+              product,
             );
           } catch (e) {
             if (e instanceof BlError) {
@@ -118,8 +120,8 @@ export class BringDeliveryService {
 
             return reject(
               new BlError(
-                "unkown error, could not parse the data from bring api"
-              ).store("error", e)
+                "unkown error, could not parse the data from bring api",
+              ).store("error", e),
             );
           }
 
@@ -156,7 +158,7 @@ export class BringDeliveryService {
     facilityAddress: FacilityAddress,
     shipmentAddress: ShipmentAddress,
     items: Item[],
-    product
+    product,
   ): BringDelivery {
     const totalWeightInGrams = this.calculateTotalWeight(items);
 
@@ -176,7 +178,7 @@ export class BringDeliveryService {
     shipmentAddress: ShipmentAddress,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     responseData: any,
-    product: string
+    product: string,
   ): DeliveryInfoBring {
     let deliveryInfoBring: DeliveryInfoBring = {
       amount: -1,
@@ -193,7 +195,7 @@ export class BringDeliveryService {
       !responseData["consignments"] ||
       !Array.isArray(
         responseData["consignments"] ||
-          responseData["consignments"].length === 0
+          responseData["consignments"].length === 0,
       )
     ) {
       throw new BlError("no consignments provided in response from bringApi");
@@ -203,7 +205,7 @@ export class BringDeliveryService {
       !responseData["consignments"][0]["products"] ||
       !Array.isArray(
         responseData["consignments"][0]["products"] ||
-          responseData["consignments"][0]["products"].length === 0
+          responseData["consignments"][0]["products"].length === 0,
       )
     ) {
       throw new BlError("no products provided in response from bringApi");
@@ -213,13 +215,13 @@ export class BringDeliveryService {
       deliveryInfoBring,
       responseData["consignments"][0]["products"][
         responseData["consignments"][0]["products"].length - 1
-      ]
+      ],
     );
 
     if (deliveryInfoBring.amount === -1) {
       throw new BlError("could not parse the data from the bring api").store(
         "responseData",
-        responseData
+        responseData,
       );
     }
 
@@ -228,17 +230,17 @@ export class BringDeliveryService {
 
   private getBringProduct(
     deliveryInfoBring: DeliveryInfoBring,
-    product
+    product,
   ): DeliveryInfoBring {
     const priceInfo = product["price"]["listPrice"];
     const priceWithoutAdditionalService =
       priceInfo["priceWithoutAdditionalServices"];
     if (priceWithoutAdditionalService) {
       deliveryInfoBring.amount = parseInt(
-        priceWithoutAdditionalService["amountWithVAT"]
+        priceWithoutAdditionalService["amountWithVAT"],
       );
       deliveryInfoBring.taxAmount = parseInt(
-        priceWithoutAdditionalService["vat"]
+        priceWithoutAdditionalService["vat"],
       );
     }
 

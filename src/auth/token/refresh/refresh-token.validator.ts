@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlError } from "@boklisten/bl-model";
+
 import { RefreshTokenSecret } from "./refresh-token.secret";
 
 export class RefreshTokenValidator {
@@ -23,13 +24,13 @@ export class RefreshTokenValidator {
             if (error)
               return reject(new BlError("could not validate token").code(909));
             resolve(payload);
-          }
+          },
         );
       } catch (error) {
         reject(
           new BlError("could not validate token")
             .store("jwt error", error)
-            .code(909)
+            .code(909),
         );
       }
     });

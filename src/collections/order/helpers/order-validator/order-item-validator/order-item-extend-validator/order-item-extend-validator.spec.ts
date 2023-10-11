@@ -21,10 +21,10 @@ chai.use(chaiAsPromised);
 
 describe("OrderItemExtendValidator", () => {
   const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-    BlCollectionName.CustomerItems
+    BlCollectionName.CustomerItems,
   );
   const orderItemExtendValidator = new OrderItemExtendValidator(
-    customerItemStorage
+    customerItemStorage,
   );
 
   let testOrder: Order;
@@ -43,7 +43,7 @@ describe("OrderItemExtendValidator", () => {
     it('should reject if orderItem.type is not "extend"', () => {
       testOrder.orderItems[0].type = "rent";
       return expect(
-        orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0])
+        orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0]),
       ).to.be.rejectedWith(BlError, /orderItem.type "rent" is not "extend"/);
     });
 
@@ -59,10 +59,10 @@ describe("OrderItemExtendValidator", () => {
       ];
 
       return expect(
-        orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0])
+        orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0]),
       ).to.be.rejectedWith(
         BlError,
-        /orderItem.info.periodType is "year" but it is not allowed by branch/
+        /orderItem.info.periodType is "year" but it is not allowed by branch/,
       );
     });
 
@@ -82,7 +82,7 @@ describe("OrderItemExtendValidator", () => {
       testOrder.orderItems[0].info = null;
 
       return expect(
-        orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0])
+        orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0]),
       ).to.be.rejectedWith(BlError, /orderItem.info is not defined/);
     });
 
@@ -90,10 +90,10 @@ describe("OrderItemExtendValidator", () => {
       testOrder.orderItems[0].info.customerItem = null;
 
       return expect(
-        orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0])
+        orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0]),
       ).to.be.rejectedWith(
         BlError,
-        /orderItem.info.customerItem is not defined/
+        /orderItem.info.customerItem is not defined/,
       );
     });
 
@@ -126,10 +126,10 @@ describe("OrderItemExtendValidator", () => {
       testOrder.orderItems[0].info.customerItem = "maxExtendedCustomerItem";
 
       return expect(
-        orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0])
+        orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0]),
       ).to.be.rejectedWith(
         BlError,
-        /orderItem can not be extended any more times/
+        /orderItem can not be extended any more times/,
       );
     });
   });

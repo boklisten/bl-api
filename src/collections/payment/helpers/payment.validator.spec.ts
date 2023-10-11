@@ -14,15 +14,15 @@ import { BlCollectionName } from "../../bl-collection";
 describe("PaymentValidator", () => {
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
   const paymentStorage = new BlDocumentStorage<Payment>(
-    BlCollectionName.Payments
+    BlCollectionName.Payments,
   );
   const deliveryStorage = new BlDocumentStorage<Delivery>(
-    BlCollectionName.Deliveries
+    BlCollectionName.Deliveries,
   );
   const paymentValidator = new PaymentValidator(
     orderStorage,
     paymentStorage,
-    deliveryStorage
+    deliveryStorage,
   );
 
   let testPayment: Payment;
@@ -80,17 +80,17 @@ describe("PaymentValidator", () => {
   describe("#validate()", () => {
     it("should reject if payment is undefined", () => {
       return expect(
-        paymentValidator.validate(undefined)
+        paymentValidator.validate(undefined),
       ).to.eventually.be.rejectedWith(BlError, /payment is not defined/);
     });
 
     it("should reject if paymentMethod is not valid", () => {
       testPayment.method = "something" as any;
       return expect(
-        paymentValidator.validate(testPayment)
+        paymentValidator.validate(testPayment),
       ).to.eventually.be.rejectedWith(
         BlError,
-        /payment.method "something" not supported/
+        /payment.method "something" not supported/,
       );
     });
 
@@ -104,7 +104,7 @@ describe("PaymentValidator", () => {
 
       return expect(paymentValidator.validate(testPayment)).to.be.rejectedWith(
         BlError,
-        /order not found/
+        /order not found/,
       );
     });
 
@@ -117,7 +117,7 @@ describe("PaymentValidator", () => {
         testOrder.delivery = "notFoundDelivery";
 
         return expect(
-          paymentValidator.validate(testPayment)
+          paymentValidator.validate(testPayment),
         ).to.be.rejectedWith(BlError, /delivery not found/);
       });
 
@@ -128,10 +128,10 @@ describe("PaymentValidator", () => {
         testOrder.delivery = testDelivery.id;
 
         return expect(
-          paymentValidator.validate(testPayment)
+          paymentValidator.validate(testPayment),
         ).to.be.rejectedWith(
           BlError,
-          /payment.amount "200" is not equal to \(order.amount \+ delivery.amount\) "300"/
+          /payment.amount "200" is not equal to \(order.amount \+ delivery.amount\) "300"/,
         );
       });
     });

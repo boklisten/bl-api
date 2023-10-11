@@ -7,7 +7,7 @@ export class DbQueryBooleanFilter {
   public getBooleanFilters(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
-    validBooleanParams: string[]
+    validBooleanParams: string[],
   ): BooleanFilter[] {
     if (
       !query ||
@@ -21,7 +21,7 @@ export class DbQueryBooleanFilter {
   private generateBooleanFilters(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
-    validBooleanParams: string[]
+    validBooleanParams: string[],
   ): BooleanFilter[] {
     const booleanFilters: BooleanFilter[] = [];
 
@@ -34,7 +34,7 @@ export class DbQueryBooleanFilter {
           value = false;
         } else {
           throw new TypeError(
-            'value "' + query[param] + '" could not be parsed to boolean'
+            'value "' + query[param] + '" could not be parsed to boolean',
           );
         }
 

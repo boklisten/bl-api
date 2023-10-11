@@ -15,11 +15,11 @@ chai.use(chaiAsPromised);
 
 describe("UserDeleteAllInfo", () => {
   const localLoginStorage = new BlDocumentStorage<LocalLogin>(
-    BlCollectionName.LocalLogins
+    BlCollectionName.LocalLogins,
   );
   const userStorage = new BlDocumentStorage<User>(BlCollectionName.Users);
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
 
   const localLoginRemoveStub = sinon.stub(localLoginStorage, "remove");
@@ -30,7 +30,7 @@ describe("UserDeleteAllInfo", () => {
 
   const userDeleteAllInfo = new UserDeleteAllInfo(
     userStorage,
-    localLoginStorage
+    localLoginStorage,
   );
 
   beforeEach(() => {
@@ -62,14 +62,14 @@ describe("UserDeleteAllInfo", () => {
 
       const result = await userDeleteAllInfo.deleteAllInfo(
         userDetailIdToRemove,
-        accessToken
+        accessToken,
       );
 
       return expect(
         userRemoveStub.getCall(0).calledWithMatch(userIdToRemove, {
           id: accessToken.details,
           permission: accessToken.permission,
-        })
+        }),
       ).to.be.true;
     });
 
@@ -94,14 +94,14 @@ describe("UserDeleteAllInfo", () => {
 
       const result = await userDeleteAllInfo.deleteAllInfo(
         userDetailIdToRemove,
-        accessToken
+        accessToken,
       );
 
       return expect(
         localLoginRemoveStub.getCall(0).calledWithMatch(localLoginIdToRemove, {
           id: accessToken.details,
           permission: accessToken.permission,
-        })
+        }),
       ).to.be.true;
     });
 
@@ -127,7 +127,7 @@ describe("UserDeleteAllInfo", () => {
       } as AccessToken;
 
       return expect(
-        userDeleteAllInfo.deleteAllInfo(userDetailIdToRemove, accessToken)
+        userDeleteAllInfo.deleteAllInfo(userDetailIdToRemove, accessToken),
       ).to.eventually.be.rejectedWith(BlError, /multiple users was found/);
     });
 
@@ -150,7 +150,7 @@ describe("UserDeleteAllInfo", () => {
       } as AccessToken;
 
       return expect(
-        userDeleteAllInfo.deleteAllInfo(userDetailIdToRemove, accessToken)
+        userDeleteAllInfo.deleteAllInfo(userDetailIdToRemove, accessToken),
       ).to.eventually.be.true;
     });
   });

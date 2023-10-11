@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Hook } from "../../../hook/hook";
 import {
   AccessToken,
   BlError,
@@ -7,12 +6,14 @@ import {
   Order,
   UserDetail,
 } from "@boklisten/bl-model";
-import { CustomerItemValidator } from "../validators/customer-item-validator";
+
+import { Hook } from "../../../hook/hook";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { BlCollectionName } from "../../bl-collection";
 import { orderSchema } from "../../order/order.schema";
 import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
-import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { CustomerItemValidator } from "../validators/customer-item-validator";
 
 export class CustomerItemPostHook extends Hook {
   private _customerItemValidator: CustomerItemValidator;
@@ -25,7 +26,7 @@ export class CustomerItemPostHook extends Hook {
     customerItemStorage?: BlDocumentStorage<CustomerItem>,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     orderStorage?: BlDocumentStorage<Order>,
-    userDetailHelper?: UserDetailHelper
+    userDetailHelper?: UserDetailHelper,
   ) {
     super();
     this._customerItemValidator =
@@ -44,7 +45,7 @@ export class CustomerItemPostHook extends Hook {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     accessToken: AccessToken,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    id?: string
+    id?: string,
   ): Promise<boolean> {
     if (!customerItem) {
       return Promise.reject(new BlError("customerItem is undefined"));
@@ -64,7 +65,7 @@ export class CustomerItemPostHook extends Hook {
           })
           .catch((customerItemValidationError: BlError) => {
             throw new BlError("could not validate customerItem").add(
-              customerItemValidationError
+              customerItemValidationError,
             );
           });
       })
@@ -75,7 +76,7 @@ export class CustomerItemPostHook extends Hook {
 
   public override after(
     customerItems: CustomerItem[],
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<CustomerItem[]> {
     // we know that the customerItem that is sent here are valid, we can just update the userDetail
 
@@ -85,7 +86,7 @@ export class CustomerItemPostHook extends Hook {
 
     if (customerItems.length > 1) {
       return Promise.reject(
-        new BlError("there are more than one customerItem")
+        new BlError("there are more than one customerItem"),
       );
     }
 
@@ -98,8 +99,8 @@ export class CustomerItemPostHook extends Hook {
     if (customerItem.orders.length !== 1) {
       return Promise.reject(
         new BlError(
-          `customerItem.orders.length is "${customerItem.orders.length}" but should be "1"`
-        )
+          `customerItem.orders.length is "${customerItem.orders.length}" but should be "1"`,
+        ),
       );
     }
 
@@ -111,7 +112,7 @@ export class CustomerItemPostHook extends Hook {
           if (orderItem.item.toString() === customerItem.item.toString()) {
             orderItem.info = Object.assign(
               { customerItem: customerItem.id },
-              orderItem.info
+              orderItem.info,
             );
             break;
           }
@@ -119,7 +120,7 @@ export class CustomerItemPostHook extends Hook {
         return this._orderStorage.update(
           order.id,
           { orderItems: order.orderItems },
-          { id: accessToken.sub, permission: accessToken.permission }
+          { id: accessToken.sub, permission: accessToken.permission },
         );
       })
       .then(() => {
@@ -144,7 +145,7 @@ export class CustomerItemPostHook extends Hook {
         return this._userDetailStorage.update(
           userDetail.id,
           { customerItems: newCustomerItems },
-          { id: accessToken.sub, permission: accessToken.permission }
+          { id: accessToken.sub, permission: accessToken.permission },
         );
       })
       .then(() => {

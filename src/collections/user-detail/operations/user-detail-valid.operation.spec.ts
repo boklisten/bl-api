@@ -19,7 +19,7 @@ describe("UserDetailValidOperation", () => {
   const responseHandler = new SEResponseHandler();
   const userDetailValidOperation = new UserDetailValidOperation(
     userDetailStorage,
-    responseHandler
+    responseHandler,
   );
 
   let testUserDetail: UserDetail;
@@ -56,11 +56,11 @@ describe("UserDetailValidOperation", () => {
           expect(resHandlerSendErrorResponseStub).to.have.been.called;
 
           expect(blError.getMsg()).to.be.eql(
-            "userDetail could not be validated"
+            "userDetail could not be validated",
           );
 
           expect(blError.errorStack[0].getMsg()).to.be.eql(
-            `userDetail "notFoundUserDetail" not found`
+            `userDetail "notFoundUserDetail" not found`,
           );
           done();
         });
@@ -91,7 +91,7 @@ describe("UserDetailValidOperation", () => {
         userDetailValidOperation.run(blApiRequest, null, null).then(() => {
           expect(resHandlerSendResponseStub).to.have.been.calledWith(
             null,
-            new BlapiResponse([{ valid: true }])
+            new BlapiResponse([{ valid: true }]),
           );
 
           done();
@@ -125,7 +125,7 @@ describe("UserDetailValidOperation", () => {
         userDetailValidOperation.run(blApiRequest, null, null).then(() => {
           expect(resHandlerSendResponseStub).to.have.been.calledWith(
             null,
-            new BlapiResponse([{ valid: false, invalidFields: ["name"] }])
+            new BlapiResponse([{ valid: false, invalidFields: ["name"] }]),
           );
           done();
         });
@@ -143,7 +143,7 @@ describe("UserDetailValidOperation", () => {
             null,
             new BlapiResponse([
               { valid: false, invalidFields: ["address", "postCode"] },
-            ])
+            ]),
           );
           done();
         });
@@ -161,7 +161,7 @@ describe("UserDetailValidOperation", () => {
             null,
             new BlapiResponse([
               { valid: false, invalidFields: ["postCity", "phone"] },
-            ])
+            ]),
           );
           done();
         });
@@ -191,7 +191,7 @@ describe("UserDetailValidOperation", () => {
         userDetailValidOperation.run(blApiRequest, null, null).then(() => {
           expect(resHandlerSendResponseStub).to.have.been.calledWith(
             null,
-            new BlapiResponse([{ valid: false, invalidFields: ["dob"] }])
+            new BlapiResponse([{ valid: false, invalidFields: ["dob"] }]),
           );
           done();
         });

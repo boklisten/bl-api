@@ -19,11 +19,11 @@ import { BlCollectionName } from "../../../bl-collection";
 
 describe("UserDetailChangeEmailOperation", () => {
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails
+    BlCollectionName.UserDetails,
   );
   const userStorage = new BlDocumentStorage<User>(BlCollectionName.Users);
   const localLoginStorage = new BlDocumentStorage<LocalLogin>(
-    BlCollectionName.LocalLogins
+    BlCollectionName.LocalLogins,
   );
   const userHandler = new UserHandler();
   const resHandler = new SEResponseHandler();
@@ -33,7 +33,7 @@ describe("UserDetailChangeEmailOperation", () => {
     userStorage,
     localLoginStorage,
     userHandler,
-    resHandler
+    resHandler,
   );
 
   const userDetailGetStub = sinon.stub(userDetailStorage, "get");
@@ -62,7 +62,7 @@ describe("UserDetailChangeEmailOperation", () => {
         documentId: "userDetail1",
         data: { email: "" },
         user: { id: "admin1", permission: "admin" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(BlError, /email is not valid/);
   });
 
@@ -75,7 +75,7 @@ describe("UserDetailChangeEmailOperation", () => {
         data: { email: "change@email.com" },
 
         user: { id: "admin1", permission: "admin" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(BlError, /user detail not found/);
   });
 
@@ -88,7 +88,7 @@ describe("UserDetailChangeEmailOperation", () => {
         documentId: "userDetail1",
         data: { email: "change@email.com" },
         user: { id: "admin1", permission: "admin" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(BlError, /no user found/);
   });
 
@@ -111,7 +111,7 @@ describe("UserDetailChangeEmailOperation", () => {
             user: { id: "userDetail2", permission: permission },
             documentId: "userDetail1",
             data: { email: "e@mail.com", permission: "employee" },
-          })
+          }),
         ).to.eventually.be.rejectedWith(BlError, "no access to change email");
       });
     }
@@ -131,7 +131,7 @@ describe("UserDetailChangeEmailOperation", () => {
         documentId: "userDetail1",
         data: { email: "change@email.com" },
         user: { id: "admin1", permission: "admin" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(BlError, /local login not found/);
   });
 
@@ -150,10 +150,10 @@ describe("UserDetailChangeEmailOperation", () => {
         documentId: "userDetail1",
         data: { email: "alreadyAdded@email.com" },
         user: { id: "admin1", permission: "admin" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(
       BlError,
-      /email is already present in database/
+      /email is already present in database/,
     );
   });
 
@@ -171,7 +171,7 @@ describe("UserDetailChangeEmailOperation", () => {
         documentId: "userDetail1",
         data: { email: "change@email.com" },
         user: { id: "admin1", permission: "admin" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(BlError, /could not update user detail/);
   });
 
@@ -190,7 +190,7 @@ describe("UserDetailChangeEmailOperation", () => {
         documentId: "userDetail1",
         data: { email: "change@email.com" },
         user: { id: "admin1", permission: "admin" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(BlError, /could not update user/);
   });
 
@@ -210,7 +210,7 @@ describe("UserDetailChangeEmailOperation", () => {
         documentId: "userDetail1",
         data: { email: "change@email.com" },
         user: { id: "admin1", permission: "admin" },
-      })
+      }),
     ).to.eventually.be.rejectedWith(BlError, /could not update local login/);
   });
 
@@ -231,7 +231,7 @@ describe("UserDetailChangeEmailOperation", () => {
         documentId: "userDetail1",
         data: { email: "change@email.com" },
         user: { id: "admin1", permission: "admin" },
-      })
+      }),
     ).to.eventually.be.true;
   });
 });

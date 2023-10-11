@@ -14,7 +14,7 @@ describe("DbQueryRegexFilter", () => {
   describe("getRegexFilters()", () => {
     it("should return empty array when searchString is empty", () => {
       expect(dbQueryRegexFilter.getRegexFilters({ name: "hello" }, [])).to.eql(
-        []
+        [],
       );
     });
 
@@ -33,7 +33,7 @@ describe("DbQueryRegexFilter", () => {
         { fieldName: "name", op: { $regex: "sig", $options: "imx" } },
       ];
       expect(dbQueryRegexFilter.getRegexFilters({ s: "sig" }, ["name"])).to.eql(
-        result
+        result,
       );
     });
 
@@ -49,7 +49,7 @@ describe("DbQueryRegexFilter", () => {
       const query = { s: "hello" };
 
       expect(
-        dbQueryRegexFilter.getRegexFilters(query, validRegexParams)
+        dbQueryRegexFilter.getRegexFilters(query, validRegexParams),
       ).to.eql(result);
     });
   });

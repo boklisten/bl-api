@@ -19,7 +19,7 @@ describe("OrderHookBefore", () => {
         const testRequest = [];
         orderHookBefore.validate(testRequest).catch((blError: BlError) => {
           expect(blError.getMsg()).to.contain(
-            "request is an array but should be a object"
+            "request is an array but should be a object",
           );
           done();
         });

@@ -1,18 +1,19 @@
 import { AccessToken, UserDetail } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+
 import { PermissionService } from "../../../auth/permission/permission.service";
-import { userDetailSchema } from "../user-detail.schema";
+import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
 import { User } from "../../user/user";
 import { UserSchema } from "../../user/user.schema";
-import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
-import { BlCollectionName } from "../../bl-collection";
+import { userDetailSchema } from "../user-detail.schema";
 
 export class UserCanDeleteUserDetail {
   private queryBuilder: SEDbQueryBuilder;
   private permissionService: PermissionService;
   constructor(
     private userDetailStorage?: BlDocumentStorage<UserDetail>,
-    private userStorage?: BlDocumentStorage<User>
+    private userStorage?: BlDocumentStorage<User>,
   ) {
     this.userDetailStorage = this.userDetailStorage
       ? this.userDetailStorage
@@ -26,7 +27,7 @@ export class UserCanDeleteUserDetail {
 
   public async canDelete(
     userIdToDelete: string,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     let userDetailToDelete;
 
@@ -47,7 +48,7 @@ export class UserCanDeleteUserDetail {
 
     const dbQuery = this.queryBuilder.getDbQuery(
       { username: userDetailToDelete.email },
-      [{ fieldName: "username", type: "string" }]
+      [{ fieldName: "username", type: "string" }],
     );
 
     let userToDelete;
@@ -63,7 +64,7 @@ export class UserCanDeleteUserDetail {
     if (
       !this.permissionService.isPermissionEqualOrOver(
         accessToken.permission,
-        userToDelete.permission
+        userToDelete.permission,
       ) ||
       accessToken.permission === userToDelete.permission
     ) {

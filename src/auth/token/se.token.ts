@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { UserPermission } from "../user/user-permission";
 import { BlError } from "@boklisten/bl-model";
+
+import { UserPermission } from "../user/user-permission";
 
 export type JwtPayload = {
   iss: string;
@@ -43,14 +44,14 @@ export class SEToken {
   public createToken(
     username: string,
     permission: UserPermission,
-    blid: string
+    blid: string,
   ): Promise<string> {
     const blError = new BlError("")
       .className("SeToken")
       .methodName("createToken");
     if (username.length <= 0)
       return Promise.reject(
-        blError.msg('username "' + username + '" is to short')
+        blError.msg('username "' + username + '" is to short'),
       );
     if (permission.length <= 0)
       return Promise.reject(blError.msg("permission is undefined"));
@@ -67,18 +68,18 @@ export class SEToken {
               blError
                 .msg("error creating jw token")
                 .store("signError", error)
-                .code(906)
+                .code(906),
             );
           }
           resolve(token);
-        }
+        },
       );
     });
   }
 
   public validateToken(
     token: string,
-    validLoginOptions?: any
+    validLoginOptions?: any,
   ): Promise<JwtPayload> {
     const blError = new BlError("")
       .className("SeToken")
@@ -92,7 +93,7 @@ export class SEToken {
             blError
               .msg("error verifying token")
               .store("jwtError", error)
-              .code(905)
+              .code(905),
           );
         }
 
@@ -106,9 +107,9 @@ export class SEToken {
                 .msg("could not validate payload")
                 .store("decodedPayload", decoded)
                 .add(validatePayloadError)
-                .code(905)
+                .code(905),
             );
-          }
+          },
         );
       });
     });
@@ -116,7 +117,7 @@ export class SEToken {
 
   public validatePayload(
     jwtPayload: JwtPayload,
-    validLoginOptions?: any
+    validLoginOptions?: any,
   ): Promise<JwtPayload> {
     return new Promise((resolve, reject) => {
       if (validLoginOptions) {
@@ -125,7 +126,7 @@ export class SEToken {
             validLoginOptions.permissions &&
             !this.validatePermissions(
               jwtPayload.permission,
-              validLoginOptions.permissions
+              validLoginOptions.permissions,
             )
           ) {
             return reject(
@@ -134,11 +135,11 @@ export class SEToken {
                   jwtPayload.permission.toString() +
                   '" does not include all the permissions of "' +
                   validLoginOptions.permissions.toString() +
-                  '"'
+                  '"',
               )
                 .className("SeToken")
                 .methodName("validateToken")
-                .code(905)
+                .code(905),
             );
           }
         }
@@ -158,7 +159,7 @@ export class SEToken {
 
   private validatePermissions(
     decodedPermission: UserPermission,
-    validPermissions: string[]
+    validPermissions: string[],
   ): boolean {
     if (validPermissions.indexOf(decodedPermission) <= -1) return false;
     return true;
@@ -167,7 +168,7 @@ export class SEToken {
   private createJwtPayload(
     username: string,
     permission: UserPermission,
-    blid: string
+    blid: string,
   ): JwtPayload {
     return {
       iss: this.options.iss,
@@ -182,7 +183,7 @@ export class SEToken {
 
   public permissionAbove(
     tokenPermission: UserPermission,
-    permissions: UserPermission[]
+    permissions: UserPermission[],
   ) {
     const lowestPermission = permissions[0];
 

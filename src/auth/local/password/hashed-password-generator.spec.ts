@@ -17,7 +17,7 @@ describe("HashedPasswordGenerator", () => {
   const seCrypto = new SeCrypto();
   const hashedPasswordGenerator = new HashedPasswordGenerator(
     saltGenerator,
-    seCrypto
+    seCrypto,
   );
 
   describe("generate()", () => {
@@ -51,7 +51,7 @@ describe("HashedPasswordGenerator", () => {
               .property("salt")
               .and.be.a("string");
           },
-          (error: any) => {}
+          (error: any) => {},
         );
       });
     });

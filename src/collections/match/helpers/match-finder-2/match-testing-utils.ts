@@ -26,14 +26,14 @@ export function calculateNumberOfMatchesPerType(matches: CandidateMatch[]) {
         acc.userMatches +
         (match.variant === CandidateMatchVariant.UserMatch ? 1 : 0),
     }),
-    { standMatches: 0, userMatches: 0 }
+    { standMatches: 0, userMatches: 0 },
   );
 }
 
 export function createFakeUserMatch(
   sender: MatchableUser,
   receiver: MatchableUser,
-  items: Set<string>
+  items: Set<string>,
 ): CandidateUserMatch {
   return {
     variant: CandidateMatchVariant.UserMatch,
@@ -46,7 +46,7 @@ export function createFakeUserMatch(
 export function createFakeStandMatch(
   user: MatchableUser,
   pickupItems: Set<string>,
-  handoffItems: Set<string>
+  handoffItems: Set<string>,
 ): CandidateStandMatch {
   return {
     variant: CandidateMatchVariant.StandMatch,
@@ -72,7 +72,7 @@ export function createUserGroup(
   ...items: string[]
 ): MatchableUser[] {
   return [...Array(size)].map((_, id) =>
-    createFakeMatchableUser(idPrefix + id, ...items)
+    createFakeMatchableUser(idPrefix + id, ...items),
   );
 }
 
@@ -96,7 +96,7 @@ export function groupMatchesByUser(matches: CandidateMatch[]) {
     }
   }
   return matchesPerUser.sort((a, b) =>
-    a.matches.length > b.matches.length ? -1 : 1
+    a.matches.length > b.matches.length ? -1 : 1,
   );
 }
 

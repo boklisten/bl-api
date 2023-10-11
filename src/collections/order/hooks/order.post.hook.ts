@@ -1,11 +1,12 @@
-import { Hook } from "../../../hook/hook";
 import { BlError, Order, UserDetail, AccessToken } from "@boklisten/bl-model";
-import { OrderValidator } from "../helpers/order-validator/order-validator";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+
 import { OrderHookBefore } from "./order-hook-before";
-import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
+import { Hook } from "../../../hook/hook";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { OrderValidator } from "../helpers/order-validator/order-validator";
 
 export class OrderPostHook extends Hook {
   private orderValidator: OrderValidator;
@@ -17,7 +18,7 @@ export class OrderPostHook extends Hook {
     orderValidator?: OrderValidator,
     orderHookBefore?: OrderHookBefore,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
-    userDetailHelper?: UserDetailHelper
+    userDetailHelper?: UserDetailHelper,
   ) {
     super();
     this.orderValidator = orderValidator ?? new OrderValidator();
@@ -30,7 +31,7 @@ export class OrderPostHook extends Hook {
 
   public override async before(
     requestBody: unknown,
-    accessToken: AccessToken
+    accessToken: AccessToken,
   ): Promise<boolean> {
     const [validUserDetails, validRequestBody] = await Promise.all([
       this.userDetailStorage
@@ -40,7 +41,7 @@ export class OrderPostHook extends Hook {
     ]);
     if (!validUserDetails) {
       throw new BlError(
-        "UserDetail not set for user: " + accessToken.username
+        "UserDetail not set for user: " + accessToken.username,
       ).code(902);
     }
     if (!validRequestBody) {
@@ -52,13 +53,13 @@ export class OrderPostHook extends Hook {
 
   public override after(
     orders: Order[],
-    accessToken?: AccessToken
+    accessToken?: AccessToken,
   ): Promise<Order[]> {
     if (!accessToken || accessToken.sub.length <= 0) {
       return Promise.reject(
         new BlError(
-          "accessToken was not specified when trying to process order"
-        )
+          "accessToken was not specified when trying to process order",
+        ),
       );
     }
 
@@ -84,7 +85,7 @@ export class OrderPostHook extends Hook {
         .then(() => {
           if (order.placed) {
             return reject(
-              new BlError("order.placed is set to true on post of order")
+              new BlError("order.placed is set to true on post of order"),
             );
           }
 

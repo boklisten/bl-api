@@ -26,15 +26,15 @@ chai.use(chaiAsPromised);
 describe("DeliveryPostHook", () => {
   const deliveryStorage = new BlDocumentStorage<Delivery>(
     BlCollectionName.Deliveries,
-    deliverySchema
+    deliverySchema,
   );
   const orderStorage = new BlDocumentStorage<Order>(
     BlCollectionName.Orders,
-    orderSchema
+    orderSchema,
   );
   const itemStorage = new BlDocumentStorage<Item>(
     BlCollectionName.Items,
-    itemSchema
+    itemSchema,
   );
   const deliveryValidator = new DeliveryValidator();
   const deliveryHandler = new DeliveryHandler();
@@ -43,7 +43,7 @@ describe("DeliveryPostHook", () => {
     deliveryHandler,
     deliveryStorage,
     orderStorage,
-    itemStorage
+    itemStorage,
   );
 
   let testDelivery: Delivery;
@@ -180,7 +180,7 @@ describe("DeliveryPostHook", () => {
       deliveryValidated = false;
 
       return expect(
-        deliveryPostHook.after([testDelivery], testAccessToken)
+        deliveryPostHook.after([testDelivery], testAccessToken),
       ).to.be.rejectedWith(BlError, /delivery could not be validated/);
     });
 
@@ -188,7 +188,7 @@ describe("DeliveryPostHook", () => {
       orderUpdated = false;
 
       return expect(
-        deliveryPostHook.after([testDelivery], testAccessToken)
+        deliveryPostHook.after([testDelivery], testAccessToken),
       ).to.be.rejectedWith(BlError, /order could not be updated/);
     });
   });

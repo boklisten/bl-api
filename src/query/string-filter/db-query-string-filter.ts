@@ -32,13 +32,13 @@ export class DbQueryStringFilter {
     } catch (error) {
       if (error instanceof TypeError) {
         throw new TypeError(
-          "query includes bad string parameter data, reason: " + error.message
+          "query includes bad string parameter data, reason: " + error.message,
         );
       }
 
       throw new Error(
         "could not parse the string parameters in query, reason: " +
-          error.message
+          error.message,
       );
     }
   }
@@ -48,7 +48,7 @@ export class DbQueryStringFilter {
       return param;
     }
     throw new TypeError(
-      'the paramterer of value "' + param + '" is not a valid string'
+      'the paramterer of value "' + param + '" is not a valid string',
     );
   }
 

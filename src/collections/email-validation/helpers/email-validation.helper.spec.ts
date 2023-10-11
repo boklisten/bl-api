@@ -18,12 +18,12 @@ describe("EmailValidationHelper", () => {
   const messenger = new Messenger();
   const userDetailStorage = new BlDocumentStorage<UserDetail>("user_details");
   const emailValidationStorage = new BlDocumentStorage<EmailValidation>(
-    BlCollectionName.EmailValidations
+    BlCollectionName.EmailValidations,
   );
   const emailValidationHelper = new EmailValidationHelper(
     messenger,
     userDetailStorage,
-    emailValidationStorage
+    emailValidationStorage,
   );
 
   const testUserDetail = { id: "", email: "" };
@@ -64,11 +64,11 @@ describe("EmailValidationHelper", () => {
     it("should reject if userId is not found", () => {
       return expect(
         emailValidationHelper.createAndSendEmailValidationLink(
-          "notFoundUserDetail"
-        )
+          "notFoundUserDetail",
+        ),
       ).to.be.rejectedWith(
         BlError,
-        /userDetail "notFoundUserDetail" not found/
+        /userDetail "notFoundUserDetail" not found/,
       );
     });
 
@@ -77,8 +77,8 @@ describe("EmailValidationHelper", () => {
 
       return expect(
         emailValidationHelper.createAndSendEmailValidationLink(
-          testUserDetail.id
-        )
+          testUserDetail.id,
+        ),
       ).to.be.rejectedWith(BlError, /could not add emailValidation/);
     });
 
@@ -90,7 +90,7 @@ describe("EmailValidationHelper", () => {
         .then(() => {
           expect(messengerEmailConfirmationStub).to.have.been.calledWith(
             testUserDetail,
-            testEmailValidation.id
+            testEmailValidation.id,
           );
           done();
         });
@@ -102,7 +102,7 @@ describe("EmailValidationHelper", () => {
       testEmailValidation.userDetail = "notFound";
 
       return expect(
-        emailValidationHelper.sendEmailValidationLink(testEmailValidation)
+        emailValidationHelper.sendEmailValidationLink(testEmailValidation),
       ).to.be.rejectedWith(BlError, /userDetail "notFound" not found/);
     });
 
@@ -112,7 +112,7 @@ describe("EmailValidationHelper", () => {
         .then(() => {
           expect(messengerEmailConfirmationStub).to.have.been.calledWith(
             testUserDetail,
-            testEmailValidation.id
+            testEmailValidation.id,
           );
           done();
         });

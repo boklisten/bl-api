@@ -1,4 +1,3 @@
-import { Hook } from "../../../hook/hook";
 import {
   BlError,
   Delivery,
@@ -6,12 +5,14 @@ import {
   Order,
   AccessToken,
 } from "@boklisten/bl-model";
+
+import { Hook } from "../../../hook/hook";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
 import { orderSchema } from "../../order/order.schema";
 import { BringDeliveryService } from "../helpers/deliveryBring/bringDelivery.service";
-import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
 import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
-import { BlCollectionName } from "../../bl-collection";
+import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
 
 export class DeliveryPostHook extends Hook {
   private orderStorage: BlDocumentStorage<Order>;
@@ -26,7 +27,7 @@ export class DeliveryPostHook extends Hook {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     itemStorage?: BlDocumentStorage<Item>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    bringDeliveryService?: BringDeliveryService
+    bringDeliveryService?: BringDeliveryService,
   ) {
     super();
     this.deliveryValidator = deliveryValidator ?? new DeliveryValidator();
@@ -38,7 +39,7 @@ export class DeliveryPostHook extends Hook {
 
   public override after(
     deliveries: Delivery[],
-    accessToken?: AccessToken
+    accessToken?: AccessToken,
   ): Promise<Delivery[]> {
     if (!deliveries || deliveries.length <= 0) {
       return Promise.reject(new BlError("deliveries is empty or undefined"));
