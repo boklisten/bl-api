@@ -12,7 +12,7 @@ export class GenerateUniqueIdsOperation implements Operation {
   async run(
     blApiRequest: BlApiRequest,
     req?: Request,
-    res?: Response
+    res?: Response,
   ): Promise<boolean> {
     res.writeHead(200, {
       "Content-Type": "application/pdf",
