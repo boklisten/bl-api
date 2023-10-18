@@ -146,16 +146,12 @@ describe("OrderPlaceOperation", () => {
       placeOrderStub.resolves(order);
       validateOrderStub.resolves(true);
 
-      try {
-        const result = await orderPlaceOperation.run({
-          documentId: validOrder.id,
-          user: { id: "user1", permission: "admin", details: "" },
-        });
-        expect(result).to.be.true;
-        return result;
-      } catch (e) {
-        return expect(e).to.be.false;
-      }
+      const result = await orderPlaceOperation.run({
+        documentId: validOrder.id,
+        user: { id: "user1", permission: "admin", details: "" },
+      });
+
+      expect(result).to.be.true;
     });
   });
 });
