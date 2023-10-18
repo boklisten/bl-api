@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -47,13 +45,15 @@ describe("UserDeleteAllInfo", () => {
       const userDetailIdToRemove = "5daf2cf19f92d901e41c10d6";
       const localLoginIdToRemove = "5daf2cf19f92d901e41c10ff";
 
-      userRemoveStub.resolves(true);
-      localLoginRemoveStub.resolves(true);
+      userRemoveStub.resolves({} as User);
+      localLoginRemoveStub.resolves({} as LocalLogin);
 
       userGetByQueryStub.resolves([
-        { id: userIdToRemove, username: "user@1234.com" },
+        { id: userIdToRemove, username: "user@1234.com" } as User,
       ]);
-      localLoginGetByQueryStub.resolves([{ id: localLoginIdToRemove }]);
+      localLoginGetByQueryStub.resolves([
+        { id: localLoginIdToRemove },
+      ] as LocalLogin[]);
 
       const accessToken = {
         details: "user777",
@@ -78,14 +78,16 @@ describe("UserDeleteAllInfo", () => {
       const userDetailIdToRemove = "5daf2cf19f92d901e41c10d6";
       const localLoginIdToRemove = "5daf2cf19f92d901e41c10ff";
 
-      userRemoveStub.resolves(true);
-      localLoginRemoveStub.resolves(true);
+      userRemoveStub.resolves({} as User);
+      localLoginRemoveStub.resolves({} as LocalLogin);
 
       userGetByQueryStub.resolves([
-        { id: userIdToRemove, username: "user@1234.com" },
+        { id: userIdToRemove, username: "user@1234.com" } as User,
       ]);
 
-      localLoginGetByQueryStub.resolves([{ id: localLoginIdToRemove }]);
+      localLoginGetByQueryStub.resolves([
+        { id: localLoginIdToRemove },
+      ] as LocalLogin[]);
 
       const accessToken = {
         details: "user777",
@@ -111,15 +113,17 @@ describe("UserDeleteAllInfo", () => {
       const userDetailIdToRemove = "5daf2cf19f92d901e41c10d6";
       const localLoginIdToRemove = "5daf2cf19f92d901e41c10ff";
 
-      userRemoveStub.resolves(true);
-      localLoginRemoveStub.resolves(true);
+      userRemoveStub.resolves({} as User);
+      localLoginRemoveStub.resolves({} as LocalLogin);
 
       userGetByQueryStub.resolves([
-        { id: userIdToRemove, username: "user@1234.com" },
-        { id: userIdToRemove2, username: "user@1234.com" },
+        { id: userIdToRemove, username: "user@1234.com" } as User,
+        { id: userIdToRemove2, username: "user@1234.com" } as User,
       ]);
 
-      localLoginGetByQueryStub.resolves([{ id: localLoginIdToRemove }]);
+      localLoginGetByQueryStub.resolves([
+        { id: localLoginIdToRemove },
+      ] as LocalLogin[]);
 
       const accessToken = {
         details: "user777",
@@ -136,13 +140,15 @@ describe("UserDeleteAllInfo", () => {
       const userDetailIdToRemove = "5daf2cf19f92d901e41c10d6";
       const localLoginIdToRemove = "5daf2cf19f92d901e41c10ff";
 
-      userRemoveStub.resolves(true);
-      localLoginRemoveStub.resolves(true);
+      userRemoveStub.resolves({} as User);
+      localLoginRemoveStub.resolves({} as LocalLogin);
 
       userGetByQueryStub.resolves([
-        { id: userIdToRemove, username: "user@1234.com" },
+        { id: userIdToRemove, username: "user@1234.com" } as User,
       ]);
-      localLoginGetByQueryStub.resolves([{ id: localLoginIdToRemove }]);
+      localLoginGetByQueryStub.resolves([
+        { id: localLoginIdToRemove },
+      ] as LocalLogin[]);
 
       const accessToken = {
         details: "user777",

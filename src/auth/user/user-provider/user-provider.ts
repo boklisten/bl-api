@@ -28,20 +28,12 @@ export class UserProvider {
     user: User;
     tokens: { accessToken: string; refreshToken: string };
   }> {
-    let user;
-    let tokens;
-
-    // eslint-disable-next-line no-useless-catch
-    try {
-      user = await this.getUser(username, provider, providerId);
-      await this._userHandler.valid(username);
-      await this._localLoginHandler.createDefaultLocalLoginIfNoneIsFound(
-        username,
-      );
-      tokens = await this._tokenHandler.createTokens(username);
-    } catch (e) {
-      throw e;
-    }
+    const user = await this.getUser(username, provider, providerId);
+    await this._userHandler.valid(username);
+    await this._localLoginHandler.createDefaultLocalLoginIfNoneIsFound(
+      username,
+    );
+    const tokens = await this._tokenHandler.createTokens(username);
 
     return { user: user, tokens: tokens };
   }
@@ -55,12 +47,7 @@ export class UserProvider {
     try {
       user = await this._userHandler.get(provider, providerId);
     } catch (e) {
-      // eslint-disable-next-line no-useless-catch
-      try {
-        user = await this._userHandler.create(username, provider, providerId);
-      } catch (createUserError) {
-        throw createUserError;
-      }
+      user = await this._userHandler.create(username, provider, providerId);
     }
 
     return user;

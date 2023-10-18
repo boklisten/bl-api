@@ -1,18 +1,18 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import sinon from "sinon";
 import { BlError, Order, UserDetail } from "@boklisten/bl-model";
 import { OrderUserDetailValidator } from "./order-user-detail-validator";
 import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("OrderUserDetailValidator", () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("user_details");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails,
+  );
   const orderUserDetailValidator = new OrderUserDetailValidator(
     userDetailStorage,
   );
@@ -48,16 +48,6 @@ describe("OrderUserDetailValidator", () => {
         done();
       });
     });
-
-    //it('should reject if userDetail.emailConfirmed is false', (done) => {
-    //testUserDetail.emailConfirmed = false;
-
-    //orderUserDetailValidator.validate(testOrder).catch((err: BlError) => {
-    //expect(err.errorStack[0].getMsg())
-    //.to.be.eq('userDetail.emailConfirmed is not true');
-    //done();
-    //})
-    //});
 
     it("should resolve if userDetail is valid", () => {
       return expect(orderUserDetailValidator.validate(testOrder)).to.be

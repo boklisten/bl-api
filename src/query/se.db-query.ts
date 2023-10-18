@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BooleanFilter } from "./boolean-filter/db-query-boolean-filter";
 import { DateFilter } from "./date-filter/db-query-date-filter";
 import { ExpandFilter } from "./expand-filter/db-query-expand-filter";
@@ -38,9 +37,9 @@ export class SEDbQuery {
     this.expandFilters = [];
   }
 
-  getFilter(): any {
-    const filterObj: any = {};
-    const orArr: any = [];
+  getFilter() {
+    const filterObj = {};
+    const orArr = [];
 
     for (const booleanFilter of this.booleanFilters) {
       filterObj[booleanFilter.fieldName] = booleanFilter.value;
@@ -58,7 +57,7 @@ export class SEDbQuery {
       if (Array.isArray(stringFilter.value)) {
         const arr = stringFilter.value;
         for (const stringValue of arr) {
-          const multipleValuesFilterObj: any = {};
+          const multipleValuesFilterObj = {};
           multipleValuesFilterObj[stringFilter.fieldName] = stringValue;
           orArr.push(multipleValuesFilterObj);
         }
@@ -71,7 +70,7 @@ export class SEDbQuery {
       if (Array.isArray(objectIdFilter.value)) {
         const arr = objectIdFilter.value;
         for (const stringValue of arr) {
-          const multipleValuesFilterObj: any = {};
+          const multipleValuesFilterObj = {};
           multipleValuesFilterObj[objectIdFilter.fieldName] = stringValue;
           orArr.push(multipleValuesFilterObj);
         }
@@ -81,7 +80,7 @@ export class SEDbQuery {
     }
 
     for (const regexFilter of this.regexFilters) {
-      const regexFilterObj: any = {};
+      const regexFilterObj = {};
       regexFilterObj[regexFilter.fieldName] = regexFilter.op;
       orArr.push(regexFilterObj);
     }
@@ -93,8 +92,8 @@ export class SEDbQuery {
     return filterObj;
   }
 
-  getOgFilter(): any {
-    const ogFilterObj: any = {};
+  getOgFilter() {
+    const ogFilterObj = {};
 
     for (const ogFilter of this.onlyGetFilters) {
       ogFilterObj[ogFilter.fieldName] = ogFilter.value;
@@ -114,8 +113,8 @@ export class SEDbQuery {
     return this.expandFilters;
   }
 
-  getSortFilter(): any {
-    const sortFilterObj: any = {};
+  getSortFilter() {
+    const sortFilterObj = {};
 
     for (const sortFilter of this.sortFilters) {
       sortFilterObj[sortFilter.fieldName] = sortFilter.direction;

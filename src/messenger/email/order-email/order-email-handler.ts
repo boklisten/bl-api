@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EmailHandler, EmailLog } from "@boklisten/bl-email";
 import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
 import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
@@ -153,7 +152,7 @@ export class OrderEmailHandler {
     }
   }
 
-  public async orderToEmailOrder(order: Order): Promise<any> {
+  public async orderToEmailOrder(order: Order): Promise<EmailOrder> {
     const emailOrder: EmailOrder = {
       id: order.id,
       showDeadline: this.shouldShowDeadline(order),
@@ -169,7 +168,9 @@ export class OrderEmailHandler {
       payment: null,
     };
 
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     let emailOrderDelivery: { showDelivery: boolean; delivery: any };
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     let emailOrderPayment: { showPayment: boolean; payment: any };
 
     try {
@@ -201,7 +202,7 @@ export class OrderEmailHandler {
 
   private extractEmailOrderPaymentFromOrder(
     order: Order,
-  ): Promise<{ payment: any; showPayment: boolean }> {
+  ): Promise<{ payment: unknown; showPayment: boolean }> {
     if (!Array.isArray(order.payments) || !order.payments.length) {
       return Promise.resolve({ payment: null, showPayment: false });
     }
@@ -228,11 +229,11 @@ export class OrderEmailHandler {
 
         if (
           emailPayment.payments[0] &&
-          emailPayment.payments[0].info &&
-          emailPayment.payments[0].info["orderDetails"]
+          emailPayment.payments[0]["info"] &&
+          emailPayment.payments[0]["info"]["orderDetails"]
         ) {
           emailPayment.currency =
-            emailPayment.payments[0].info["orderDetails"].currency;
+            emailPayment.payments[0]["info"]["orderDetails"].currency;
         }
 
         return { payment: emailPayment, showPayment: true };
@@ -244,7 +245,7 @@ export class OrderEmailHandler {
 
   private extractEmailOrderDeliveryFromOrder(
     order: Order,
-  ): Promise<{ delivery: any; showDelivery: boolean }> {
+  ): Promise<{ delivery: unknown; showDelivery: boolean }> {
     const deliveryId = order.delivery as string;
     if (!order.delivery || !deliveryId.length) {
       return Promise.resolve({ delivery: null, showDelivery: false });
@@ -265,7 +266,7 @@ export class OrderEmailHandler {
       });
   }
 
-  private paymentToEmailPayment(payment: Payment): any {
+  private paymentToEmailPayment(payment: Payment) {
     if (!payment) {
       return null;
     }
@@ -330,7 +331,7 @@ export class OrderEmailHandler {
     return paymentObj;
   }
 
-  private deliveryToEmailDelivery(delivery: Delivery): any {
+  private deliveryToEmailDelivery(delivery: Delivery) {
     return {
       method: delivery.method,
       currency: this.defaultCurrency,
@@ -425,12 +426,7 @@ export class OrderEmailHandler {
       }
     }
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      return await this.isBranchResponsible(branchId);
-    } catch (e) {
-      throw e;
-    }
+    return await this.isBranchResponsible(branchId);
   }
 
   private isBranchResponsible(branchId: string): Promise<boolean> {

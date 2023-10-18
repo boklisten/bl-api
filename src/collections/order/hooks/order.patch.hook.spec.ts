@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -94,7 +92,7 @@ describe("OrderPatchHook", () => {
     if (!orderPlacedConfirmed) {
       return Promise.reject(new BlError("could not place order"));
     }
-    return Promise.resolve(true);
+    return Promise.resolve({} as Order);
   });
 
   const userDetailStorageUpdateStub = sinon
@@ -108,7 +106,7 @@ describe("OrderPatchHook", () => {
         testUserDetail.orders = data["orders"];
       }
 
-      return Promise.resolve(true);
+      return Promise.resolve({} as UserDetail);
     });
 
   sinon.stub(userDetailStorage, "get").callsFake((id: string) => {

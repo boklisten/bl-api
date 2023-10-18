@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlError } from "@boklisten/bl-model";
 import { Router } from "express";
 import passport from "passport";
@@ -40,22 +39,17 @@ export class GoogleAuth {
       new OAuth2Strategy(
         this._googlePassportStrategySettings,
         async (
-          req,
-          accessToken: any,
-          refreshToken: any,
+          req: unknown,
+          accessToken: unknown,
+          refreshToken: unknown,
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           profile: any,
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           done: any,
         ) => {
           const provider = APP_CONFIG.login.google.name;
           const providerId = profile.id;
-          let username;
-
-          // eslint-disable-next-line no-useless-catch
-          try {
-            username = this.retrieveUsername(profile);
-          } catch (e) {
-            throw e;
-          }
+          const username = this.retrieveUsername(profile);
 
           if (!providerId) {
             return done(null, false, new BlError("no providerId").code(902));

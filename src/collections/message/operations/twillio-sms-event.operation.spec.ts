@@ -1,16 +1,10 @@
-// AUTO IGNORED:
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import sinon from "sinon";
-import { BlError, Message } from "@boklisten/bl-model";
+import { Message } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlApiRequest } from "../../../request/bl-api-request";
-import { SEResponseHandler } from "../../../response/se.response.handler";
 import { TwilioSmsEventOperation } from "./twillio-sms-event.operation";
 import { BlCollectionName } from "../../bl-collection";
 
@@ -26,7 +20,7 @@ describe("TwilioSmsEventOperation", () => {
   const messageStorageGetIdStub = sinon.stub(messageStorage, "get");
   const messageStorageUpdateStub = sinon.stub(messageStorage, "update");
 
-  messageStorageUpdateStub.resolves(true);
+  messageStorageUpdateStub.resolves({} as Message);
 
   describe("#run", () => {
     it("should be rejected if blApiRequest.data is empty or undefined", () => {
@@ -64,11 +58,11 @@ describe("TwilioSmsEventOperation", () => {
         query: { bl_message_id: "blMessage1" },
       };
 
-      messageStorageUpdateStub.resolves(true);
+      messageStorageUpdateStub.resolves({} as Message);
 
       messageStorageGetIdStub
         .withArgs("blMessage1")
-        .resolves({ id: "blMessage1" });
+        .resolves({ id: "blMessage1" } as Message);
 
       twilioSmsEventOperation
         .run(blApiRequest)
@@ -99,9 +93,9 @@ describe("TwilioSmsEventOperation", () => {
 
       messageStorageGetIdStub
         .withArgs("blMessage1")
-        .resolves({ id: "blMessage1" });
+        .resolves({ id: "blMessage1" } as Message);
 
-      messageStorageUpdateStub.resolves(true);
+      messageStorageUpdateStub.resolves({} as Message);
 
       twilioSmsEventOperation
         .run(blApiRequest)

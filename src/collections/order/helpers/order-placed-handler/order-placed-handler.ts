@@ -82,67 +82,62 @@ export class OrderPlacedHandler {
     order: Order,
     accessToken: AccessToken,
   ): Promise<Order> {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      for (const orderItem of order.orderItems) {
-        if (
-          orderItem.type === "extend" ||
-          orderItem.type === "return" ||
-          orderItem.type === "buyout" ||
-          orderItem.type === "buyback" ||
-          orderItem.type === "cancel"
-        ) {
-          let customerItemId = null;
+    for (const orderItem of order.orderItems) {
+      if (
+        orderItem.type === "extend" ||
+        orderItem.type === "return" ||
+        orderItem.type === "buyout" ||
+        orderItem.type === "buyback" ||
+        orderItem.type === "cancel"
+      ) {
+        let customerItemId = null;
 
-          if (orderItem.info && orderItem.info.customerItem) {
-            customerItemId = orderItem.info.customerItem;
-          } else if (orderItem.customerItem) {
-            customerItemId = orderItem.customerItem;
-          }
+        if (orderItem.info && orderItem.info.customerItem) {
+          customerItemId = orderItem.info.customerItem;
+        } else if (orderItem.customerItem) {
+          customerItemId = orderItem.customerItem;
+        }
 
-          if (customerItemId !== null) {
-            if (orderItem.type === "extend") {
-              await this._customerItemHandler.extend(
-                customerItemId,
-                orderItem,
-                order.branch as string,
-                order.id,
-              );
-            } else if (orderItem.type === "buyout") {
-              await this._customerItemHandler.buyout(
-                customerItemId,
-                order.id,
-                orderItem,
-              );
-            } else if (orderItem.type === "buyback") {
-              await this._customerItemHandler.buyback(
-                customerItemId,
-                order.id,
-                orderItem,
-              );
-            } else if (orderItem.type === "cancel") {
-              await this._customerItemHandler.cancel(
-                customerItemId,
-                order.id,
-                orderItem,
-              );
-            } else if (orderItem.type === "return") {
-              await this._customerItemHandler.return(
-                customerItemId,
-                order.id,
-                orderItem,
-                order.branch as string,
-                accessToken.details,
-              );
-            }
+        if (customerItemId !== null) {
+          if (orderItem.type === "extend") {
+            await this._customerItemHandler.extend(
+              customerItemId,
+              orderItem,
+              order.branch as string,
+              order.id,
+            );
+          } else if (orderItem.type === "buyout") {
+            await this._customerItemHandler.buyout(
+              customerItemId,
+              order.id,
+              orderItem,
+            );
+          } else if (orderItem.type === "buyback") {
+            await this._customerItemHandler.buyback(
+              customerItemId,
+              order.id,
+              orderItem,
+            );
+          } else if (orderItem.type === "cancel") {
+            await this._customerItemHandler.cancel(
+              customerItemId,
+              order.id,
+              orderItem,
+            );
+          } else if (orderItem.type === "return") {
+            await this._customerItemHandler.return(
+              customerItemId,
+              order.id,
+              orderItem,
+              order.branch as string,
+              accessToken.details,
+            );
           }
         }
       }
-
-      return Promise.resolve(order);
-    } catch (e) {
-      throw e;
     }
+
+    return Promise.resolve(order);
   }
 
   private updateUserDetailWithPlacedOrder(

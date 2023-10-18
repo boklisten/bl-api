@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -131,20 +129,17 @@ describe("PaymentDibsHandler", () => {
       testPaymentId = "dibsPaymentId1";
     });
 
-    sinon
-      .stub(dibsPaymentService, "orderToDibsEasyOrder")
-      .callsFake((order: Order) => {
-        return getDibsEasyOrderConfirm
-          ? Promise.resolve(testDibsEasyOrder)
-          : Promise.reject(new BlError("could not create dibs easy order"));
-      });
+    sinon.stub(dibsPaymentService, "orderToDibsEasyOrder").callsFake(() => {
+      if (getDibsEasyOrderConfirm) return testDibsEasyOrder;
+      throw new BlError("could not create dibs easy order");
+    });
 
-    sinon.stub(userDetailStorage, "get").callsFake((id: string) => {
-      return {
+    sinon.stub(userDetailStorage, "get").callsFake(() => {
+      return Promise.resolve({
         id: "customer1",
         name: "Billy Bob",
         email: "billy@boklisten.co",
-      };
+      } as UserDetail);
     });
 
     sinon

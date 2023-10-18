@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -9,17 +7,15 @@ import { BlError, AccessToken, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { OrderActive } from "../../order/helpers/order-active/order-active";
 import { UserDetailDeleteHook } from "./user-detail-delete.hook";
-chai.use(chaiAsPromised);
 import { CustomerHaveActiveCustomerItems } from "../../customer-item/helpers/customer-have-active-customer-items";
 import { CustomerInvoiceActive } from "../../invoice/helpers/customer-invoice-active";
 import { UserCanDeleteUserDetail } from "../helpers/user-can-delete-user-detail";
 import { UserDeleteAllInfo } from "../helpers/user-delete-all-info";
 import { BlCollectionName } from "../../bl-collection";
+chai.use(chaiAsPromised);
 
 describe("UserDetailDeleteHook", () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>(
-    BlCollectionName.UserDetails,
-  );
+  new BlDocumentStorage<UserDetail>(BlCollectionName.UserDetails);
   const customerHaveActiveCustomerItems = new CustomerHaveActiveCustomerItems();
   const haveActiveCustomerItemsStub = sinon.stub(
     customerHaveActiveCustomerItems,

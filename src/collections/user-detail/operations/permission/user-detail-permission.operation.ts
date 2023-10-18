@@ -55,26 +55,14 @@ export class UserDetailPermissionOperation implements Operation {
       throw new BlError("user can not change own permission");
     }
 
-    let userDetail: UserDetail;
+    const userDetail = await this._userDetailStorage.get(
+      blApiRequest.documentId,
+    );
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      userDetail = await this._userDetailStorage.get(blApiRequest.documentId);
-    } catch (e) {
-      throw e;
-    }
-
-    let user: User;
-
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const users = await this._userStorage.aggregate([
-        { $match: { blid: userDetail.blid } },
-      ]);
-      user = users[0];
-    } catch (e) {
-      throw e;
-    }
+    const users = await this._userStorage.aggregate([
+      { $match: { blid: userDetail.blid } },
+    ]);
+    const user = users[0];
 
     if (
       !this._permissionService.isAdmin(blApiRequest.user.permission) ||
@@ -90,16 +78,11 @@ export class UserDetailPermissionOperation implements Operation {
       throw new BlError("no access to change permission").code(904);
     }
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      await this._userStorage.update(
-        user["_id"],
-        { permission: permissionChange },
-        blApiRequest.user,
-      );
-    } catch (e) {
-      throw e;
-    }
+    await this._userStorage.update(
+      user["_id"],
+      { permission: permissionChange },
+      blApiRequest.user,
+    );
 
     this._resHandler.sendResponse(res, new BlapiResponse([{ success: true }]));
 

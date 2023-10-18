@@ -1,12 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import sinon from "sinon";
 import { OrderItemBuyValidator } from "./order-item-buy-validator";
-import { Order, OrderItem, BlError, Item, Branch } from "@boklisten/bl-model";
+import { Order, BlError, Item, Branch } from "@boklisten/bl-model";
 import { PriceService } from "../../../../../../price/price.service";
 
 chai.use(chaiAsPromised);

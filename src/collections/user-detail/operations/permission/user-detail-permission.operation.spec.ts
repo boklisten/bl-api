@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -44,7 +42,7 @@ describe("UserDetailPermissionOperation", () => {
 
     return expect(
       userDetailPermissionOperation.run({
-        user: { id: "userDetail2", permission: "admin" },
+        user: { id: "userDetail2", permission: "admin", details: "" },
         data: { permission: "employee" },
       }),
     ).to.eventually.be.rejectedWith(BlError, /user-detail not found/);
@@ -55,12 +53,12 @@ describe("UserDetailPermissionOperation", () => {
       id: "userDetail1",
       blid: "abcdef",
       email: "abcdef",
-    });
+    } as UserDetail);
     userAggregateStub.rejects(new BlError("user not found"));
 
     return expect(
       userDetailPermissionOperation.run({
-        user: { id: "userDetail2", permission: "admin" },
+        user: { id: "userDetail2", permission: "admin", details: "" },
         data: { permission: "employee" },
       }),
     ).to.eventually.be.rejectedWith(BlError, /user not found/);
@@ -74,12 +72,12 @@ describe("UserDetailPermissionOperation", () => {
         id: "userDetail1",
         blid: "abcdef",
         email: "abcdef",
-      });
-      userAggregateStub.resolves([{ permission: "admin" }]);
+      } as UserDetail);
+      userAggregateStub.resolves([{ permission: "admin" } as User]);
 
       return expect(
         userDetailPermissionOperation.run({
-          user: { id: "userDetail2", permission: permission },
+          user: { id: "userDetail2", permission: permission, details: "" },
           documentId: "userDetail1",
           data: { permission: "employee" },
         }),
@@ -95,12 +93,12 @@ describe("UserDetailPermissionOperation", () => {
       id: "userDetail1",
       blid: "abcdef",
       email: "abcdef",
-    });
-    userAggregateStub.resolves([{ permission: "employee" }]);
+    } as UserDetail);
+    userAggregateStub.resolves([{ permission: "employee" } as User]);
 
     return expect(
       userDetailPermissionOperation.run({
-        user: { id: "userDetail2", permission: "manager" },
+        user: { id: "userDetail2", permission: "manager", details: "" },
         documentId: "userDetail1",
         data: { permission: "employee" },
       }),
@@ -112,12 +110,12 @@ describe("UserDetailPermissionOperation", () => {
       id: "userDetail1",
       blid: "abcdef",
       email: "abcdef",
-    });
-    userAggregateStub.resolves([{ permission: "employee" }]);
+    } as UserDetail);
+    userAggregateStub.resolves([{ permission: "employee" } as User]);
 
     return expect(
       userDetailPermissionOperation.run({
-        user: { id: "userDetail1", permission: "manager" },
+        user: { id: "userDetail1", permission: "manager", details: "" },
         documentId: "userDetail1",
         data: { permission: "employee" },
       }),
@@ -130,7 +128,7 @@ describe("UserDetailPermissionOperation", () => {
   it("should reject if blApiRequest.data.permission is not a valid permission", () => {
     return expect(
       userDetailPermissionOperation.run({
-        user: { id: "userDetail1", permission: "admin" },
+        user: { id: "userDetail1", permission: "admin", details: "" },
         documentId: "userDetail2",
         data: {},
       }),
@@ -145,13 +143,13 @@ describe("UserDetailPermissionOperation", () => {
       id: "userDetail1",
       blid: "abcdef",
       email: "abcdef",
-    });
-    userAggregateStub.resolves([{ permission: "customer" }]);
+    } as UserDetail);
+    userAggregateStub.resolves([{ permission: "customer" } as User]);
     userUpdateStub.rejects(new BlError("could not update permission"));
 
     return expect(
       userDetailPermissionOperation.run({
-        user: { id: "userDetail1", permission: "admin" },
+        user: { id: "userDetail1", permission: "admin", details: "" },
         documentId: "userDetail2",
         data: { permission: "employee" },
       }),
@@ -163,14 +161,14 @@ describe("UserDetailPermissionOperation", () => {
       id: "userDetail1",
       blid: "abcdef",
       email: "abcdef",
-    });
-    userAggregateStub.resolves([{ permission: "customer" }]);
-    userUpdateStub.resolves(true);
+    } as UserDetail);
+    userAggregateStub.resolves([{ permission: "customer" } as User]);
+    userUpdateStub.resolves({} as User);
     resHandlerStub.resolves(true);
 
     return expect(
       userDetailPermissionOperation.run({
-        user: { id: "userDetail1", permission: "admin" },
+        user: { id: "userDetail1", permission: "admin", details: "" },
         documentId: "userDetail2",
         data: { permission: "employee" },
       }),

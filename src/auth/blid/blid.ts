@@ -23,8 +23,7 @@ export class Blid {
         (cipher: string) => {
           resolve("u#" + cipher);
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (error: any) => {
+        (error: unknown) => {
           reject(
             new BlError("error creating cipher for user_blid")
               .data(error)

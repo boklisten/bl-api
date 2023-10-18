@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -71,11 +69,9 @@ describe("PaymentPostHook", () => {
     return Promise.resolve(testPayment);
   });
 
-  sinon
-    .stub(paymentStorage, "update")
-    .callsFake((id: string, data: any, accessToken: AccessToken) => {
-      return Promise.resolve(testPayment);
-    });
+  sinon.stub(paymentStorage, "update").callsFake((id, data, accessToken) => {
+    return Promise.resolve(testPayment);
+  });
 
   sinon
     .stub(paymentDibsHandler, "handleDibsPayment")

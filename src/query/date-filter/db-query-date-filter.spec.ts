@@ -1,11 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import sinon from "sinon";
-import { BlError } from "@boklisten/bl-model";
 import { DbQueryDateFilter } from "./db-query-date-filter";
 import moment = require("moment");
 

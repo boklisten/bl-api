@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -13,7 +11,7 @@ import {
   Message,
 } from "@boklisten/bl-model";
 import { EmailService } from "./email-service";
-import { EmailHandler } from "@boklisten/bl-email";
+import { EmailHandler, EmailLog } from "@boklisten/bl-email";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import {
   PostOffice,
@@ -32,7 +30,7 @@ class MockPostOffice extends PostOffice {
     });
   }
 
-  public async send(recipients: Recipient[], options: MessageOptions) {
+  public override async send(recipients: Recipient[], options: MessageOptions) {
     return true;
   }
 }
@@ -111,7 +109,7 @@ describe("EmailService", () => {
     it("should call emailHandler.sendReminder", (done) => {
       postOfficeSendStub.reset();
       postOfficeSendStub.resolves(true);
-      itemStorageGetStub.resolves({ id: "item1", title: "title" });
+      itemStorageGetStub.resolves({ id: "item1", title: "title" } as Item);
 
       const message: Message = {
         id: "message1",
@@ -136,7 +134,7 @@ describe("EmailService", () => {
     it("should call emailHandler.sendReminder twice if userDetail.dob is under 18 and has a valid guardian", (done) => {
       postOfficeSendStub.reset();
       postOfficeSendStub.resolves(true);
-      itemStorageGetStub.resolves({ id: "item1", title: "title" });
+      itemStorageGetStub.resolves({ id: "item1", title: "title" } as Item);
 
       const message: Message = {
         id: "message1",
@@ -228,7 +226,7 @@ describe("EmailService", () => {
           isbn: "123",
         },
         title: "Signatur 1",
-      };
+      } as Item;
 
       const item2 = {
         id: "item2",
@@ -236,7 +234,7 @@ describe("EmailService", () => {
           isbn: "456",
         },
         title: "Terra Mater",
-      };
+      } as Item;
 
       const message: Message = {
         id: "message1",
@@ -247,7 +245,7 @@ describe("EmailService", () => {
         },
       } as Message;
 
-      emailHandlerRemindStub.resolves(true);
+      emailHandlerRemindStub.resolves({} as EmailLog);
       itemStorageGetStub.withArgs("item1").resolves(item1);
       itemStorageGetStub.withArgs("item2").resolves(item2);
 

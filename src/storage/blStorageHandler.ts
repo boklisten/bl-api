@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlDocument, UserPermission } from "@boklisten/bl-model";
 
 import { NestedDocument } from "./nested-document";
@@ -33,11 +32,11 @@ export interface BlStorageHandler<T extends BlDocument> {
 
   update(
     id: string,
-    data: any,
+    data: unknown,
     user: { id: string; permission: UserPermission },
   ): Promise<T>;
 
-  updateMany(docs: { id: string; data: any }[]): Promise<T[]>;
+  updateMany(docs: { id: string; data: unknown }[]): Promise<T[]>;
 
   remove(
     id: string,
@@ -46,7 +45,7 @@ export interface BlStorageHandler<T extends BlDocument> {
 
   removeMany(ids: string[]): Promise<T[]>;
 
-  aggregate(aggregation: any[]): Promise<T[]>;
+  aggregate(aggregation: unknown[]): Promise<T[]>;
 
   exists(id: string): Promise<boolean>;
 }

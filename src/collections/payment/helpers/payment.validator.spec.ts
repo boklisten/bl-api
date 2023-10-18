@@ -1,15 +1,13 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
 import { PaymentValidator } from "./payment.validator";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-chai.use(chaiAsPromised);
 import { expect } from "chai";
-import { Payment, Order, BlError, Branch, Delivery } from "@boklisten/bl-model";
+import { Payment, Order, BlError, Delivery } from "@boklisten/bl-model";
 import { BlCollectionName } from "../../bl-collection";
+chai.use(chaiAsPromised);
 
 describe("PaymentValidator", () => {
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);

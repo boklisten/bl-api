@@ -109,13 +109,7 @@ export class BookingPatchHook extends Hook {
       }
     } else {
       if (!this.permissionService.isAdmin(accessToken.permission)) {
-        let booking;
-        // eslint-disable-next-line no-useless-catch
-        try {
-          booking = await this.bookingStorage.get(id);
-        } catch (e) {
-          throw e;
-        }
+        const booking = await this.bookingStorage.get(id);
         if (
           booking &&
           booking.customer.toString() !== accessToken.details.toString()

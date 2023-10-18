@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -17,7 +15,7 @@ import {
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { OrderEmailHandler } from "./order-email-handler";
 import { dateService } from "../../../blc/date.service";
-import { EmailHandler } from "@boklisten/bl-email";
+import { EmailHandler, EmailLog } from "@boklisten/bl-email";
 import { isNullOrUndefined } from "util";
 import moment from "moment-timezone";
 import { BlCollectionName } from "../../../collections/bl-collection";
@@ -59,7 +57,7 @@ describe("OrderEmailHandler", () => {
 
   const branchStorageGetStub = sinon
     .stub(branchStorage, "get")
-    .resolves({ paymentInfo: { responsible: false } });
+    .resolves({ paymentInfo: { responsible: false } } as Branch);
 
   const paymentStorageStub = sinon
     .stub(paymentStorage, "get")
@@ -78,7 +76,7 @@ describe("OrderEmailHandler", () => {
         throw new Error("could not send email");
       }
 
-      return true;
+      return {} as EmailLog;
     });
 
   describe("sendOrderReceipt()", () => {
@@ -150,8 +148,8 @@ describe("OrderEmailHandler", () => {
 
         it("should set withAgreement to true when branch.responsible is set to true", (done) => {
           branchStorageGetStub
-            .withArgs(testOrder.branch)
-            .resolves({ paymentInfo: { responsible: true } });
+            .withArgs(testOrder.branch as string)
+            .resolves({ paymentInfo: { responsible: true } } as Branch);
 
           orderEmailHandler
             .sendOrderReceipt(testCustomerDetail, testOrder)
@@ -172,8 +170,8 @@ describe("OrderEmailHandler", () => {
         it("should send email to guardian if withAgreement is set and user is under 18", (done) => {
           //this ensures that with agreement is set to true
           branchStorageGetStub
-            .withArgs(testOrder.branch)
-            .resolves({ paymentInfo: { responsible: true } });
+            .withArgs(testOrder.branch as string)
+            .resolves({ paymentInfo: { responsible: true } } as Branch);
           (testCustomerDetail.dob = moment(new Date())
             .subtract(16, "year")
             .toDate()),

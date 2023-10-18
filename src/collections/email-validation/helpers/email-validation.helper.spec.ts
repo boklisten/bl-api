@@ -1,9 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import sinon from "sinon";
 import { BlError, UserDetail } from "@boklisten/bl-model";
 import { Messenger } from "../../../messenger/messenger";
@@ -16,7 +13,9 @@ chai.use(chaiAsPromised);
 
 describe("EmailValidationHelper", () => {
   const messenger = new Messenger();
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("user_details");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails,
+  );
   const emailValidationStorage = new BlDocumentStorage<EmailValidation>(
     BlCollectionName.EmailValidations,
   );
@@ -26,7 +25,7 @@ describe("EmailValidationHelper", () => {
     emailValidationStorage,
   );
 
-  const testUserDetail = { id: "", email: "" };
+  const testUserDetail = { id: "", email: "" } as UserDetail;
   let emailValidationStorageAddSuccess: boolean;
   let testEmailValidation: EmailValidation;
 

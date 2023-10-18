@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlError } from "@boklisten/bl-model";
 
 import { RefreshTokenSecret } from "./refresh-token.secret";
@@ -11,7 +10,7 @@ export class RefreshTokenValidator {
     this.refreshTokenSecret = new RefreshTokenSecret();
   }
 
-  public validate(refreshToken: string): Promise<any> {
+  public validate(refreshToken: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
       if (!refreshToken || refreshToken.length <= 0)
         reject(new BlError("refreshToken is empty or undefined"));
@@ -20,7 +19,7 @@ export class RefreshTokenValidator {
         this.jwt.verify(
           refreshToken,
           this.refreshTokenSecret.get(),
-          (error: any, payload: any) => {
+          (error: unknown, payload: unknown) => {
             if (error)
               return reject(new BlError("could not validate token").code(909));
             resolve(payload);

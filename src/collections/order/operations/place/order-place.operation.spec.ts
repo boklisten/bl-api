@@ -1,7 +1,3 @@
-// AUTO IGNORED:
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -74,7 +70,7 @@ describe("OrderPlaceOperation", () => {
           title: "signatur 3",
           age: "new",
           amount: 100,
-          uniPrice: 100,
+          unitPrice: 100,
           blid: "blid1",
           taxRate: 0,
           taxAmount: 0,
@@ -91,7 +87,7 @@ describe("OrderPlaceOperation", () => {
       placed: false,
       payments: ["payment1"],
       delivery: "delivery1",
-    };
+    } as Order;
 
     it("should reject if order is not found", () => {
       getOrderStub.rejects(new BlError('order "randomOrder" not found'));
@@ -110,14 +106,14 @@ describe("OrderPlaceOperation", () => {
       return expect(
         orderPlaceOperation.run({
           documentId: validOrder.id,
-          user: { id: "user1", permission: "admin" },
+          user: { id: "user1", permission: "admin", details: "" },
         }),
       ).to.eventually.be.rejectedWith(/order could not be placed/);
     });
 
     it("should reject if orderValidator.validate rejects", () => {
       getOrderStub.resolves(validOrder);
-      placeOrderStub.resolves(true);
+      placeOrderStub.resolves({} as Order);
       validateOrderStub.rejects(new BlError("order not valid!"));
       getAllMatchesStub.resolves([]);
       getManyCustomerItemsStub.resolves([]);
@@ -125,7 +121,7 @@ describe("OrderPlaceOperation", () => {
       return expect(
         orderPlaceOperation.run({
           documentId: validOrder.id,
-          user: { id: "user1", permission: "admin" },
+          user: { id: "user1", permission: "admin", details: "" },
         }),
       ).to.eventually.be.rejectedWith(/order not valid/);
     });
@@ -143,24 +139,17 @@ describe("OrderPlaceOperation", () => {
             amount: 100,
           },
         ],
-      };
+      } as Order;
 
       getOrderStub.resolves(order);
       generateCustomerItemStub.resolves([]);
-      placeOrderStub.resolves(true);
+      placeOrderStub.resolves(order);
       validateOrderStub.resolves(true);
 
-      let result;
-
-      try {
-        result = await orderPlaceOperation.run({
-          documentId: validOrder.id,
-          user: { id: "user1", permission: "admin" },
-        });
-      } catch (e) {
-        return expect(e).to.be.false;
-        //throw e;
-      }
+      const result = await orderPlaceOperation.run({
+        documentId: validOrder.id,
+        user: { id: "user1", permission: "admin", details: "" },
+      });
 
       expect(result).to.be.true;
     });

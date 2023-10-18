@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -11,7 +9,6 @@ import { LocalLogin } from "../../collections/local-login/local-login";
 import { SEDbQuery } from "../../query/se.db-query";
 import { BlError } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import local from "commander";
 import { BlCollectionName } from "../../collections/bl-collection";
 
 chai.use(chaiAsPromised);

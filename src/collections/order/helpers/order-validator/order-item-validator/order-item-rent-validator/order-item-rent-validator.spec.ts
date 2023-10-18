@@ -1,11 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import sinon from "sinon";
-import { BlError, Item, Branch, Order } from "@boklisten/bl-model";
+import { Item, Branch, Order } from "@boklisten/bl-model";
 import { PriceService } from "../../../../../../price/price.service";
 import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
 import { OrderItemRentValidator } from "./order-item-rent-validator";
@@ -24,7 +21,7 @@ describe("OrderItemRentValidator", () => {
 
   const orderStorageGetStub = sinon
     .stub(orderStorage, "get")
-    .callsFake(() => {});
+    .callsFake(() => Promise.resolve({} as Order));
 
   beforeEach(() => {
     testOrder = {

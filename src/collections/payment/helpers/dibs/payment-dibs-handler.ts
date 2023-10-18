@@ -1,8 +1,8 @@
 import {
-  Payment,
-  Order,
   AccessToken,
   Delivery,
+  Order,
+  Payment,
   UserDetail,
 } from "@boklisten/bl-model";
 
@@ -50,53 +50,20 @@ export class PaymentDibsHandler {
     payment: Payment,
     accessToken: AccessToken,
   ): Promise<Payment> {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const order = await this.orderStorage.get(payment.order as string);
-      const userDetail = await this.userDetailStorage.get(
-        payment.customer as string,
-      );
-      const dibsEasyOrder: DibsEasyOrder = await this.getDibsEasyOrder(
-        userDetail,
-        order,
-      );
-      const paymentId =
-        await this.dibsPaymentService.getPaymentId(dibsEasyOrder);
-      const updatedPayment = await this.paymentStorage.update(
-        payment.id,
-        { info: { paymentId: paymentId } },
-        { id: accessToken.sub, permission: accessToken.permission },
-      );
-
-      return updatedPayment;
-    } catch (createDibsPaymentError) {
-      throw createDibsPaymentError;
-    }
-    /*
-    return this.orderStorage
-      .get(payment.order as string)
-      .then((theOrder: Order) => {
-        order = theOrder;
-        let userDetail = {} as any;
-        return this.getDibsEasyOrder(userDetail, theOrder);
-      })
-      .then((dibsEasyOrder: DibsEasyOrder) => {
-        return this.dibsPaymentService.getPaymentId(dibsEasyOrder);
-      })
-      .then((paymentId: string) => {
-        return this.paymentStorage.update(
-          payment.id,
-          {info: {paymentId: paymentId}},
-          {id: accessToken.sub, permission: accessToken.permission},
-        );
-      })
-      .then((updatedPayment: Payment) => {
-        return updatedPayment;
-      })
-      .catch((createDibsPaymentError: BlError) => {
-        throw createDibsPaymentError;
-      });
-*/
+    const order = await this.orderStorage.get(payment.order as string);
+    const userDetail = await this.userDetailStorage.get(
+      payment.customer as string,
+    );
+    const dibsEasyOrder: DibsEasyOrder = await this.getDibsEasyOrder(
+      userDetail,
+      order,
+    );
+    const paymentId = await this.dibsPaymentService.getPaymentId(dibsEasyOrder);
+    return await this.paymentStorage.update(
+      payment.id,
+      { info: { paymentId: paymentId } },
+      { id: accessToken.sub, permission: accessToken.permission },
+    );
   }
 
   private getDibsEasyOrder(

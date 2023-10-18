@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-useless-catch */
 import {
   BlError,
   Branch,
@@ -46,58 +44,50 @@ export class CustomerItemHandler {
     branchId: string,
     orderId: string,
   ): Promise<CustomerItem> {
-    try {
-      const customerItem = await this._customerItemStorage.get(customerItemId);
+    const customerItem = await this._customerItemStorage.get(customerItemId);
 
-      if (customerItem.returned) {
-        return Promise.reject(
-          new BlError("can not extend when returned is true"),
-        );
-      }
-
-      if (orderItem.type !== "extend") {
-        return Promise.reject(new BlError('orderItem.type is not "extend"'));
-      }
-
-      if (!orderItem.info || !orderItem.info["periodType"]) {
-        return Promise.reject(
-          new BlError('orderItem info is not present when type is "extend"'),
-        );
-      }
-
-      const branch = await this._branchStorage.get(branchId);
-
-      this.getExtendPeriod(branch, orderItem.info["periodType"]);
-
-      const periodExtends = customerItem.periodExtends
-        ? customerItem.periodExtends
-        : [];
-
-      const customerItemOrders: any[] = customerItem.orders
-        ? customerItem.orders
-        : [];
-
-      periodExtends.push({
-        from: orderItem.info["from"],
-        to: orderItem.info["to"],
-        periodType: orderItem.info["periodType"],
-        time: new Date(),
-      });
-
-      customerItemOrders.push(orderId);
-
-      return await this._customerItemStorage.update(
-        customerItemId,
-        {
-          deadline: orderItem.info["to"],
-          periodExtends: periodExtends,
-          orders: customerItemOrders,
-        },
-        new SystemUser(),
+    if (customerItem.returned) {
+      return Promise.reject(
+        new BlError("can not extend when returned is true"),
       );
-    } catch (e) {
-      throw e;
     }
+
+    if (orderItem.type !== "extend") {
+      return Promise.reject(new BlError('orderItem.type is not "extend"'));
+    }
+
+    if (!orderItem.info || !orderItem.info["periodType"]) {
+      return Promise.reject(
+        new BlError('orderItem info is not present when type is "extend"'),
+      );
+    }
+
+    const branch = await this._branchStorage.get(branchId);
+
+    this.getExtendPeriod(branch, orderItem.info["periodType"]);
+
+    const periodExtends = customerItem.periodExtends ?? [];
+
+    const customerItemOrders = (customerItem.orders ?? []) as string[];
+
+    periodExtends.push({
+      from: orderItem.info["from"],
+      to: orderItem.info["to"],
+      periodType: orderItem.info["periodType"],
+      time: new Date(),
+    });
+
+    customerItemOrders.push(orderId);
+
+    return await this._customerItemStorage.update(
+      customerItemId,
+      {
+        deadline: orderItem.info["to"],
+        periodExtends: periodExtends,
+        orders: customerItemOrders,
+      },
+      new SystemUser(),
+    );
   }
 
   /**
@@ -111,33 +101,27 @@ export class CustomerItemHandler {
     orderId: string,
     orderItem: OrderItem,
   ) {
-    try {
-      if (orderItem.type !== "buyout") {
-        return Promise.reject(`orderItem.type is not "buyout"`);
-      }
-
-      const customerItem = await this._customerItemStorage.get(customerItemId);
-      const customerItemOrders: any[] = customerItem.orders
-        ? customerItem.orders
-        : [];
-
-      customerItemOrders.push(orderId);
-
-      return await this._customerItemStorage.update(
-        customerItemId,
-        {
-          buyout: true,
-          orders: customerItemOrders,
-          buyoutInfo: {
-            order: orderId,
-            time: new Date(),
-          },
-        },
-        new SystemUser(),
-      );
-    } catch (e) {
-      throw e;
+    if (orderItem.type !== "buyout") {
+      return Promise.reject(`orderItem.type is not "buyout"`);
     }
+
+    const customerItem = await this._customerItemStorage.get(customerItemId);
+    const customerItemOrders = (customerItem.orders ?? []) as string[];
+
+    customerItemOrders.push(orderId);
+
+    return await this._customerItemStorage.update(
+      customerItemId,
+      {
+        buyout: true,
+        orders: customerItemOrders,
+        buyoutInfo: {
+          order: orderId,
+          time: new Date(),
+        },
+      },
+      new SystemUser(),
+    );
   }
 
   /**
@@ -153,36 +137,30 @@ export class CustomerItemHandler {
     branchId: string,
     employeeId: string,
   ) {
-    try {
-      if (orderItem.type !== "return") {
-        return Promise.reject(`orderItem.type is not "return"`);
-      }
-
-      const customerItem = await this._customerItemStorage.get(customerItemId);
-
-      const customerItemOrders: any[] = customerItem.orders
-        ? customerItem.orders
-        : [];
-
-      customerItemOrders.push(orderId);
-
-      return await this._customerItemStorage.update(
-        customerItemId,
-        {
-          returned: true,
-          orders: customerItemOrders,
-          returnInfo: {
-            returnedTo: "branch",
-            returnedToId: branchId,
-            returnEmployee: employeeId,
-            time: new Date(),
-          },
-        },
-        new SystemUser(),
-      );
-    } catch (e) {
-      throw e;
+    if (orderItem.type !== "return") {
+      return Promise.reject(`orderItem.type is not "return"`);
     }
+
+    const customerItem = await this._customerItemStorage.get(customerItemId);
+
+    const customerItemOrders = (customerItem.orders ?? []) as string[];
+
+    customerItemOrders.push(orderId);
+
+    return await this._customerItemStorage.update(
+      customerItemId,
+      {
+        returned: true,
+        orders: customerItemOrders,
+        returnInfo: {
+          returnedTo: "branch",
+          returnedToId: branchId,
+          returnEmployee: employeeId,
+          time: new Date(),
+        },
+      },
+      new SystemUser(),
+    );
   }
 
   /**
@@ -196,35 +174,29 @@ export class CustomerItemHandler {
     orderId: string,
     orderItem: OrderItem,
   ) {
-    try {
-      if (orderItem.type !== "cancel") {
-        return Promise.reject(`orderItem.type is not "cancel"`);
-      }
-
-      const customerItem = await this._customerItemStorage.get(customerItemId);
-
-      const customerItemOrders: any[] = customerItem.orders
-        ? customerItem.orders
-        : [];
-
-      customerItemOrders.push(orderId);
-
-      return await this._customerItemStorage.update(
-        customerItemId,
-        {
-          returned: true,
-          orders: customerItemOrders,
-          cancel: true,
-          cancelInfo: {
-            time: new Date(),
-            order: orderId,
-          },
-        },
-        new SystemUser(),
-      );
-    } catch (e) {
-      throw e;
+    if (orderItem.type !== "cancel") {
+      return Promise.reject(`orderItem.type is not "cancel"`);
     }
+
+    const customerItem = await this._customerItemStorage.get(customerItemId);
+
+    const customerItemOrders = (customerItem.orders ?? []) as string[];
+
+    customerItemOrders.push(orderId);
+
+    return await this._customerItemStorage.update(
+      customerItemId,
+      {
+        returned: true,
+        orders: customerItemOrders,
+        cancel: true,
+        cancelInfo: {
+          time: new Date(),
+          order: orderId,
+        },
+      },
+      new SystemUser(),
+    );
   }
 
   /**
@@ -238,34 +210,28 @@ export class CustomerItemHandler {
     orderId: string,
     orderItem: OrderItem,
   ) {
-    try {
-      if (orderItem.type !== "buyback") {
-        return Promise.reject(`orderItem.type is not "buyback"`);
-      }
-
-      const customerItem = await this._customerItemStorage.get(customerItemId);
-      const customerItemOrders: any[] = customerItem.orders
-        ? customerItem.orders
-        : [];
-
-      customerItemOrders.push(orderId);
-
-      return await this._customerItemStorage.update(
-        customerItemId,
-        {
-          returned: true,
-          orders: customerItemOrders,
-          buyback: true,
-          buybackInfo: {
-            order: orderId,
-            time: new Date(),
-          },
-        },
-        new SystemUser(),
-      );
-    } catch (e) {
-      throw e;
+    if (orderItem.type !== "buyback") {
+      return Promise.reject(`orderItem.type is not "buyback"`);
     }
+
+    const customerItem = await this._customerItemStorage.get(customerItemId);
+    const customerItemOrders = (customerItem.orders ?? []) as string[];
+
+    customerItemOrders.push(orderId);
+
+    return await this._customerItemStorage.update(
+      customerItemId,
+      {
+        returned: true,
+        orders: customerItemOrders,
+        buyback: true,
+        buybackInfo: {
+          order: orderId,
+          time: new Date(),
+        },
+      },
+      new SystemUser(),
+    );
   }
 
   /**

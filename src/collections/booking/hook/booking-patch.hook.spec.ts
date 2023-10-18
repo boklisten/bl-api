@@ -1,19 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import sinon from "sinon";
-import {
-  AccessToken,
-  BlError,
-  CustomerItem,
-  UserDetail,
-  Booking,
-} from "@boklisten/bl-model";
+import { BlError, Booking } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import sinonChai from "sinon-chai";
 import { BookingPatchHook } from "./booking-patch.hook";
 import { BlCollectionName } from "../../bl-collection";
 
@@ -44,7 +33,7 @@ const testBooking3 = {
   customer: testId,
   from: new Date(),
   to: new Date(),
-};
+} as Booking;
 
 const testBooking4 = {
   id: "testBooking4",
@@ -52,9 +41,9 @@ const testBooking4 = {
   booked: true,
   from: new Date(),
   to: new Date(),
-};
+} as Booking;
 
-sinon.stub(bookingStorage, "get").callsFake((id) => {
+sinon.stub(bookingStorage, "get").callsFake((id, userPermission) => {
   if (id == testBooking.id) {
     return Promise.resolve(testBooking);
   } else if (id == testBooking2.id) {
@@ -202,11 +191,11 @@ describe("BookingPatchHook", () => {
     const testId3 = "5ea6a45dc39947205e3ecdd3";
 
     sinon.stub(bookingStorage, "get").callsFake(() => {
-      return Promise.resolve({});
+      return Promise.resolve({} as Booking);
     });
 
     sinon.stub(bookingStorage, "update").callsFake(() => {
-      return Promise.resolve(true);
+      return Promise.resolve({} as Booking);
     });
 
     it("should reject if booking have customer but 'booked' is false", () => {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from "mongoose";
 
 import { BlCollectionName } from "../../collections/bl-collection";
@@ -6,10 +5,10 @@ import { BlCollectionName } from "../../collections/bl-collection";
 export class MongooseModelCreator {
   constructor(
     private collectionName: BlCollectionName,
-    private schema: any,
+    private schema: unknown,
   ) {}
 
-  create(): any {
+  create() {
     const mongooseSchema = this.createMongooseSchema(this.schema);
     if (this.collectionName === BlCollectionName.UniqueItems) {
       mongooseSchema.index({ blid: 1 });
@@ -30,7 +29,7 @@ export class MongooseModelCreator {
     return this.createMongooseModel(mongooseSchema);
   }
 
-  createMongooseModel(mongooseSchema: mongoose.Schema): any {
+  createMongooseModel(mongooseSchema: mongoose.Schema) {
     try {
       if (mongoose.model(this.collectionName))
         return mongoose.model(this.collectionName);
@@ -39,9 +38,10 @@ export class MongooseModelCreator {
         return mongoose.model(this.collectionName, mongooseSchema);
       }
     }
+    return null;
   }
 
-  createMongooseSchema(mschema: any): mongoose.Schema {
+  createMongooseSchema(mschema: unknown): mongoose.Schema {
     mschema["blid"] = {
       type: mongoose.Schema.Types.String,
     };

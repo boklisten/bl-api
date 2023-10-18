@@ -76,6 +76,7 @@ export async function createMatchOrder(
   }
 
   return {
+    id: undefined,
     placed: true,
     payments: [],
     amount: 0,
@@ -84,14 +85,10 @@ export async function createMatchOrder(
     byCustomer: true,
     orderItems: [
       {
-        // TODO
         movedFromOrder,
         item: item.id,
         title: item.title,
         blid: customerItem.blid,
-        // TODO before merge: Update when @Lars publishes new version of bl-model
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         type: `match-${isSender ? "deliver" : "receive"}`,
         amount: 0,
         unitPrice: 0,

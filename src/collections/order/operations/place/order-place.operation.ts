@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-useless-catch */
 import {
   BlapiResponse,
   BlError,
@@ -12,6 +10,7 @@ import {
   StandMatch,
   UserDetail,
   UserMatch,
+  UserPermission,
 } from "@boklisten/bl-model";
 import { NextFunction, Request, Response } from "express";
 
@@ -405,6 +404,7 @@ export class OrderPlaceOperation implements Operation {
     await this._orderPlacedHandler.placeOrder(order, {
       sub: blApiRequest.user,
       permission: blApiRequest.user.permission,
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } as any);
 
     await this._orderValidator.validate(order);
@@ -458,7 +458,7 @@ export class OrderPlaceOperation implements Operation {
 
   private async addCustomerItems(
     customerItems: CustomerItem[],
-    user: any,
+    user: { id: string; permission: UserPermission },
   ): Promise<CustomerItem[]> {
     const addedCustomerItems = [];
     for (const customerItem of customerItems) {
@@ -475,7 +475,7 @@ export class OrderPlaceOperation implements Operation {
   private async addCustomerItemsToCustomer(
     customerItems: CustomerItem[],
     customerId: string,
-    user: { id: string; permission: any },
+    user: { id: string; permission: UserPermission },
   ): Promise<boolean> {
     const customerItemIds: string[] = customerItems.map((ci) => {
       return ci.id.toString();

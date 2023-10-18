@@ -1,19 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import sinon from "sinon";
-import {
-  AccessToken,
-  BlError,
-  CustomerItem,
-  Order,
-  OrderItem,
-  UserDetail,
-} from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { AccessToken } from "@boklisten/bl-model";
 import sinonChai from "sinon-chai";
 import { BranchGetHook } from "./branch-get.hook";
 

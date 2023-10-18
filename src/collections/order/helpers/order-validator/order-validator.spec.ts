@@ -1,18 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-import {
-  Order,
-  BlError,
-  CustomerItem,
-  Item,
-  Branch,
-  Payment,
-  Delivery,
-} from "@boklisten/bl-model";
+import { Order, BlError, Branch } from "@boklisten/bl-model";
 import { OrderValidator } from "./order-validator";
 import sinon from "sinon";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
@@ -60,7 +50,7 @@ describe("OrderValidator", () => {
     return Promise.resolve(testBranch);
   });
 
-  sinon.stub(orderItemValidator, "validate").callsFake((order: Order) => {
+  sinon.stub(orderItemValidator, "validate").callsFake((order) => {
     if (!orderItemShouldResolve) {
       return Promise.reject(new BlError("orderItems not valid"));
     }

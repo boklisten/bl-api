@@ -18,20 +18,14 @@ export class OrderToCustomerItemGenerator {
 
   public async generate(order: Order): Promise<CustomerItem[]> {
     const customerItems = [];
-    let customerDetail: UserDetail;
 
     if (!order.customer) {
       return [];
     }
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      customerDetail = await this._userDetailStorage.get(
-        order.customer as string,
-      );
-    } catch (e) {
-      throw e;
-    }
+    const customerDetail = await this._userDetailStorage.get(
+      order.customer as string,
+    );
 
     for (const orderItem of order.orderItems) {
       if (this.shouldCreateCustomerItem(orderItem)) {
@@ -53,8 +47,6 @@ export class OrderToCustomerItemGenerator {
       orderItem.type === "partly-payment" ||
       orderItem.type === "rent" ||
       orderItem.type === "loan" ||
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore TODO before merge
       orderItem.type === "match-receive"
     );
   }
@@ -72,8 +64,6 @@ export class OrderToCustomerItemGenerator {
       );
     } else if (
       orderItem.type === "rent" ||
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore TODO before merge
       orderItem.type === "match-receive"
     ) {
       return this.createRentCustomerItem(customerDetail, order, orderItem);

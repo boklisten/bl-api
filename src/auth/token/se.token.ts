@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlError } from "@boklisten/bl-model";
 
 import { UserPermission } from "../user/user-permission";
@@ -62,7 +61,7 @@ export class SEToken {
       this.jwt.sign(
         this.createJwtPayload(username, permission, blid),
         this.getSecret(),
-        (error: any, token: string) => {
+        (error: unknown, token: string) => {
           if (error) {
             return reject(
               blError
@@ -79,7 +78,7 @@ export class SEToken {
 
   public validateToken(
     token: string,
-    validLoginOptions?: any,
+    validLoginOptions: { permissions: string[] },
   ): Promise<JwtPayload> {
     const blError = new BlError("")
       .className("SeToken")
@@ -87,37 +86,44 @@ export class SEToken {
     if (token.length <= 0) return Promise.reject(blError.msg("token is empty"));
 
     return new Promise((resolve, reject) => {
-      this.jwt.verify(token, this.getSecret(), (error: any, decoded: any) => {
-        if (error) {
-          return reject(
-            blError
-              .msg("error verifying token")
-              .store("jwtError", error)
-              .code(905),
-          );
-        }
-
-        this.validatePayload(decoded, validLoginOptions).then(
-          (jwtPayload: any) => {
-            resolve(jwtPayload);
-          },
-          (validatePayloadError: BlError) => {
-            reject(
+      this.jwt.verify(
+        token,
+        this.getSecret(),
+        (error: unknown, decoded: JwtPayload) => {
+          if (error) {
+            return reject(
               blError
-                .msg("could not validate payload")
-                .store("decodedPayload", decoded)
-                .add(validatePayloadError)
+                .msg("error verifying token")
+                .store("jwtError", error)
                 .code(905),
             );
-          },
-        );
-      });
+          }
+
+          this.validatePayload(decoded, validLoginOptions).then(
+            (jwtPayload: JwtPayload) => {
+              resolve(jwtPayload);
+            },
+            (validatePayloadError: BlError) => {
+              reject(
+                blError
+                  .msg("could not validate payload")
+                  .store("decodedPayload", decoded)
+                  .add(validatePayloadError)
+                  .code(905),
+              );
+            },
+          );
+        },
+      );
     });
   }
 
   public validatePayload(
     jwtPayload: JwtPayload,
-    validLoginOptions?: any,
+    validLoginOptions: {
+      permissions: string[];
+      restrictedToUserOrAbove?: boolean;
+    },
   ): Promise<JwtPayload> {
     return new Promise((resolve, reject) => {
       if (validLoginOptions) {

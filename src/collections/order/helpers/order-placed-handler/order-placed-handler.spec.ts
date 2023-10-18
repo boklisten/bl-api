@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -8,7 +6,6 @@ import sinon from "sinon";
 import {
   BlError,
   Order,
-  OrderItem,
   CustomerItem,
   Payment,
   AccessToken,
@@ -88,7 +85,7 @@ describe("OrderPlacedHandler", () => {
     return Promise.reject(new BlError("could not update user detail"));
   });
 
-  sinon.stub(paymentHandler, "confirmPayments").callsFake((ids: string[]) => {
+  sinon.stub(paymentHandler, "confirmPayments").callsFake(() => {
     if (!paymentsConfirmed) {
       return Promise.reject(new BlError("could not confirm payments"));
     }
@@ -211,7 +208,7 @@ describe("OrderPlacedHandler", () => {
       testOrder.customer = "notFoundUserDetails";
 
       try {
-        await orderPlacedHandler.placeOrder(testOrder, testAccessToken);
+        return await orderPlacedHandler.placeOrder(testOrder, testAccessToken);
       } catch (e) {
         return expect(e.errorStack[0].getMsg()).to.eq(
           'customer "notFoundUserDetails" not found',

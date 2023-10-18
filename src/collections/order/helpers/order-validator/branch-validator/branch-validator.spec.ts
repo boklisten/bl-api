@@ -1,10 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { BlError, Branch, Item, OrderItem } from "@boklisten/bl-model";
+import { Branch, OrderItem } from "@boklisten/bl-model";
 import { BranchValidator } from "./branch-validator";
 
 chai.use(chaiAsPromised);

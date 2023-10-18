@@ -50,44 +50,32 @@ export class UserDetailChangeEmailOperation implements Operation {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction,
   ): Promise<boolean> {
-    let userDetail: UserDetail;
-    let user: User;
-    let localLogin;
-
     const emailChange = blApiRequest.data["email"];
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      this.validateEmail(emailChange);
-      userDetail = await this._userDetailStorage.get(blApiRequest.documentId);
-      user = await this.getUser(userDetail.email, userDetail.blid);
-      localLogin = await this.getLocalLogin(userDetail.email);
-      this.validatePermission(blApiRequest.user.permission, user.permission);
-      await this.checkIfAlreadyAdded(emailChange);
-    } catch (e) {
-      throw e;
-    }
+    this.validateEmail(emailChange);
+    const userDetail = await this._userDetailStorage.get(
+      blApiRequest.documentId,
+    );
+    const user = await this.getUser(userDetail.email, userDetail.blid);
+    const localLogin = await this.getLocalLogin(userDetail.email);
+    this.validatePermission(blApiRequest.user.permission, user.permission);
+    await this.checkIfAlreadyAdded(emailChange);
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      await this._userDetailStorage.update(
-        userDetail["_id"],
-        { email: emailChange },
-        blApiRequest.user,
-      );
-      await this._userStorage.update(
-        user["_id"],
-        { username: emailChange },
-        blApiRequest.user,
-      );
-      await this._localLoginStorage.update(
-        localLogin["_id"],
-        { username: emailChange },
-        blApiRequest.user,
-      );
-    } catch (e) {
-      throw e;
-    }
+    await this._userDetailStorage.update(
+      userDetail["_id"],
+      { email: emailChange },
+      blApiRequest.user,
+    );
+    await this._userStorage.update(
+      user["_id"],
+      { username: emailChange },
+      blApiRequest.user,
+    );
+    await this._localLoginStorage.update(
+      localLogin["_id"],
+      { username: emailChange },
+      blApiRequest.user,
+    );
 
     this._resHandler.sendResponse(res, new BlapiResponse([{ success: true }]));
     return true;
@@ -124,31 +112,17 @@ export class UserDetailChangeEmailOperation implements Operation {
   }
 
   private async getUser(email: string, blid: string): Promise<User> {
-    let user;
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const users = await this._userStorage.aggregate([
-        { $match: { username: email, blid: blid } },
-      ]);
-      user = users[0];
-    } catch (e) {
-      throw e;
-    }
-    return user;
+    const users = await this._userStorage.aggregate([
+      { $match: { username: email, blid: blid } },
+    ]);
+    return users[0];
   }
 
   private async getLocalLogin(username: string): Promise<LocalLogin> {
-    let localLogin: LocalLogin | PromiseLike<LocalLogin>;
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const localLogins = await this._localLoginStorage.aggregate([
-        { $match: { username: username } },
-      ]);
-      localLogin = localLogins[0];
-    } catch (e) {
-      throw e;
-    }
-    return localLogin;
+    const localLogins = await this._localLoginStorage.aggregate([
+      { $match: { username: username } },
+    ]);
+    return localLogins[0];
   }
 
   private validateEmail(email: string) {
