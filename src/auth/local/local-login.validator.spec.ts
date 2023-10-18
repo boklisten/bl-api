@@ -72,7 +72,6 @@ describe("LocalLoginValidator", () => {
 
   sinon
     .stub(userHandler, "create")
-    // @ts-ignore
     .callsFake((username: string, provider: string, providerId: string) => {
       return Promise.resolve({
         id: "",
@@ -88,7 +87,7 @@ describe("LocalLoginValidator", () => {
         active: true,
         lastActive: "",
         lastRequest: "",
-      });
+      } as User);
     });
 
   sinon.stub(userHandler, "valid").callsFake(() => {

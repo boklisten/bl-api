@@ -47,8 +47,6 @@ export class OrderToCustomerItemGenerator {
       orderItem.type === "partly-payment" ||
       orderItem.type === "rent" ||
       orderItem.type === "loan" ||
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore TODO before merge
       orderItem.type === "match-receive"
     );
   }
@@ -66,8 +64,6 @@ export class OrderToCustomerItemGenerator {
       );
     } else if (
       orderItem.type === "rent" ||
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore TODO before merge
       orderItem.type === "match-receive"
     ) {
       return this.createRentCustomerItem(customerDetail, order, orderItem);
