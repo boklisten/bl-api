@@ -34,9 +34,9 @@ export class OrderItemMovedFromOrderHandler {
   private async addMovedToOrderOnOrderItems(
     orderItemsToUpdate: OrderItemToUpdate[],
   ): Promise<boolean> {
-    await Promise.all(
-      orderItemsToUpdate.map((orderItem) => this.updateOrderItem(orderItem)),
-    );
+    for (const orderItemToUpdate of orderItemsToUpdate) {
+      await this.updateOrderItem(orderItemToUpdate);
+    }
     return true;
   }
 
