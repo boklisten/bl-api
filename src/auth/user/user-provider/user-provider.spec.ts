@@ -47,7 +47,7 @@ describe("UserProvider", () => {
       userValidStub.rejects(new BlError("user is not valid"));
 
       return expect(
-        userProvider.loginOrCreate("username@mail.com", "feide", "abcdef"),
+        userProvider.loginOrCreate("username@mail.com", "local", "abcdef"),
       ).to.eventually.be.rejectedWith(BlError, /user is not valid/);
     });
 
@@ -59,7 +59,7 @@ describe("UserProvider", () => {
       );
 
       return expect(
-        userProvider.loginOrCreate("username@mail.com", "feide", "abcde"),
+        userProvider.loginOrCreate("username@mail.com", "local", "abcde"),
       ).to.eventually.be.rejectedWith(
         BlError,
         /local login could not be created/,
@@ -72,7 +72,7 @@ describe("UserProvider", () => {
         userCreateStub.rejects(new BlError("user could not be created"));
 
         return expect(
-          userProvider.loginOrCreate("username@mail.com", "feide", "abcde"),
+          userProvider.loginOrCreate("username@mail.com", "local", "abcde"),
         ).to.eventually.be.rejectedWith(BlError, /user could not be created/);
       });
 
@@ -86,7 +86,7 @@ describe("UserProvider", () => {
         createTokenStub.resolves(tokens);
 
         return expect(
-          userProvider.loginOrCreate("username@mail.com", "feide", "abcdefg"),
+          userProvider.loginOrCreate("username@mail.com", "local", "abcdefg"),
         ).to.eventually.be.eql({ user: user, tokens: tokens });
       });
     });
@@ -102,7 +102,7 @@ describe("UserProvider", () => {
         createTokenStub.resolves(tokens);
 
         return expect(
-          userProvider.loginOrCreate("username@mail.com", "feide", "abcdefg"),
+          userProvider.loginOrCreate("username@mail.com", "local", "abcdefg"),
         ).to.eventually.be.eql({ user: user, tokens: tokens });
       });
     });
