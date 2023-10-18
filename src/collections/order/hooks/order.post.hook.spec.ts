@@ -103,15 +103,12 @@ describe("OrderPostHook", () => {
     };
   });
 
-  sinon.stub(orderValidator, "validate").callsFake((order) =>
-    Promise.resolve(
-      orderValidated
-        ? true
-        : (() => {
-            throw new BlError("not a valid order");
-          })(),
-    ),
-  );
+  sinon.stub(orderValidator, "validate").callsFake(async () => {
+    if (orderValidated) {
+      return true;
+    }
+    throw new BlError("not a valid order");
+  });
 
   sinon.stub(orderStorage, "get").callsFake((orderId: string) => {
     if (orderId !== "order1" && orderId !== "orderValid") {
