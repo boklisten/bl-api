@@ -1,17 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
 import { expect } from "chai";
-import {
-  BlError,
-  Branch,
-  Order,
-  UserDetail,
-  AccessToken,
-} from "@boklisten/bl-model";
+import { BlError, Order, UserDetail, AccessToken } from "@boklisten/bl-model";
 import { OrderValidator } from "../helpers/order-validator/order-validator";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { orderSchema } from "../order.schema";
@@ -19,6 +11,7 @@ import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { OrderHookBefore } from "./order-hook-before";
 import { OrderPostHook } from "./order.post.hook";
 import { BlCollectionName } from "../../bl-collection";
+import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
 
 chai.use(chaiAsPromised);
 
@@ -30,12 +23,13 @@ describe("OrderPostHook", () => {
   );
   const userDetailStorage: BlDocumentStorage<UserDetail> =
     new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+  const userDetailHelper = new UserDetailHelper(userDetailStorage);
   const orderHookBefore: OrderHookBefore = new OrderHookBefore();
   const orderPostHook: OrderPostHook = new OrderPostHook(
     orderValidator,
     orderHookBefore,
     userDetailStorage,
-    orderStorage,
+    userDetailHelper,
   );
 
   let testOrder: Order;
@@ -109,12 +103,15 @@ describe("OrderPostHook", () => {
     };
   });
 
-  sinon.stub(orderValidator, "validate").callsFake((order: any) => {
-    if (!orderValidated) {
-      return Promise.reject(new BlError("not a valid order"));
-    }
-    return Promise.resolve(testOrder);
-  });
+  sinon.stub(orderValidator, "validate").callsFake((order) =>
+    Promise.resolve(
+      orderValidated
+        ? true
+        : (() => {
+            throw new BlError("not a valid order");
+          })(),
+    ),
+  );
 
   sinon.stub(orderStorage, "get").callsFake((orderId: string) => {
     if (orderId !== "order1" && orderId !== "orderValid") {

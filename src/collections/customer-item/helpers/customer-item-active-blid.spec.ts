@@ -1,21 +1,9 @@
-// AUTO IGNORED:
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import sinon from "sinon";
 import { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-chai.use(chaiAsPromised);
-import {
-  BlError,
-  Branch,
-  CustomerItem,
-  Order,
-  OrderItem,
-  UserDetail,
-} from "@boklisten/bl-model";
+import { CustomerItem } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { CustomerItemActiveBlid } from "./customer-item-active-blid";
 import { BlCollectionName } from "../../bl-collection";

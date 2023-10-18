@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -120,11 +118,11 @@ describe("DeliveryPostHook", () => {
 
   sinon
     .stub(deliveryHandler, "updateOrderBasedOnMethod")
-    .callsFake((delivery: Delivery, order: Order, accessToken: AccessToken) => {
+    .callsFake((delivery, order, accessToken) => {
       if (!orderUpdated) {
         return Promise.reject(new BlError("order could not be updated"));
       }
-      return Promise.resolve(order);
+      return Promise.resolve(order.delivery as Delivery);
     });
 
   sinon.stub(deliveryStorage, "get").callsFake((id: string) => {
@@ -148,7 +146,7 @@ describe("DeliveryPostHook", () => {
   sinon.stub(itemStorage, "getMany").callsFake((ids: string[]) => {
     return new Promise((resolve, reject) => {
       if (ids[0] === "item1") {
-        return resolve(testItem);
+        return resolve([testItem]);
       }
       return reject(new BlError("not found").code(702));
     });

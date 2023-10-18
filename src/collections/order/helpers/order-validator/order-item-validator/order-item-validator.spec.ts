@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -59,7 +57,7 @@ describe("OrderItemValidator", () => {
   });
 
   sinon.stub(itemStorage, "get").callsFake((id: string) => {
-    return Promise.resolve({});
+    return Promise.resolve({} as Item);
   });
 
   beforeEach(() => {

@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -15,7 +13,6 @@ import {
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { PaymentHandler } from "./payment-handler";
 import { DibsPaymentService } from "../../../payment/dibs/dibs-payment.service";
-import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
 import { PaymentDibsConfirmer } from "./dibs/payment-dibs-confirmer";
 import { BlCollectionName } from "../../bl-collection";
@@ -56,7 +53,7 @@ describe("PaymentHandler", () => {
       byCustomer: true,
       payments: ["payment1"],
       delivery: "delivery1",
-    };
+    } as Order;
 
     testPayment1 = {
       id: "payment1",
@@ -68,7 +65,7 @@ describe("PaymentHandler", () => {
       info: {
         paymentId: "dibsEasyPayment1",
       },
-    };
+    } as Payment;
 
     testPayment2 = {
       id: "payment2",
@@ -78,7 +75,7 @@ describe("PaymentHandler", () => {
       customer: "customer1",
       branch: "branch1",
       info: {},
-    };
+    } as Payment;
 
     testAccessToken = {
       iss: "boklisten.co",
@@ -89,7 +86,7 @@ describe("PaymentHandler", () => {
       username: "user@name.com",
       permission: "customer",
       details: "userDetails1",
-    };
+    } as AccessToken;
 
     userDetailHelperDibsPaymentUpdateSuccess = true;
   });
@@ -121,7 +118,7 @@ describe("PaymentHandler", () => {
       for (const method of methods) {
         it("should confirm if amount is equal to order", () => {
           const order = { amount: 100, payments: ["payment1"] } as Order;
-          const payments = [{ method: method, amount: 100 }];
+          const payments = [{ method: method, amount: 100 }] as Payment[];
 
           paymentStorageGetManyStub.resolves(payments);
 
@@ -132,7 +129,7 @@ describe("PaymentHandler", () => {
 
         it("should reject if amount is not equal to order", () => {
           const order = { amount: 110, payments: ["payment1"] } as Order;
-          const payments = [{ method: method, amount: 500 }];
+          const payments = [{ method: method, amount: 500 }] as Payment[];
 
           paymentStorageGetManyStub.resolves(payments);
 
@@ -154,7 +151,7 @@ describe("PaymentHandler", () => {
             payments: ["payment1"],
             byCustomer: true,
           } as Order;
-          const payments = [{ method: method, amount: 111 }];
+          const payments = [{ method: method, amount: 111 }] as Payment[];
 
           paymentStorageGetManyStub.resolves(payments);
 
@@ -171,10 +168,14 @@ describe("PaymentHandler", () => {
     describe('when paymentMethod is "dibs"', () => {
       it("should reject if paymentDibsValidator.validate rejects", () => {
         paymentStorageGetManyStub.resolves([
-          { amount: testOrder.amount, method: "dibs", confirmed: false },
+          {
+            amount: testOrder.amount,
+            method: "dibs",
+            confirmed: false,
+          } as Payment,
         ]);
 
-        deliveryGetStub.resolves({ id: "delivery1", amount: 0 });
+        deliveryGetStub.resolves({ id: "delivery1", amount: 0 } as Delivery);
 
         paymentDibsConfirmStub.rejects(new BlError("dibs payment not valid"));
 
@@ -186,10 +187,10 @@ describe("PaymentHandler", () => {
       it("should resolve if paymentDibsValidator.validate resolves", () => {
         const payments = [
           { amount: testOrder.amount, method: "dibs", confirmed: false },
-        ];
+        ] as Payment[];
 
         paymentStorageGetManyStub.resolves(payments);
-        deliveryGetStub.resolves({ id: "delivery1", amount: 0 });
+        deliveryGetStub.resolves({ id: "delivery1", amount: 0 } as Delivery);
         paymentDibsConfirmStub.resolves(true);
 
         return expect(
@@ -209,7 +210,7 @@ describe("PaymentHandler", () => {
         { method: "vipps", amount: 100 },
         { method: "cash", amount: 100 },
         { method: "card", amount: 100 },
-      ];
+      ] as Payment[];
 
       paymentStorageGetManyStub.resolves(payments);
 
@@ -226,7 +227,7 @@ describe("PaymentHandler", () => {
       const payments = [
         { method: "cash", amount: 500 },
         { method: "vipps", amount: 300 },
-      ];
+      ] as Payment[];
 
       paymentStorageGetManyStub.resolves(payments);
 
@@ -247,7 +248,7 @@ describe("PaymentHandler", () => {
         { id: "payment1", method: "cash", amount: 100 },
         { id: "payment2", method: "dibs", amount: 150 },
         { id: "payment3", method: "vipps", amount: 300 },
-      ];
+      ] as Payment[];
 
       paymentStorageGetManyStub.resolves(payments);
 
@@ -267,7 +268,7 @@ describe("PaymentHandler", () => {
       const payments = [
         { id: "payment1", method: "dibs", amount: 100 },
         { id: "payment2", method: "dibs", amount: 150 },
-      ];
+      ] as Payment[];
 
       paymentStorageGetManyStub.resolves(payments);
 

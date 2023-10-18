@@ -1,18 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import sinon from "sinon";
 import { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import {
-  BlError,
-  Branch,
-  CustomerItem,
-  Order,
-  OrderItem,
-  UserDetail,
-} from "@boklisten/bl-model";
+import { BlError, Order, OrderItem, UserDetail } from "@boklisten/bl-model";
 import { OrderToCustomerItemGenerator } from "./order-to-customer-item-generator";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
@@ -23,7 +14,6 @@ describe("OrderToCustomerItemGenerator", () => {
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
     BlCollectionName.UserDetails,
   );
-
   const userDetail = {
     id: "customer1",
     name: "Hans Hansen",
@@ -40,11 +30,11 @@ describe("OrderToCustomerItemGenerator", () => {
       email: "lathanshansen@hansen.com",
       phone: "123456789",
     },
-  };
+  } as UserDetail;
 
   sinon.stub(userDetailStorage, "get").callsFake((id) => {
     if (id === userDetail.id) {
-      return userDetail;
+      return new Promise((resolve) => resolve(userDetail));
     } else {
       throw new BlError("not found").code(702);
     }

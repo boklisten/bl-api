@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -38,7 +36,7 @@ describe("DeliveryValidator", () => {
 
   sinon
     .stub(deliveryBranchHandler, "validate")
-    .callsFake((delivery: Delivery, order: Order) => {
+    .callsFake((delivery: Delivery) => {
       if (!deliveryBranchValidation) {
         return Promise.reject(
           new BlError('validation of delivery.method "branch" failed'),

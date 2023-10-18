@@ -1,14 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
-import { expect } from "chai";
 import { TokenHandler } from "./token.handler";
 import { BlError } from "@boklisten/bl-model";
 import { UserHandler } from "../user/user.handler";
-import { User } from "../../collections/user/user";
 import { TokenConfig } from "./token.config";
 import { AccessToken } from "./access-token/access-token";
 import { RefreshToken } from "./refresh/refresh-token";

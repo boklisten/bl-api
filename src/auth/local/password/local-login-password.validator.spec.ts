@@ -1,10 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
-import { expect } from "chai";
 import { LocalLoginPasswordValidator } from "./local-login-password.validator";
 import { SeCrypto } from "../../../crypto/se.crypto";
 import { BlError } from "@boklisten/bl-model";

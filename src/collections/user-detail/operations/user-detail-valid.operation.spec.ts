@@ -1,21 +1,20 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import sinon from "sinon";
 import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { UserDetailValidOperation } from "./user-detail-valid.operation";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { SEResponseHandler } from "../../../response/se.response.handler";
-import { Response } from "express";
 import { BlApiRequest } from "../../../request/bl-api-request";
+import { BlCollectionName } from "../../bl-collection";
 
 chai.use(chaiAsPromised);
 
 describe("UserDetailValidOperation", () => {
-  const userDetailStorage = new BlDocumentStorage<UserDetail>("user_details");
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails,
+  );
   const responseHandler = new SEResponseHandler();
   const userDetailValidOperation = new UserDetailValidOperation(
     userDetailStorage,

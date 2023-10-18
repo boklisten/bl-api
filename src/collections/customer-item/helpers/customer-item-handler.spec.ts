@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -8,7 +6,6 @@ import sinon from "sinon";
 import { BlError, Branch, CustomerItem, OrderItem } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { CustomerItemHandler } from "./customer-item-handler";
-import { SystemUser } from "../../../auth/permission/permission.service";
 import { SEDbQuery } from "../../../query/se.db-query";
 import mongoose from "mongoose";
 import { BlCollectionName } from "../../bl-collection";
@@ -45,7 +42,7 @@ describe("CustomerItemHandler", () => {
         deadline: new Date(),
         handout: true,
         returned: true,
-      };
+      } as CustomerItem;
 
       getCustomerItemStub.withArgs("customerItem1").resolves(customerItem);
 
@@ -66,7 +63,7 @@ describe("CustomerItemHandler", () => {
         deadline: new Date(),
         handout: true,
         returned: false,
-      };
+      } as CustomerItem;
 
       getCustomerItemStub.withArgs("customerItem1").resolves(customerItem);
 
@@ -89,7 +86,7 @@ describe("CustomerItemHandler", () => {
         deadline: new Date(),
         handout: true,
         returned: false,
-      };
+      } as CustomerItem;
 
       getCustomerItemStub.withArgs("customerItem1").resolves(customerItem);
 
@@ -264,9 +261,11 @@ describe("CustomerItemHandler", () => {
           deadline: new Date(2018, 11, 20),
           returned: false,
         },
-      ];
+      ] as CustomerItem[];
 
-      getByQueryCustomerItemStub.returns(customerItems);
+      getByQueryCustomerItemStub.returns(
+        new Promise((resolve) => resolve(customerItems)),
+      );
 
       customerItemHandler
         .getNotReturned("5c33b6137eab87644f7e75e2", new Date(2018, 11, 20))

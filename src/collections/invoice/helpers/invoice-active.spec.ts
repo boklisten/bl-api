@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import { expect } from "chai";
 import { Invoice } from "@boklisten/bl-model";

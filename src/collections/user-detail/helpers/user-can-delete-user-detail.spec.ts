@@ -1,11 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import sinon from "sinon";
-import { BlError, AccessToken, UserDetail } from "@boklisten/bl-model";
+import { AccessToken, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { UserCanDeleteUserDetail } from "./user-can-delete-user-detail";
 import { User } from "../../user/user";
@@ -44,7 +42,7 @@ describe("UserCanDeleteUserDetail", () => {
         permission: "customer",
         details: "userDetail1",
       };
-      userDetailGetIdStub.resolves({ id: "userDetail1" });
+      userDetailGetIdStub.resolves({ id: "userDetail1" } as UserDetail);
 
       return expect(
         userCanDeleteUserDetail.canDelete("userDetail1", accessToken),
@@ -66,9 +64,9 @@ describe("UserCanDeleteUserDetail", () => {
       userDetailGetIdStub.resolves({
         id: "userDetail2",
         email: "user@test.com",
-      });
+      } as UserDetail);
 
-      userGetByQueryStub.resolves([{ permission: "admin" }]);
+      userGetByQueryStub.resolves([{ permission: "admin" } as User]);
 
       return expect(
         userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
@@ -90,9 +88,9 @@ describe("UserCanDeleteUserDetail", () => {
       userDetailGetIdStub.resolves({
         id: "userDetail2",
         email: "user@test.com",
-      });
+      } as UserDetail);
 
-      userGetByQueryStub.resolves([{ permission: "admin" }]);
+      userGetByQueryStub.resolves([{ permission: "admin" } as User]);
 
       return expect(
         userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
@@ -114,9 +112,9 @@ describe("UserCanDeleteUserDetail", () => {
       userDetailGetIdStub.resolves({
         id: "userDetail2",
         email: "user@test.com",
-      });
+      } as UserDetail);
 
-      userGetByQueryStub.resolves([{ permission: "customer" }]);
+      userGetByQueryStub.resolves([{ permission: "customer" } as User]);
 
       return expect(
         userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
@@ -138,9 +136,9 @@ describe("UserCanDeleteUserDetail", () => {
       userDetailGetIdStub.resolves({
         id: "userDetail2",
         email: "user@test.com",
-      });
+      } as UserDetail);
 
-      userGetByQueryStub.resolves([{ permission: "admin" }]);
+      userGetByQueryStub.resolves([{ permission: "admin" } as User]);
 
       return expect(
         userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
@@ -162,9 +160,11 @@ describe("UserCanDeleteUserDetail", () => {
       userDetailGetIdStub.resolves({
         id: "userDetail2",
         email: "user@test.com",
-      });
+      } as UserDetail);
 
-      userGetByQueryStub.resolves([{ permission: "manager" }]);
+      userGetByQueryStub.resolves([
+        { permission: "manager" } as unknown as User,
+      ]);
 
       return expect(
         userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
@@ -186,9 +186,9 @@ describe("UserCanDeleteUserDetail", () => {
       userDetailGetIdStub.resolves({
         id: "userDetail2",
         email: "user@test.com",
-      });
+      } as UserDetail);
 
-      userGetByQueryStub.resolves([{ permission: "employee" }]);
+      userGetByQueryStub.resolves([{ permission: "employee" } as User]);
 
       return expect(
         userCanDeleteUserDetail.canDelete("userDetail2", accessToken),
@@ -210,9 +210,9 @@ describe("UserCanDeleteUserDetail", () => {
       userDetailGetIdStub.resolves({
         id: "userDetail2",
         email: "user@test.com",
-      });
+      } as UserDetail);
 
-      userGetByQueryStub.resolves([{ permission: "customer" }]);
+      userGetByQueryStub.resolves([{ permission: "customer" } as User]);
 
       return expect(
         userCanDeleteUserDetail.canDelete("userDetail2", accessToken),

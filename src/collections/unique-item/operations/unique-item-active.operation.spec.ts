@@ -1,20 +1,16 @@
-// AUTO IGNORED:
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
-chai.use(chaiAsPromised);
 import sinon from "sinon";
-//const resHandler = new SEResponseHandler();
 import { CustomerItemActiveBlid } from "../../customer-item/helpers/customer-item-active-blid";
 import { UniqueItemActiveOperation } from "./unique-item-active.operation";
 import { SEResponseHandler } from "../../../response/se.response.handler";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { UniqueItem } from "@boklisten/bl-model";
 import { BlCollectionName } from "../../bl-collection";
+
+chai.use(chaiAsPromised);
 
 describe("UniqueItemActiveOperation", () => {
   describe("run()", () => {
@@ -45,7 +41,7 @@ describe("UniqueItemActiveOperation", () => {
     });
 
     it("should return true", () => {
-      getUniqueItemStub.resolves({ blid: "blid1" });
+      getUniqueItemStub.resolves({ blid: "blid1" } as UniqueItem);
 
       getActiveCustomerItemsStub.resolves([]);
 

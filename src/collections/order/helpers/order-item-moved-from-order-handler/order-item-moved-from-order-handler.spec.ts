@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -43,7 +41,7 @@ describe("OrderItemMovedFromOrderHandler", () => {
             },
           },
         ],
-      };
+      } as Order;
 
       getOrderStub.withArgs(testMovedFromOrderId).resolves(testMovedFromOrder);
 

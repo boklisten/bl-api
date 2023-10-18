@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -30,14 +28,16 @@ describe("SeToken", () => {
     const seToken: SEToken = new SEToken();
 
     it("should reject with BlError if token is empty", () => {
-      return seToken.validateToken("").should.be.rejectedWith(BlError);
+      return seToken
+        .validateToken("", { permissions: ["admin"] })
+        .should.be.rejectedWith(BlError);
     });
 
     it("should decode so the username is the same as when signed", () => {
       return new Promise((resolve, reject) => {
         seToken.createToken("albert", "admin", "1").then(
           (token: string) => {
-            seToken.validateToken(token).then(
+            seToken.validateToken(token, { permissions: ["admin"] }).then(
               (decodedToken: JwtPayload) => {
                 resolve(decodedToken.username);
               },

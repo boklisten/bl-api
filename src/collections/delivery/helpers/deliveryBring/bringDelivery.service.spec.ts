@@ -1,13 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
-import { expect } from "chai";
 import { BringDeliveryService } from "./bringDelivery.service";
 import { HttpHandler } from "../../../../http/http.handler";
-import { BlError, Item, DeliveryInfoBring } from "@boklisten/bl-model";
+import { BlError, Item } from "@boklisten/bl-model";
 import { APP_CONFIG } from "../../../../application-config";
 
 chai.use(chaiAsPromised);
@@ -69,7 +66,7 @@ describe("BringDeliveryService", () => {
 
   sinon
     .stub(httpHandler, "getWithQuery")
-    .callsFake((url: string, queryString: string, authorization?: string) => {
+    .callsFake((url: string, queryString: string, headers: object) => {
       return new Promise((resolve, reject) => {
         if (url === APP_CONFIG.url.bring.shipmentInfo) {
           return resolve(testBringResponse);

@@ -1,15 +1,12 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import sinon from "sinon";
-import { BlError, UserDetail, Message } from "@boklisten/bl-model";
+import { UserDetail, Message } from "@boklisten/bl-model";
 import { MessengerReminder } from "./messenger-reminder";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import { CustomerItem } from "@boklisten/bl-model";
-import { SEDbQuery } from "../../query/se.db-query";
 import { CustomerItemHandler } from "../../collections/customer-item/helpers/customer-item-handler";
 import { EmailService } from "../email/email-service";
 import { BlCollectionName } from "../../collections/bl-collection";
@@ -99,7 +96,7 @@ describe("MessengerReminder", () => {
           id: "customerItem1",
           deadline: new Date(2018, 0, 1),
           title: "",
-        },
+        } as unknown as CustomerItem,
       ];
 
       const customerDetail: UserDetail = {

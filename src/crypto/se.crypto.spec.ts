@@ -1,14 +1,11 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import { SeCrypto } from "./se.crypto";
 import { BlError } from "@boklisten/bl-model";
 
 chai.use(chaiAsPromised);
-const shuld = chai.should();
+chai.should();
 
 describe("SeCrypto", () => {
   const seCrypto: SeCrypto = new SeCrypto();

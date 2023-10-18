@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -14,6 +12,7 @@ import { SEDbQuery } from "../../query/se.db-query";
 import { EmailValidationHelper } from "../../collections/email-validation/helpers/email-validation.helper";
 import { LocalLoginHandler } from "../local/local-login.handler";
 import { BlCollectionName } from "../../collections/bl-collection";
+import { LocalLogin } from "../../collections/local-login/local-login";
 
 chai.use(chaiAsPromised);
 
@@ -29,7 +28,7 @@ const testUser = {
   username: "bill@gmail.com",
   valid: false,
   active: true,
-};
+} as User;
 
 describe("UserHandler", () => {
   const userStorage: BlDocumentStorage<User> = new BlDocumentStorage(
@@ -86,7 +85,7 @@ describe("UserHandler", () => {
   const localLoginHandlerGetStub = sinon
     .stub(localLoginHandler, "get")
     .callsFake(() => {
-      return Promise.resolve({});
+      return Promise.resolve({} as LocalLogin);
     });
 
   const userStorageGetByQueryStub = sinon
@@ -97,7 +96,7 @@ describe("UserHandler", () => {
           return reject(new BlError("not found").code(702));
         }
 
-        resolve([{ username: testUser.username }]);
+        resolve([{ username: testUser.username } as User]);
       });
     });
 
@@ -169,7 +168,7 @@ describe("UserHandler", () => {
         const testUsers = [
           { username: username, movedToPrimary: "someObjectId" },
           { username: username, primary: true },
-        ];
+        ] as User[];
 
         const dbQuery = new SEDbQuery();
         dbQuery.stringFilters = [{ fieldName: "username", value: username }];

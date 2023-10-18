@@ -1,20 +1,19 @@
-// AUTO IGNORED:
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import sinon from "sinon";
-chai.use(chaiAsPromised);
 import { BlErrorHandler } from "./bl-error-handler";
 import { BlDocumentStorage } from "../storage/blDocumentStorage";
 import { BlError } from "@boklisten/bl-model";
 import { BlErrorLog } from "../collections/bl-error-log/bl-error-log";
+import { BlCollectionName } from "../collections/bl-collection";
+
+chai.use(chaiAsPromised);
 
 describe("BlErrorHandler", () => {
-  const errorLogStorage = new BlDocumentStorage<BlErrorLog>("");
+  const errorLogStorage = new BlDocumentStorage<BlErrorLog>(
+    BlCollectionName.BlErrorLogs,
+  );
   const blErrorHandler = new BlErrorHandler(errorLogStorage);
 
   const errorLogStorageAddSpy = sinon.stub(errorLogStorage, "add");
@@ -28,7 +27,7 @@ describe("BlErrorHandler", () => {
       const blError = new BlError("some error");
       const expectedStoredErrorLog = new BlErrorLog(blError);
 
-      errorLogStorageAddSpy.resolves(true);
+      errorLogStorageAddSpy.resolves(expectedStoredErrorLog);
 
       blErrorHandler.storeError(blError);
 
@@ -43,7 +42,7 @@ describe("BlErrorHandler", () => {
 
       const expectedStoredErrorLog = new BlErrorLog(blError);
 
-      errorLogStorageAddSpy.resolves(true);
+      errorLogStorageAddSpy.resolves(expectedStoredErrorLog);
 
       blErrorHandler.storeError(blError);
 
@@ -58,7 +57,7 @@ describe("BlErrorHandler", () => {
 
       const expectedStoredErrorLog = new BlErrorLog(blError);
 
-      errorLogStorageAddSpy.resolves(true);
+      errorLogStorageAddSpy.resolves(expectedStoredErrorLog);
 
       blErrorHandler.storeError(blError);
 

@@ -1,9 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import sinon from "sinon";
 import { Branch, OpeningHour, BlError } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
@@ -53,7 +50,7 @@ describe("getNextAvailableOpeningHour()", () => {
           to: moment("2012-01-03").toDate(),
           branch: "branch1",
         },
-      ]);
+      ] as OpeningHour[]);
 
     return openingHourHelper
       .getNextAvailableOpeningHour(branch)
@@ -79,7 +76,7 @@ describe("getNextAvailableOpeningHour()", () => {
         to: moment().add(1, "day").toDate(),
         branch: "branch1",
       },
-    ];
+    ] as OpeningHour[];
 
     openingHourStorageGetMany
       .withArgs(["openingHour3", "openingHour4"])
@@ -111,7 +108,7 @@ describe("getNextAvailableOpeningHour()", () => {
         to: moment().add(2, "day").toDate(),
         branch: "branch1",
       },
-    ];
+    ] as OpeningHour[];
 
     openingHourStorageGetMany
       .withArgs(["openingHour3", "openingHour4"])
@@ -144,7 +141,7 @@ describe("getNextAvailableOpeningHour()", () => {
           to: moment().add(2, "day").toDate(),
           branch: "branch1",
         },
-      ];
+      ] as OpeningHour[];
 
       openingHourStorageGetMany
         .withArgs(["openingHour3", "openingHour4"])
@@ -179,7 +176,7 @@ describe("getNextAvailableOpeningHour()", () => {
           to: moment().add(2, "day").toDate(),
           branch: "branch1",
         },
-      ];
+      ] as OpeningHour[];
 
       openingHourStorageGetMany
         .withArgs(["openingHour3", "openingHour4"])
@@ -211,7 +208,7 @@ describe("getNextAvailableOpeningHour()", () => {
           to: moment().add(2, "day").toDate(),
           branch: "branch1",
         },
-      ];
+      ] as OpeningHour[];
 
       openingHourStorageGetMany
         .withArgs(["openingHour3", "openingHour4"])
