@@ -57,7 +57,6 @@ export const branchSchema = {
       },
       required: false,
     },
-    required: false,
   },
   paymentInfo: {
     type: {

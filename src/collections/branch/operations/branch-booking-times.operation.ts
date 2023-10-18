@@ -42,7 +42,7 @@ export class BranchBookingTimesOperation implements Operation {
     const aggregation = [
       {
         $match: {
-          branch: mongoose.Types.ObjectId(blApiRequest.documentId),
+          branch: new mongoose.Types.ObjectId(blApiRequest.documentId),
           from: { $gt: this.dateService.startOfDay(new Date()) },
           booked: false,
         },

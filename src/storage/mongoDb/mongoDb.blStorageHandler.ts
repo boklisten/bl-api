@@ -112,7 +112,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
       for (const id of ids) {
         try {
-          idArr.push(mongoose.Types.ObjectId(id));
+          idArr.push(new mongoose.Types.ObjectId(id));
         } catch (e) {
           return Promise.reject(new BlError("id in array is not valid"));
         }
@@ -308,7 +308,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   /**
    * Tries to fetch all nested values on the specified documents.
    * @param {BlDocument[]} docs the documents to search through
-   * @param {NestedDocument[]} nestedDocuments the allowed values to fetch
+   * @param {NestedDocument[]} allowedNestedDocuments the allowed values to fetch
    * @param {ExpandFilter} expandFilters the nested documents to fetch
    * @param {UserPermission} userPermission
    */

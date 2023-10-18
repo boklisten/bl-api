@@ -45,7 +45,7 @@ describe("DbQueryObjectIdFilter", () => {
           fieldName: "id",
           value: [
             "5c2e0e5bb311ba0701f15967",
-            mongoose.Types.ObjectId("5c2e0e5bb311ba0701f15967"),
+            new mongoose.Types.ObjectId("5c2e0e5bb311ba0701f15967"),
           ],
         },
       ];
@@ -68,23 +68,23 @@ describe("DbQueryObjectIdFilter", () => {
           fieldName: "id",
           value: [
             "5c2e0e5bb311ba0701f15967",
-            mongoose.Types.ObjectId("5c2e0e5bb311ba0701f15967"),
+            new mongoose.Types.ObjectId("5c2e0e5bb311ba0701f15967"),
           ],
         },
         {
           fieldName: "customer",
           value: [
             "5c2e0e5bb311ba0701f15967",
-            mongoose.Types.ObjectId("5c2e0e5bb311ba0701f15967"),
+            new mongoose.Types.ObjectId("5c2e0e5bb311ba0701f15967"),
           ],
         },
         {
           fieldName: "branch",
           value: [
             "5c2e0e5bb311ba0701f15968",
-            mongoose.Types.ObjectId("5c2e0e5bb311ba0701f15968"),
+            new mongoose.Types.ObjectId("5c2e0e5bb311ba0701f15968"),
             "5c2e0e5bb311ba0701f15967",
-            mongoose.Types.ObjectId("5c2e0e5bb311ba0701f15967"),
+            new mongoose.Types.ObjectId("5c2e0e5bb311ba0701f15967"),
           ],
         },
       ];
