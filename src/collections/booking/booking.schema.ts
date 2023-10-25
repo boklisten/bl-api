@@ -1,6 +1,7 @@
+import { Booking } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const bookingSchema = new Schema({
+export const bookingSchema = new Schema<Booking>({
   from: {
     type: Date,
     required: true,

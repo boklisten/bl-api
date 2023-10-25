@@ -1,6 +1,7 @@
+import { Payment } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const paymentSchema = new Schema({
+export const paymentSchema = new Schema<Payment>({
   method: {
     type: String,
     required: true,

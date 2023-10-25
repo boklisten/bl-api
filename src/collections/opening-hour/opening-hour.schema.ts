@@ -1,6 +1,7 @@
+import { OpeningHour } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const openingHourSchema = new Schema({
+export const openingHourSchema = new Schema<OpeningHour>({
   from: {
     type: Date,
     required: true,

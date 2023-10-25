@@ -1,6 +1,8 @@
 import { Schema } from "mongoose";
 
-export const emailValidationSchema = new Schema({
+import { EmailValidation } from "./email-validation";
+
+export const emailValidationSchema = new Schema<EmailValidation>({
   email: {
     type: String,
     required: true,

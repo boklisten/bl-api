@@ -112,7 +112,7 @@ const standMatchSchema = {
  * Variants implemented using the union of all possible keys, with those present only in some variants optional and
  * default undefined. No key name may be used with different definitions in multiple variants.
  */
-export const matchSchema = new Schema({
+export const matchSchema = new Schema<Match>({
   ...matchBaseSchema,
   ...standMatchSchema,
   ...userMatchSchema,

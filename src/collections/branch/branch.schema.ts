@@ -1,6 +1,7 @@
+import { Branch } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const branchSchema = new Schema({
+export const branchSchema = new Schema<Branch>({
   name: {
     type: String,
     required: true,

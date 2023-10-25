@@ -2,10 +2,10 @@ import mongoose, { Schema } from "mongoose";
 
 import { BlCollectionName } from "../../collections/bl-collection";
 
-export class MongooseModelCreator {
+export class MongooseModelCreator<T> {
   constructor(
     private collectionName: BlCollectionName,
-    private schema: Schema,
+    private schema: Schema<T>,
   ) {}
 
   create() {
@@ -28,7 +28,7 @@ export class MongooseModelCreator {
     return this.createMongooseModel(mongooseSchema);
   }
 
-  createMongooseModel(mongooseSchema: Schema) {
+  createMongooseModel(mongooseSchema: Schema<T>) {
     try {
       if (mongoose.model(this.collectionName))
         return mongoose.model(this.collectionName);
@@ -40,7 +40,7 @@ export class MongooseModelCreator {
     return null;
   }
 
-  createMongooseSchema(schema: Schema): Schema {
+  createMongooseSchema<T>(schema: Schema<T>): Schema<T> {
     schema.add({
       blid: String,
       lastUpdated: {

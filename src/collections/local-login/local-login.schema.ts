@@ -1,6 +1,8 @@
 import { Schema } from "mongoose";
 
-export const localLoginSchema = new Schema({
+import { LocalLogin } from "./local-login";
+
+export const localLoginSchema = new Schema<LocalLogin>({
   username: {
     type: String,
     required: true,

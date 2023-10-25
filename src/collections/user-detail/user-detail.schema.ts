@@ -1,6 +1,7 @@
+import { UserDetail } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const userDetailSchema = new Schema({
+export const userDetailSchema = new Schema<UserDetail>({
   name: {
     type: String,
   },

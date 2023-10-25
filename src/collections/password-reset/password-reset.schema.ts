@@ -1,6 +1,8 @@
 import { Schema } from "mongoose";
 
-export const passwordResetSchema = new Schema({
+import { PasswordReset } from "./password-reset";
+
+export const passwordResetSchema = new Schema<PasswordReset>({
   email: {
     type: String,
     required: true,

@@ -1,6 +1,8 @@
 import { Schema } from "mongoose";
 
-export const blErrorLogSchema = new Schema({
+import { BlErrorLog } from "./bl-error-log";
+
+export const blErrorLogSchema = new Schema<BlErrorLog>({
   code: Number,
   className: String,
   methodName: String,

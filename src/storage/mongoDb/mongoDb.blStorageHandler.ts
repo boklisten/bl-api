@@ -18,7 +18,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   private mongooseModel: any;
   private permissionService: PermissionService;
 
-  constructor(collectionName: BlCollectionName, schema: Schema) {
+  constructor(collectionName: BlCollectionName, schema: Schema<T>) {
     const mongooseModelCreator = new MongooseModelCreator(
       collectionName,
       schema,

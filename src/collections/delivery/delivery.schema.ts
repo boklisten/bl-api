@@ -1,6 +1,7 @@
+import { Delivery } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const deliverySchema = new Schema({
+export const deliverySchema = new Schema<Delivery>({
   method: {
     type: String,
     required: true,

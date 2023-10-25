@@ -1,6 +1,8 @@
 import { Schema } from "mongoose";
 
-export const UserSchema = new Schema({
+import { User } from "./user";
+
+export const UserSchema = new Schema<User>({
   userDetail: {
     type: Schema.Types.ObjectId,
   },

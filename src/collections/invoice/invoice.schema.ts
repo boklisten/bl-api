@@ -1,6 +1,7 @@
+import { Invoice } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const invoiceSchema = new Schema({
+export const invoiceSchema = new Schema<Invoice>({
   duedate: {
     type: Date,
     required: true,

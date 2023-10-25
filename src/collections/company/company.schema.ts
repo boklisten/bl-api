@@ -1,6 +1,7 @@
+import { Company } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const companySchema = new Schema({
+export const companySchema = new Schema<Company>({
   name: {
     type: String,
     required: true,

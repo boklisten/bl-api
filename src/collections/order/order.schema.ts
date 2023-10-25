@@ -1,6 +1,7 @@
+import { Order } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const orderSchema = new Schema({
+export const orderSchema = new Schema<Order>({
   amount: {
     type: Number,
     required: true,

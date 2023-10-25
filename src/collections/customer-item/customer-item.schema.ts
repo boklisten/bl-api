@@ -1,6 +1,7 @@
+import { CustomerItem } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const customerItemSchema = new Schema({
+export const customerItemSchema = new Schema<CustomerItem>({
   item: {
     type: Schema.Types.Mixed,
     required: true,

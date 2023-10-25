@@ -1,6 +1,7 @@
+import { Message } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const messageSchema = new Schema({
+export const messageSchema = new Schema<Message>({
   messageType: {
     type: String,
     required: true,
