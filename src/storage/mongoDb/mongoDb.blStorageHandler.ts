@@ -116,7 +116,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       });
 
     if (!doc) {
-      throw new BlError(`aggregation yielded no results`).code(702);
+      throw new BlError(`aggregation returned null`);
     }
     return doc;
   }
@@ -126,11 +126,20 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       userPermission && this.permissionService.isAdmin(userPermission)
         ? {}
         : { active: true };
-    try {
-      return await this.mongooseModel.find(filter).exec();
-    } catch (error) {
-      throw this.handleError(new BlError("failed to get all documents"), error);
+    const doc = await this.mongooseModel
+      .find(filter)
+      .exec()
+      .catch((error) => {
+        throw this.handleError(
+          new BlError("failed to get all documents"),
+          error,
+        );
+      });
+
+    if (!doc) {
+      throw new BlError(`getAll returned null`);
     }
+    return doc;
   }
 
   public async add(
