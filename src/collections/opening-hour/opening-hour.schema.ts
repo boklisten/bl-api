@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const openingHourSchema = {
+export const openingHourSchema = new Schema({
   from: {
     type: Date,
     required: true,
@@ -13,4 +13,4 @@ export const openingHourSchema = {
     type: Schema.Types.ObjectId,
     required: true,
   },
-};
+});

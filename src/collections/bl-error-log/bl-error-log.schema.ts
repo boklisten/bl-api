@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const blErrorLogSchema = {
+export const blErrorLogSchema = new Schema({
   code: Number,
   className: String,
   methodName: String,
@@ -8,4 +8,4 @@ export const blErrorLogSchema = {
   errorStack: Schema.Types.Mixed,
   store: Schema.Types.Array,
   data: Schema.Types.Mixed,
-};
+});

@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const userDetailSchema = {
+export const userDetailSchema = new Schema({
   name: {
     type: String,
   },
@@ -62,4 +62,4 @@ export const userDetailSchema = {
     type: [Schema.Types.ObjectId],
     default: [],
   },
-};
+});

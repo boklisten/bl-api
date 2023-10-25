@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const orderSchema = {
+export const orderSchema = new Schema({
   amount: {
     type: Number,
     required: true,
@@ -118,4 +118,4 @@ export const orderSchema = {
     type: Schema.Types.Mixed,
     required: false,
   },
-};
+});

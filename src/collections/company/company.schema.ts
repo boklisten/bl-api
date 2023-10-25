@@ -1,4 +1,6 @@
-export const companySchema = {
+import { Schema } from "mongoose";
+
+export const companySchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -27,4 +29,4 @@ export const companySchema = {
   organizationNumber: {
     type: String,
   },
-};
+});

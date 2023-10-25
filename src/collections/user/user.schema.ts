@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const UserSchema = {
+export const UserSchema = new Schema({
   userDetail: {
     type: Schema.Types.ObjectId,
   },
@@ -50,4 +50,4 @@ export const UserSchema = {
   lastRequest: {
     type: String,
   },
-};
+});

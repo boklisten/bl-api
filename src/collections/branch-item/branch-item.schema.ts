@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const branchItemSchema = {
+export const branchItemSchema = new Schema({
   branch: {
     type: Schema.Types.ObjectId,
     required: true,
@@ -60,4 +60,4 @@ export const branchItemSchema = {
     type: [String],
     default: [],
   },
-};
+});

@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const customerItemSchema = {
+export const customerItemSchema = new Schema({
   item: {
     type: Schema.Types.Mixed,
     required: true,
@@ -187,4 +187,4 @@ export const customerItemSchema = {
     },
     required: false,
   },
-};
+});

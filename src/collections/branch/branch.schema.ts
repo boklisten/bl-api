@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const branchSchema = {
+export const branchSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -178,4 +178,4 @@ export const branchSchema = {
     type: Schema.Types.Mixed,
     required: false,
   },
-};
+});

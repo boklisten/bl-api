@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const itemSchema = {
+export const itemSchema = new Schema({
   title: {
     type: String,
     required: true,
@@ -39,4 +39,4 @@ export const itemSchema = {
     type: [String],
     default: [],
   },
-};
+});

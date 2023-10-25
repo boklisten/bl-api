@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const bookingSchema = {
+export const bookingSchema = new Schema({
   from: {
     type: Date,
     required: true,
@@ -21,4 +21,4 @@ export const bookingSchema = {
     type: Boolean,
     default: false,
   },
-};
+});

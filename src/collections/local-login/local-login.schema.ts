@@ -1,4 +1,6 @@
-export const localLoginSchema = {
+import { Schema } from "mongoose";
+
+export const localLoginSchema = new Schema({
   username: {
     type: String,
     required: true,
@@ -19,4 +21,4 @@ export const localLoginSchema = {
     type: String,
     required: true,
   },
-};
+});

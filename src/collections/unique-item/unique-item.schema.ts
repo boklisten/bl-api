@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const uniqueItemSchema = {
+export const uniqueItemSchema = new Schema({
   blid: {
     type: String,
     required: true,
@@ -19,4 +19,4 @@ export const uniqueItemSchema = {
   actions: {
     type: [Schema.Types.Mixed],
   },
-};
+});

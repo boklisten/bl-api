@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const deliverySchema = {
+export const deliverySchema = new Schema({
   method: {
     type: String,
     required: true,
@@ -17,4 +17,4 @@ export const deliverySchema = {
     type: Number,
     required: true,
   },
-};
+});

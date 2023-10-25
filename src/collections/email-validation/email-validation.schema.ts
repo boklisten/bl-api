@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const emailValidationSchema = {
+export const emailValidationSchema = new Schema({
   email: {
     type: String,
     required: true,
@@ -15,4 +15,4 @@ export const emailValidationSchema = {
     expires: 900, // 15 minutes
     default: Date.now,
   },
-};
+});

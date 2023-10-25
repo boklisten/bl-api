@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const messageSchema = {
+export const messageSchema = new Schema({
   messageType: {
     type: String,
     required: true,
@@ -52,4 +52,4 @@ export const messageSchema = {
     type: [Schema.Types.Mixed],
     required: false,
   },
-};
+});

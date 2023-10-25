@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const passwordResetSchema = {
+export const passwordResetSchema = new Schema({
   email: {
     type: String,
     required: true,
@@ -19,4 +19,4 @@ export const passwordResetSchema = {
     expires: 900, // 15 minutes
     default: Date.now,
   },
-};
+});

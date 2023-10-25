@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const paymentSchema = {
+export const paymentSchema = new Schema({
   method: {
     type: String,
     required: true,
@@ -43,4 +43,4 @@ export const paymentSchema = {
     },
     required: false,
   },
-};
+});

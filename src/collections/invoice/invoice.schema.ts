@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const invoiceSchema = {
+export const invoiceSchema = new Schema({
   duedate: {
     type: Date,
     required: true,
@@ -88,4 +88,4 @@ export const invoiceSchema = {
   ourReference: String,
   invoiceId: String,
   reference: String,
-};
+});

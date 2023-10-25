@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 import { MongooseModelCreator } from "./mongoose-schema-creator";
 import { PermissionService } from "../../auth/permission/permission.service";
@@ -18,10 +18,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   private mongooseModel: any;
   private permissionService: PermissionService;
 
-  constructor(
-    collectionName: BlCollectionName,
-    schema: Record<string, unknown>,
-  ) {
+  constructor(collectionName: BlCollectionName, schema: Schema) {
     const mongooseModelCreator = new MongooseModelCreator(
       collectionName,
       schema,
