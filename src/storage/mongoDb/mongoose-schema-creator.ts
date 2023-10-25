@@ -16,8 +16,7 @@ export class MongooseModelCreator {
 
     //remove fields that the client shall not see
     mongooseSchema.set("toJSON", {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      transform: function (doc, ret, options) {
+      transform: function (_doc, ret) {
         ret.id = ret._id;
         delete ret.user;
         delete ret._id;
@@ -42,65 +41,56 @@ export class MongooseModelCreator {
   }
 
   createMongooseSchema(mschema: Record<string, unknown>): Schema {
-    mschema["blid"] = {
-      type: String,
-    };
-
-    mschema["lastUpdated"] = {
-      type: Date,
-      default: Date.now(),
-    };
-
-    mschema["creationTime"] = {
-      type: Date,
-      default: Date.now(),
-    };
-
-    mschema["comments"] = {
-      type: [
-        {
-          id: String,
-          msg: String,
-          creationTime: {
-            type: Date,
-            default: Date.now(),
-          },
-          user: Schema.Types.ObjectId,
-        },
-      ],
-    };
-
-    mschema["active"] = {
-      type: Boolean,
-      default: true,
-    };
-
-    mschema["user"] = {
-      type: {
-        id: String,
-        permission: String,
+    const schema = new Schema(mschema);
+    schema.add({
+      blid: String,
+      lastUpdated: {
+        type: Date,
+        default: Date.now(),
       },
-    };
-
-    mschema["viewableFor"] = {
-      type: [String],
-      default: [],
-    };
-
-    mschema["viewableForPermission"] = {
-      type: String,
-    };
-
-    mschema["editableFor"] = {
-      type: [String],
-      default: [],
-    };
-
-    mschema["archived"] = {
-      type: Boolean,
-      default: false,
-    };
-
-    return new Schema(mschema);
+      creationTime: {
+        type: Date,
+        default: Date.now(),
+      },
+      comments: {
+        type: [
+          {
+            id: String,
+            msg: String,
+            creationTime: {
+              type: Date,
+              default: Date.now(),
+            },
+            user: Schema.Types.ObjectId,
+          },
+        ],
+      },
+      active: {
+        type: Boolean,
+        default: true,
+      },
+      user: {
+        type: {
+          id: String,
+          permission: String,
+        },
+      },
+      viewableFor: {
+        type: [String],
+        default: [],
+      },
+      viewableForPermission: {
+        type: String,
+      },
+      editableFor: {
+        type: [String],
+        default: [],
+      },
+      archived: {
+        type: Boolean,
+        default: false,
+      },
+    });
+    return schema;
   }
 }
