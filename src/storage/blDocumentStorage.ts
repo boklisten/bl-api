@@ -14,7 +14,7 @@ export class BlDocumentStorage<T extends BlDocument>
 
   constructor(
     private collectionName: BlCollectionName,
-    private mongooseSchema?: unknown,
+    private mongooseSchema?: Record<string, unknown>,
   ) {
     if (mongooseSchema) {
       this.mongoDbHandler = new MongoDbBlStorageHandler(

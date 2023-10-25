@@ -5,7 +5,7 @@ import { BlCollectionName } from "../../collections/bl-collection";
 export class MongooseModelCreator {
   constructor(
     private collectionName: BlCollectionName,
-    private schema: unknown,
+    private schema: Record<string, unknown>,
   ) {}
 
   create() {
@@ -41,7 +41,7 @@ export class MongooseModelCreator {
     return null;
   }
 
-  createMongooseSchema(mschema: unknown): Schema {
+  createMongooseSchema(mschema: Record<string, unknown>): Schema {
     mschema["blid"] = {
       type: String,
     };

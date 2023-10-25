@@ -13,6 +13,7 @@ import { EmailValidationHelper } from "../../collections/email-validation/helper
 import { LocalLoginHandler } from "../local/local-login.handler";
 import { BlCollectionName } from "../../collections/bl-collection";
 import { LocalLogin } from "../../collections/local-login/local-login";
+import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
 
 chai.use(chaiAsPromised);
 
@@ -38,7 +39,7 @@ describe("UserHandler", () => {
   const emailValidationHelper: EmailValidationHelper =
     new EmailValidationHelper();
   const userDetailStorage: BlDocumentStorage<UserDetail> =
-    new BlDocumentStorage(BlCollectionName.UserDetails, UserDetail);
+    new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
   const localLoginHandler: LocalLoginHandler = new LocalLoginHandler();
   const userHandler = new UserHandler(
     userDetailStorage,
