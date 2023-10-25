@@ -105,14 +105,20 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   }
 
   public async aggregate(aggregation: unknown[]): Promise<T[]> {
-    try {
-      return await this.mongooseModel.aggregate(aggregation).exec();
-    } catch (error) {
-      throw this.handleError(
-        new BlError("failed to aggregate documents"),
-        error,
-      );
+    const doc = await this.mongooseModel
+      .aggregate(aggregation)
+      .exec()
+      .catch((error) => {
+        throw this.handleError(
+          new BlError("failed to aggregate documents"),
+          error,
+        );
+      });
+
+    if (!doc) {
+      throw new BlError(`aggregation yielded no results`).code(702);
     }
+    return doc;
   }
 
   public async getAll(userPermission?: UserPermission): Promise<T[]> {
