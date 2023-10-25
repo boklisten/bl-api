@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
 import { Model, Schema, Types } from "mongoose";
 
@@ -25,6 +24,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     this.mongooseModel = mongooseModelCreator.create();
     this.permissionService = new PermissionService();
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async get(id: string, userPermission?: UserPermission): Promise<T> {
     try {
       const doc = await this.mongooseModel.findById(id).exec();
@@ -151,6 +151,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   public async update(
     id: string,
     data: unknown,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
     try {
@@ -181,12 +182,14 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public updateMany(docs: { id: string; data: unknown }[]): Promise<T[]> {
     throw new BlError("not implemented");
   }
 
   public async remove(
     id: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
     try {
@@ -205,6 +208,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public removeMany(ids: string[]): Promise<T[]> {
     throw new BlError("not implemented");
   }
