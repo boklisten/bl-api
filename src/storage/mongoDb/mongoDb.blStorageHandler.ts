@@ -73,7 +73,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
     const expandFilters = dbQuery.getExpandFilter();
     if (allowedNestedDocuments && allowedNestedDocuments.length > 0) {
-      return this.retrieveNestedDocuments(
+      return await this.retrieveNestedDocuments(
         docs,
         allowedNestedDocuments,
         expandFilters,
