@@ -11,44 +11,44 @@ export const branchItemSchema = {
   },
 
   rent: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   partlyPayment: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   buy: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   sell: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   live: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
 
   rentAtBranch: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   partlyPaymentAtBranch: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   buyAtBranch: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   sellAtBranch: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   liveAtBranch: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
 
@@ -57,7 +57,7 @@ export const branchItemSchema = {
     default: [],
   },
   categories: {
-    type: [Schema.Types.String],
+    type: [String],
     default: [],
   },
 };

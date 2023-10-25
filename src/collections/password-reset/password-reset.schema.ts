@@ -2,7 +2,7 @@ import { Schema } from "mongoose";
 
 export const passwordResetSchema = {
   email: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   userDetail: {
@@ -10,7 +10,7 @@ export const passwordResetSchema = {
     required: true,
   },
   token: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   createdAt: {

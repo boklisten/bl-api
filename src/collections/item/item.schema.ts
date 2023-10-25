@@ -2,24 +2,24 @@ import { Schema } from "mongoose";
 
 export const itemSchema = {
   title: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   type: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   digital: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
     required: false,
   },
   price: {
-    type: Schema.Types.Number,
+    type: Number,
     required: true,
   },
   taxRate: {
-    type: Schema.Types.Number,
+    type: Number,
     required: true,
   },
   info: {
@@ -27,16 +27,16 @@ export const itemSchema = {
     required: false,
   },
   buyback: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     required: false,
     default: false,
   },
   desc: {
-    type: Schema.Types.String,
+    type: String,
     required: false,
   },
   categories: {
-    type: [Schema.Types.String],
+    type: [String],
     default: [],
   },
 };

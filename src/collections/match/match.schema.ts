@@ -19,7 +19,7 @@ import { Schema } from "mongoose";
 
 import { BlCollectionName } from "../bl-collection";
 
-const { ObjectId, String, Date, Boolean } = Schema.Types;
+const { ObjectId } = Schema.Types;
 
 /** @see MatchBase */
 const matchBaseSchema = {

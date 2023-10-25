@@ -1,32 +1,30 @@
-import { Schema } from "mongoose";
-
 export const companySchema = {
   name: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
-  viewableFor: [Schema.Types.String],
+  viewableFor: [String],
   contactInfo: {
     phone: {
-      type: Schema.Types.String,
+      type: String,
     },
     email: {
-      type: Schema.Types.String,
+      type: String,
     },
     address: {
-      type: Schema.Types.String,
+      type: String,
     },
     postCode: {
-      type: Schema.Types.String,
+      type: String,
     },
     postCity: {
-      type: Schema.Types.String,
+      type: String,
     },
   },
   customerNumber: {
-    type: Schema.Types.String,
+    type: String,
   },
   organizationNumber: {
-    type: Schema.Types.String,
+    type: String,
   },
 };

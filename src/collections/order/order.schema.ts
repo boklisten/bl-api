@@ -2,18 +2,18 @@ import { Schema } from "mongoose";
 
 export const orderSchema = {
   amount: {
-    type: Schema.Types.Number,
+    type: Number,
     required: true,
   },
   orderItems: {
     type: [
       {
         type: {
-          type: Schema.Types.String,
+          type: String,
           required: true,
         },
         age: {
-          type: Schema.Types.String,
+          type: String,
           required: false,
         },
         item: {
@@ -21,31 +21,31 @@ export const orderSchema = {
           required: true,
         },
         blid: {
-          type: Schema.Types.String,
+          type: String,
         },
         title: {
-          type: Schema.Types.String,
+          type: String,
           required: true,
         },
         amount: {
-          type: Schema.Types.Number,
+          type: Number,
           required: true,
         },
         unitPrice: {
-          type: Schema.Types.Number,
+          type: Number,
           required: true,
         },
         delivered: {
-          type: Schema.Types.Boolean,
+          type: Boolean,
           required: false,
           default: false,
         },
         taxRate: {
-          type: Schema.Types.Number,
+          type: Number,
           required: true,
         },
         taxAmount: {
-          type: Schema.Types.Number,
+          type: Number,
           required: true,
         },
         customerItem: {
@@ -57,7 +57,7 @@ export const orderSchema = {
           required: false,
         },
         handout: {
-          type: Schema.Types.Boolean,
+          type: Boolean,
           required: false,
         },
         movedFromOrder: {
@@ -71,11 +71,11 @@ export const orderSchema = {
         discount: {
           type: {
             amount: {
-              type: Schema.Types.Number,
+              type: Number,
               required: true,
             },
             coupon: {
-              type: Schema.Types.String,
+              type: String,
               required: true,
             },
           },
@@ -93,25 +93,25 @@ export const orderSchema = {
     type: Schema.Types.Mixed,
   },
   byCustomer: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     required: true,
   },
   employee: {
     type: Schema.Types.ObjectId,
   },
   placed: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   payments: {
-    type: [Schema.Types.String],
+    type: [String],
     default: [],
   },
   delivery: {
     type: Schema.Types.ObjectId,
   },
   handoutByDelivery: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     required: false,
   },
   notification: {

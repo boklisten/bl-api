@@ -2,7 +2,7 @@ import { Schema } from "mongoose";
 
 export const uniqueItemSchema = {
   blid: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   item: {
@@ -10,7 +10,7 @@ export const uniqueItemSchema = {
     required: true,
   },
   title: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   location: {

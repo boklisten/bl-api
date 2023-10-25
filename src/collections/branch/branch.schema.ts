@@ -2,56 +2,56 @@ import { Schema } from "mongoose";
 
 export const branchSchema = {
   name: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   type: {
-    type: Schema.Types.String,
+    type: String,
     required: false,
   },
   desc: {
-    type: Schema.Types.String,
+    type: String,
     required: false,
   },
   root: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     required: false,
   },
   childBranches: {
     type: [Schema.Types.ObjectId],
     default: [],
   },
-  viewableFor: [Schema.Types.String],
+  viewableFor: [String],
   contactInfo: {
     phone: {
-      type: Schema.Types.String,
+      type: String,
     },
     email: {
-      type: Schema.Types.String,
+      type: String,
     },
     address: {
-      type: Schema.Types.String,
+      type: String,
     },
     postCode: {
-      type: Schema.Types.String,
+      type: String,
     },
     postCity: {
-      type: Schema.Types.String,
+      type: String,
     },
     country: {
-      type: Schema.Types.String,
+      type: String,
     },
     locationDesc: {
-      type: Schema.Types.String,
+      type: String,
     },
     location: {
       type: {
         latitude: {
-          type: Schema.Types.String,
+          type: String,
           required: true,
         },
         longitude: {
-          type: Schema.Types.String,
+          type: String,
           required: true,
         },
       },
@@ -62,24 +62,24 @@ export const branchSchema = {
   paymentInfo: {
     type: {
       responsible: {
-        type: Schema.Types.Boolean,
+        type: Boolean,
         default: false,
         required: true,
       },
       responsibleForDelivery: {
-        type: Schema.Types.Boolean,
+        type: Boolean,
         default: false,
         required: false,
       },
       partlyPaymentPeriods: {
         type: [
           {
-            type: Schema.Types.String,
-            date: Schema.Types.Date,
-            percentageBuyout: Schema.Types.Number,
-            percentageBuyoutUsed: Schema.Types.Number,
-            percentageUpFront: Schema.Types.Number,
-            percentageUpFrontUsed: Schema.Types.Number,
+            type: String,
+            date: Date,
+            percentageBuyout: Number,
+            percentageBuyoutUsed: Number,
+            percentageUpFront: Number,
+            percentageUpFrontUsed: Number,
           },
         ],
         default: [],
@@ -87,10 +87,10 @@ export const branchSchema = {
       rentPeriods: {
         type: [
           {
-            type: Schema.Types.String,
-            maxNumberOfPeriods: Schema.Types.Number,
-            date: Schema.Types.Date,
-            percentage: Schema.Types.Number,
+            type: String,
+            maxNumberOfPeriods: Number,
+            date: Date,
+            percentage: Number,
           },
         ],
         default: [],
@@ -98,12 +98,12 @@ export const branchSchema = {
       extendPeriods: {
         type: [
           {
-            type: Schema.Types.String,
-            maxNumberOfPeriods: Schema.Types.Number,
-            price: Schema.Types.Number,
-            date: Schema.Types.Date,
+            type: String,
+            maxNumberOfPeriods: Number,
+            price: Number,
+            date: Date,
             percentage: {
-              type: Schema.Types.Number,
+              type: Number,
               required: false,
             },
           },
@@ -112,22 +112,22 @@ export const branchSchema = {
       },
       buyout: {
         type: {
-          percentage: Schema.Types.Number,
+          percentage: Number,
         },
         default: 1,
       },
       sell: {
         type: {
-          percentage: Schema.Types.Number,
+          percentage: Number,
         },
         default: 1,
       },
       acceptedMethods: {
-        type: [Schema.Types.String],
+        type: [String],
         default: [],
       },
       payLater: {
-        type: Schema.Types.Boolean,
+        type: Boolean,
         default: false,
       },
     },
@@ -147,18 +147,18 @@ export const branchSchema = {
   },
   deliveryMethods: {
     branch: {
-      type: Schema.Types.Boolean,
+      type: Boolean,
       default: true,
     },
     byMail: {
-      type: Schema.Types.Boolean,
+      type: Boolean,
       default: true,
     },
   },
   isBranchItemsLive: {
     type: {
-      online: Schema.Types.Boolean,
-      atBranch: Schema.Types.Boolean,
+      online: Boolean,
+      atBranch: Boolean,
     },
     default: {
       online: false,

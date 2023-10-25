@@ -2,27 +2,27 @@ import { Schema } from "mongoose";
 
 export const messageSchema = {
   messageType: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   messageSubtype: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   messageMethod: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   sequenceNumber: {
-    type: Schema.Types.Number,
+    type: Number,
     default: 0,
   },
   customerId: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   employeeId: {
-    type: Schema.Types.String,
+    type: String,
     required: false,
   },
   info: {
@@ -30,11 +30,11 @@ export const messageSchema = {
     required: false,
   },
   subject: {
-    type: Schema.Types.String,
+    type: String,
     required: false,
   },
   htmlContent: {
-    type: Schema.Types.String,
+    type: String,
     required: false,
   },
   events: {

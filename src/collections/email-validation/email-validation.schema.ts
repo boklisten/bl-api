@@ -2,7 +2,7 @@ import { Schema } from "mongoose";
 
 export const emailValidationSchema = {
   email: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   userDetail: {

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 import { BlCollectionName } from "../../collections/bl-collection";
 
@@ -29,7 +29,7 @@ export class MongooseModelCreator {
     return this.createMongooseModel(mongooseSchema);
   }
 
-  createMongooseModel(mongooseSchema: mongoose.Schema) {
+  createMongooseModel(mongooseSchema: Schema) {
     try {
       if (mongoose.model(this.collectionName))
         return mongoose.model(this.collectionName);
@@ -41,66 +41,66 @@ export class MongooseModelCreator {
     return null;
   }
 
-  createMongooseSchema(mschema: unknown): mongoose.Schema {
+  createMongooseSchema(mschema: unknown): Schema {
     mschema["blid"] = {
-      type: mongoose.Schema.Types.String,
+      type: String,
     };
 
     mschema["lastUpdated"] = {
-      type: mongoose.Schema.Types.Date,
+      type: Date,
       default: Date.now(),
     };
 
     mschema["creationTime"] = {
-      type: mongoose.Schema.Types.Date,
+      type: Date,
       default: Date.now(),
     };
 
     mschema["comments"] = {
       type: [
         {
-          id: mongoose.Schema.Types.String,
-          msg: mongoose.Schema.Types.String,
+          id: String,
+          msg: String,
           creationTime: {
-            type: mongoose.Schema.Types.Date,
+            type: Date,
             default: Date.now(),
           },
-          user: mongoose.Schema.Types.ObjectId,
+          user: Schema.Types.ObjectId,
         },
       ],
     };
 
     mschema["active"] = {
-      type: mongoose.Schema.Types.Boolean,
+      type: Boolean,
       default: true,
     };
 
     mschema["user"] = {
       type: {
-        id: mongoose.Schema.Types.String,
-        permission: mongoose.Schema.Types.String,
+        id: String,
+        permission: String,
       },
     };
 
     mschema["viewableFor"] = {
-      type: [mongoose.Schema.Types.String],
+      type: [String],
       default: [],
     };
 
     mschema["viewableForPermission"] = {
-      type: mongoose.Schema.Types.String,
+      type: String,
     };
 
     mschema["editableFor"] = {
-      type: [mongoose.Schema.Types.String],
+      type: [String],
       default: [],
     };
 
     mschema["archived"] = {
-      type: mongoose.Schema.Types.Boolean,
+      type: Boolean,
       default: false,
     };
 
-    return new mongoose.Schema(mschema);
+    return new Schema(mschema);
   }
 }

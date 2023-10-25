@@ -5,49 +5,49 @@ export const UserSchema = {
     type: Schema.Types.ObjectId,
   },
   permission: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   login: {
     type: {
       provider: {
-        type: Schema.Types.String,
+        type: String,
         required: true,
       },
       providerId: {
-        type: Schema.Types.String,
+        type: String,
         required: true,
       },
     },
     required: true,
   },
   blid: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   username: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   valid: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: true,
   },
   primary: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
   },
   movedToPrimary: {
     type: Schema.Types.ObjectId,
   },
   active: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: true,
   },
   lastActive: {
-    type: Schema.Types.Date,
+    type: Date,
     default: new Date(),
   },
   lastRequest: {
-    type: Schema.Types.String,
+    type: String,
   },
 };

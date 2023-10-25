@@ -2,7 +2,7 @@ import { Schema } from "mongoose";
 
 export const deliverySchema = {
   method: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   info: {
@@ -14,7 +14,7 @@ export const deliverySchema = {
     required: true,
   },
   amount: {
-    type: Schema.Types.Number,
+    type: Number,
     required: true,
   },
 };
