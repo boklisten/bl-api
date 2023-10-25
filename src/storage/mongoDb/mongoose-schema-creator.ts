@@ -66,10 +66,6 @@ export class MongooseModelCreator<T> {
       },
     });
 
-    if (this.collectionName === BlCollectionName.UniqueItems) {
-      schema.index({ blid: 1 });
-    }
-
     //remove fields that the client shall not see
     schema.set("toJSON", {
       transform: function (_doc, ret) {
