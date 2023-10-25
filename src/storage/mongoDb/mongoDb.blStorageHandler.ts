@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
-import mongoose, { Schema } from "mongoose";
+import { Model, Schema, Types } from "mongoose";
 
 import { MongooseModelCreator } from "./mongoose-schema-creator";
 import { PermissionService } from "../../auth/permission/permission.service";
@@ -14,8 +14,7 @@ import { NestedDocument } from "../nested-document";
 export class MongoDbBlStorageHandler<T extends BlDocument>
   implements BlStorageHandler<T>
 {
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  private mongooseModel: any;
+  private mongooseModel: Model<T>;
   private permissionService: PermissionService;
 
   constructor(collectionName: BlCollectionName, schema: Schema<T>) {
@@ -26,158 +25,109 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     this.mongooseModel = mongooseModelCreator.create();
     this.permissionService = new PermissionService();
   }
-
-  public get(id: string, userPermission?: UserPermission): Promise<T> {
-    return new Promise((resolve, reject) => {
-      const filter = { _id: id };
-
-      this.mongooseModel.findOne(filter, (error, doc) => {
-        if (error) {
-          return reject(
-            this.handleError(
-              new BlError(`error when trying to find document with id "${id}"`),
-              error,
-            ),
-          );
-        }
-
-        if (doc === null) {
-          return reject(new BlError(`object "${id}" not found`).code(702));
-        }
-
-        resolve(doc);
-      });
-    });
+  public async get(id: string, userPermission?: UserPermission): Promise<T> {
+    try {
+      const doc = await this.mongooseModel.findById(id).exec();
+      if (!doc) {
+        throw new BlError(`object "${id}" not found`).code(702);
+      }
+      return doc;
+    } catch (error) {
+      throw this.handleError(
+        new BlError(`error when trying to find document with id "${id}"`),
+        error,
+      );
+    }
   }
-
-  public getByQuery(
+  public async getByQuery(
     dbQuery: SEDbQuery,
     allowedNestedDocuments?: NestedDocument[],
   ): Promise<T[]> {
-    return new Promise((resolve, reject) => {
-      logger.silly(
-        `mongoose.find(${JSON.stringify(dbQuery.getFilter())}, ${JSON.stringify(
-          dbQuery.getOgFilter(),
-        )}).limit(${dbQuery.getLimitFilter()}).skip(${dbQuery.getSkipFilter()}).sort(${JSON.stringify(
-          dbQuery.getSortFilter(),
-        )})`,
-      );
-      this.mongooseModel
+    logger.silly(
+      `mongoose.find(${JSON.stringify(dbQuery.getFilter())}, ${JSON.stringify(
+        dbQuery.getOgFilter(),
+      )}).limit(${dbQuery.getLimitFilter()}).skip(${dbQuery.getSkipFilter()}).sort(${JSON.stringify(
+        dbQuery.getSortFilter(),
+      )})`,
+    );
+    try {
+      const docs = await this.mongooseModel
         .find(dbQuery.getFilter(), dbQuery.getOgFilter())
         .limit(dbQuery.getLimitFilter())
         .skip(dbQuery.getSkipFilter())
         .sort(dbQuery.getSortFilter())
-        .exec((error, docs) => {
-          if (error || docs === null) {
-            return reject(
-              this.handleError(
-                new BlError(`could not find document by the provided query`),
-                error,
-              ),
-            );
-          }
+        .exec();
 
-          if (docs.length <= 0) {
-            return reject(new BlError("not found").code(702));
-          }
+      if (docs.length <= 0) {
+        throw new BlError("not found").code(702);
+      }
 
-          const expandFilters = dbQuery.getExpandFilter();
-
-          if (allowedNestedDocuments && allowedNestedDocuments.length > 0) {
-            this.retrieveNestedDocuments(
-              docs,
-              allowedNestedDocuments,
-              expandFilters,
-            )
-              .then((docsWithNestedDocuments: T[]) => {
-                resolve(docsWithNestedDocuments);
-              })
-              .catch((e) => {
-                reject(e);
-              });
-          } else {
-            resolve(docs);
-          }
-        });
-    });
+      const expandFilters = dbQuery.getExpandFilter();
+      if (allowedNestedDocuments && allowedNestedDocuments.length > 0) {
+        return this.retrieveNestedDocuments(
+          docs,
+          allowedNestedDocuments,
+          expandFilters,
+        );
+      } else {
+        return docs;
+      }
+    } catch (error) {
+      throw this.handleError(
+        new BlError(`could not find document by the provided query`),
+        error,
+      );
+    }
   }
 
-  public getMany(ids: string[], userPermission?: UserPermission): Promise<T[]> {
-    return new Promise((resolve, reject) => {
-      if (ids.length === 0) {
-        resolve([]);
-      }
-
-      const idArr = [];
-
-      for (const id of ids) {
-        try {
-          idArr.push(mongoose.Types.ObjectId(id));
-        } catch (e) {
-          return Promise.reject(new BlError("id in array is not valid"));
-        }
-      }
-
+  public async getMany(
+    ids: string[],
+    userPermission?: UserPermission,
+  ): Promise<T[]> {
+    try {
+      const idArr = ids.map((id) => new Types.ObjectId(id));
       // if user have admin privileges, he can also get documents that are inactive
       const filter =
         userPermission && this.permissionService.isAdmin(userPermission)
-          ? { _id: { $id: idArr } }
+          ? { _id: { $in: idArr } }
           : { _id: { $in: idArr }, active: true };
 
-      this.mongooseModel.find(filter).exec((error, docs) => {
-        if (error || docs.length <= 0) {
-          return reject(
-            this.handleError(
-              new BlError("error when trying to find document"),
-              error,
-            ),
-          );
-        }
-        resolve(docs);
-      });
-      return undefined;
-    });
+      return await this.mongooseModel.find(filter).exec();
+    } catch (error) {
+      throw this.handleError(
+        new BlError("error when trying to find documents"),
+        error,
+      );
+    }
   }
 
-  public aggregate(aggregation: unknown[]): Promise<T[]> {
-    return new Promise((resolve, reject) => {
-      this.mongooseModel.aggregate(aggregation, (error, docs) => {
-        if (error || docs === null) {
-          reject(
-            this.handleError(
-              new BlError("failed to aggregate documents"),
-              error,
-            ),
-          );
-        }
-        resolve(docs);
-      });
-    });
+  public async aggregate(aggregation: unknown[]): Promise<T[]> {
+    try {
+      return await this.mongooseModel.aggregate(aggregation).exec();
+    } catch (error) {
+      throw this.handleError(
+        new BlError("failed to aggregate documents"),
+        error,
+      );
+    }
   }
-
-  public getAll(userPermission?: UserPermission): Promise<T[]> {
-    return new Promise((resolve, reject) => {
+  public async getAll(userPermission?: UserPermission): Promise<T[]> {
+    try {
       const filter =
         userPermission && this.permissionService.isAdmin(userPermission)
           ? {}
           : { active: true };
-
-      this.mongooseModel.find(filter, (error, docs) => {
-        if (error || docs === null) {
-          reject(
-            this.handleError(new BlError("failed to get all documnts"), error),
-          );
-        }
-        resolve(docs);
-      });
-    });
+      return await this.mongooseModel.find(filter).exec();
+    } catch (error) {
+      throw this.handleError(new BlError("failed to get all documents"), error);
+    }
   }
 
-  public add(
+  public async add(
     doc: T,
     user?: { id: string; permission: UserPermission },
   ): Promise<T> {
-    return new Promise((resolve, reject) => {
+    try {
       doc.creationTime = new Date();
       doc.lastUpdated = new Date();
 
@@ -186,169 +136,130 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       }
 
       const newDocument = new this.mongooseModel(doc);
-
-      newDocument.save((error, addedDoc) => {
-        if (error) {
-          return reject(
-            this.handleError(
-              new BlError("error when trying to add document").data(doc),
-              error,
-            ),
-          );
-        }
-
-        resolve(addedDoc);
-      });
-    });
+      return (await newDocument.save()) as unknown as T;
+    } catch (error) {
+      throw this.handleError(
+        new BlError("error when trying to add document").data(doc),
+        error,
+      );
+    }
   }
 
   public addMany(docs: T[]): Promise<T[]> {
     return this.mongooseModel.insertMany(docs);
   }
-
-  public update(
+  public async update(
     id: string,
     data: unknown,
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
-    return new Promise((resolve, reject) => {
-      this.mongooseModel.findById(id, (error, document) => {
-        if (error) {
-          return reject(
-            this.handleError(
-              new BlError(`failed to find document with id ${id}`),
-              error,
-            ),
-          );
-        }
+    try {
+      if (data["user"]) {
+        throw new BlError(
+          "can not change user restrictions after creation",
+        ).code(701);
+      }
 
-        if (document === null) {
-          return reject(
-            new BlError(`could not find document with id "${id}"`).code(702),
-          );
-        }
+      const document = await this.mongooseModel.findById(id).exec();
+      if (!document) {
+        throw new BlError(`could not find document with id "${id}"`).code(702);
+      }
 
-        if (data["user"]) {
-          return reject(
-            new BlError("can not change user restrictions after creation").code(
-              701,
-            ),
-          );
-        }
+      document.set(data);
+      document.set({ lastUpdated: new Date() });
 
-        document.set(data);
-        document.set({ lastUpdated: new Date() });
-
-        document.save((error, updatedDocument) => {
-          if (error) {
-            logger.error(`failed to save document: ${error}`);
-            return reject(
-              this.handleError(
-                new BlError(`failed to save the document`).store("data", data),
-                error,
-              ),
-            );
-          }
-
-          resolve(updatedDocument);
-        });
-      });
-    });
+      return (await document.save()) as unknown as T;
+    } catch (error) {
+      logger.error(`failed to save document: ${error}`);
+      throw this.handleError(
+        new BlError(`failed to update document with id ${id}`).store(
+          "data",
+          data,
+        ),
+        error,
+      );
+    }
   }
 
   public updateMany(docs: { id: string; data: unknown }[]): Promise<T[]> {
-    return new Promise((resolve, reject) => {
-      reject(new BlError("not implemented"));
-    });
+    throw new BlError("not implemented");
   }
 
-  public remove(
+  public async remove(
     id: string,
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
-    return new Promise((resolve, reject) => {
-      this.mongooseModel.deleteOne({ _id: id }, (error, doc) => {
-        if (error) {
-          return reject(
-            this.handleError(
-              new BlError(`could not remove document with id "${id}"`),
-              error,
-            ),
-          );
-        }
-
-        if (doc === null) {
-          return reject(new BlError("not found").code(702).store("id", id));
-        }
-
-        resolve(doc);
-      });
-    });
+    try {
+      const doc = await this.mongooseModel.findByIdAndRemove(id).exec();
+      if (!doc) {
+        throw new BlError(`could not remove document with id "${id}"`).code(
+          702,
+        );
+      }
+      return doc;
+    } catch (error) {
+      throw this.handleError(
+        new BlError(`could not remove document with id "${id}"`),
+        error,
+      );
+    }
   }
 
   public removeMany(ids: string[]): Promise<T[]> {
-    return new Promise((resolve, reject) => {
-      reject(new BlError("not implemented"));
-    });
+    throw new BlError("not implemented");
   }
 
-  public exists(id: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      this.get(id)
-        .then(() => {
-          resolve(true);
-        })
-        .catch(() => {
-          reject(
-            new BlError(`document with id ${id} does not exist`).code(702),
-          );
-        });
-    });
+  public async exists(id: string): Promise<boolean> {
+    try {
+      await this.get(id);
+      return true;
+    } catch (error) {
+      throw new BlError(`document with id ${id} does not exist`).code(702);
+    }
   }
+
   /**
    * Tries to fetch all nested values on the specified documents.
    * @param {BlDocument[]} docs the documents to search through
-   * @param {NestedDocument[]} nestedDocuments the allowed values to fetch
+   * @param allowedNestedDocuments
    * @param {ExpandFilter} expandFilters the nested documents to fetch
    * @param {UserPermission} userPermission
    */
+
   private async retrieveNestedDocuments(
-    docs: BlDocument[],
+    docs: T[],
     allowedNestedDocuments: NestedDocument[],
     expandFilters: ExpandFilter[],
     userPermission?: UserPermission,
-  ): Promise<BlDocument[]> {
+  ): Promise<T[]> {
     if (!expandFilters || expandFilters.length <= 0) {
-      return Promise.resolve(docs);
+      return docs;
     }
-
-    const expandedNestedDocuments = [];
-
-    for (const expandFilter of expandFilters) {
-      for (const nestedDocument of allowedNestedDocuments) {
-        if (expandFilter.fieldName === nestedDocument.field) {
-          expandedNestedDocuments.push(nestedDocument);
-        }
-      }
-    }
-
-    allowedNestedDocuments = expandedNestedDocuments;
+    const expandedNestedDocuments = allowedNestedDocuments.filter(
+      (nestedDocument) =>
+        expandFilters.some(
+          (expandFilter) => expandFilter.fieldName === nestedDocument.field,
+        ),
+    );
 
     try {
-      const promiseArr = docs.map((doc) =>
-        this.getNestedDocuments(doc, allowedNestedDocuments, userPermission),
+      return await Promise.all(
+        docs.map((doc) =>
+          this.getNestedDocuments(doc, expandedNestedDocuments, userPermission),
+        ),
       );
-      return await Promise.all(promiseArr);
-    } catch (e) {
-      throw new BlError("could not retrieve nested documents").code(702).add(e);
+    } catch (error) {
+      throw new BlError("could not retrieve nested documents")
+        .code(702)
+        .add(error);
     }
   }
 
-  private async getNestedDocuments(
-    doc: BlDocument,
+  private async getNestedDocuments<T extends BlDocument>(
+    doc: T,
     nestedDocuments: NestedDocument[],
     userPermission?: UserPermission,
-  ): Promise<BlDocument> {
+  ): Promise<T> {
     const nestedDocumentsPromArray = nestedDocuments.flatMap(
       (nestedDocument) =>
         doc && doc[nestedDocument.field]
@@ -392,7 +303,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     if (error) {
       if (error.name === "CastError") {
         return blError.code(702).store("castError", error);
-      } else if (error.name == "ValidationError") {
+      } else if (error.name === "ValidationError") {
         return blError.code(701).store("validationError", error);
       } else {
         return blError.code(200);
