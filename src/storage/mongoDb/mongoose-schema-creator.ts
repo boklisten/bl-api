@@ -8,39 +8,14 @@ export class MongooseModelCreator<T> {
     private schema: Schema<T>,
   ) {}
 
-  create() {
-    const mongooseSchema = this.createMongooseSchema(this.schema);
-    if (this.collectionName === BlCollectionName.UniqueItems) {
-      mongooseSchema.index({ blid: 1 });
-    }
-
-    //remove fields that the client shall not see
-    mongooseSchema.set("toJSON", {
-      transform: function (_doc, ret) {
-        ret.id = ret._id;
-        delete ret.user;
-        delete ret._id;
-        delete ret.__v;
-        delete ret.viewableFor;
-      },
-    });
-
-    return this.createMongooseModel(mongooseSchema);
+  create(): mongoose.Model<T> {
+    return mongoose.model(
+      this.collectionName,
+      this.standardizeSchema(this.schema),
+    );
   }
 
-  createMongooseModel(mongooseSchema: Schema<T>) {
-    try {
-      if (mongoose.model(this.collectionName))
-        return mongoose.model(this.collectionName);
-    } catch (e) {
-      if (e.name === "MissingSchemaError") {
-        return mongoose.model(this.collectionName, mongooseSchema);
-      }
-    }
-    return null;
-  }
-
-  createMongooseSchema<T>(schema: Schema<T>): Schema<T> {
+  private standardizeSchema<T>(schema: Schema<T>): Schema<T> {
     schema.add({
       blid: String,
       lastUpdated: {
@@ -88,6 +63,21 @@ export class MongooseModelCreator<T> {
       archived: {
         type: Boolean,
         default: false,
+      },
+    });
+
+    if (this.collectionName === BlCollectionName.UniqueItems) {
+      schema.index({ blid: 1 });
+    }
+
+    //remove fields that the client shall not see
+    schema.set("toJSON", {
+      transform: function (_doc, ret) {
+        ret.id = ret._id;
+        delete ret.user;
+        delete ret._id;
+        delete ret.__v;
+        delete ret.viewableFor;
       },
     });
     return schema;
