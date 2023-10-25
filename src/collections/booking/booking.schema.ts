@@ -1,12 +1,13 @@
+import { Booking } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const bookingSchema = {
+export const bookingSchema = new Schema<Booking>({
   from: {
-    type: Schema.Types.Date,
+    type: Date,
     required: true,
   },
   to: {
-    type: Schema.Types.Date,
+    type: Date,
     required: true,
   },
   branch: {
@@ -18,7 +19,7 @@ export const bookingSchema = {
     required: false,
   },
   booked: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
-};
+});

@@ -1,8 +1,9 @@
+import { Delivery } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const deliverySchema = {
+export const deliverySchema = new Schema<Delivery>({
   method: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   info: {
@@ -14,7 +15,7 @@ export const deliverySchema = {
     required: true,
   },
   amount: {
-    type: Schema.Types.Number,
+    type: Number,
     required: true,
   },
-};
+});

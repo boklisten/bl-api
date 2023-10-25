@@ -1,8 +1,9 @@
+import { Payment } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const paymentSchema = {
+export const paymentSchema = new Schema<Payment>({
   method: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   order: {
@@ -10,7 +11,7 @@ export const paymentSchema = {
     required: true,
   },
   amount: {
-    type: Schema.Types.Number,
+    type: Number,
     required: true,
   },
   customer: {
@@ -22,7 +23,7 @@ export const paymentSchema = {
     required: true,
   },
   taxAmount: {
-    type: Schema.Types.Number,
+    type: Number,
     required: true,
   },
   info: {
@@ -30,17 +31,17 @@ export const paymentSchema = {
     required: false,
   },
   confirmed: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   discount: {
     type: {
       amount: {
-        type: Schema.Types.Number,
+        type: Number,
         required: true,
       },
-      coupon: Schema.Types.String,
+      coupon: String,
     },
     required: false,
   },
-};
+});

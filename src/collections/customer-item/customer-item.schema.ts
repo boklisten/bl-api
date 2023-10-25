@@ -1,19 +1,20 @@
+import { CustomerItem } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const customerItemSchema = {
+export const customerItemSchema = new Schema<CustomerItem>({
   item: {
     type: Schema.Types.Mixed,
     required: true,
   },
   type: {
-    type: Schema.Types.String,
+    type: String,
     required: false,
   },
   age: {
-    type: Schema.Types.String,
+    type: String,
   },
   blid: {
-    type: Schema.Types.String,
+    type: String,
   },
   customer: {
     type: Schema.Types.Mixed,
@@ -24,36 +25,36 @@ export const customerItemSchema = {
     required: false,
   },
   deadline: {
-    type: Schema.Types.Date,
+    type: Date,
     required: true,
   },
   state: {
-    type: Schema.Types.String,
+    type: String,
   },
   digital: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   digitalInfo: {
     type: Schema.Types.Mixed,
   },
   match: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   matchInfo: {
     type: {
       id: Schema.Types.ObjectId,
-      time: Schema.Types.Date,
+      time: Date,
     },
   },
   handout: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   handoutInfo: {
     handoutBy: {
-      type: Schema.Types.String,
+      type: String,
       required: true,
     },
     handoutById: {
@@ -62,17 +63,17 @@ export const customerItemSchema = {
     },
     handoutEmployee: Schema.Types.ObjectId,
     time: {
-      type: Schema.Types.Date,
+      type: Date,
     },
   },
   returned: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     required: true,
   },
   returnInfo: {
     type: {
       returnedTo: {
-        type: Schema.Types.String,
+        type: String,
         required: true,
       },
       returnedToId: {
@@ -81,14 +82,14 @@ export const customerItemSchema = {
       },
       returnEmployee: Schema.Types.ObjectId,
       time: {
-        type: Schema.Types.Date,
+        type: Date,
         required: true,
       },
     },
     required: false,
   },
   cancel: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   cancelInfo: {
@@ -97,13 +98,13 @@ export const customerItemSchema = {
         type: Schema.Types.ObjectId,
       },
       time: {
-        type: Schema.Types.Date,
+        type: Date,
       },
     },
     required: false,
   },
   buyout: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   buyoutInfo: {
@@ -112,13 +113,13 @@ export const customerItemSchema = {
         type: Schema.Types.ObjectId,
       },
       time: {
-        type: Schema.Types.Date,
+        type: Date,
       },
     },
     required: false,
   },
   buyback: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   buybackInfo: {
@@ -127,7 +128,7 @@ export const customerItemSchema = {
         type: Schema.Types.ObjectId,
       },
       time: {
-        type: Schema.Types.Date,
+        type: Date,
       },
     },
     required: false,
@@ -141,19 +142,19 @@ export const customerItemSchema = {
     type: [
       {
         from: {
-          type: Schema.Types.Date,
+          type: Date,
           required: true,
         },
         to: {
-          type: Schema.Types.Date,
+          type: Date,
           required: true,
         },
         periodType: {
-          type: Schema.Types.String,
+          type: String,
           required: true,
         },
         time: {
-          type: Schema.Types.Date,
+          type: Date,
           required: true,
         },
       },
@@ -161,30 +162,30 @@ export const customerItemSchema = {
     default: [],
   },
   totalAmount: {
-    type: Schema.Types.Number,
+    type: Number,
     required: false,
   },
   amountLeftToPay: {
-    type: Schema.Types.Number,
+    type: Number,
     required: false,
   },
   customerInfo: {
     type: {
-      name: Schema.Types.String,
-      phone: Schema.Types.String,
-      address: Schema.Types.String,
-      postCode: Schema.Types.String,
-      postCity: Schema.Types.String,
-      dob: Schema.Types.Date,
+      name: String,
+      phone: String,
+      address: String,
+      postCode: String,
+      postCity: String,
+      dob: Date,
       guardian: {
         type: {
-          name: Schema.Types.String,
-          email: Schema.Types.String,
-          phone: Schema.Types.String,
+          name: String,
+          email: String,
+          phone: String,
         },
         required: false,
       },
     },
     required: false,
   },
-};
+});

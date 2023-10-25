@@ -1,57 +1,58 @@
+import { UserDetail } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const userDetailSchema = {
+export const userDetailSchema = new Schema<UserDetail>({
   name: {
-    type: Schema.Types.String,
+    type: String,
   },
   email: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   phone: {
-    type: Schema.Types.String,
+    type: String,
   },
   address: {
-    type: Schema.Types.String,
+    type: String,
   },
   postCode: {
-    type: Schema.Types.String,
+    type: String,
   },
   postCity: {
-    type: Schema.Types.String,
+    type: String,
   },
   country: {
-    type: Schema.Types.String,
+    type: String,
   },
   emailConfirmed: {
-    type: Schema.Types.Boolean,
+    type: Boolean,
     default: false,
   },
   dob: {
-    type: Schema.Types.Date,
+    type: Date,
   },
   branch: {
     type: Schema.Types.ObjectId,
   },
   lastActive: {
-    type: Schema.Types.Date,
+    type: Date,
     default: Date.now(),
   },
   guardian: {
     name: {
-      type: Schema.Types.String,
+      type: String,
     },
     email: {
-      type: Schema.Types.String,
+      type: String,
     },
     emailConfirmed: {
-      type: Schema.Types.Boolean,
+      type: Boolean,
     },
     phone: {
-      type: Schema.Types.String,
+      type: String,
     },
     confirmed: {
-      type: Schema.Types.Boolean,
+      type: Boolean,
     },
   },
   customerItems: {
@@ -62,4 +63,4 @@ export const userDetailSchema = {
     type: [Schema.Types.ObjectId],
     default: [],
   },
-};
+});

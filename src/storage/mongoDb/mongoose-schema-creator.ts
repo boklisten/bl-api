@@ -1,23 +1,74 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 import { BlCollectionName } from "../../collections/bl-collection";
 
-export class MongooseModelCreator {
+export class MongooseModelCreator<T> {
   constructor(
     private collectionName: BlCollectionName,
-    private schema: unknown,
+    private schema: Schema<T>,
   ) {}
 
-  create() {
-    const mongooseSchema = this.createMongooseSchema(this.schema);
-    if (this.collectionName === BlCollectionName.UniqueItems) {
-      mongooseSchema.index({ blid: 1 });
-    }
+  create(): mongoose.Model<T> {
+    return mongoose.model(
+      this.collectionName,
+      this.standardizeSchema(this.schema),
+    );
+  }
+
+  private standardizeSchema<T>(schema: Schema<T>): Schema<T> {
+    schema.add({
+      blid: String,
+      lastUpdated: {
+        type: Date,
+        default: Date.now(),
+      },
+      creationTime: {
+        type: Date,
+        default: Date.now(),
+      },
+      comments: {
+        type: [
+          {
+            id: String,
+            msg: String,
+            creationTime: {
+              type: Date,
+              default: Date.now(),
+            },
+            user: Schema.Types.ObjectId,
+          },
+        ],
+      },
+      active: {
+        type: Boolean,
+        default: true,
+      },
+      user: {
+        type: {
+          id: String,
+          permission: String,
+        },
+      },
+      viewableFor: {
+        type: [String],
+        default: [],
+      },
+      viewableForPermission: {
+        type: String,
+      },
+      editableFor: {
+        type: [String],
+        default: [],
+      },
+      archived: {
+        type: Boolean,
+        default: false,
+      },
+    });
 
     //remove fields that the client shall not see
-    mongooseSchema.set("toJSON", {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      transform: function (doc, ret, options) {
+    schema.set("toJSON", {
+      transform: function (_doc, ret) {
         ret.id = ret._id;
         delete ret.user;
         delete ret._id;
@@ -25,82 +76,6 @@ export class MongooseModelCreator {
         delete ret.viewableFor;
       },
     });
-
-    return this.createMongooseModel(mongooseSchema);
-  }
-
-  createMongooseModel(mongooseSchema: mongoose.Schema) {
-    try {
-      if (mongoose.model(this.collectionName))
-        return mongoose.model(this.collectionName);
-    } catch (e) {
-      if (e.name === "MissingSchemaError") {
-        return mongoose.model(this.collectionName, mongooseSchema);
-      }
-    }
-    return null;
-  }
-
-  createMongooseSchema(mschema: unknown): mongoose.Schema {
-    mschema["blid"] = {
-      type: mongoose.Schema.Types.String,
-    };
-
-    mschema["lastUpdated"] = {
-      type: mongoose.Schema.Types.Date,
-      default: Date.now(),
-    };
-
-    mschema["creationTime"] = {
-      type: mongoose.Schema.Types.Date,
-      default: Date.now(),
-    };
-
-    mschema["comments"] = {
-      type: [
-        {
-          id: mongoose.Schema.Types.String,
-          msg: mongoose.Schema.Types.String,
-          creationTime: {
-            type: mongoose.Schema.Types.Date,
-            default: Date.now(),
-          },
-          user: mongoose.Schema.Types.ObjectId,
-        },
-      ],
-    };
-
-    mschema["active"] = {
-      type: mongoose.Schema.Types.Boolean,
-      default: true,
-    };
-
-    mschema["user"] = {
-      type: {
-        id: mongoose.Schema.Types.String,
-        permission: mongoose.Schema.Types.String,
-      },
-    };
-
-    mschema["viewableFor"] = {
-      type: [mongoose.Schema.Types.String],
-      default: [],
-    };
-
-    mschema["viewableForPermission"] = {
-      type: mongoose.Schema.Types.String,
-    };
-
-    mschema["editableFor"] = {
-      type: [mongoose.Schema.Types.String],
-      default: [],
-    };
-
-    mschema["archived"] = {
-      type: mongoose.Schema.Types.Boolean,
-      default: false,
-    };
-
-    return new mongoose.Schema(mschema);
+    return schema;
   }
 }

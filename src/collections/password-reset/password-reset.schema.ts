@@ -1,8 +1,10 @@
 import { Schema } from "mongoose";
 
-export const passwordResetSchema = {
+import { PasswordReset } from "./password-reset";
+
+export const passwordResetSchema = new Schema<PasswordReset>({
   email: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   userDetail: {
@@ -10,7 +12,7 @@ export const passwordResetSchema = {
     required: true,
   },
   token: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   createdAt: {
@@ -19,4 +21,4 @@ export const passwordResetSchema = {
     expires: 900, // 15 minutes
     default: Date.now,
   },
-};
+});

@@ -1,8 +1,9 @@
+import { UniqueItem } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const uniqueItemSchema = {
+export const uniqueItemSchema = new Schema<UniqueItem>({
   blid: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   item: {
@@ -10,7 +11,7 @@ export const uniqueItemSchema = {
     required: true,
   },
   title: {
-    type: Schema.Types.String,
+    type: String,
     required: true,
   },
   location: {
@@ -19,4 +20,4 @@ export const uniqueItemSchema = {
   actions: {
     type: [Schema.Types.Mixed],
   },
-};
+});
