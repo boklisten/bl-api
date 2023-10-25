@@ -24,21 +24,25 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     this.mongooseModel = mongooseModelCreator.create();
     this.permissionService = new PermissionService();
   }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async get(id: string, userPermission?: UserPermission): Promise<T> {
-    try {
-      const doc = await this.mongooseModel.findById(id).exec();
-      if (!doc) {
-        throw new BlError(`object "${id}" not found`).code(702);
-      }
-      return doc;
-    } catch (error) {
-      throw this.handleError(
-        new BlError(`error when trying to find document with id "${id}"`),
-        error,
-      );
+    const doc = await this.mongooseModel
+      .findById(id)
+      .exec()
+      .catch((error) => {
+        throw this.handleError(
+          new BlError(`error when trying to find document with id "${id}"`),
+          error,
+        );
+      });
+
+    if (!doc) {
+      throw new BlError(`object "${id}" not found`).code(702);
     }
+    return doc;
   }
+
   public async getByQuery(
     dbQuery: SEDbQuery,
     allowedNestedDocuments?: NestedDocument[],
@@ -50,33 +54,32 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         dbQuery.getSortFilter(),
       )})`,
     );
-    try {
-      const docs = await this.mongooseModel
-        .find(dbQuery.getFilter(), dbQuery.getOgFilter())
-        .limit(dbQuery.getLimitFilter())
-        .skip(dbQuery.getSkipFilter())
-        .sort(dbQuery.getSortFilter())
-        .exec();
-
-      if (docs.length <= 0) {
-        throw new BlError("not found").code(702);
-      }
-
-      const expandFilters = dbQuery.getExpandFilter();
-      if (allowedNestedDocuments && allowedNestedDocuments.length > 0) {
-        return this.retrieveNestedDocuments(
-          docs,
-          allowedNestedDocuments,
-          expandFilters,
+    const docs = await this.mongooseModel
+      .find(dbQuery.getFilter(), dbQuery.getOgFilter())
+      .limit(dbQuery.getLimitFilter())
+      .skip(dbQuery.getSkipFilter())
+      .sort(dbQuery.getSortFilter())
+      .exec()
+      .catch((error) => {
+        throw this.handleError(
+          new BlError(`could not find document by the provided query`),
+          error,
         );
-      } else {
-        return docs;
-      }
-    } catch (error) {
-      throw this.handleError(
-        new BlError(`could not find document by the provided query`),
-        error,
+      });
+
+    if (docs.length <= 0) {
+      throw new BlError("not found").code(702);
+    }
+
+    const expandFilters = dbQuery.getExpandFilter();
+    if (allowedNestedDocuments && allowedNestedDocuments.length > 0) {
+      return this.retrieveNestedDocuments(
+        docs,
+        allowedNestedDocuments,
+        expandFilters,
       );
+    } else {
+      return docs;
     }
   }
 
@@ -111,12 +114,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       );
     }
   }
+
   public async getAll(userPermission?: UserPermission): Promise<T[]> {
+    const filter =
+      userPermission && this.permissionService.isAdmin(userPermission)
+        ? {}
+        : { active: true };
     try {
-      const filter =
-        userPermission && this.permissionService.isAdmin(userPermission)
-          ? {}
-          : { active: true };
       return await this.mongooseModel.find(filter).exec();
     } catch (error) {
       throw this.handleError(new BlError("failed to get all documents"), error);
@@ -148,38 +152,41 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   public addMany(docs: T[]): Promise<T[]> {
     return this.mongooseModel.insertMany(docs);
   }
+
   public async update(
     id: string,
     data: unknown,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
-    try {
-      if (data["user"]) {
-        throw new BlError(
-          "can not change user restrictions after creation",
-        ).code(701);
-      }
-
-      const document = await this.mongooseModel.findById(id).exec();
-      if (!document) {
-        throw new BlError(`could not find document with id "${id}"`).code(702);
-      }
-
-      document.set(data);
-      document.set({ lastUpdated: new Date() });
-
-      return (await document.save()) as unknown as T;
-    } catch (error) {
-      logger.error(`failed to save document: ${error}`);
-      throw this.handleError(
-        new BlError(`failed to update document with id ${id}`).store(
-          "data",
-          data,
-        ),
-        error,
+    if (data["user"]) {
+      throw new BlError("can not change user restrictions after creation").code(
+        701,
       );
     }
+
+    const document = await this.mongooseModel
+      .findById(id)
+      .exec()
+      .catch((error) => {
+        logger.error(`failed to save document: ${error}`);
+        throw this.handleError(
+          new BlError(`failed to update document with id ${id}`).store(
+            "data",
+            data,
+          ),
+          error,
+        );
+      });
+
+    if (!document) {
+      throw new BlError(`could not find document with id "${id}"`).code(702);
+    }
+
+    document.set(data);
+    document.set({ lastUpdated: new Date() });
+
+    return (await document.save()) as unknown as T;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -192,20 +199,20 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
-    try {
-      const doc = await this.mongooseModel.findByIdAndRemove(id).exec();
-      if (!doc) {
-        throw new BlError(`could not remove document with id "${id}"`).code(
-          702,
+    const doc = await this.mongooseModel
+      .findByIdAndRemove(id)
+      .exec()
+      .catch((error) => {
+        throw this.handleError(
+          new BlError(`could not remove document with id "${id}"`),
+          error,
         );
-      }
-      return doc;
-    } catch (error) {
-      throw this.handleError(
-        new BlError(`could not remove document with id "${id}"`),
-        error,
-      );
+      });
+
+    if (!doc) {
+      throw new BlError(`could not remove document with id "${id}"`).code(702);
     }
+    return doc;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
