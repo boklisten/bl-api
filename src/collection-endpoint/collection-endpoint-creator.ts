@@ -16,8 +16,8 @@ import { MatchCollection } from "../collections/match/match.collection";
 import { MessageCollection } from "../collections/message/message.collection";
 import { OpeningHourCollection } from "../collections/opening-hour/opening-hour.collection";
 import { OrderCollection } from "../collections/order/order.collection";
-import { PasswordResetCollection } from "../collections/password-reset/password-reset.collection";
 import { PaymentCollection } from "../collections/payment/payment.collection";
+import { PendingPasswordResetCollection } from "../collections/pending-password-reset/pending-password-reset.collection";
 import { UniqueItemCollection } from "../collections/unique-item/unique-item.collection";
 import { UserDetailCollection } from "../collections/user-detail/user-detail.collection";
 import { SEResponseHandler } from "../response/se.response.handler";
@@ -39,7 +39,10 @@ export class CollectionEndpointCreator {
       new CollectionEndpoint(this._router, new PaymentCollection()),
       new CollectionEndpoint(this._router, new UserDetailCollection()),
       new CollectionEndpoint(this._router, new BlErrorLogCollection()),
-      new CollectionEndpoint(this._router, new PasswordResetCollection()),
+      new CollectionEndpoint(
+        this._router,
+        new PendingPasswordResetCollection(),
+      ),
       new CollectionEndpoint(this._router, new EmailValidationCollection()),
       new CollectionEndpoint(this._router, new MessageCollection()),
       new CollectionEndpoint(this._router, new MatchCollection()),

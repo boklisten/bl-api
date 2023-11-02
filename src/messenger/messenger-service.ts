@@ -21,5 +21,5 @@ export interface MessengerService {
   orderPlaced(customerDetail: UserDetail, order: Order): void;
 
   emailConfirmation(customerDetail: UserDetail, code: string): void;
-  passwordReset(customerDetail: UserDetail, code: string): void;
+  passwordReset(userId: string, userEmail: string, code: string): void;
 }

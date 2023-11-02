@@ -123,10 +123,19 @@ export class Messenger implements MessengerService {
 
   /**
    * sends out message to customer with a link to reset password
-   * @param {UserDetail} customerDetail
+   * @param {string} userId the ID of the user in the Users collection
+   * @param {string} userEmail the email (username) of the user in the Users collection
    * @param {string} passwordResetCode
    */
-  public passwordReset(customerDetail: UserDetail, passwordResetCode: string) {
-    this._emailService.passwordReset(customerDetail, passwordResetCode);
+  public async passwordReset(
+    userId: string,
+    userEmail: string,
+    passwordResetCode: string,
+  ): Promise<void> {
+    await this._emailService.passwordReset(
+      userId,
+      userEmail,
+      passwordResetCode,
+    );
   }
 }

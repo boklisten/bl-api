@@ -21,7 +21,7 @@ export enum BlCollectionName {
   Messages = "messages",
   OpeningHours = "openinghours",
   Orders = "orders",
-  PasswordResets = "passwordresets",
+  PendingPasswordResets = "pendingpasswordresets",
   Payments = "payments",
   UniqueItems = "uniqueitems",
   UserDetails = "userdetails",

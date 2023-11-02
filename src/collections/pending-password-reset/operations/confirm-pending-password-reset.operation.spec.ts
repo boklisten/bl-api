@@ -1,0 +1,180 @@
+import { BlError, PendingPasswordReset } from "@boklisten/bl-model";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import "mocha";
+import sinon from "sinon";
+import { LocalLoginHandler } from "../../../auth/local/local-login.handler";
+import { SeCrypto } from "../../../crypto/se.crypto";
+import { BlApiRequest } from "../../../request/bl-api-request";
+import { SEResponseHandler } from "../../../response/se.response.handler";
+import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../bl-collection";
+import { ConfirmPendingPasswordResetOperation } from "./confirm-pending-password-reset.operation";
+
+chai.use(chaiAsPromised);
+
+describe("ConfirmPendingPasswordResetOperation", () => {
+  const pendingPasswordResetStorage =
+    new BlDocumentStorage<PendingPasswordReset>(
+      BlCollectionName.PendingPasswordResets,
+    );
+  const localLoginHandler = new LocalLoginHandler();
+  const resHandler = new SEResponseHandler();
+  const confirmPendingPasswordResetOperation =
+    new ConfirmPendingPasswordResetOperation(
+      pendingPasswordResetStorage,
+      localLoginHandler,
+      resHandler,
+    );
+  let testBlApiRequest: BlApiRequest;
+  let testPendingPasswordReset: PendingPasswordReset;
+  let localLoginUpdateSuccess: boolean;
+  let testToken = "hablebable";
+  let testSalt = "salt";
+  let tokenHash: string;
+
+  beforeEach(async () => {
+    tokenHash = await new SeCrypto().hash(testToken, testSalt);
+    testPendingPasswordReset = {
+      id: "id",
+      tokenHash,
+      email: "user@mail.com",
+      salt: testSalt,
+      creationTime: new Date(),
+      active: true,
+    };
+    testBlApiRequest = {
+      documentId: testPendingPasswordReset.id + ":" + testToken,
+      data: {
+        newPassword: "newPassword123",
+      },
+    };
+
+    localLoginUpdateSuccess = true;
+  });
+
+  sinon.stub(pendingPasswordResetStorage, "get").callsFake((id: string) => {
+    if (id !== testPendingPasswordReset.id) {
+      return Promise.reject(new BlError("not found"));
+    }
+
+    return Promise.resolve(testPendingPasswordReset);
+  });
+
+  sinon
+    .stub(pendingPasswordResetStorage, "update")
+    .callsFake(async (id, data: unknown) => {
+      return Object.assign(testPendingPasswordReset, data);
+    });
+
+  sinon.stub(localLoginHandler, "setPassword").callsFake(() => {
+    if (localLoginUpdateSuccess) {
+      return Promise.resolve(true);
+    }
+
+    return Promise.reject(new BlError("could not set password"));
+  });
+
+  describe("#run", () => {
+    it("should reject if documentId is not found", async () => {
+      testBlApiRequest.documentId = "notFoundPasswordReset:hable";
+
+      await expect(
+        confirmPendingPasswordResetOperation.run(testBlApiRequest),
+      ).to.be.rejectedWith(
+        BlError,
+        /PendingPasswordReset "notFoundPasswordReset" not found/,
+      );
+    });
+
+    it("should reject if token does not match", async () => {
+      testBlApiRequest.documentId = testPendingPasswordReset.id + ":wrongToken";
+
+      await expect(
+        confirmPendingPasswordResetOperation.run(testBlApiRequest),
+      ).to.be.rejectedWith(
+        BlError,
+        /Invalid password reset attempt: candidate token hash does not match stored hash/,
+      );
+    });
+
+    it("should reject if blApiRequest.data.newPassword is null, empty or undefined", async () => {
+      testBlApiRequest.data["newPassword"] = null;
+
+      await expect(
+        confirmPendingPasswordResetOperation.run(testBlApiRequest),
+      ).to.be.rejectedWith(
+        BlError,
+        /blApiRequest.data.newPassword is null, empty or undefined/,
+      );
+    });
+
+    it("should reject if blApiRequest.data.newPassword is under length of 6", async () => {
+      testBlApiRequest.data["newPassword"] = "abcde";
+
+      await expect(
+        confirmPendingPasswordResetOperation.run(testBlApiRequest),
+      ).to.be.rejectedWith(
+        BlError,
+        /blApiRequest.data.newPassword is under length of 6/,
+      );
+    });
+
+    it("should reject if PendingPasswordReset is expired", async () => {
+      testPendingPasswordReset.creationTime = new Date();
+      testPendingPasswordReset.creationTime.setDate(
+        testPendingPasswordReset.creationTime.getDate() - 8,
+      );
+
+      await expect(
+        confirmPendingPasswordResetOperation.run(testBlApiRequest),
+      ).to.be.rejectedWith(BlError, /PendingPasswordReset (.*) expired/);
+    });
+
+    it("should accept even if PendingPasswordReset is nearing expired", async () => {
+      const date = new Date();
+      date.setDate(date.getDate() - 6);
+      testPendingPasswordReset.creationTime = date;
+
+      await confirmPendingPasswordResetOperation.run(testBlApiRequest);
+    });
+
+    it("should reject if localLoginHandler.setPassword rejects", async () => {
+      localLoginUpdateSuccess = false;
+
+      await expect(
+        confirmPendingPasswordResetOperation.run(testBlApiRequest),
+      ).to.be.rejectedWith(
+        BlError,
+        /Could not update localLogin with password/,
+      );
+    });
+
+    it("should reject if PendingPasswordReset inactive", async () => {
+      testPendingPasswordReset.active = false;
+
+      await expect(
+        confirmPendingPasswordResetOperation.run(testBlApiRequest),
+      ).to.be.rejectedWith(BlError, /PendingPasswordReset (.*) already used/);
+    });
+
+    it("should deactivate PendingPasswordReset after use", async () => {
+      await confirmPendingPasswordResetOperation.run(testBlApiRequest);
+      expect(testPendingPasswordReset.active).to.be.false;
+    });
+
+    it("should not allow reusing PendingPasswordReset", async () => {
+      expect(testPendingPasswordReset.active).to.be.true;
+      await confirmPendingPasswordResetOperation.run(testBlApiRequest);
+      expect(testPendingPasswordReset.active).to.be.false;
+      await expect(
+        confirmPendingPasswordResetOperation.run(testBlApiRequest),
+      ).to.be.rejectedWith(BlError, /PendingPasswordReset (.*) already used/);
+    });
+
+    it("should resolve if given valid ID, token and password", async () => {
+      await expect(confirmPendingPasswordResetOperation.run(testBlApiRequest))
+        .to.be.fulfilled;
+    });
+  });
+});
