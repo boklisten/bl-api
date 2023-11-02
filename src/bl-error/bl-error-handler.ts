@@ -165,10 +165,6 @@ export class BlErrorHandler {
           "Ordren inneholder bøker som er låst til en UserMatch; kunden må motta de låste bøkene fra en annen elev";
         blapiErrorResponse.httpStatus = 409;
         break;
-      case 808:
-        blapiErrorResponse.msg = "Bad request format";
-        blapiErrorResponse.httpStatus = 400;
-        break;
     }
 
     return blapiErrorResponse;

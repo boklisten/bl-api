@@ -19,7 +19,7 @@ export class UserDetailUpdateHook extends Hook {
     accessToken: AccessToken,
   ): Promise<UserDetailPatch> {
     if (!validateUserDetailUpdateType(body)) {
-      throw new BlError("Invalid UserDetailUpdateType request body").code(808);
+      throw new BlError("Invalid UserDetailUpdateType request body").code(701);
     }
     const { name, address, postCity, dob, postCode, phone, emailConfirmed } =
       body;
