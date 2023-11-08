@@ -32,8 +32,7 @@ export class ConfirmPendingPasswordResetOperation implements Operation {
   }
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
-    const [pendingPasswordResetId, candidateToken] =
-      parsePendingPasswordResetDocumentId(blApiRequest.documentId);
+    const pendingPasswordResetId = blApiRequest.documentId;
     const passwordResetConfirmationRequest: unknown = blApiRequest.data;
     validatePasswordResetConfirmationRequest(passwordResetConfirmationRequest);
 
@@ -49,7 +48,11 @@ export class ConfirmPendingPasswordResetOperation implements Operation {
 
     validatePendingPasswordResetNotExpired(pendingPasswordReset);
     validatePendingPasswordResetUnused(pendingPasswordReset);
-    await verifyToken(candidateToken, pendingPasswordReset, this.seCrypto);
+    await verifyResetToken(
+      passwordResetConfirmationRequest.resetToken,
+      pendingPasswordReset,
+      this.seCrypto,
+    );
 
     await updatePassword(
       pendingPasswordReset,
@@ -69,6 +72,16 @@ export class ConfirmPendingPasswordResetOperation implements Operation {
 function validatePasswordResetConfirmationRequest(
   candidate: unknown,
 ): asserts candidate is PasswordResetConfirmationRequest {
+  if (!candidate || !candidate["resetToken"]) {
+    throw new BlError(
+      "blApiRequest.data.resetToken is null, empty or undefined",
+    ).code(701);
+  }
+
+  if (typeof candidate["resetToken"] !== "string") {
+    throw new BlError("blApiRequest.data.resetToken is not a string").code(701);
+  }
+
   if (!candidate || !candidate["newPassword"]) {
     throw new BlError(
       "blApiRequest.data.newPassword is null, empty or undefined",
@@ -90,20 +103,7 @@ function validatePasswordResetConfirmationRequest(
   }
 }
 
-function parsePendingPasswordResetDocumentId(
-  documentId?: string,
-): [string, string] {
-  if (!documentId) {
-    throw new BlError("documentId is empty, null or undefined").code(701);
-  }
-  const parts = documentId.split(":");
-  if (parts.length !== 2) {
-    throw new BlError('documentId should be formatted as "ID:TOKEN"').code(701);
-  }
-  return parts as [string, string];
-}
-
-async function verifyToken(
+async function verifyResetToken(
   candidateToken: string,
   pendingPasswordReset: PendingPasswordReset,
   seCrypto: SeCrypto,
@@ -116,7 +116,7 @@ async function verifyToken(
     !seCrypto.timingSafeEqual(candiateTokenHash, pendingPasswordReset.tokenHash)
   ) {
     throw new BlError(
-      "Invalid password reset attempt: candidate token hash does not match stored hash",
+      "Invalid password reset attempt: computed token hash does not match stored hash",
     ).code(702);
   }
 }

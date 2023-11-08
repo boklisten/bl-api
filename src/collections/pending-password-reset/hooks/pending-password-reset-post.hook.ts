@@ -55,7 +55,7 @@ export class PendingPasswordResetPostHook extends Hook {
     // database, but it would be poor security to save the unhashed token in the database, and we have no other way
     // of passing information from before to after, so this is the lesser evil.
     await this.messenger
-      .passwordReset(user.id, passwordResetRequest.email, `${id}:${token}`)
+      .passwordReset(user.id, passwordResetRequest.email, id, token)
       .catch(() => {
         throw new BlError(
           `Unable to send password reset email to ${passwordResetRequest.email}`,

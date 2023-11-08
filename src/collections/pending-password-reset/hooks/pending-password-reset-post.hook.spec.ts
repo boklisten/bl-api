@@ -162,7 +162,8 @@ describe("PendingPasswordResetPostHook", () => {
               messengerPasswordResetStub.calledWithExactly(
                 testUser.id,
                 testUser.username,
-                `${testId}:${testToken}`,
+                testId,
+                testToken,
               ),
             ).to.be.true;
           });

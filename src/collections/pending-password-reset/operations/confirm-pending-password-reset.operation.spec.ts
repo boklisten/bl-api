@@ -44,8 +44,9 @@ describe("ConfirmPendingPasswordResetOperation", () => {
       active: true,
     };
     testBlApiRequest = {
-      documentId: testPendingPasswordReset.id + ":" + testToken,
+      documentId: testPendingPasswordReset.id,
       data: {
+        resetToken: testToken,
         newPassword: "newPassword123",
       },
     };
@@ -77,7 +78,7 @@ describe("ConfirmPendingPasswordResetOperation", () => {
 
   describe("#run", () => {
     it("should reject if documentId is not found", async () => {
-      testBlApiRequest.documentId = "notFoundPasswordReset:hable";
+      testBlApiRequest.documentId = "notFoundPasswordReset";
 
       await expect(
         confirmPendingPasswordResetOperation.run(testBlApiRequest),
@@ -88,13 +89,13 @@ describe("ConfirmPendingPasswordResetOperation", () => {
     });
 
     it("should reject if token does not match", async () => {
-      testBlApiRequest.documentId = testPendingPasswordReset.id + ":wrongToken";
+      testBlApiRequest.data["resetToken"] = "notAValidToken";
 
       await expect(
         confirmPendingPasswordResetOperation.run(testBlApiRequest),
       ).to.be.rejectedWith(
         BlError,
-        /Invalid password reset attempt: candidate token hash does not match stored hash/,
+        /Invalid password reset attempt: computed token hash does not match stored hash/,
       );
     });
 

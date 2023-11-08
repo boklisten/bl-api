@@ -475,7 +475,8 @@ export class EmailService implements MessengerService {
   public async passwordReset(
     userId: string,
     userEmail: string,
-    passwordResetCode: string,
+    pendingPasswordResetId: string,
+    resetToken: string,
   ): Promise<void> {
     const emailSetting: EmailSetting = {
       toEmail: userEmail,
@@ -488,7 +489,9 @@ export class EmailService implements MessengerService {
       ? process.env.CLIENT_URI
       : "localhost:4200/";
     passwordResetUri +=
-      EMAIL_SETTINGS.types.passwordReset.path + passwordResetCode;
+      EMAIL_SETTINGS.types.passwordReset.path +
+      pendingPasswordResetId +
+      `?resetToken=${resetToken}`;
 
     await this._emailHandler.sendPasswordReset(emailSetting, passwordResetUri);
   }
