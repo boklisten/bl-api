@@ -26,13 +26,6 @@ export class PendingPasswordResetPostHook extends Hook {
     passwordResetRequest: unknown,
   ): Promise<PendingPasswordReset> {
     validatePasswordResetRequest(passwordResetRequest);
-    if (!passwordResetRequest) {
-      throw new BlError("passwordResetRequest is empty or undefined");
-    }
-
-    if (!passwordResetRequest.email || !isEmail(passwordResetRequest.email)) {
-      throw new BlError(`passwordResetRequest.email is not a valid email`);
-    }
 
     const user = await this.userHandler
       .getByUsername(passwordResetRequest.email)
