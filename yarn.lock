@@ -21,12 +21,12 @@
     puppeteer "^9.1.1"
     typescript "^2.6.2"
 
-"@boklisten/bl-model@^0.25.22":
-  version "0.25.22"
-  resolved "https://registry.yarnpkg.com/@boklisten/bl-model/-/bl-model-0.25.22.tgz#ff61ebefd64d5219a611d5fe40870be7812d31df"
-  integrity sha512-jjlrO21IDa1yKOAVv/Skm/z6DJlRIu5q9panfUZ/o1Fz2XuYxaqFcU0tB4v9wJ/pqciMgt8oexAzWQmbo4SrSg==
+"@boklisten/bl-model@0.25.26":
+  version "0.25.26"
+  resolved "https://registry.yarnpkg.com/@boklisten/bl-model/-/bl-model-0.25.26.tgz#324091873a80deb62b064dde4de2e9bb426b6acb"
+  integrity sha512-KpChYWqWcNob73KEhXucOI0cyQKQ7zI2cwIt4PEAe9VFF/LJwavwn9jwRvcrcN45qX3huCUguf2yABK9zJ62Bg==
   dependencies:
-    typescript "^4.5.2"
+    typescript "^5.2.2"
 
 "@boklisten/bl-post-office@^0.5.48":
   version "0.5.48"
@@ -5342,11 +5342,6 @@ typescript@^2.6.2:
   version "2.9.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
   integrity sha512-Gr4p6nFNaoufRIY4NMdpQRNmgxVIGMs4Fcu/ujdYk3nAZqk7supzBE9idmvfZIlH/Cuj//dvi+019qEue9lV0w==
-
-typescript@^4.5.2:
-  version "4.5.4"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.5.4.tgz"
-  integrity sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==
 
 typescript@^5.2.2:
   version "5.2.2"
