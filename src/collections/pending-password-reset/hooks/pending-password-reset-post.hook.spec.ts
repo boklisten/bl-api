@@ -66,35 +66,15 @@ describe("PendingPasswordResetPostHook", () => {
       );
     });
 
-    context("when email (username) is not on a valid format", () => {
-      const expectedError = /passwordResetRequest.email is not a valid email/;
+    it("should reject if passwordResetRequest.email is undefined", async () => {
+      const passwordResetRequest: PasswordResetRequest = { email: undefined };
 
-      it('should reject if passwordResetRequest.email is "b.com"', async () => {
-        const passwordResetRequest: PasswordResetRequest = { email: "b.com" };
-
-        await expect(
-          pendingPasswordResetPostHook.before(passwordResetRequest),
-        ).to.be.rejectedWith(BlError, expectedError);
-      });
-
-      it('should reject if passwordResetRequest.email is "jonman"', async () => {
-        const passwordResetRequest: PasswordResetRequest = { email: "jonman" };
-
-        await expect(
-          pendingPasswordResetPostHook.before(passwordResetRequest),
-        ).to.be.rejectedWith(BlError, expectedError);
-      });
-
-      it("should reject if passwordResetRequest.email is undefined", async () => {
-        const passwordResetRequest: PasswordResetRequest = { email: undefined };
-
-        await expect(
-          pendingPasswordResetPostHook.before(passwordResetRequest),
-        ).to.be.rejectedWith(
-          BlError,
-          /passwordResetRequest.email is null, empty or undefined/,
-        );
-      });
+      await expect(
+        pendingPasswordResetPostHook.before(passwordResetRequest),
+      ).to.be.rejectedWith(
+        BlError,
+        /passwordResetRequest.email is null, empty or undefined/,
+      );
     });
 
     sinon
@@ -135,7 +115,7 @@ describe("PendingPasswordResetPostHook", () => {
       };
     });
 
-    describe("when token is correct", () => {
+    describe("when everything is valid", () => {
       let messengerPasswordResetStub = sinon
         .stub(messenger, "passwordReset")
         .returns(new Promise((resolve) => resolve()));

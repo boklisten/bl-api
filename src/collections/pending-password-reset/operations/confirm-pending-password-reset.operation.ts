@@ -155,9 +155,9 @@ async function updatePassword(
   await localLoginHandler
     .setPassword(pendingPasswordReset.email, newPassword)
     .catch((setPasswordError: BlError) => {
-      throw new BlError("Could not update localLogin with password").add(
-        setPasswordError,
-      );
+      throw new BlError("Could not update localLogin with password")
+        .code(200)
+        .add(setPasswordError);
     });
 }
 

@@ -3,7 +3,6 @@ import {
   PasswordResetRequest,
   PendingPasswordReset,
 } from "@boklisten/bl-model";
-import isEmail from "validator/lib/isEmail";
 
 import { UserHandler } from "../../../auth/user/user.handler";
 import { SeCrypto } from "../../../crypto/se.crypto";
@@ -30,13 +29,13 @@ export class PendingPasswordResetPostHook extends Hook {
     const user = await this.userHandler
       .getByUsername(passwordResetRequest.email)
       .catch((getUserError: BlError) => {
-        throw new BlError(
-          `username "${passwordResetRequest.email}" not found`,
-        ).add(getUserError);
+        throw new BlError(`username "${passwordResetRequest.email}" not found`)
+          .code(10702)
+          .add(getUserError);
       });
 
     if (!user.active) {
-      throw new BlError("user.active is false").code(703);
+      throw new BlError("user.active is false").code(10703);
     }
 
     const id = this.seCrypto.random();
@@ -52,7 +51,7 @@ export class PendingPasswordResetPostHook extends Hook {
       .catch(() => {
         throw new BlError(
           `Unable to send password reset email to ${passwordResetRequest.email}`,
-        ).code(200);
+        ).code(10200);
       });
 
     return {
@@ -61,6 +60,11 @@ export class PendingPasswordResetPostHook extends Hook {
       tokenHash,
       salt,
     };
+  }
+
+  // Don't return the stored secrets!
+  override async after(): Promise<never[]> {
+    return [];
   }
 }
 

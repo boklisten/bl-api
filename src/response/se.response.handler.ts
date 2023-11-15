@@ -41,8 +41,14 @@ export class SEResponseHandler {
     res.status(blapiErrorRes.httpStatus);
 
     this.setHeaders(res);
-    res.send(blapiErrorRes);
 
+    if (blapiErrorRes.httpStatus === 200) {
+      logger.verbose(`<- ${blapiErrorRes.httpStatus} ${blapiErrorRes.msg}`);
+      this.sendResponse(res, new BlapiResponse(blapiErrorRes.data));
+      return;
+    }
+
+    res.send(blapiErrorRes);
     logger.verbose(`<- ${blapiErrorRes.httpStatus} ${blapiErrorRes.msg}`);
 
     res.end();
