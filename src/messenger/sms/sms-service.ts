@@ -1,6 +1,5 @@
 import twilio from "twilio";
 
-import { SMS_SETTINGS } from "./sms-settings";
 import { logger } from "../../logger/logger";
 
 const accountSid = process.env.TWILIO_SMS_SID;
@@ -20,7 +19,7 @@ export async function sendSMS(
     await client.messages.create({
       body: message,
       to: `+47${toNumber}`,
-      from: SMS_SETTINGS.fromNumber,
+      from: "Boklisten",
     });
     logger.info(`successfully sent SMS to "${toNumber}"`);
   } catch (e) {
