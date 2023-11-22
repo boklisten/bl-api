@@ -154,7 +154,10 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         doc.user = user;
       }
 
-      const newDocument = new this.mongooseModel(doc);
+      const newDocument = new this.mongooseModel({
+        ...doc,
+        ...(doc.id && { _id: doc.id }),
+      });
       return (await newDocument.save()) as unknown as T;
     } catch (error) {
       throw this.handleError(

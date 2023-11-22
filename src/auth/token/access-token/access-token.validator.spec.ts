@@ -49,7 +49,7 @@ describe("", () => {
     });
 
     context("when accessToken is not valid", () => {
-      it("should reject with BlError code 905", (done) => {
+      it("should reject with BlError code 910", (done) => {
         accessTokenValidator
           .validate("this is not valid")
           .catch((error: BlError) => {

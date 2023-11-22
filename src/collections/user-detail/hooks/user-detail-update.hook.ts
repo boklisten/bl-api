@@ -19,14 +19,14 @@ export class UserDetailUpdateHook extends Hook {
     accessToken: AccessToken,
   ): Promise<UserDetailPatch> {
     if (!validateUserDetailUpdateType(body)) {
-      throw new BlError("Invalid UserDetailUpdateType request body").code(808);
+      throw new BlError("Invalid UserDetailUpdateType request body").code(701);
     }
     const { name, address, postCity, dob, postCode, phone, emailConfirmed } =
       body;
     if (emailConfirmed !== undefined && accessToken.permission === "customer") {
       throw new BlError(
         "bruker kan ikke endre egen e-post-bekreftet-status",
-      ).code(910);
+      ).code(911);
     }
 
     // In an update call, a value of 'undefined' will remove a key, so the key

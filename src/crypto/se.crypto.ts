@@ -58,6 +58,10 @@ export class SeCrypto {
     });
   }
 
+  public timingSafeEqual(a: string, b: string): boolean {
+    return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+  }
+
   public random(): string {
     return crypto.randomBytes(20).toLocaleString("hex");
   }

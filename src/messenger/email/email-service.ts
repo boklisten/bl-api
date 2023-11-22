@@ -472,23 +472,27 @@ export class EmailService implements MessengerService {
       .catch(() => {});
   }
 
-  public passwordReset(customerDetail: UserDetail, passwordResetCode: string) {
+  public async passwordReset(
+    userId: string,
+    userEmail: string,
+    pendingPasswordResetId: string,
+    resetToken: string,
+  ): Promise<void> {
     const emailSetting: EmailSetting = {
-      toEmail: customerDetail.email,
+      toEmail: userEmail,
       fromEmail: EMAIL_SETTINGS.types.passwordReset.fromEmail,
       subject: EMAIL_SETTINGS.types.passwordReset.subject,
-      userId: customerDetail.id,
+      userId: userId,
     };
 
     let passwordResetUri = process.env.CLIENT_URI
       ? process.env.CLIENT_URI
       : "localhost:4200/";
     passwordResetUri +=
-      EMAIL_SETTINGS.types.passwordReset.path + passwordResetCode;
+      EMAIL_SETTINGS.types.passwordReset.path +
+      pendingPasswordResetId +
+      `?resetToken=${resetToken}`;
 
-    this._emailHandler
-      .sendPasswordReset(emailSetting, passwordResetUri)
-      .then(() => {})
-      .catch(() => {});
+    await this._emailHandler.sendPasswordReset(emailSetting, passwordResetUri);
   }
 }

@@ -33,6 +33,7 @@ export class BlErrorHandler {
       blErrorResponse.httpStatus,
       blErrorResponse.code,
       blErrorResponse.msg,
+      blErrorResponse.data,
     );
   }
 
@@ -101,7 +102,9 @@ export class BlErrorHandler {
       return this.requestErrorResponse(blError.getCode());
     else if (blError.getCode() >= 900 && blError.getCode() <= 999)
       return this.authErrorResponse(blError.getCode());
-    else return blapiErrorResponse;
+    else if (blError.getCode() >= 10000 && blError.getCode() <= 11000) {
+      return this.fakeSuccessResponse(blError);
+    } else return blapiErrorResponse;
   }
 
   private serverErrorResponse(code: number): BlapiErrorResponse {
@@ -164,10 +167,6 @@ export class BlErrorHandler {
         blapiErrorResponse.msg =
           "Ordren inneholder bøker som er låst til en UserMatch; kunden må motta de låste bøkene fra en annen elev";
         blapiErrorResponse.httpStatus = 409;
-        break;
-      case 808:
-        blapiErrorResponse.msg = "Bad request format";
-        blapiErrorResponse.httpStatus = 400;
         break;
     }
 
@@ -235,10 +234,25 @@ export class BlErrorHandler {
         blapiErrorResponse.msg = "refreshToken not valid";
         break;
       case 910:
+        blapiErrorResponse.msg = "accessToken not valid";
+        break;
+      case 911:
         blapiErrorResponse.msg =
           "bruker kan ikke endre egen e-post-bekreftet-status";
-        break;
     }
+
+    return blapiErrorResponse;
+  }
+
+  private fakeSuccessResponse(underlyingError: BlError): BlapiErrorResponse {
+    const blapiErrorResponse: BlapiErrorResponse = {
+      httpStatus: 200,
+      code: underlyingError.getCode(),
+      msg:
+        "returning fake success for security reasons, underlying error: " +
+        underlyingError.getMsg(),
+      data: [],
+    };
 
     return blapiErrorResponse;
   }
