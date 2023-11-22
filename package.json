@@ -17,7 +17,7 @@
   "dependencies": {
     "@boklisten/bl-email": "^1.7.2",
     "@boklisten/bl-model": "^0.25.22",
-    "@boklisten/bl-post-office": "^0.5.48",
+    "@boklisten/bl-post-office": "^0.5.51",
     "@sendgrid/mail": "^7.7.0",
     "canvas": "^2.11.2",
     "commander": "^8.3.0",
