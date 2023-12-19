@@ -93,18 +93,16 @@ describe("OrderPlacedHandler", () => {
     return Promise.resolve([testPayment]);
   });
 
-  sinon.stub(orderStorage, "update").callsFake((id: string, data: any) => {
+  sinon.stub(orderStorage, "update").callsFake(() => {
     if (!orderUpdate) {
       return Promise.reject(new BlError("could not update order"));
     }
     return Promise.resolve(testOrder);
   });
 
-  const getOrderStub = sinon.stub(orderStorage, "get");
+  sinon.stub(orderStorage, "get");
 
-  sinon.stub(messenger, "orderPlaced").callsFake(() => {
-    return true;
-  });
+  sinon.stub(messenger, "orderPlaced").resolves();
 
   beforeEach(() => {
     paymentsConfirmed = true;

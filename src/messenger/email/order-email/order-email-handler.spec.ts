@@ -16,7 +16,6 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { OrderEmailHandler } from "./order-email-handler";
 import { dateService } from "../../../blc/date.service";
 import { EmailHandler, EmailLog } from "@boklisten/bl-email";
-import { isNullOrUndefined } from "util";
 import moment from "moment-timezone";
 import { BlCollectionName } from "../../../collections/bl-collection";
 
@@ -85,7 +84,7 @@ describe("OrderEmailHandler", () => {
 
       return expect(
         orderEmailHandler.sendOrderReceipt(testCustomerDetail, testOrder),
-      ).to.be.rejectedWith(Error, /could not send email/);
+      ).to.be.rejectedWith(Error, /Unable to send order receipt email/);
     });
 
     it("should resolve with EmailLog if emailHandler.sendWithAgreement resolves", () => {
@@ -172,29 +171,28 @@ describe("OrderEmailHandler", () => {
           branchStorageGetStub
             .withArgs(testOrder.branch as string)
             .resolves({ paymentInfo: { responsible: true } } as Branch);
-          (testCustomerDetail.dob = moment(new Date())
+          testCustomerDetail.dob = moment(new Date())
             .subtract(16, "year")
-            .toDate()),
-            orderEmailHandler
-              .sendOrderReceipt(testCustomerDetail, testOrder)
-              .then(() => {
-                const sendOrderReceiptArguments =
-                  sendOrderReceiptStub.getCalls();
+            .toDate();
+          orderEmailHandler
+            .sendOrderReceipt(testCustomerDetail, testOrder)
+            .then(() => {
+              const sendOrderReceiptArguments = sendOrderReceiptStub.getCalls();
 
-                const guardianEmailSetting =
-                  sendOrderReceiptArguments[
-                    sendOrderReceiptStub.getCalls().length - 2
-                  ].args[0]; // the next to last call should be to the guardian
+              const guardianEmailSetting =
+                sendOrderReceiptArguments[
+                  sendOrderReceiptStub.getCalls().length - 2
+                ].args[0]; // the next to last call should be to the guardian
 
-                expect(guardianEmailSetting.toEmail).to.be.eq(
-                  testCustomerDetail.guardian.email,
-                );
+              expect(guardianEmailSetting.toEmail).to.be.eq(
+                testCustomerDetail.guardian.email,
+              );
 
-                done();
-              })
-              .catch((err) => {
-                done(err);
-              });
+              done();
+            })
+            .catch((err) => {
+              done(err);
+            });
         });
       });
 

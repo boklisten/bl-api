@@ -35,7 +35,7 @@ describe("EmailValidationPostHook", () => {
       );
     }
 
-    return Promise.resolve(true);
+    return Promise.resolve();
   });
 
   describe("#after", () => {

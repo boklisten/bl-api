@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { EmailHandler } from "@boklisten/bl-email";
 import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
 import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
@@ -11,12 +10,14 @@ import {
   CustomerItem,
   Item,
   Message,
+  BlError,
 } from "@boklisten/bl-model";
 import {
   Recipient,
   MessageOptions,
   PostOffice,
   postOffice,
+  ItemList,
 } from "@boklisten/bl-post-office";
 
 import { EMAIL_SETTINGS } from "./email-settings";
@@ -66,7 +67,7 @@ export class EmailService implements MessengerService {
     });
   }
 
-  public send(message: Message, customerDetail: UserDetail): Promise<boolean> {
+  public send(message: Message, customerDetail: UserDetail): Promise<void> {
     if (message.messageType === "generic") {
       return this.sendGeneric(message, customerDetail);
     } else if (message.messageType === "match") {
@@ -76,13 +77,19 @@ export class EmailService implements MessengerService {
     throw `message type "${message.messageType}" not supported`;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public sendMany(messages: Message[], customerDetails: UserDetail[]) {}
+  public async sendMany(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    messages: Message[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    customerDetails: UserDetail[],
+  ): Promise<void> {
+    throw new BlError("Not implemented!").code(200);
+  }
 
   public async sendGeneric(
     message: Message,
     customerDetail: UserDetail,
-  ): Promise<boolean> {
+  ): Promise<void> {
     const recipient = await this.customerDetailToRecipient(
       message,
       customerDetail,
@@ -101,11 +108,9 @@ export class EmailService implements MessengerService {
 
     try {
       await this._postOffice.send([recipient], messageOptions);
-      return true;
     } catch (e) {
       logger.error(`could not send generic mail: ${e}`);
     }
-    return undefined;
   }
 
   public async sendBookingEmail(
@@ -145,7 +150,7 @@ export class EmailService implements MessengerService {
   public async sendMatch(
     message: Message,
     customerDetail: UserDetail,
-  ): Promise<boolean> {
+  ): Promise<void> {
     const recipient = await this.customerDetailToRecipient(
       message,
       customerDetail,
@@ -164,11 +169,9 @@ export class EmailService implements MessengerService {
 
     try {
       await this._postOffice.send([recipient], messageOptions);
-      return true;
     } catch (e) {
       logger.error(`could not send match message: ${e}`);
     }
-    return undefined;
   }
 
   /**
@@ -255,16 +258,18 @@ export class EmailService implements MessengerService {
     }
   }
 
-  public remindMany(
+  public async remindMany(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[],
-  ) {}
+  ): Promise<void> {
+    throw new BlError("Not implemented!").code(200);
+  }
 
-  public orderPlaced(customerDetail: UserDetail, order: Order) {
-    this._orderEmailHandler
-      .sendOrderReceipt(customerDetail, order)
-      .then(() => {})
-      .catch(() => {});
+  public async orderPlaced(
+    customerDetail: UserDetail,
+    order: Order,
+  ): Promise<void> {
+    await this._orderEmailHandler.sendOrderReceipt(customerDetail, order);
   }
 
   private async customerDetailToRecipient(
@@ -292,7 +297,7 @@ export class EmailService implements MessengerService {
   private async customerItemsToItemList(
     message: Message,
     customerItems: CustomerItem[],
-  ) {
+  ): Promise<ItemList> {
     if (message.messageSubtype === "partly-payment") {
       return {
         summary: {
@@ -319,7 +324,7 @@ export class EmailService implements MessengerService {
   private async customerItemsToEmailItems(
     message: Message,
     customerItems: CustomerItem[],
-  ) {
+  ): Promise<ItemList["items"]> {
     const items = [];
 
     for (const customerItem of customerItems) {
@@ -334,7 +339,7 @@ export class EmailService implements MessengerService {
     message: Message,
     customerItem: CustomerItem,
     item: Item,
-  ) {
+  ): ItemList["items"][number] {
     if (message.messageSubtype === "partly-payment") {
       return {
         id: this.getItemIsbn(item),
@@ -351,8 +356,8 @@ export class EmailService implements MessengerService {
     }
   }
 
-  private formatDeadline(deadline) {
-    return deadline !== null && deadline !== undefined
+  private formatDeadline(deadline?: Date): string {
+    return deadline != undefined
       ? dateService.toPrintFormat(deadline, "Europe/Oslo")
       : "";
   }
@@ -368,11 +373,11 @@ export class EmailService implements MessengerService {
     );
   }
 
-  public deliveryInformation(
+  public async deliveryInformation(
     customerDetail: UserDetail,
     order: Order,
     delivery: Delivery,
-  ) {
+  ): Promise<void> {
     const emailSetting: EmailSetting = {
       toEmail: customerDetail.email,
       fromEmail: EMAIL_SETTINGS.types.deliveryInformation.fromEmail,
@@ -430,15 +435,16 @@ export class EmailService implements MessengerService {
       },
     };
 
-    this._emailHandler
+    await this._emailHandler
       .sendDelivery(emailSetting, emailOrder, emailUser)
-      .then(() => {})
-      .catch((err) => {
-        logger.log("warn", "could not send delivery info by mail: " + err);
+      .catch((e) => {
+        throw new BlError("Unable to send delivery email").code(200).add(e);
       });
   }
 
-  private orderItemsToDeliveryInformationItems(orderItems: OrderItem[]) {
+  private orderItemsToDeliveryInformationItems(
+    orderItems: OrderItem[],
+  ): EmailOrder["items"] {
     const emailInformaitionItems: { title: string; status: string }[] = [];
     for (const orderItem of orderItems) {
       emailInformaitionItems.push({
@@ -449,10 +455,10 @@ export class EmailService implements MessengerService {
     return emailInformaitionItems;
   }
 
-  public emailConfirmation(
+  public async emailConfirmation(
     customerDetail: UserDetail,
     confirmationCode: string,
-  ) {
+  ): Promise<void> {
     const emailSetting: EmailSetting = {
       toEmail: customerDetail.email,
       fromEmail: EMAIL_SETTINGS.types.emailConfirmation.fromEmail,
@@ -466,10 +472,10 @@ export class EmailService implements MessengerService {
     emailVerificationUri +=
       EMAIL_SETTINGS.types.emailConfirmation.path + confirmationCode;
 
-    this._emailHandler
-      .sendEmailVerification(emailSetting, emailVerificationUri)
-      .then(() => {})
-      .catch(() => {});
+    await this._emailHandler.sendEmailVerification(
+      emailSetting,
+      emailVerificationUri,
+    );
   }
 
   public async passwordReset(

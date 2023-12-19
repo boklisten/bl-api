@@ -93,12 +93,13 @@ export class OrderEmailHandler {
       this.addNoPaymentProvidedNotice(emailSetting);
     }
 
-    return this._emailHandler.sendOrderReceipt(
-      emailSetting,
-      emailOrder,
-      emailUser,
-      withAgreement,
-    );
+    return await this._emailHandler
+      .sendOrderReceipt(emailSetting, emailOrder, emailUser, withAgreement)
+      .catch((e) => {
+        throw new BlError("Unable to send order receipt email")
+          .code(200)
+          .add(e);
+      });
   }
 
   private paymentNeeded(order: Order): boolean {

@@ -61,33 +61,25 @@ describe("UserHandler", () => {
 
   const emailValidationHelperSendLinkStub = sinon
     .stub(emailValidationHelper, "createAndSendEmailValidationLink")
-    .callsFake((userDetailId: string) => {
+    .callsFake(() => {
       if (!emailValidationLinkSuccess) {
         return Promise.reject(
           new BlError("could not create and send email validation"),
         );
       }
 
-      return Promise.resolve(true);
+      return Promise.resolve();
     });
 
   sinon.stub(userDetailStorage, "add").callsFake(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       resolve({ id: testUser.userDetail, user: { id: testUser.blid } } as any);
     });
   });
 
-  sinon.stub(userStorage, "add").callsFake((data: any, user: any) => {
-    return new Promise((resolve, reject) => {
-      resolve(testUser);
-    });
-  });
+  sinon.stub(userStorage, "add").resolves(testUser);
 
-  const localLoginHandlerGetStub = sinon
-    .stub(localLoginHandler, "get")
-    .callsFake(() => {
-      return Promise.resolve({} as LocalLogin);
-    });
+  sinon.stub(localLoginHandler, "get").resolves({} as LocalLogin);
 
   const userStorageGetByQueryStub = sinon
     .stub(userStorage, "getByQuery")
