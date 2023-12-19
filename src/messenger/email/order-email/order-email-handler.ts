@@ -342,9 +342,10 @@ export class OrderEmailHandler {
         : null,
       trackingNumber: delivery.info["trackingNumber"],
       estimatedDeliveryDate: delivery.info["estimatedDelivery"]
-        ? moment(delivery.info["estimatedDelivery"])
-            .utcOffset(this.utcOffset)
-            .format(this.standardDayFormat)
+        ? dateService.toPrintFormat(
+            delivery.info["estimatedDelivery"],
+            "Europe/Oslo",
+          )
         : "",
     };
   }
