@@ -8,7 +8,7 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 
-export class MessagePostHook implements Hook {
+export class MessagePostHook extends Hook {
   private readonly messengerReminder: MessengerReminder;
   private readonly permissionService: PermissionService;
   private readonly messenger: Messenger;
@@ -19,6 +19,7 @@ export class MessagePostHook implements Hook {
     messenger?: Messenger,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
+    super();
     this.messengerReminder = messengerReminder ?? new MessengerReminder();
     this.permissionService = new PermissionService();
     this.messenger = messenger ?? new Messenger();
@@ -27,7 +28,10 @@ export class MessagePostHook implements Hook {
       new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
   }
 
-  async before(message: Message, accessToken: AccessToken): Promise<boolean> {
+  override async before(
+    message: Message,
+    accessToken: AccessToken,
+  ): Promise<Message> {
     if (typeof message.messageType === "undefined" || !message.messageType) {
       throw new BlError("messageType is not defined").code(701);
     }
@@ -50,16 +54,6 @@ export class MessagePostHook implements Hook {
       }
     }
 
-    return true;
-  }
-
-  async after(messages: Message[]): Promise<[Message]> {
-    if (messages == null || messages.length <= 0) {
-      throw new BlError("no messages provided").code(701);
-    }
-
-    const message = messages[0] as Message;
-
     switch (message.messageType) {
       case "reminder":
         return await this.onRemind(message);
@@ -74,7 +68,7 @@ export class MessagePostHook implements Hook {
     }
   }
 
-  private async onGeneric(message: Message): Promise<[Message]> {
+  private async onGeneric(message: Message): Promise<Message> {
     const userDetail = await this.userDetailStorage
       .get(message.customerId)
       .catch(() => {
@@ -86,10 +80,10 @@ export class MessagePostHook implements Hook {
     this.messenger.send(message, userDetail).catch((e) => {
       throw new BlError(`Could not send generic message`).code(200).add(e);
     });
-    return [message];
+    return message;
   }
 
-  private async onMatch(message: Message): Promise<[Message]> {
+  private async onMatch(message: Message): Promise<Message> {
     const userDetail = await this.userDetailStorage
       .get(message.customerId)
       .catch(() => {
@@ -102,14 +96,14 @@ export class MessagePostHook implements Hook {
     this.messenger.send(message, userDetail).catch((e) => {
       throw new BlError(`Could not send match message`).code(200).add(e);
     });
-    return [message];
+    return message;
   }
 
-  private async onRemind(message: Message): Promise<[Message]> {
+  private async onRemind(message: Message): Promise<Message> {
     // Do not await to improve performance
     this.messengerReminder.remindCustomer(message).catch((e) => {
       throw new BlError(`Could not send reminder message`).code(200).add(e);
     });
-    return [message];
+    return message;
   }
 }
