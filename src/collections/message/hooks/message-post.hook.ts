@@ -57,8 +57,13 @@ export class MessagePostHook extends Hook {
     switch (message.messageType) {
       case "custom-reminder":
       case "reminder":
-        if (message.messageType === "custom-reminder" && message.messageMethod !== "sms") {
-          throw new BlError("Cannot send custom email reminder, only SMS").code(808)
+        if (
+          message.messageType === "custom-reminder" &&
+          message.messageMethod !== "sms"
+        ) {
+          throw new BlError("Cannot send custom email reminder, only SMS").code(
+            808,
+          );
         }
         return await this.onRemind(message);
       case "generic":
