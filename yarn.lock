@@ -21,17 +21,17 @@
     puppeteer "^9.1.1"
     typescript "^2.6.2"
 
-"@boklisten/bl-model@0.25.26":
-  version "0.25.26"
-  resolved "https://registry.yarnpkg.com/@boklisten/bl-model/-/bl-model-0.25.26.tgz#324091873a80deb62b064dde4de2e9bb426b6acb"
-  integrity sha512-KpChYWqWcNob73KEhXucOI0cyQKQ7zI2cwIt4PEAe9VFF/LJwavwn9jwRvcrcN45qX3huCUguf2yABK9zJ62Bg==
+"@boklisten/bl-model@^0.25.27":
+  version "0.25.27"
+  resolved "https://registry.yarnpkg.com/@boklisten/bl-model/-/bl-model-0.25.27.tgz#26ba29538a09f381f1d55bb424c24ccbf71933ef"
+  integrity sha512-PfdcAWyb66GMvpX/J1r7kJjEVSFmUbwhcJ+ncDU8EAR7ZPtNTs+M7MxEbEk8dIFqlRaOgHWoYo0z53l4s2roaA==
   dependencies:
     typescript "^5.2.2"
 
-"@boklisten/bl-post-office@^0.5.51":
-  version "0.5.51"
-  resolved "https://registry.yarnpkg.com/@boklisten/bl-post-office/-/bl-post-office-0.5.51.tgz#4a57401a371877ce84f4abc7784c476b465dcb0d"
-  integrity sha512-kfQO3o3WV0vD+ztKR9wwLB5Ny1VbNomyhkQ4NrLGtNWRd1FhHdOUyfcXbtuZKQihRfA4qR2/wJq+eG++KWQeag==
+"@boklisten/bl-post-office@^0.5.53":
+  version "0.5.53"
+  resolved "https://registry.yarnpkg.com/@boklisten/bl-post-office/-/bl-post-office-0.5.53.tgz#c5f016cee7bda895092e9883d146932b1e624c00"
+  integrity sha512-qF94DulYX8WopEmzvZ1AFqWR7W8rnUB1IXyXgVr2EmhWXA7u8WNoHvPYG+9kaWXY1y8bXue5hyFQQ2tWNEWcpg==
   dependencies:
     "@sendgrid/mail" "^6.3.1"
     "@types/mustache" "^0.8.32"

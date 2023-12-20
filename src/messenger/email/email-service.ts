@@ -193,12 +193,13 @@ export class EmailService implements MessengerService {
     );
 
     const messageOptions: MessageOptions = {
-      type: "reminder",
+      type: message.messageType,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       subtype: message.messageSubtype as any,
       sequence_number: message.sequenceNumber,
       textBlocks: message.textBlocks,
       mediums: this.getMessageOptionMediums(message),
+      customContent: message.customContent,
     };
 
     try {

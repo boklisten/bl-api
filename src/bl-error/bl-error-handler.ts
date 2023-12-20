@@ -168,6 +168,11 @@ export class BlErrorHandler {
           "Ordren inneholder bøker som er låst til en UserMatch; kunden må motta de låste bøkene fra en annen elev";
         blapiErrorResponse.httpStatus = 409;
         break;
+      case 808:
+        blapiErrorResponse.msg =
+          "Kan ikke sende e-post-påminnelse med egendefinert tekst, bare SMS";
+        blapiErrorResponse.httpStatus = 400;
+        break;
     }
 
     return blapiErrorResponse;
