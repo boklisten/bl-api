@@ -1,11 +1,12 @@
 import {
-  Order,
-  CustomerItem,
-  BlError,
   AccessToken,
+  BlError,
+  CustomerItem,
+  Order,
   UserDetail,
 } from "@boklisten/bl-model";
 
+import { logger } from "../../../../logger/logger";
 import { Messenger } from "../../../../messenger/messenger";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../bl-collection";
@@ -70,7 +71,10 @@ export class OrderPlacedHandler {
       await this.updateCustomerItemsIfPresent(placedOrder, accessToken);
       await this._orderItemMovedFromOrderHandler.updateOrderItems(placedOrder);
       await this.updateUserDetailWithPlacedOrder(placedOrder, accessToken);
-      this.sendOrderConfirmationMail(placedOrder);
+      // Don't await to improve performance
+      this.sendOrderConfirmationMail(placedOrder).catch((e) =>
+        logger.warn(`could not send order confirmation mail: ${e}`),
+      );
 
       return placedOrder;
     } catch (e) {
@@ -186,18 +190,17 @@ export class OrderPlacedHandler {
     });
   }
 
-  private sendOrderConfirmationMail(order: Order) {
-    if (!order.notification || order.notification.email) {
-      this.userDetailStorage
-        .get(order.customer as string)
-        .then((customerDetail: UserDetail) => {
-          if (order.handoutByDelivery) {
-            this._messenger.sendDeliveryInformation(customerDetail, order);
-          } else {
-            this._messenger.orderPlaced(customerDetail, order);
-          }
-        })
-        .catch();
+  private async sendOrderConfirmationMail(order: Order): Promise<void> {
+    if (order.notification && !order.notification.email) {
+      return;
+    }
+    const customerDetail = await this.userDetailStorage.get(
+      String(order.customer),
+    );
+    if (order.handoutByDelivery) {
+      await this._messenger.sendDeliveryInformation(customerDetail, order);
+    } else {
+      await this._messenger.orderPlaced(customerDetail, order);
     }
   }
 }

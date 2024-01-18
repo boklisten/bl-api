@@ -1,7 +1,6 @@
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import { LocalLoginHandler } from "./local-login.handler";
 import { LocalLogin } from "../../collections/local-login/local-login";
 import { LocalLoginValidator } from "./local-login.validator";
@@ -59,16 +58,12 @@ describe("LocalLoginValidator", () => {
   });
 
   sinon.stub(localLoginHandler, "add").callsFake((localLogin: LocalLogin) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       resolve(localLogin);
     });
   });
 
-  sinon
-    .stub(localLoginPasswordValidator, "validate")
-    .callsFake((password: string, salt: string, hashedPassword: any) => {
-      return Promise.resolve(true);
-    });
+  sinon.stub(localLoginPasswordValidator, "validate").resolves(true);
 
   sinon
     .stub(userHandler, "create")
@@ -91,7 +86,7 @@ describe("LocalLoginValidator", () => {
     });
 
   sinon.stub(userHandler, "valid").callsFake(() => {
-    return Promise.resolve(true);
+    return Promise.resolve();
   });
 
   describe("validate()", () => {

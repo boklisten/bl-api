@@ -5,9 +5,6 @@ import sinon from "sinon";
 import { TokenHandler } from "./token.handler";
 import { BlError } from "@boklisten/bl-model";
 import { UserHandler } from "../user/user.handler";
-import { TokenConfig } from "./token.config";
-import { AccessToken } from "./access-token/access-token";
-import { RefreshToken } from "./refresh/refresh-token";
 
 chai.use(chaiAsPromised);
 
@@ -25,28 +22,7 @@ const testUser: any = {
 };
 
 describe("TokenHandler", () => {
-  const refreshTokenConfig: RefreshToken = {
-    iss: "",
-    aud: "",
-    expiresIn: "12h",
-    iat: 0,
-    sub: "",
-    username: "",
-  };
-
-  const accessTokenConfig: AccessToken = {
-    iss: "",
-    aud: "",
-    expiresIn: "30s",
-    iat: 0,
-    sub: "",
-    username: "",
-    permission: "customer",
-    details: "",
-  };
-
   const userHandler = new UserHandler();
-  const tokenConfig = new TokenConfig(accessTokenConfig, refreshTokenConfig);
   const tokenHandler = new TokenHandler(userHandler);
 
   sinon.stub(userHandler, "getByUsername").callsFake((username: string) => {
@@ -59,7 +35,7 @@ describe("TokenHandler", () => {
   });
 
   sinon.stub(userHandler, "valid").callsFake(() => {
-    return Promise.resolve(true);
+    return Promise.resolve();
   });
 
   describe("createTokens()", () => {

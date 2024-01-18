@@ -1,6 +1,4 @@
-import { isNullOrUndefined } from "util";
-
-import { AccessToken, Message, BlError, UserDetail } from "@boklisten/bl-model";
+import { AccessToken, BlError, Message, UserDetail } from "@boklisten/bl-model";
 
 import { PermissionService } from "../../../auth/permission/permission.service";
 import { Hook } from "../../../hook/hook";
@@ -9,37 +7,31 @@ import { MessengerReminder } from "../../../messenger/reminder/messenger-reminde
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { MessageHelper } from "../helper/message-helper";
 
-export class MessagePostHook implements Hook {
-  private messengerReminder: MessengerReminder;
-  private permissionService: PermissionService;
-  private messenger: Messenger;
-  private userDetailStorage: BlDocumentStorage<UserDetail>;
+export class MessagePostHook extends Hook {
+  private readonly messengerReminder: MessengerReminder;
+  private readonly permissionService: PermissionService;
+  private readonly messenger: Messenger;
+  private readonly userDetailStorage: BlDocumentStorage<UserDetail>;
 
   constructor(
     messengerReminder?: MessengerReminder,
-    messageStorage?: BlDocumentStorage<Message>,
-    messageHelper?: MessageHelper,
     messenger?: Messenger,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
-    this.messengerReminder = messengerReminder
-      ? messengerReminder
-      : new MessengerReminder();
+    super();
+    this.messengerReminder = messengerReminder ?? new MessengerReminder();
     this.permissionService = new PermissionService();
-    this.messenger = messenger ? messenger : new Messenger();
-    this.userDetailStorage = userDetailStorage
-      ? userDetailStorage
-      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+    this.messenger = messenger ?? new Messenger();
+    this.userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
   }
 
-  async before(
+  override async before(
     message: Message,
     accessToken: AccessToken,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    id?: string,
-  ): Promise<boolean> {
+  ): Promise<Message> {
     if (typeof message.messageType === "undefined" || !message.messageType) {
       throw new BlError("messageType is not defined").code(701);
     }
@@ -61,40 +53,18 @@ export class MessagePostHook implements Hook {
         throw new BlError("no permission").code(904);
       }
     }
-    /*
-    let alreadyAdded;
-
-    try {
-      alreadyAdded = await this.messageHelper.isAdded(message);
-    } catch (e) {
-      throw new BlError('could not check if message was already added');
-    }
-
-    if (alreadyAdded) {
-      throw new BlError(
-        `message is already added: type: ${message.messageType}, subtype: ${
-          message.messageSubtype
-        }, seq: ${message.sequenceNumber}, customer: "${message.customerId}"`,
-      ).code(701);
-    }
-    */
-
-    return true;
-  }
-
-  async after(
-    messages: Message[],
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    accessToken: AccessToken,
-  ): Promise<Message[]> {
-    if (isNullOrUndefined(messages) || messages.length <= 0) {
-      throw new BlError("no messages provided");
-    }
-
-    const message = messages[0];
 
     switch (message.messageType) {
+      case "custom-reminder":
       case "reminder":
+        if (
+          message.messageType === "custom-reminder" &&
+          message.messageMethod !== "sms"
+        ) {
+          throw new BlError("Cannot send custom email reminder, only SMS").code(
+            808,
+          );
+        }
         return await this.onRemind(message);
       case "generic":
         return await this.onGeneric(message);
@@ -103,34 +73,46 @@ export class MessagePostHook implements Hook {
       default:
         throw new BlError(
           `MessageType "${message.messageType}" is not supported`,
-        );
+        ).code(701);
     }
   }
 
-  private async onGeneric(message: Message): Promise<Message[]> {
-    let userDetail: UserDetail;
-    try {
-      userDetail = await this.userDetailStorage.get(message.customerId);
-      await this.messenger.send(message, userDetail);
-      return [message];
-    } catch (e) {
-      throw `could not send generic message: ${e}`;
-    }
+  private async onGeneric(message: Message): Promise<Message> {
+    const userDetail = await this.userDetailStorage
+      .get(message.customerId)
+      .catch(() => {
+        throw new BlError(
+          `Could not find customerId ${message.customerId}`,
+        ).code(702);
+      });
+    // Do not await to improve performance
+    this.messenger.send(message, userDetail).catch((e) => {
+      throw new BlError(`Could not send generic message`).code(200).add(e);
+    });
+    return message;
   }
 
-  private async onMatch(message: Message): Promise<Message[]> {
-    let userDetail: UserDetail;
-    try {
-      userDetail = await this.userDetailStorage.get(message.customerId);
-      await this.messenger.send(message, userDetail);
-      return [message];
-    } catch (e) {
-      throw `could not send match message: ${e}`;
-    }
+  private async onMatch(message: Message): Promise<Message> {
+    const userDetail = await this.userDetailStorage
+      .get(message.customerId)
+      .catch(() => {
+        throw new BlError(
+          `Could not find customerId ${message.customerId}`,
+        ).code(702);
+      });
+
+    // Do not await to improve performance
+    this.messenger.send(message, userDetail).catch((e) => {
+      throw new BlError(`Could not send match message`).code(200).add(e);
+    });
+    return message;
   }
 
-  private async onRemind(message: Message): Promise<Message[]> {
-    await this.messengerReminder.remindCustomer(message);
-    return [message];
+  private async onRemind(message: Message): Promise<Message> {
+    // Do not await to improve performance
+    this.messengerReminder.remindCustomer(message).catch((e) => {
+      throw new BlError(`Could not send reminder message`).code(200).add(e);
+    });
+    return message;
   }
 }

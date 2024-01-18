@@ -9,30 +9,28 @@ import { EmailValidation } from "../email-validation";
 import { emailValidationSchema } from "../email-validation.schema";
 
 export class EmailValidationHelper {
-  private _messenger: Messenger;
-  private _userDetailStorage: BlDocumentStorage<UserDetail>;
-  private _emailValidationStorage?: BlDocumentStorage<EmailValidation>;
+  private readonly _messenger: Messenger;
+  private readonly _userDetailStorage: BlDocumentStorage<UserDetail>;
+  private readonly _emailValidationStorage?: BlDocumentStorage<EmailValidation>;
 
   constructor(
     messenger?: Messenger,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     emailValidationStorage?: BlDocumentStorage<EmailValidation>,
   ) {
-    this._messenger = messenger ? messenger : new Messenger();
-    this._userDetailStorage = userDetailStorage
-      ? userDetailStorage
-      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
-    this._emailValidationStorage = emailValidationStorage
-      ? emailValidationStorage
-      : new BlDocumentStorage(
-          BlCollectionName.EmailValidations,
-          emailValidationSchema,
-        );
+    this._messenger = messenger ?? new Messenger();
+    this._userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+    this._emailValidationStorage =
+      emailValidationStorage ??
+      new BlDocumentStorage(
+        BlCollectionName.EmailValidations,
+        emailValidationSchema,
+      );
   }
 
-  public createAndSendEmailValidationLink(
-    userDetailId: string,
-  ): Promise<boolean> {
+  public createAndSendEmailValidationLink(userDetailId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this._userDetailStorage
         .get(userDetailId)
@@ -45,12 +43,10 @@ export class EmailValidationHelper {
           this._emailValidationStorage
             .add(emailValidation, new SystemUser())
             .then((addedEmailValidation: EmailValidation) => {
-              this._messenger.emailConfirmation(
-                userDetail,
-                addedEmailValidation.id,
-              );
-
-              resolve(true);
+              this._messenger
+                .emailConfirmation(userDetail, addedEmailValidation.id)
+                .then(resolve)
+                .catch(reject);
             })
             .catch((addEmailValidationError: BlError) => {
               reject(
@@ -72,22 +68,23 @@ export class EmailValidationHelper {
 
   public sendEmailValidationLink(
     emailValidation: EmailValidation,
-  ): Promise<boolean> {
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       this._userDetailStorage
         .get(emailValidation.userDetail)
-        .then((userDetail: UserDetail) => {
-          this._messenger.emailConfirmation(userDetail, emailValidation.id);
-
-          resolve(true);
-        })
         .catch((getUserDetailError: BlError) => {
           reject(
             new BlError(
               `userDetail "${emailValidation.userDetail}" not found`,
             ).add(getUserDetailError),
           );
-        });
+        })
+        .then((userDetail: UserDetail) =>
+          this._messenger
+            .emailConfirmation(userDetail, emailValidation.id)
+            .then(resolve)
+            .catch(reject),
+        );
     });
   }
 }

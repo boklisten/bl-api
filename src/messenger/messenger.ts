@@ -1,3 +1,4 @@
+import { EmailAttachment } from "@boklisten/bl-email";
 import {
   Delivery,
   Order,
@@ -17,9 +18,9 @@ import { deliverySchema } from "../collections/delivery/delivery.schema";
 import { BlDocumentStorage } from "../storage/blDocumentStorage";
 
 export class Messenger implements MessengerService {
-  private _emailService: EmailService;
-  private _pdfService: PdfService;
-  private _deliveryStorage: BlDocumentStorage<Delivery>;
+  private readonly _emailService: EmailService;
+  private readonly _pdfService: PdfService;
+  private readonly _deliveryStorage: BlDocumentStorage<Delivery>;
 
   constructor() {
     this._emailService = new EmailService();
@@ -32,11 +33,14 @@ export class Messenger implements MessengerService {
 
   /**
    * send out message(s) to the customer
-   * @param {Message[]} messages
+   * @param {Message[]} message
    * @param {UserDetail} customerDetail
    */
-  public send(message: Message, customerDetail: UserDetail) {
-    this._emailService.send(message, customerDetail);
+  public async send(
+    message: Message,
+    customerDetail: UserDetail,
+  ): Promise<void> {
+    await this._emailService.send(message, customerDetail);
   }
 
   /**
@@ -44,31 +48,35 @@ export class Messenger implements MessengerService {
    * @param {Message[]} messages
    * @param {UserDetail[]} customerDetails
    */
-  public sendMany(messages: Message[], customerDetails: UserDetail[]) {
-    this._emailService.sendMany(messages, customerDetails);
+  public async sendMany(
+    messages: Message[],
+    customerDetails: UserDetail[],
+  ): Promise<void> {
+    await this._emailService.sendMany(messages, customerDetails);
   }
 
   /**
    * reminds the customer of the due date of his items
-   * @param {UserDetail} the customer to send reminder to
-   * @param {CustomerItem[]} the customerItems to remind of
+   * @param message the message to send
+   * @param customerDetail the customer to send reminder to
+   * @param customerItems the customerItems to remind of
    */
-  public remind(
+  public async remind(
     message: Message,
     customerDetail: UserDetail,
     customerItems: CustomerItem[],
-  ) {
-    this._emailService.remind(message, customerDetail, customerItems);
+  ): Promise<void> {
+    await this._emailService.remind(message, customerDetail, customerItems);
   }
 
   /**
    * sends out reminders to more than one customer
-   * @param {CustomerDetailWithCustomerItem[]} customerDetails with customerItems to remind about
+   * @param customerDetailsWithCustomerItems customerDetails with customerItems to remind about
    */
-  public remindMany(
+  public async remindMany(
     customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[],
-  ) {
-    this._emailService.remindMany(customerDetailsWithCustomerItems);
+  ): Promise<void> {
+    await this._emailService.remindMany(customerDetailsWithCustomerItems);
   }
 
   /**
@@ -76,8 +84,11 @@ export class Messenger implements MessengerService {
    * @param {UserDetail} customerDetail
    * @param {Order} order
    */
-  public orderPlaced(customerDetail: UserDetail, order: Order) {
-    this._emailService.orderPlaced(customerDetail, order);
+  public async orderPlaced(
+    customerDetail: UserDetail,
+    order: Order,
+  ): Promise<void> {
+    await this._emailService.orderPlaced(customerDetail, order);
   }
 
   /**
@@ -85,8 +96,11 @@ export class Messenger implements MessengerService {
    * @param {UserDetail} customerDetail
    * @param {Order} order
    */
-  public getOrderReceiptPdf(customerDetail: UserDetail, order: Order) {
-    return this._pdfService.getOrderReceiptPdf(customerDetail, order);
+  public async getOrderReceiptPdf(
+    customerDetail: UserDetail,
+    order: Order,
+  ): Promise<EmailAttachment> {
+    return await this._pdfService.getOrderReceiptPdf(customerDetail, order);
   }
 
   /**
@@ -94,19 +108,24 @@ export class Messenger implements MessengerService {
    * @param {UserDetail} customerDetail
    * @param {Order} order
    */
-  public getOrderAgreementPdf(customerDetail: UserDetail, order: Order) {
-    return this._pdfService.getOrderAgreementPdf(customerDetail, order);
+  public async getOrderAgreementPdf(
+    customerDetail: UserDetail,
+    order: Order,
+  ): Promise<EmailAttachment> {
+    return await this._pdfService.getOrderAgreementPdf(customerDetail, order);
   }
 
-  public sendDeliveryInformation(customerDetail: UserDetail, order: Order) {
+  public async sendDeliveryInformation(
+    customerDetail: UserDetail,
+    order: Order,
+  ): Promise<void> {
     const deliveryId = typeof order.delivery === "string" ? order.delivery : "";
-    this._deliveryStorage
-      .get(deliveryId)
-      .then((delivery: Delivery) => {
-        this._emailService.deliveryInformation(customerDetail, order, delivery);
-      })
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      .catch(() => {});
+    const delivery = await this._deliveryStorage.get(deliveryId);
+    await this._emailService.deliveryInformation(
+      customerDetail,
+      order,
+      delivery,
+    );
   }
 
   /**
@@ -114,11 +133,14 @@ export class Messenger implements MessengerService {
    * @param {UserDetail} customerDetail
    * @param {string} confirmationCode
    */
-  public emailConfirmation(
+  public async emailConfirmation(
     customerDetail: UserDetail,
     confirmationCode: string,
-  ) {
-    this._emailService.emailConfirmation(customerDetail, confirmationCode);
+  ): Promise<void> {
+    await this._emailService.emailConfirmation(
+      customerDetail,
+      confirmationCode,
+    );
   }
 
   /**

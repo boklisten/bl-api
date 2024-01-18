@@ -16,8 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "@boklisten/bl-email": "^1.7.2",
-    "@boklisten/bl-model": "0.25.26",
-    "@boklisten/bl-post-office": "^0.5.51",
+    "@boklisten/bl-model": "^0.25.28",
+    "@boklisten/bl-post-office": "^0.5.53",
     "@sendgrid/mail": "^7.7.0",
     "canvas": "^2.11.2",
     "commander": "^8.3.0",

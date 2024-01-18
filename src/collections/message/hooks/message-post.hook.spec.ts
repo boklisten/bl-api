@@ -8,7 +8,6 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import sinonChai from "sinon-chai";
 import { MessagePostHook } from "./message-post.hook";
 import { MessengerReminder } from "../../../messenger/reminder/messenger-reminder";
-import { MessageHelper } from "../helper/message-helper";
 import { Messenger } from "../../../messenger/messenger";
 import { BlCollectionName } from "../../bl-collection";
 
@@ -17,18 +16,12 @@ chai.use(sinonChai);
 
 describe("MessagePostHook", () => {
   const messengerReminder = new MessengerReminder();
-  const messageStorage = new BlDocumentStorage<Message>(
-    BlCollectionName.Messages,
-  );
   const userDetailStorage = new BlDocumentStorage<UserDetail>(
     BlCollectionName.UserDetails,
   );
-  const messageHelper = new MessageHelper(messageStorage);
   const messenger = new Messenger();
   const messagePostHook = new MessagePostHook(
     messengerReminder,
-    messageStorage,
-    messageHelper,
     messenger,
     userDetailStorage,
   );
@@ -41,11 +34,17 @@ describe("MessagePostHook", () => {
 
   const userDetailGetStub = sinon.stub(userDetailStorage, "get");
 
-  const messageHelperIsAddedStub = sinon.stub(messageHelper, "isAdded");
-
-  messageHelperIsAddedStub.resolves(false);
+  const adminAccessToken = {
+    permission: "admin",
+  } as AccessToken;
 
   describe("#before", () => {
+    messengerReminderRemindCustomerStub.resolves();
+
+    beforeEach(() => {
+      messengerReminderRemindCustomerStub.reset();
+    });
+
     it("should reject with permission error if permission is not admin or above", () => {
       const accessToken = {
         permission: "customer",
@@ -62,50 +61,9 @@ describe("MessagePostHook", () => {
         },
       };
 
-      messengerReminderRemindCustomerStub.resolves(true);
-
       return expect(
         messagePostHook.before(body, accessToken),
       ).to.eventually.be.rejectedWith(BlError, /no permission/);
-    });
-
-    /*
-    it('should reject if message is already added', () => {
-      const accessToken = {
-        permission: 'admin',
-      } as AccessToken;
-
-      const body: Message = {
-        id: '',
-        customerId: 'customer1',
-        messageType: 'reminder',
-        messageSubtype: 'none',
-        messageMethod: 'all',
-        info: {
-          deadline: new Date(),
-        },
-      };
-
-      messengerReminderRemindCustomerStub.resolves(true);
-      messageHelperIsAddedStub.resolves(true);
-
-      return expect(
-        messagePostHook.before(body, accessToken),
-      ).to.eventually.be.rejectedWith(BlError, /already added/);
-    });
-
-  */
-  });
-
-  describe("#after", () => {
-    beforeEach(() => {
-      messengerReminderRemindCustomerStub.reset();
-    });
-
-    it("should reject if no messages was provided", () => {
-      return expect(messagePostHook.after([], {} as AccessToken))
-        .to.eventually.be.rejectedWith(/no messages provided/)
-        .and.be.an.instanceOf(BlError);
     });
 
     context('when messageType is "reminder"', () => {
@@ -130,15 +88,15 @@ describe("MessagePostHook", () => {
         );
 
         expect(
-          messagePostHook.after([message], {} as AccessToken),
+          messagePostHook.before(message, adminAccessToken),
         ).to.eventually.be.rejectedWith(BlError);
       });
 
       it("should call messengerReminder", (done) => {
-        messengerReminderRemindCustomerStub.resolves(true);
+        messengerReminderRemindCustomerStub.resolves();
 
         messagePostHook
-          .after([message], {} as AccessToken)
+          .before(message, adminAccessToken)
           .then(() => {
             expect(messengerReminderRemindCustomerStub).to.have.been.called;
 
@@ -175,11 +133,11 @@ describe("MessagePostHook", () => {
       });
 
       it("should call messenger.send", (done) => {
-        messengerSendStub.resolves(true);
+        messengerSendStub.resolves();
         userDetailGetStub.resolves(userDetail);
 
         messagePostHook
-          .after([message], {} as AccessToken)
+          .before(message, adminAccessToken)
           .then(() => {
             expect(messengerSendStub).to.have.been.called;
 

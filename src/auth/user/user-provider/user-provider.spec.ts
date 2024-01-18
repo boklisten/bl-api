@@ -1,15 +1,14 @@
-import "mocha";
+import { BlError } from "@boklisten/bl-model";
 
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import "mocha";
 import sinon from "sinon";
-import { expect } from "chai";
-import { UserHandler } from "../user.handler";
-import { BlError, UserDetail } from "@boklisten/bl-model";
-import { User } from "../../../collections/user/user";
-import { UserProvider } from "./user-provider";
 import { LocalLoginHandler } from "../../local/local-login.handler";
 import { TokenHandler } from "../../token/token.handler";
+import { UserHandler } from "../user.handler";
+import { UserProvider } from "./user-provider";
+
 chai.use(chaiAsPromised);
 
 describe("UserProvider", () => {
@@ -51,7 +50,7 @@ describe("UserProvider", () => {
 
     it("should reject if localLoginHandler.createDefaultLocalLoginIfNoneIsFound rejects", () => {
       userGetStub.resolves({ id: "user1" } as any);
-      userValidStub.resolves(true);
+      userValidStub.resolves();
       createDefaultLocalLoginStub.rejects(
         new BlError("local login could not be created"),
       );
@@ -78,7 +77,7 @@ describe("UserProvider", () => {
         const user = {};
         userGetStub.rejects(new BlError("user not found"));
         userCreateStub.resolves(user as any);
-        userValidStub.resolves(true);
+        userValidStub.resolves();
         createDefaultLocalLoginStub.resolves(true);
         const tokens = { accessToken: "atoken", refreshToken: "rtoken" };
         createTokenStub.resolves(tokens);
@@ -93,7 +92,7 @@ describe("UserProvider", () => {
       it("should resolve with a user object and tokens", () => {
         const user = { id: "user1", username: "user@mail.com" };
         userGetStub.resolves(user as any);
-        userValidStub.resolves(true);
+        userValidStub.resolves();
         createDefaultLocalLoginStub.resolves(true);
 
         const tokens = { accessToken: "atoken", refreshToken: "rtoken" };

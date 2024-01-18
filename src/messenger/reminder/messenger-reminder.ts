@@ -7,48 +7,44 @@ import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import { EmailService } from "../email/email-service";
 
 export class MessengerReminder {
-  private customerItemHandler: CustomerItemHandler;
-  private userDetailStorage: BlDocumentStorage<UserDetail>;
-  private emailService: EmailService;
+  private readonly customerItemHandler: CustomerItemHandler;
+  private readonly userDetailStorage: BlDocumentStorage<UserDetail>;
+  private readonly emailService: EmailService;
 
   constructor(
     customerItemHandler?: CustomerItemHandler,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     emailService?: EmailService,
   ) {
-    this.customerItemHandler = customerItemHandler
-      ? customerItemHandler
-      : new CustomerItemHandler();
-    this.userDetailStorage = userDetailStorage
-      ? userDetailStorage
-      : new BlDocumentStorage<UserDetail>(
-          BlCollectionName.UserDetails,
-          userDetailSchema,
-        );
-    this.emailService = emailService ? emailService : new EmailService();
+    this.customerItemHandler = customerItemHandler ?? new CustomerItemHandler();
+    this.userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage<UserDetail>(
+        BlCollectionName.UserDetails,
+        userDetailSchema,
+      );
+    this.emailService = emailService ?? new EmailService();
   }
 
   /**
    *  Tries to remind all customers to return items that have the specified deadline
    *  @param deadline the deadline the reminder is for
    */
-  // eslint-disable-next-line
-  public remindAll(deadline: Date) {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public remindAll(deadline: Date) {
+    throw new BlError("Not implemented!").code(200);
+  }
 
   /**
    *  Reminds a customer to return a item with the specified deadline
-   *  @param customerId the customers id
-   *  @param deadline the deadline the reminder is for
-   *  @param messageId if provided, stores message info in that message object
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async remindCustomer(message: Message): Promise<any> {
+  public async remindCustomer(message: Message): Promise<void> {
     if (message.customerId == null || message.customerId.length <= 0) {
-      throw new BlError("customerId is null or undefined");
+      throw new BlError("customerId is null or undefined").code(701);
     }
 
     if (!message.info || message.info["deadline"] == null) {
-      throw new BlError("deadline is null or undefined");
+      throw new BlError("deadline is null or undefined").code(701);
     }
 
     const notReturnedCustomerItems =
@@ -66,7 +62,5 @@ export class MessengerReminder {
       userDetail,
       notReturnedCustomerItems,
     );
-
-    return true;
   }
 }

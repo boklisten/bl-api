@@ -57,7 +57,7 @@ describe("EmailValidationHelper", () => {
 
   const messengerEmailConfirmationStub = sinon
     .stub(messenger, "emailConfirmation")
-    .callsFake(() => {});
+    .resolves();
 
   describe("#createAndSendEmailValidationLink", () => {
     it("should reject if userId is not found", () => {

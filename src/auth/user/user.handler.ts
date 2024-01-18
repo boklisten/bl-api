@@ -166,7 +166,7 @@ export class UserHandler {
     if (!providerId || providerId.length <= 0)
       throw new BlError("providerId is empty or undefined").code(907);
 
-    let userExists: User = null;
+    let userExists: User;
     try {
       userExists = await this.getByUsername(username);
     } catch (e) {
@@ -257,12 +257,9 @@ export class UserHandler {
     );
   }
 
-  private sendEmailValidationLink(userDetail: UserDetail): Promise<boolean> {
-    return this._emailValidationHelper
+  private async sendEmailValidationLink(userDetail: UserDetail): Promise<void> {
+    await this._emailValidationHelper
       .createAndSendEmailValidationLink(userDetail.id)
-      .then(() => {
-        return true;
-      })
       .catch((sendEmailValidationLinkError: BlError) => {
         throw new BlError("could not send out email validation link").add(
           sendEmailValidationLinkError,
@@ -270,7 +267,7 @@ export class UserHandler {
       });
   }
 
-  public valid(username: string): Promise<boolean> {
+  public valid(username: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.getByUsername(username)
         .then((user: User) => {
@@ -278,7 +275,7 @@ export class UserHandler {
             return reject(new BlError("user.active is false").code(913));
           }
 
-          resolve(true);
+          resolve();
         })
         .catch((getUserError: BlError) => {
           reject(getUserError);
@@ -286,7 +283,7 @@ export class UserHandler {
     });
   }
 
-  public exists(provider: string, providerId: string): Promise<boolean> {
+  public exists(provider: string, providerId: string): Promise<void> {
     if (!provider || !providerId) {
       return Promise.reject(
         new BlError("provider or providerId is empty or undefinedl"),
@@ -302,9 +299,8 @@ export class UserHandler {
     return new Promise((resolve, reject) => {
       this.userStorage
         .getByQuery(dbQuery)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .then((users: User[]) => {
-          resolve(true);
+        .then(() => {
+          resolve();
         })
         .catch((blError: BlError) => {
           reject(new BlError("does not exist").add(blError));
