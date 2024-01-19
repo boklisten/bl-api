@@ -66,7 +66,6 @@ export const customerItemSchema = new Schema<CustomerItem>({
   buyback: Boolean,
   buybackInfo: {
     order: Schema.Types.ObjectId,
-    time: Date,
   },
 
   orders: [Schema.Types.ObjectId],

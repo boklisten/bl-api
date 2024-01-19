@@ -1,5 +1,5 @@
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
-import { Model, PipelineStage, Schema, Types } from "mongoose";
+import { Error, Model, PipelineStage, Schema, Types } from "mongoose";
 
 import { MongooseModelCreator } from "./mongoose-schema-creator";
 import { PermissionService } from "../../auth/permission/permission.service";
@@ -176,7 +176,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public async update(
     id: string,
-    data: unknown,
+    data: Partial<T>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
@@ -212,7 +212,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public updateMany(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    docs: { id: string; data: unknown }[],
+    docs: { id: string; data: Partial<T> }[],
   ): Promise<T[]> {
     throw new BlError("not implemented");
   }
@@ -332,9 +332,8 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     return documentStorage.get(id, userPermission);
   }
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  private handleError(blError: BlError, error: any): BlError {
-    if (error) {
+  private handleError(blError: BlError, error: unknown): BlError {
+    if (error && error instanceof Error) {
       if (error.name === "CastError") {
         return blError.code(702).store("castError", error);
       } else if (error.name === "ValidationError") {

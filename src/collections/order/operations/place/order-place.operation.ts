@@ -296,7 +296,7 @@ export class OrderPlaceOperation implements Operation {
           {
             deliveredItems: [
               ...foundStandMatch.deliveredItems,
-              customerItem.item,
+              customerItem.item as string,
             ],
           },
           new SystemUser(),
@@ -317,7 +317,7 @@ export class OrderPlaceOperation implements Operation {
           {
             receivedItems: [
               ...foundStandMatch.receivedItems,
-              customerItem.item,
+              customerItem.item as string,
             ],
           },
           new SystemUser(),

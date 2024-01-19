@@ -227,7 +227,6 @@ export class CustomerItemHandler {
         buyback: true,
         buybackInfo: {
           order: orderId,
-          time: new Date(),
         },
       },
       new SystemUser(),

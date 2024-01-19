@@ -33,11 +33,11 @@ export interface BlStorageHandler<T extends BlDocument> {
 
   update(
     id: string,
-    data: unknown,
+    data: Partial<T>,
     user: { id: string; permission: UserPermission },
   ): Promise<T>;
 
-  updateMany(docs: { id: string; data: unknown }[]): Promise<T[]>;
+  updateMany(docs: { id: string; data: Partial<T> }[]): Promise<T[]>;
 
   remove(
     id: string,

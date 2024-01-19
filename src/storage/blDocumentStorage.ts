@@ -106,7 +106,7 @@ export class BlDocumentStorage<T extends BlDocument>
 
   update(
     id: string,
-    data: unknown,
+    data: Partial<T>,
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
     return new Promise((resolve, reject) => {
@@ -121,7 +121,7 @@ export class BlDocumentStorage<T extends BlDocument>
     });
   }
 
-  updateMany(docs: { id: string; data: unknown }[]): Promise<T[]> {
+  updateMany(docs: { id: string; data: Partial<T> }[]): Promise<T[]> {
     return new Promise((resolve, reject) => {
       reject(new BlError("not implemented"));
     });
