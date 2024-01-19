@@ -38,19 +38,8 @@ export const messageSchema = new Schema<Message>({
     type: String,
     required: false,
   },
-  events: {
-    type: [Schema.Types.Mixed],
-    required: false,
-    default: [],
-  },
+  events: [Schema.Types.Mixed],
 
-  smsEvents: {
-    type: [Schema.Types.Mixed],
-    required: false,
-    default: [],
-  },
-  textBlocks: {
-    type: [Schema.Types.Mixed],
-    required: false,
-  },
+  smsEvents: [Schema.Types.Mixed],
+  textBlocks: [Schema.Types.Mixed],
 });

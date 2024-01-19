@@ -1,21 +1,21 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 
 import { BlCollectionName } from "../../collections/bl-collection";
 
 export class MongooseModelCreator<T> {
   constructor(
     private collectionName: BlCollectionName,
-    private schema: Schema<T>,
+    private schema: Schema,
   ) {}
 
-  create(): mongoose.Model<T> {
-    return mongoose.model(
+  create(): Model<T> {
+    return mongoose.model<T>(
       this.collectionName,
       this.standardizeSchema(this.schema),
     );
   }
 
-  private standardizeSchema<T>(schema: Schema<T>): Schema<T> {
+  private standardizeSchema(schema: Schema): Schema {
     schema.add({
       blid: String,
       lastUpdated: {

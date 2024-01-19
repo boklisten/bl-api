@@ -1,4 +1,5 @@
 import { BlDocument, UserPermission } from "@boklisten/bl-model";
+import { PipelineStage } from "mongoose";
 
 import { NestedDocument } from "./nested-document";
 import { SEDbQuery } from "../query/se.db-query";
@@ -45,7 +46,7 @@ export interface BlStorageHandler<T extends BlDocument> {
 
   removeMany(ids: string[]): Promise<T[]>;
 
-  aggregate(aggregation: unknown[]): Promise<T[]>;
+  aggregate(aggregation: PipelineStage[]): Promise<T[]>;
 
   exists(id: string): Promise<boolean>;
 }

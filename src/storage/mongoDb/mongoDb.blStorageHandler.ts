@@ -1,5 +1,5 @@
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
-import { Model, Schema, Types } from "mongoose";
+import { Model, PipelineStage, Schema, Types } from "mongoose";
 
 import { MongooseModelCreator } from "./mongoose-schema-creator";
 import { PermissionService } from "../../auth/permission/permission.service";
@@ -13,11 +13,11 @@ import { NestedDocument } from "../nested-document";
 export class MongoDbBlStorageHandler<T extends BlDocument>
   implements BlStorageHandler<T>
 {
-  private mongooseModel: Model<T>;
+  private readonly mongooseModel: Model<T>;
   private permissionService: PermissionService;
 
   constructor(collectionName: BlCollectionName, schema: Schema<T>) {
-    const mongooseModelCreator = new MongooseModelCreator(
+    const mongooseModelCreator = new MongooseModelCreator<T>(
       collectionName,
       schema,
     );
@@ -25,10 +25,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     this.permissionService = new PermissionService();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async get(id: string, userPermission?: UserPermission): Promise<T> {
+  public async get(
+    id: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    userPermission?: UserPermission,
+  ): Promise<T> {
     const doc = await this.mongooseModel
-      .findById(id)
+      .findById<T>(id)
       .exec()
       .catch((error) => {
         throw this.handleError(
@@ -104,7 +107,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     }
   }
 
-  public async aggregate(aggregation: unknown[]): Promise<T[]> {
+  public async aggregate(aggregation: PipelineStage[]): Promise<T[]> {
     const doc = await this.mongooseModel
       .aggregate(aggregation)
       .exec()
@@ -158,7 +161,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         ...doc,
         ...(doc.id && { _id: doc.id }),
       });
-      return (await newDocument.save()) as unknown as T;
+      return await newDocument.save();
     } catch (error) {
       throw this.handleError(
         new BlError("error when trying to add document").data(doc),
@@ -204,11 +207,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     document.set(data);
     document.set({ lastUpdated: new Date() });
 
-    return (await document.save()) as unknown as T;
+    return await document.save();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public updateMany(docs: { id: string; data: unknown }[]): Promise<T[]> {
+  public updateMany(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    docs: { id: string; data: unknown }[],
+  ): Promise<T[]> {
     throw new BlError("not implemented");
   }
 
@@ -218,7 +223,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
     const doc = await this.mongooseModel
-      .findByIdAndRemove(id)
+      .findByIdAndDelete(id)
       .exec()
       .catch((error) => {
         throw this.handleError(
@@ -284,7 +289,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     }
   }
 
-  private async getNestedDocuments<T extends BlDocument>(
+  private async getNestedDocuments(
     doc: T,
     nestedDocuments: NestedDocument[],
     userPermission?: UserPermission,
@@ -319,8 +324,8 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     id: string,
     nestedDocument: NestedDocument,
     userPermission?: UserPermission,
-  ): Promise<BlDocument> {
-    const documentStorage = new MongoDbBlStorageHandler(
+  ): Promise<T> {
+    const documentStorage = new MongoDbBlStorageHandler<T>(
       nestedDocument.collection,
       nestedDocument.mongooseSchema,
     );

@@ -34,10 +34,6 @@ export const userDetailSchema = new Schema<UserDetail>({
   branch: {
     type: Schema.Types.ObjectId,
   },
-  lastActive: {
-    type: Date,
-    default: Date.now(),
-  },
   guardian: {
     name: {
       type: String,
@@ -55,12 +51,6 @@ export const userDetailSchema = new Schema<UserDetail>({
       type: Boolean,
     },
   },
-  customerItems: {
-    type: [Schema.Types.ObjectId],
-    default: [],
-  },
-  orders: {
-    type: [Schema.Types.ObjectId],
-    default: [],
-  },
+  customerItems: [Schema.Types.ObjectId],
+  orders: [Schema.Types.ObjectId],
 });

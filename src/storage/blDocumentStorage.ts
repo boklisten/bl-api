@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
-import { Schema } from "mongoose";
+import { PipelineStage, Schema } from "mongoose";
 
 import { BlStorageHandler } from "./blStorageHandler";
 import { MongoDbBlStorageHandler } from "./mongoDb/mongoDb.blStorageHandler";
@@ -15,10 +15,10 @@ export class BlDocumentStorage<T extends BlDocument>
 
   constructor(
     private collectionName: BlCollectionName,
-    private mongooseSchema?: Schema<T>,
+    private mongooseSchema?: Schema,
   ) {
     if (mongooseSchema) {
-      this.mongoDbHandler = new MongoDbBlStorageHandler(
+      this.mongoDbHandler = new MongoDbBlStorageHandler<T>(
         collectionName,
         mongooseSchema,
       );
@@ -143,7 +143,7 @@ export class BlDocumentStorage<T extends BlDocument>
     });
   }
 
-  aggregate(aggregation: unknown[]): Promise<T[]> {
+  aggregate(aggregation: PipelineStage[]): Promise<T[]> {
     return this.mongoDbHandler.aggregate(aggregation);
   }
 

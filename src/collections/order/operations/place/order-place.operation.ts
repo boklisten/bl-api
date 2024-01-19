@@ -462,11 +462,8 @@ export class OrderPlaceOperation implements Operation {
   ): Promise<CustomerItem[]> {
     const addedCustomerItems = [];
     for (const customerItem of customerItems) {
-      try {
-        const ci = await this._customerItemStorage.add(customerItem, user);
-        addedCustomerItems.push(ci);
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+      const ci = await this._customerItemStorage.add(customerItem, user);
+      addedCustomerItems.push(ci);
     }
 
     return addedCustomerItems;

@@ -10,6 +10,7 @@ export const orderSchema = new Schema<Order>({
     type: [
       {
         type: {
+          // Important: keep this nesting ("type" is reserved by mongoose)
           type: String,
           required: true,
         },
