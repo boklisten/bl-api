@@ -152,7 +152,7 @@ export class CollectionEndpoint<T extends BlDocument> {
       endpoint,
       this._collection.collectionName,
       this._documentStorage,
-      this._collection.documentPermission
+      this._collection.documentPermission,
     );
     collectionEndpointPut.create();
   }

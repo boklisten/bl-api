@@ -24,6 +24,6 @@ export class EditableTextCollection implements BlCollection {
       restriction: {
         permissions: ["admin", "super"],
       },
-    }
+    },
   ];
 }

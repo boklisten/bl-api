@@ -70,7 +70,10 @@ export class MongooseModelCreator<T> {
     });
 
     // Enable automatic timestamps
-    schema.set("timestamps", { createdAt: "creationTime", updatedAt: "lastUpdated"});
+    schema.set("timestamps", {
+      createdAt: "creationTime",
+      updatedAt: "lastUpdated",
+    });
 
     return schema;
   }
