@@ -3,10 +3,9 @@ const ObjectId = require("mongodb").ObjectID;
 
 module.exports = [
   {
-    _id: ObjectId("61cded5a8f6c5c0047a21b4f"),
+    _id: new ObjectId("61cded5a8f6c5c0047a21b4f"),
     valid: false,
     active: true,
-    lastActive: new Date("2021-12-29T18:39:37.536Z"),
     lastUpdated: new Date("2021-12-29T18:39:37.536Z"),
     creationTime: new Date("2021-12-29T18:39:37.536Z"),
     viewableFor: [],
@@ -26,10 +25,9 @@ module.exports = [
     __v: 0,
   },
   {
-    _id: ObjectId("61d35c6b48bf8900475f88fe"),
+    _id: new ObjectId("61d35c6b48bf8900475f88fe"),
     valid: false,
     active: true,
-    lastActive: new Date("2021-12-29T18:39:37.536Z"),
     lastUpdated: new Date("2021-12-29T18:39:37.536Z"),
     creationTime: new Date("2021-12-29T18:39:37.536Z"),
     viewableFor: [],

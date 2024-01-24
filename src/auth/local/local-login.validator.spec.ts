@@ -80,7 +80,6 @@ describe("LocalLoginValidator", () => {
         username: username,
         valid: true,
         active: true,
-        lastActive: "",
         lastRequest: "",
       } as User);
     });

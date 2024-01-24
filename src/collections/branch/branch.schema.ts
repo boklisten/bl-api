@@ -6,45 +6,19 @@ export const branchSchema = new Schema<Branch>({
     type: String,
     required: true,
   },
-  type: {
-    type: String,
-    required: false,
-  },
-  desc: {
-    type: String,
-    required: false,
-  },
-  root: {
-    type: Boolean,
-    required: false,
-  },
-  childBranches: {
-    type: [Schema.Types.ObjectId],
-    default: [],
-  },
+  type: String,
+  desc: String,
+  root: Boolean,
+  childBranches: [Schema.Types.ObjectId],
   viewableFor: [String],
   contactInfo: {
-    phone: {
-      type: String,
-    },
-    email: {
-      type: String,
-    },
-    address: {
-      type: String,
-    },
-    postCode: {
-      type: String,
-    },
-    postCity: {
-      type: String,
-    },
-    country: {
-      type: String,
-    },
-    locationDesc: {
-      type: String,
-    },
+    phone: String,
+    email: String,
+    address: String,
+    postCode: String,
+    postCity: String,
+    country: String,
+    locationDesc: String,
     location: {
       type: {
         latitude: {
@@ -56,95 +30,76 @@ export const branchSchema = new Schema<Branch>({
           required: true,
         },
       },
-      required: false,
     },
-    required: false,
   },
   paymentInfo: {
-    type: {
-      responsible: {
-        type: Boolean,
-        default: false,
-        required: true,
-      },
-      responsibleForDelivery: {
-        type: Boolean,
-        default: false,
-        required: false,
-      },
-      partlyPaymentPeriods: {
-        type: [
-          {
+    responsible: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    responsibleForDelivery: Boolean,
+    partlyPaymentPeriods: {
+      type: [
+        {
+          type: {
+            // Important: keep this nesting ("type" is reserved by mongoose)
             type: String,
-            date: Date,
-            percentageBuyout: Number,
-            percentageBuyoutUsed: Number,
-            percentageUpFront: Number,
-            percentageUpFrontUsed: Number,
           },
-        ],
-        default: [],
-      },
-      rentPeriods: {
-        type: [
-          {
+          date: Date,
+          percentageBuyout: Number,
+          percentageBuyoutUsed: Number,
+          percentageUpFront: Number,
+          percentageUpFrontUsed: Number,
+        },
+      ],
+      default: [],
+    },
+    rentPeriods: {
+      type: [
+        {
+          type: {
+            // Important: keep this nesting ("type" is reserved by mongoose)
             type: String,
-            maxNumberOfPeriods: Number,
-            date: Date,
-            percentage: Number,
           },
-        ],
-        default: [],
-      },
-      extendPeriods: {
-        type: [
-          {
-            type: String,
-            maxNumberOfPeriods: Number,
-            price: Number,
-            date: Date,
-            percentage: {
-              type: Number,
-              required: false,
-            },
-          },
-        ],
-        default: [],
-      },
-      buyout: {
-        type: {
+          maxNumberOfPeriods: Number,
+          date: Date,
           percentage: Number,
         },
-        default: 1,
-      },
-      sell: {
-        type: {
+      ],
+      default: [],
+    },
+    extendPeriods: {
+      type: [
+        {
+          type: {
+            // Important: keep this nesting ("type" is reserved by mongoose)
+            type: String,
+          },
+          maxNumberOfPeriods: Number,
+          date: Date,
           percentage: Number,
         },
-        default: 1,
-      },
-      acceptedMethods: {
-        type: [String],
-        default: [],
-      },
-      payLater: {
-        type: Boolean,
-        default: false,
-      },
+      ],
+      default: [],
     },
-    required: true,
-    default: {
-      responsible: false,
-      rentPeriods: [],
-      extendPeriods: [],
-      buyout: {
-        percentage: 1,
+    buyout: {
+      type: {
+        percentage: Number,
       },
-      sell: {
-        percentage: 1,
-      },
-      acceptedMethods: [],
+      default: 1,
     },
+    sell: {
+      type: {
+        percentage: Number,
+      },
+      default: 1,
+    },
+    acceptedMethods: {
+      type: [String],
+      default: [],
+    },
+    payLater: Boolean,
   },
   deliveryMethods: {
     branch: {
@@ -157,26 +112,10 @@ export const branchSchema = new Schema<Branch>({
     },
   },
   isBranchItemsLive: {
-    type: {
-      online: Boolean,
-      atBranch: Boolean,
-    },
-    default: {
-      online: false,
-      atBranch: false,
-    },
-    required: false,
+    online: Boolean,
+    atBranch: Boolean,
   },
-  branchItems: {
-    type: [Schema.Types.ObjectId],
-    default: [],
-  },
-  openingHours: {
-    type: [Schema.Types.ObjectId],
-    default: [],
-  },
-  location: {
-    type: Schema.Types.Mixed,
-    required: false,
-  },
+  branchItems: [Schema.Types.ObjectId],
+  openingHours: [Schema.Types.ObjectId],
+  location: Schema.Types.Mixed,
 });

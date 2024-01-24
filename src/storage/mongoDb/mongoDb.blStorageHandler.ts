@@ -1,5 +1,5 @@
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
-import { Model, Schema, Types } from "mongoose";
+import { Error, Model, PipelineStage, Schema, Types } from "mongoose";
 
 import { MongooseModelCreator } from "./mongoose-schema-creator";
 import { PermissionService } from "../../auth/permission/permission.service";
@@ -13,11 +13,11 @@ import { NestedDocument } from "../nested-document";
 export class MongoDbBlStorageHandler<T extends BlDocument>
   implements BlStorageHandler<T>
 {
-  private mongooseModel: Model<T>;
+  private readonly mongooseModel: Model<T>;
   private permissionService: PermissionService;
 
   constructor(collectionName: BlCollectionName, schema: Schema<T>) {
-    const mongooseModelCreator = new MongooseModelCreator(
+    const mongooseModelCreator = new MongooseModelCreator<T>(
       collectionName,
       schema,
     );
@@ -25,10 +25,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     this.permissionService = new PermissionService();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async get(id: string, userPermission?: UserPermission): Promise<T> {
+  public async get(
+    id: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    userPermission?: UserPermission,
+  ): Promise<T> {
     const doc = await this.mongooseModel
-      .findById(id)
+      .findById<T>(id)
       .exec()
       .catch((error) => {
         throw this.handleError(
@@ -55,7 +58,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       )})`,
     );
     const docs = await this.mongooseModel
-      .find(dbQuery.getFilter(), dbQuery.getOgFilter())
+      .find<T>(dbQuery.getFilter(), dbQuery.getOgFilter())
       .limit(dbQuery.getLimitFilter())
       .skip(dbQuery.getSkipFilter())
       .sort(dbQuery.getSortFilter())
@@ -95,7 +98,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
           ? { _id: { $in: idArr } }
           : { _id: { $in: idArr }, active: true };
 
-      return await this.mongooseModel.find(filter).exec();
+      return await this.mongooseModel.find<T>(filter).exec();
     } catch (error) {
       throw this.handleError(
         new BlError("error when trying to find documents"),
@@ -104,9 +107,9 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     }
   }
 
-  public async aggregate(aggregation: unknown[]): Promise<T[]> {
+  public async aggregate(aggregation: PipelineStage[]): Promise<T[]> {
     const doc = await this.mongooseModel
-      .aggregate(aggregation)
+      .aggregate<T>(aggregation)
       .exec()
       .catch((error) => {
         throw this.handleError(
@@ -127,7 +130,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         ? {}
         : { active: true };
     const doc = await this.mongooseModel
-      .find(filter)
+      .find<T>(filter)
       .exec()
       .catch((error) => {
         throw this.handleError(
@@ -158,7 +161,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         ...doc,
         ...(doc.id && { _id: doc.id }),
       });
-      return (await newDocument.save()) as unknown as T;
+      return await newDocument.save();
     } catch (error) {
       throw this.handleError(
         new BlError("error when trying to add document").data(doc),
@@ -173,7 +176,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public async update(
     id: string,
-    data: unknown,
+    data: Partial<T>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
@@ -183,11 +186,15 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       );
     }
 
-    const document = await this.mongooseModel
-      .findById(id)
+    const doc = await this.mongooseModel
+      .findOneAndUpdate<T>(
+        { _id: id },
+        { ...data, lastUpdated: new Date() },
+        { new: true },
+      )
       .exec()
       .catch((error) => {
-        logger.error(`failed to save document: ${error}`);
+        logger.error(`failed to update document: ${error}`);
         throw this.handleError(
           new BlError(`failed to update document with id ${id}`).store(
             "data",
@@ -197,18 +204,17 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         );
       });
 
-    if (!document) {
+    if (!doc) {
       throw new BlError(`could not find document with id "${id}"`).code(702);
     }
 
-    document.set(data);
-    document.set({ lastUpdated: new Date() });
-
-    return (await document.save()) as unknown as T;
+    return doc;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public updateMany(docs: { id: string; data: unknown }[]): Promise<T[]> {
+  public updateMany(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    docs: { id: string; data: Partial<T> }[],
+  ): Promise<T[]> {
     throw new BlError("not implemented");
   }
 
@@ -218,7 +224,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
     const doc = await this.mongooseModel
-      .findByIdAndRemove(id)
+      .findByIdAndDelete<T>(id)
       .exec()
       .catch((error) => {
         throw this.handleError(
@@ -284,7 +290,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     }
   }
 
-  private async getNestedDocuments<T extends BlDocument>(
+  private async getNestedDocuments(
     doc: T,
     nestedDocuments: NestedDocument[],
     userPermission?: UserPermission,
@@ -319,17 +325,16 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     id: string,
     nestedDocument: NestedDocument,
     userPermission?: UserPermission,
-  ): Promise<BlDocument> {
-    const documentStorage = new MongoDbBlStorageHandler(
+  ): Promise<T> {
+    const documentStorage = new MongoDbBlStorageHandler<T>(
       nestedDocument.collection,
       nestedDocument.mongooseSchema,
     );
     return documentStorage.get(id, userPermission);
   }
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  private handleError(blError: BlError, error: any): BlError {
-    if (error) {
+  private handleError(blError: BlError, error: unknown): BlError {
+    if (error && error instanceof Error) {
       if (error.name === "CastError") {
         return blError.code(702).store("castError", error);
       } else if (error.name === "ValidationError") {

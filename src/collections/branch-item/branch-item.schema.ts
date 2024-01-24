@@ -53,10 +53,7 @@ export const branchItemSchema = new Schema<BranchItem>({
     default: false,
   },
 
-  sharedItems: {
-    type: [Schema.Types.ObjectId],
-    default: [],
-  },
+  sharedItems: [Schema.Types.ObjectId],
   categories: {
     type: [String],
     default: [],

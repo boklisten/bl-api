@@ -8,50 +8,29 @@ export const customerItemSchema = new Schema<CustomerItem>({
   },
   type: {
     type: String,
-    required: false,
   },
-  age: {
-    type: String,
-  },
-  blid: {
-    type: String,
-  },
+  age: String,
+  blid: String,
   customer: {
     type: Schema.Types.Mixed,
     require: true,
   },
-  sharedItem: {
-    type: Schema.Types.ObjectId,
-    required: false,
-  },
+  sharedItem: Schema.Types.ObjectId,
   deadline: {
     type: Date,
     required: true,
   },
-  state: {
-    type: String,
-  },
-  digital: {
-    type: Boolean,
-    default: false,
-  },
-  digitalInfo: {
-    type: Schema.Types.Mixed,
-  },
+  digital: Boolean,
+  digitalInfo: Schema.Types.Mixed,
   match: {
     type: Boolean,
     default: false,
   },
   matchInfo: {
-    type: {
-      id: Schema.Types.ObjectId,
-      time: Date,
-    },
+    id: Schema.Types.ObjectId,
+    time: Date,
   },
-  handout: {
-    type: Boolean,
-    default: false,
-  },
+  handout: Boolean,
   handoutInfo: {
     handoutBy: {
       type: String,
@@ -62,82 +41,34 @@ export const customerItemSchema = new Schema<CustomerItem>({
       required: true,
     },
     handoutEmployee: Schema.Types.ObjectId,
-    time: {
-      type: Date,
-    },
+    time: Date,
   },
   returned: {
     type: Boolean,
     required: true,
   },
   returnInfo: {
-    type: {
-      returnedTo: {
-        type: String,
-        required: true,
-      },
-      returnedToId: {
-        type: Schema.Types.ObjectId,
-        required: true,
-      },
-      returnEmployee: Schema.Types.ObjectId,
-      time: {
-        type: Date,
-        required: true,
-      },
-    },
-    required: false,
+    returnedTo: String,
+    returnedToId: Schema.Types.ObjectId,
+    returnEmployee: Schema.Types.ObjectId,
+    time: Date,
   },
-  cancel: {
-    type: Boolean,
-    default: false,
-  },
+  cancel: Boolean,
   cancelInfo: {
-    type: {
-      order: {
-        type: Schema.Types.ObjectId,
-      },
-      time: {
-        type: Date,
-      },
-    },
-    required: false,
+    order: Schema.Types.ObjectId,
+    time: Date,
   },
-  buyout: {
-    type: Boolean,
-    default: false,
-  },
+  buyout: Boolean,
   buyoutInfo: {
-    type: {
-      order: {
-        type: Schema.Types.ObjectId,
-      },
-      time: {
-        type: Date,
-      },
-    },
-    required: false,
+    order: Schema.Types.ObjectId,
+    time: Date,
   },
-  buyback: {
-    type: Boolean,
-    default: false,
-  },
+  buyback: Boolean,
   buybackInfo: {
-    type: {
-      order: {
-        type: Schema.Types.ObjectId,
-      },
-      time: {
-        type: Date,
-      },
-    },
-    required: false,
+    order: Schema.Types.ObjectId,
   },
 
-  orders: {
-    type: [Schema.Types.ObjectId],
-    default: [],
-  },
+  orders: [Schema.Types.ObjectId],
   periodExtends: {
     type: [
       {
@@ -161,31 +92,19 @@ export const customerItemSchema = new Schema<CustomerItem>({
     ],
     default: [],
   },
-  totalAmount: {
-    type: Number,
-    required: false,
-  },
-  amountLeftToPay: {
-    type: Number,
-    required: false,
-  },
+  totalAmount: Number,
+  amountLeftToPay: Number,
   customerInfo: {
-    type: {
+    name: String,
+    phone: String,
+    address: String,
+    postCode: String,
+    postCity: String,
+    dob: Date,
+    guardian: {
       name: String,
+      email: String,
       phone: String,
-      address: String,
-      postCode: String,
-      postCity: String,
-      dob: Date,
-      guardian: {
-        type: {
-          name: String,
-          email: String,
-          phone: String,
-        },
-        required: false,
-      },
     },
-    required: false,
   },
 });

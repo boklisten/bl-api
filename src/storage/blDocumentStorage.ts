@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
-import { Schema } from "mongoose";
+import { PipelineStage, Schema } from "mongoose";
 
 import { BlStorageHandler } from "./blStorageHandler";
 import { MongoDbBlStorageHandler } from "./mongoDb/mongoDb.blStorageHandler";
@@ -15,10 +15,10 @@ export class BlDocumentStorage<T extends BlDocument>
 
   constructor(
     private collectionName: BlCollectionName,
-    private mongooseSchema?: Schema<T>,
+    private mongooseSchema?: Schema,
   ) {
     if (mongooseSchema) {
-      this.mongoDbHandler = new MongoDbBlStorageHandler(
+      this.mongoDbHandler = new MongoDbBlStorageHandler<T>(
         collectionName,
         mongooseSchema,
       );
@@ -106,7 +106,7 @@ export class BlDocumentStorage<T extends BlDocument>
 
   update(
     id: string,
-    data: unknown,
+    data: Partial<T>,
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
     return new Promise((resolve, reject) => {
@@ -121,7 +121,7 @@ export class BlDocumentStorage<T extends BlDocument>
     });
   }
 
-  updateMany(docs: { id: string; data: unknown }[]): Promise<T[]> {
+  updateMany(docs: { id: string; data: Partial<T> }[]): Promise<T[]> {
     return new Promise((resolve, reject) => {
       reject(new BlError("not implemented"));
     });
@@ -143,7 +143,7 @@ export class BlDocumentStorage<T extends BlDocument>
     });
   }
 
-  aggregate(aggregation: unknown[]): Promise<T[]> {
+  aggregate(aggregation: PipelineStage[]): Promise<T[]> {
     return this.mongoDbHandler.aggregate(aggregation);
   }
 

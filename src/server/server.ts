@@ -77,9 +77,6 @@ export class Server {
           maxPoolSize: 10,
           connectTimeoutMS: 10000,
           socketTimeoutMS: 45000,
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-          useCreateIndex: true,
         })
         .then(() => {
           logger.verbose(`connected to mongodb: ${process.env.MONGODB_URI}`);
@@ -194,7 +191,7 @@ export class Server {
     });
 
     this.app.on("SIGINT", function () {
-      mongoose.connection.close(function () {
+      mongoose.connection.close().then(() => {
         logger.warn("mongoose connection disconnected through app termination");
         process.exit(0);
       });

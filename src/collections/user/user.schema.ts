@@ -3,9 +3,7 @@ import { Schema } from "mongoose";
 import { User } from "./user";
 
 export const UserSchema = new Schema<User>({
-  userDetail: {
-    type: Schema.Types.ObjectId,
-  },
+  userDetail: Schema.Types.ObjectId,
   permission: {
     type: String,
     required: true,
@@ -38,16 +36,10 @@ export const UserSchema = new Schema<User>({
   primary: {
     type: Boolean,
   },
-  movedToPrimary: {
-    type: Schema.Types.ObjectId,
-  },
+  movedToPrimary: Schema.Types.ObjectId,
   active: {
     type: Boolean,
     default: true,
-  },
-  lastActive: {
-    type: Date,
-    default: new Date(),
   },
   lastRequest: {
     type: String,

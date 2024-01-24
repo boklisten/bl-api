@@ -3,9 +3,8 @@ const ObjectId = require("mongodb").ObjectID;
 
 module.exports = [
   {
-    _id: ObjectId("61cded5a8f6c5c0047a21b4a"),
+    _id: new ObjectId("61cded5a8f6c5c0047a21b4a"),
     emailConfirmed: true,
-    lastActive: new Date("2021-12-29T18:39:37.536Z"),
     customerItems: [],
     orders: [],
     lastUpdated: new Date("2021-12-29T18:39:37.536Z"),
@@ -28,9 +27,8 @@ module.exports = [
     postCode: "7032",
   },
   {
-    _id: ObjectId("61d35c6b48bf8900475f88f9"),
+    _id: new ObjectId("61d35c6b48bf8900475f88f9"),
     emailConfirmed: false,
-    lastActive: new Date("2021-12-29T18:39:37.536Z"),
     customerItems: [],
     orders: [],
     lastUpdated: new Date("2021-12-29T18:39:37.536Z"),

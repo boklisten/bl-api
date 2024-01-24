@@ -215,7 +215,7 @@ describe("CustomerItemHandler", () => {
           fieldName: "customer",
           value: [
             "5c33b6137eab87644f7e75e2",
-            mongoose.Types.ObjectId("5c33b6137eab87644f7e75e2"),
+            new mongoose.Types.ObjectId("5c33b6137eab87644f7e75e2"),
           ],
         },
       ];

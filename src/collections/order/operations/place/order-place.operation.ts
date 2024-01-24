@@ -296,7 +296,7 @@ export class OrderPlaceOperation implements Operation {
           {
             deliveredItems: [
               ...foundStandMatch.deliveredItems,
-              customerItem.item,
+              customerItem.item as string,
             ],
           },
           new SystemUser(),
@@ -317,7 +317,7 @@ export class OrderPlaceOperation implements Operation {
           {
             receivedItems: [
               ...foundStandMatch.receivedItems,
-              customerItem.item,
+              customerItem.item as string,
             ],
           },
           new SystemUser(),
@@ -462,11 +462,8 @@ export class OrderPlaceOperation implements Operation {
   ): Promise<CustomerItem[]> {
     const addedCustomerItems = [];
     for (const customerItem of customerItems) {
-      try {
-        const ci = await this._customerItemStorage.add(customerItem, user);
-        addedCustomerItems.push(ci);
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+      const ci = await this._customerItemStorage.add(customerItem, user);
+      addedCustomerItems.push(ci);
     }
 
     return addedCustomerItems;

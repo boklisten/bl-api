@@ -10,14 +10,8 @@ export const bookingSchema = new Schema<Booking>({
     type: Date,
     required: true,
   },
-  branch: {
-    type: Schema.Types.ObjectId,
-    required: true,
-  },
-  customer: {
-    type: Schema.Types.ObjectId,
-    required: false,
-  },
+  branch: Schema.Types.ObjectId,
+  customer: Schema.Types.ObjectId,
   booked: {
     type: Boolean,
     default: false,
