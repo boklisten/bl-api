@@ -33,7 +33,11 @@ export const branchSchema = new Schema<Branch>({
     },
   },
   paymentInfo: {
-    responsible: Boolean,
+    responsible: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
     responsibleForDelivery: Boolean,
     partlyPaymentPeriods: {
       type: [
