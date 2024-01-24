@@ -58,7 +58,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       )})`,
     );
     const docs = await this.mongooseModel
-      .find(dbQuery.getFilter(), dbQuery.getOgFilter())
+      .find<T>(dbQuery.getFilter(), dbQuery.getOgFilter())
       .limit(dbQuery.getLimitFilter())
       .skip(dbQuery.getSkipFilter())
       .sort(dbQuery.getSortFilter())
@@ -98,7 +98,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
           ? { _id: { $in: idArr } }
           : { _id: { $in: idArr }, active: true };
 
-      return await this.mongooseModel.find(filter).exec();
+      return await this.mongooseModel.find<T>(filter).exec();
     } catch (error) {
       throw this.handleError(
         new BlError("error when trying to find documents"),
@@ -109,7 +109,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public async aggregate(aggregation: PipelineStage[]): Promise<T[]> {
     const doc = await this.mongooseModel
-      .aggregate(aggregation)
+      .aggregate<T>(aggregation)
       .exec()
       .catch((error) => {
         throw this.handleError(
@@ -130,7 +130,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         ? {}
         : { active: true };
     const doc = await this.mongooseModel
-      .find(filter)
+      .find<T>(filter)
       .exec()
       .catch((error) => {
         throw this.handleError(
@@ -186,11 +186,15 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       );
     }
 
-    const document = await this.mongooseModel
-      .findById(id)
+    const doc = await this.mongooseModel
+      .findOneAndUpdate<T>(
+        { _id: id },
+        { ...data, lastUpdated: new Date() },
+        { new: true },
+      )
       .exec()
       .catch((error) => {
-        logger.error(`failed to save document: ${error}`);
+        logger.error(`failed to update document: ${error}`);
         throw this.handleError(
           new BlError(`failed to update document with id ${id}`).store(
             "data",
@@ -200,14 +204,11 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         );
       });
 
-    if (!document) {
+    if (!doc) {
       throw new BlError(`could not find document with id "${id}"`).code(702);
     }
 
-    document.set(data);
-    document.set({ lastUpdated: new Date() });
-
-    return await document.save();
+    return doc;
   }
 
   public updateMany(
@@ -223,7 +224,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
     const doc = await this.mongooseModel
-      .findByIdAndDelete(id)
+      .findByIdAndDelete<T>(id)
       .exec()
       .catch((error) => {
         throw this.handleError(
