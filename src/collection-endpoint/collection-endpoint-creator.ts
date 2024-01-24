@@ -19,7 +19,6 @@ import {
 } from "@boklisten/bl-model";
 import { Router } from "express";
 
-
 import { CollectionEndpoint } from "./collection-endpoint";
 import { BlErrorLog } from "../collections/bl-error-log/bl-error-log";
 import { BlErrorLogCollection } from "../collections/bl-error-log/bl-error-log.collection";
