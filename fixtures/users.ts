@@ -3,7 +3,7 @@ const ObjectId = require("mongodb").ObjectID;
 
 module.exports = [
   {
-    _id: ObjectId("61cded5a8f6c5c0047a21b4f"),
+    _id: new ObjectId("61cded5a8f6c5c0047a21b4f"),
     valid: false,
     active: true,
     lastUpdated: new Date("2021-12-29T18:39:37.536Z"),
@@ -25,7 +25,7 @@ module.exports = [
     __v: 0,
   },
   {
-    _id: ObjectId("61d35c6b48bf8900475f88fe"),
+    _id: new ObjectId("61d35c6b48bf8900475f88fe"),
     valid: false,
     active: true,
     lastUpdated: new Date("2021-12-29T18:39:37.536Z"),

@@ -7,7 +7,7 @@ const today = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
 
 module.exports = [
   {
-    _id: ObjectId("61dc4814ad783d00461e1267"),
+    _id: new ObjectId("61dc4814ad783d00461e1267"),
     lastUpdated: new Date(),
     creationTime: new Date(),
     active: true,
@@ -22,7 +22,7 @@ module.exports = [
     __v: 0,
   },
   {
-    _id: ObjectId("61dc480fad783d00461e1263"),
+    _id: new ObjectId("61dc480fad783d00461e1263"),
     lastUpdated: new Date(),
     creationTime: new Date(),
     active: true,
@@ -37,7 +37,7 @@ module.exports = [
     __v: 0,
   },
   {
-    _id: ObjectId("61dc47f5ad783d00461e123d"),
+    _id: new ObjectId("61dc47f5ad783d00461e123d"),
     lastUpdated: new Date(),
     creationTime: new Date(),
     active: true,
@@ -52,7 +52,7 @@ module.exports = [
     __v: 0,
   },
   {
-    _id: ObjectId("61dc480fad783d00461e1221"),
+    _id: new ObjectId("61dc480fad783d00461e1221"),
     lastUpdated: new Date(),
     creationTime: new Date(),
     active: true,

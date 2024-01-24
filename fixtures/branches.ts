@@ -3,7 +3,7 @@ const ObjectId = require("mongodb").ObjectID;
 
 module.exports = [
   {
-    _id: ObjectId("5dfa263e8eeee5001c83eacf"),
+    _id: new ObjectId("5dfa263e8eeee5001c83eacf"),
     name: "Metis nettstudier",
     type: "school",
     user: { permission: "admin", id: "u#dd3ca358e9721cf8f0aa71da8549bbf6" },
@@ -58,7 +58,7 @@ module.exports = [
     desc: "Nettstudiene til Metis",
   },
   {
-    _id: ObjectId("5ec28bf21ffe48001c194bc7"),
+    _id: new ObjectId("5ec28bf21ffe48001c194bc7"),
     deliveryMethods: { branch: false, byMail: false },
     childBranches: [],
     viewableFor: [],
@@ -108,7 +108,7 @@ module.exports = [
     __v: 70,
   },
   {
-    _id: ObjectId("5f32f526d29abc001c6d405f"),
+    _id: new ObjectId("5f32f526d29abc001c6d405f"),
     deliveryMethods: { branch: true, byMail: false },
     childBranches: [],
     viewableFor: [],
@@ -144,7 +144,7 @@ module.exports = [
     __v: 12,
   },
   {
-    _id: ObjectId("5b6442ebd2e733002fae8a2f"),
+    _id: new ObjectId("5b6442ebd2e733002fae8a2f"),
     name: "Sonans Oslo",
     type: "school",
     user: { permission: "admin", id: "u#efc2452ba17c9df5e6fde940218a74ce" },
@@ -202,7 +202,7 @@ module.exports = [
     },
   },
   {
-    _id: ObjectId("60074e293309ff001a51b244"),
+    _id: new ObjectId("60074e293309ff001a51b244"),
     deliveryMethods: { branch: true, byMail: false },
     childBranches: [],
     viewableFor: [],

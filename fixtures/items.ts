@@ -3,7 +3,7 @@ const ObjectId = require("mongodb").ObjectID;
 
 module.exports = [
   {
-    _id: ObjectId("5b6441add2e733002fae871f"),
+    _id: new ObjectId("5b6441add2e733002fae871f"),
     info: {
       subject: "Internasjonal Engelsk",
       price: { "2018": 845, "2019": 845, "2020": 845, "2021": 845 },
@@ -32,7 +32,7 @@ module.exports = [
     digital: false,
   },
   {
-    _id: ObjectId("5b6441b3d2e733002fae87c4"),
+    _id: new ObjectId("5b6441b3d2e733002fae87c4"),
     info: {
       subject: "Informasjonsteknologi 1",
       price: { "2018": 579, "2019": 629, "2020": 629, "2021": 655 },
@@ -61,7 +61,7 @@ module.exports = [
     digital: false,
   },
   {
-    _id: ObjectId("5b6441b3d2e733002fae87c5"),
+    _id: new ObjectId("5b6441b3d2e733002fae87c5"),
     info: {
       subject: "Informasjonsteknologi 2",
       price: { "2018": 589, "2019": 629, "2020": 629, "2021": 655 },
