@@ -9,10 +9,7 @@ export class CollectionEndpointPut<T extends BlDocument>
   implements CollectionEndpointOnRequest<T>
 {
   override async onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
-    await this._documentStorage.upsert(
-      blApiRequest.documentId,
-      blApiRequest.data,
-    );
+    await this._documentStorage.put(blApiRequest.documentId, blApiRequest.data);
     return [];
   }
 }

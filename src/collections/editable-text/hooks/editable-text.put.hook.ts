@@ -1,24 +1,9 @@
 import { BlError, EditableText } from "@boklisten/bl-model";
 
 import { Hook } from "../../../hook/hook";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { editableTextSchema } from "../editable-text.schema";
 
 export class EditableTextPutHook extends Hook {
-  private readonly editableTextStorage: BlDocumentStorage<EditableText>;
-
-  constructor(editableTextStorage?: BlDocumentStorage<EditableText>) {
-    super();
-    this.editableTextStorage = editableTextStorage
-      ? editableTextStorage
-      : new BlDocumentStorage(
-          BlCollectionName.EditableTexts,
-          editableTextSchema,
-        );
-  }
-
-  // Our PUT implementation resets creationTime, but it shouldn't matter for this
+  // Our PUT implementation resets creationTime, but it shouldn't matter for this use case
   override async before(
     body: unknown,
     _accessToken: never,
