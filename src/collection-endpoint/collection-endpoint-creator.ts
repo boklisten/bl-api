@@ -18,7 +18,7 @@ import {
   PendingPasswordReset,
 } from "@boklisten/bl-model";
 import { Router } from "express";
-import { EditableTextCollection } from "../collections/editable-text/editable-text.collection";
+
 
 import { CollectionEndpoint } from "./collection-endpoint";
 import { BlErrorLog } from "../collections/bl-error-log/bl-error-log";
@@ -29,6 +29,7 @@ import { BranchItemCollection } from "../collections/branch-item/branch-item.col
 import { CompanyCollection } from "../collections/company/company.collection";
 import { CustomerItemCollection } from "../collections/customer-item/customer-item.collection";
 import { DeliveryCollection } from "../collections/delivery/delivery.collection";
+import { EditableTextCollection } from "../collections/editable-text/editable-text.collection";
 import { EmailValidation } from "../collections/email-validation/email-validation";
 import { EmailValidationCollection } from "../collections/email-validation/email-validation.collection";
 import { InvoiceCollection } from "../collections/invoice/invoice.collection";
@@ -96,7 +97,10 @@ export class CollectionEndpointCreator {
         this._router,
         new EditableTextCollection(),
       ),
-      new CollectionEndpoint<EditableText>(this._router, new EditableTextCollection()),
+      new CollectionEndpoint<EditableText>(
+        this._router,
+        new EditableTextCollection(),
+      ),
     ];
 
     for (const collectionEndpoint of collectionEndpoints) {

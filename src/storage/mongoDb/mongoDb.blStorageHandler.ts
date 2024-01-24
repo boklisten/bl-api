@@ -216,18 +216,19 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   }
 
   public async put(id: string, data: unknown): Promise<void> {
-    const result = await this.mongooseModel.replaceOne({ _id: id }, data, {
-      upsert: true,
-    });
-    if (!result.ok) {
-      throw this.handleError(
-        new BlError("document put not acknowledged").store("data", {
-          data,
-          _id: id,
-        }),
-        null,
-      );
-    }
+    await this.mongooseModel
+      .replaceOne({ _id: id }, data, {
+        upsert: true,
+      })
+      .catch((error) => {
+        throw this.handleError(
+          new BlError("failed to PUT document").store("data", {
+            data,
+            _id: id,
+          }),
+          error,
+        );
+      });
   }
 
   public async remove(
