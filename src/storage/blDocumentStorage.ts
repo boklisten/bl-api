@@ -127,6 +127,10 @@ export class BlDocumentStorage<T extends BlDocument>
     });
   }
 
+  async put(id: string, data: unknown): Promise<void> {
+    await this.mongoDbHandler.put(id, data);
+  }
+
   remove(
     id: string,
     user: { id: string; permission: UserPermission },

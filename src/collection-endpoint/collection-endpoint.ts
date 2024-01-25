@@ -6,6 +6,7 @@ import { CollectionEndpointGetAll } from "./collection-endpoint-get-all/collecti
 import { CollectionEndpointGetId } from "./collection-endpoint-get-id/collection-endpoint-get-id";
 import { CollectionEndpointPatch } from "./collection-endpoint-patch/collection-endpoint-patch";
 import { CollectionEndpointPost } from "./collection-endpoint-post/collection-endpoint-post";
+import { CollectionEndpointPut } from "./collection-endpoint-put/collection-endpoint-put";
 import { PermissionService } from "../auth/permission/permission.service";
 import { BlCollection, BlEndpoint } from "../collections/bl-collection";
 import { ApiPath } from "../config/api-path";
@@ -41,6 +42,9 @@ export class CollectionEndpoint<T extends BlDocument> {
           break;
         case "patch":
           this.createPatch(endpoint);
+          break;
+        case "put":
+          this.createPut(endpoint);
           break;
         case "delete":
           this.createDelete(endpoint);
@@ -140,5 +144,16 @@ export class CollectionEndpoint<T extends BlDocument> {
       this._collection.documentPermission,
     );
     collectionEndpointPatch.create();
+  }
+
+  private createPut(endpoint: BlEndpoint) {
+    const collectionEndpointPut = new CollectionEndpointPut<T>(
+      this._router,
+      endpoint,
+      this._collection.collectionName,
+      this._documentStorage,
+      this._collection.documentPermission,
+    );
+    collectionEndpointPut.create();
   }
 }

@@ -150,9 +150,6 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     user?: { id: string; permission: UserPermission },
   ): Promise<T> {
     try {
-      doc.creationTime = new Date();
-      doc.lastUpdated = new Date();
-
       if (user) {
         doc.user = user;
       }
@@ -216,6 +213,22 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     docs: { id: string; data: Partial<T> }[],
   ): Promise<T[]> {
     throw new BlError("not implemented");
+  }
+
+  public async put(id: string, data: unknown): Promise<void> {
+    await this.mongooseModel
+      .replaceOne({ _id: id }, data, {
+        upsert: true,
+      })
+      .catch((error) => {
+        throw this.handleError(
+          new BlError("failed to PUT document").store("data", {
+            data,
+            _id: id,
+          }),
+          error,
+        );
+      });
   }
 
   public async remove(

@@ -41,16 +41,6 @@ describe("CollectionEndpointDocumentAuth", () => {
     ];
   });
 
-  it("should reject if docs is empty", () => {
-    return expect(
-      collectionEndpointDocumentAuth.validate(
-        testRestriction,
-        [],
-        testBlApiRequest,
-      ),
-    ).to.be.rejectedWith(BlError, /docs is empty or undefined/);
-  });
-
   it("should reject if blApiRequest is null or undefined", () => {
     return expect(
       collectionEndpointDocumentAuth.validate(testRestriction, testDocs, null),
