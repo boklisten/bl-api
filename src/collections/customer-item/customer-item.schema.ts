@@ -30,7 +30,10 @@ export const customerItemSchema = new Schema<CustomerItem>({
     id: Schema.Types.ObjectId,
     time: Date,
   },
-  handout: Boolean,
+  handout: {
+    type: Boolean,
+    default: false,
+  },
   handoutInfo: {
     handoutBy: {
       type: String,
@@ -53,17 +56,26 @@ export const customerItemSchema = new Schema<CustomerItem>({
     returnEmployee: Schema.Types.ObjectId,
     time: Date,
   },
-  cancel: Boolean,
+  cancel: {
+    type: Boolean,
+    default: false,
+  },
   cancelInfo: {
     order: Schema.Types.ObjectId,
     time: Date,
   },
-  buyout: Boolean,
+  buyout: {
+    type: Boolean,
+    default: false,
+  },
   buyoutInfo: {
     order: Schema.Types.ObjectId,
     time: Date,
   },
-  buyback: Boolean,
+  buyback: {
+    type: Boolean,
+    default: false,
+  },
   buybackInfo: {
     order: Schema.Types.ObjectId,
   },
