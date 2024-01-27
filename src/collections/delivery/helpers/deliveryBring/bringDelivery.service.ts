@@ -62,12 +62,8 @@ export class BringDeliveryService {
     }
 
     const bringAuthHeaders = {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      "X-MyBring-API-Key": process.env.BRING_API_KEY,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      "X-MyBring-API-Uid": process.env.BRING_API_ID,
+      "X-MyBring-API-Key": process.env["BRING_API_KEY"],
+      "X-MyBring-API-Uid": process.env["BRING_API_ID"],
     };
 
     const postalInfoUrl = `https://api.bring.com/pickuppoint/api/postalCode/NO/getCityAndType/${shipmentAddress.postalCode}.json`;

@@ -61,21 +61,11 @@ export class MongooseModelCreator<T> {
     //remove fields that the client shall not see
     schema.set("toJSON", {
       transform: function (_doc, ret) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        ret.id = ret._id;
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        delete ret.user;
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        delete ret._id;
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        delete ret.__v;
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        delete ret.viewableFor;
+        ret["id"] = ret["_id"];
+        delete ret["user"];
+        delete ret["_id"];
+        delete ret["__v"];
+        delete ret["viewableFor"];
       },
     });
 

@@ -33,13 +33,9 @@ export class DibsPaymentService {
     return new Promise((resolve, reject) => {
       this._httpHandler
         .post(
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          process.env.DIBS_URI + APP_CONFIG.path.dibs.payment,
+          process.env["DIBS_URI"] + APP_CONFIG.path.dibs.payment,
           dibsEasyOrder,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          process.env.DIBS_SECRET_KEY,
+          process.env["DIBS_SECRET_KEY"],
         )
         .then((responseData: string) => {
           if (responseData) {
@@ -64,12 +60,11 @@ export class DibsPaymentService {
   public fetchDibsPaymentData(paymentId: string): Promise<DibsEasyPayment> {
     return this._httpHandler
       .get(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        process.env.DIBS_URI + APP_CONFIG.path.dibs.payment + "/" + paymentId,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        process.env.DIBS_SECRET_KEY,
+        process.env["DIBS_URI"] +
+          APP_CONFIG.path.dibs.payment +
+          "/" +
+          paymentId,
+        process.env["DIBS_SECRET_KEY"],
       )
       .then((response) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -115,12 +110,9 @@ export class DibsPaymentService {
     const userDetailValid = this._userDetailHelper.isValid(userDetail);
 
     dibsEasyOrder.checkout = {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      url: process.env.CLIENT_URI + APP_CONFIG.path.client.checkout,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      termsUrl: process.env.CLIENT_URI + APP_CONFIG.path.client.agreement.rent,
+      url: process.env["CLIENT_URI"] + APP_CONFIG.path.client.checkout,
+      termsUrl:
+        process.env["CLIENT_URI"] + APP_CONFIG.path.client.agreement.rent,
       ShippingCountries: [{ countryCode: "NOR" }],
       merchantHandlesConsumerData: userDetailValid, // if userDetail is not valid, the customer must reenter data
       consumer: userDetailValid

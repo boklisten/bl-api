@@ -26,16 +26,10 @@ export class FacebookAuth {
     this.apiPath = new ApiPath();
 
     this.facebookPassportStrategySettings = {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      clientID: process.env.FACEBOOK_CLIENT_ID,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      clientSecret: process.env.FACEBOOK_SECRET,
+      clientID: process.env["FACEBOOK_CLIENT_ID"],
+      clientSecret: process.env["FACEBOOK_SECRET"],
       callbackURL:
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        process.env.BL_API_URI +
+        process.env["BL_API_URI"] +
         this.apiPath.createPath("auth/facebook/callback"),
       profileFields: ["id", "email", "name"],
       enableProof: true,
@@ -125,9 +119,7 @@ export class FacebookAuth {
           (err, tokens, blError: BlError) => {
             if (!tokens && (err || blError)) {
               return res.redirect(
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                process.env.CLIENT_URI +
+                process.env["CLIENT_URI"] +
                   APP_CONFIG.path.client.auth.socialLoginFailure,
               );
             }

@@ -47,9 +47,7 @@ export class EmailService implements MessengerService {
       ? emailHandler
       : new EmailHandler({
           sendgrid: {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            apiKey: process.env.SENDGRID_API_KEY,
+            apiKey: process.env["SENDGRID_API_KEY"] ?? "",
           },
           locale: "nb",
         });
@@ -515,13 +513,7 @@ export class EmailService implements MessengerService {
       userId: customerDetail.id,
     };
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    let emailVerificationUri = process.env.CLIENT_URI
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        process.env.CLIENT_URI
-      : "localhost:4200/";
+    let emailVerificationUri = process.env["CLIENT_URI"] ?? "localhost:4200/";
     emailVerificationUri +=
       EMAIL_SETTINGS.types.emailConfirmation.path + confirmationCode;
 
@@ -544,13 +536,7 @@ export class EmailService implements MessengerService {
       userId: userId,
     };
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    let passwordResetUri = process.env.CLIENT_URI
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        process.env.CLIENT_URI
-      : "localhost:4200/";
+    let passwordResetUri = process.env["CLIENT_URI"] ?? "localhost:4200/";
     passwordResetUri +=
       EMAIL_SETTINGS.types.passwordReset.path +
       pendingPasswordResetId +

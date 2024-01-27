@@ -31,17 +31,11 @@ export class GoogleAuth {
     this._userProvider = new UserProvider();
 
     this._googlePassportStrategySettings = {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      clientSecret: process.env.GOOGLE_SECRET,
+      clientID: process.env["GOOGLE_CLIENT_ID"],
+      clientSecret: process.env["GOOGLE_SECRET"],
       passReqToCallback: true,
       callbackURL:
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        process.env.BL_API_URI +
+        process.env["BL_API_URI"] +
         this.apiPath.createPath("auth/google/callback"),
     };
 
@@ -130,9 +124,7 @@ export class GoogleAuth {
 
           if (!tokens && (err || blError)) {
             return res.redirect(
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              process.env.CLIENT_URI +
+              process.env["CLIENT_URI"] +
                 APP_CONFIG.path.client.auth.socialLoginFailure,
             );
           }

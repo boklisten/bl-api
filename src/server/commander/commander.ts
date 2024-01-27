@@ -12,12 +12,8 @@ program
 export function getLogLevel() {
   let LOG_LEVEL = "info";
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  if (process.env.LOG_LEVEL) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    LOG_LEVEL = process.env.LOG_LEVEL;
+  if (process.env["LOG_LEVEL"]) {
+    LOG_LEVEL = process.env["LOG_LEVEL"];
     return LOG_LEVEL;
   }
 

@@ -7,13 +7,9 @@ export class ApiPath {
   private baseHost: string;
 
   constructor() {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (process.env.NODE_ENV == "production") {
+    if (process.env["NODE_ENV"] == "production") {
       this.baseHost = APP_CONFIG.path.host;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-    } else if (process.env.NODE_ENV == "dev") {
+    } else if (process.env["NODE_ENV"] == "dev") {
       this.baseHost = APP_CONFIG.path.dev.host;
     } else {
       this.baseHost = APP_CONFIG.path.local.host;
@@ -21,9 +17,7 @@ export class ApiPath {
   }
 
   private getBasePath(): string {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return process.env.SERVER_PATH;
+    return process.env["SERVER_PATH"] ?? "";
   }
 
   public createPath(customPath: string): string {
