@@ -50,6 +50,8 @@ export class GetMyMatchesOperation implements Operation {
   }
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const matches = await getAllMatchesForUser(blApiRequest.user.details);
 
     if (matches.length === 0) {
@@ -58,6 +60,8 @@ export class GetMyMatchesOperation implements Operation {
 
     const matchesWithDetails = await addDetailsToAllMatches(
       matches,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this.userDetailStorage,
       this.itemStorage,
       this.customerItemStorage,

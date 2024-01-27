@@ -34,6 +34,8 @@ export class CustomerItemActiveBlid {
       { fieldName: "blid", type: "string" },
     ]);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const customerItems = await this.customerItemStorage.getByQuery(dbQuery);
 
     const activeCustomerItems = customerItems.filter((customerItem) =>

@@ -15,7 +15,8 @@ export class ProviderIdGenerator {
         .methodName("generate");
       if (!username || username.length <= 0)
         reject(blError.msg("username is empty or undefined"));
-
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       crypto.randomBytes(32, (error, buffer) => {
         if (error)
           reject(blError.msg("could not generate random bytes").data(error));

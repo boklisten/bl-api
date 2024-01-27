@@ -143,17 +143,33 @@ export function verifyMatcherSpec(
   const m = matcherSpec as Record<string, unknown>;
   return (
     m &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     Array.isArray(m.senderBranches) &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     Array.isArray(m.receiverBranches) &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     Array.isArray(m.userMatchLocations) &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     m.senderBranches.every(
       (branchId) => typeof branchId === "string" && branchId.length === 24,
     ) &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     m.receiverBranches.every(
       (branchId) => typeof branchId === "string" && branchId.length === 24,
     ) &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     typeof m.standLocation === "string" &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     m.standLocation.length > 0 &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     m.userMatchLocations.every(
       (location) =>
         typeof location.name === "string" &&
@@ -162,10 +178,20 @@ export function verifyMatcherSpec(
           (Number.isInteger(location.simultaneousMatchLimit) &&
             location.simultaneousMatchLimit > 0)),
     ) &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     typeof m.startTime === "string" &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     !isNaN(new Date(m.startTime).getTime()) &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     typeof m.deadlineBefore === "string" &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     !isNaN(new Date(m.deadlineBefore).getTime()) &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     new Date(m.deadlineBefore).getTime() > new Date().getTime()
   );
 }

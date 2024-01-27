@@ -23,6 +23,8 @@ export class OrderActive {
     let orders: Order[];
 
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       orders = await this._orderStorage.getByQuery(dbQuery);
     } catch (e) {
       if (e instanceof BlError) {
@@ -42,6 +44,8 @@ export class OrderActive {
   }
 
   private isOrderActive(order: Order): boolean {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return (
       order.placed &&
       order.orderItems.some((orderItem) => this.isOrderItemActive(orderItem))

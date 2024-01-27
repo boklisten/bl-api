@@ -12,13 +12,25 @@ chai.use(chaiAsPromised);
 
 describe("OrderItemRentValidator", () => {
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const orderItemRentValidator = new OrderItemRentValidator(orderStorage);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const priceService = new PriceService({ roundDown: true });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testOrder: Order;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testItem: Item;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testBranch: Branch;
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const orderStorageGetStub = sinon
     .stub(orderStorage, "get")
     .callsFake(() => Promise.resolve({} as Order));

@@ -17,6 +17,8 @@ export class UserDetailValidOperation implements Operation {
   constructor(
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     resHandler?: SEResponseHandler,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     userDetailHelper?: UserDetailHelper,
   ) {
@@ -29,13 +31,19 @@ export class UserDetailValidOperation implements Operation {
 
   async run(
     blApiRequest: BlApiRequest,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction,
   ): Promise<boolean> {
     try {
       const userDetail = await this._userDetailStorage.get(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         blApiRequest.documentId,
       );
 
@@ -44,11 +52,15 @@ export class UserDetailValidOperation implements Operation {
 
       if (invalidUserDetailFields.length <= 0) {
         this._resHandler.sendResponse(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           res,
           new BlapiResponse([{ valid: true }]),
         );
       } else {
         this._resHandler.sendResponse(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           res,
           new BlapiResponse([
             { valid: false, invalidFields: invalidUserDetailFields },
@@ -66,6 +78,8 @@ export class UserDetailValidOperation implements Operation {
         responseError.add(err);
       }
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this._resHandler.sendErrorResponse(res, responseError);
 
       throw responseError;

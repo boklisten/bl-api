@@ -25,6 +25,8 @@ export class CustomerHaveActiveCustomerItems {
     let customerItems: CustomerItem[];
 
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       customerItems = await this._customerItemStorage.getByQuery(dbQuery);
     } catch (e) {
       if (e instanceof BlError) {

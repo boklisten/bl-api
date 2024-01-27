@@ -29,10 +29,16 @@ export class UserProvider {
     tokens: { accessToken: string; refreshToken: string };
   }> {
     const user = await this.getUser(username, provider, providerId);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await this._userHandler.valid(username);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await this._localLoginHandler.createDefaultLocalLoginIfNoneIsFound(
       username,
     );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const tokens = await this._tokenHandler.createTokens(username);
 
     return { user: user, tokens: tokens };
@@ -45,8 +51,12 @@ export class UserProvider {
   ): Promise<User> {
     let user;
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       user = await this._userHandler.get(provider, providerId);
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       user = await this._userHandler.create(username, provider, providerId);
     }
 

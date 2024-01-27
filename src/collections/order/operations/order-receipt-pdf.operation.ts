@@ -33,11 +33,17 @@ export class OrderReceiptPdfOperation implements Operation {
 
   async run(
     blApiRequest: BlApiRequest,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction,
   ): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const order = await this._orderStorage.get(blApiRequest.documentId);
     const customerDetail = await this._userDetailStorage.get(
       order.customer as string,
@@ -47,7 +53,8 @@ export class OrderReceiptPdfOperation implements Operation {
       customerDetail,
       order,
     );
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this._resHandler.sendResponse(res, new BlapiResponse([orderReceiptPdf]));
 
     return true;

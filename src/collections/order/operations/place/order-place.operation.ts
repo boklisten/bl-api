@@ -122,6 +122,8 @@ export class OrderPlaceOperation implements Operation {
     );
 
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const existingOrders = await this._orderStorage.getByQuery(dbQuery);
       const alreadyOrderedItems =
         this.filterOrdersByAlreadyOrdered(existingOrders);
@@ -129,7 +131,8 @@ export class OrderPlaceOperation implements Operation {
       for (const orderItem of order.orderItems) {
         for (const alreadyOrderedItem of alreadyOrderedItems) {
           if (
-            String(orderItem.item) === String(alreadyOrderedItem.item) &&
+            String(orderItem.item) === String(alreadyOrderedItem.item) && // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             orderItem.info.to === alreadyOrderedItem.info.to
           ) {
             return true;
@@ -171,6 +174,8 @@ export class OrderPlaceOperation implements Operation {
     try {
       // Use an aggregation because the query builder does not support checking against a list of blids,
       // and we would otherwise have to send a query for every single order item.
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const unreturnedItems = await this._customerItemStorage.aggregate([
         {
           $match: {
@@ -271,10 +276,14 @@ export class OrderPlaceOperation implements Operation {
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const returnCustomerItems = await this._customerItemStorage.getMany(
       returnOrderItems.map((orderItem) => String(orderItem.customerItem)),
     );
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const handoutCustomerItems = await this._customerItemStorage.getMany(
       handoutOrderItems.map((orderItem) => String(orderItem.customerItem)),
     );
@@ -291,6 +300,8 @@ export class OrderPlaceOperation implements Operation {
           !standMatch.deliveredItems.includes(String(customerItem.item)),
       );
       if (foundStandMatch) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await this._matchStorage.update(
           foundStandMatch.id,
           {
@@ -312,6 +323,8 @@ export class OrderPlaceOperation implements Operation {
           !standMatch.receivedItems.includes(String(customerItem.item)),
       );
       if (foundStandMatch) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await this._matchStorage.update(
           foundStandMatch.id,
           {
@@ -328,14 +341,20 @@ export class OrderPlaceOperation implements Operation {
 
   public async run(
     blApiRequest: BlApiRequest,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction,
   ): Promise<boolean> {
     let order: Order;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       order = await this._orderStorage.get(blApiRequest.documentId);
     } catch (e) {
       throw new ReferenceError(`order "${blApiRequest.documentId}" not found`);
@@ -365,6 +384,8 @@ export class OrderPlaceOperation implements Operation {
       (orderItem) => orderItem.type === "rent",
     );
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const allMatches = await this._matchStorage.getAll();
 
     if (!order.byCustomer) {
@@ -377,18 +398,26 @@ export class OrderPlaceOperation implements Operation {
     }
 
     let customerItems =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await this._orderToCustomerItemGenerator.generate(order);
 
     if (customerItems && customerItems.length > 0) {
       customerItems = await this.addCustomerItems(
         customerItems,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         blApiRequest.user,
       );
       order = this.addCustomerItemIdToOrderItems(order, customerItems);
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await this._orderStorage.update(
         order.id,
         { orderItems: order.orderItems },
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         blApiRequest.user,
       );
     }
@@ -401,12 +430,18 @@ export class OrderPlaceOperation implements Operation {
       );
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await this._orderPlacedHandler.placeOrder(order, {
       sub: blApiRequest.user,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       permission: blApiRequest.user.permission,
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } as any);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await this._orderValidator.validate(order);
 
     if (customerItems && customerItems.length > 0) {
@@ -415,12 +450,14 @@ export class OrderPlaceOperation implements Operation {
         await this.addCustomerItemsToCustomer(
           customerItems,
           order.customer as string,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           blApiRequest.user,
         );
         // eslint-disable-next-line no-empty
       } catch (e) {}
-    }
-
+    } // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this._resHandler.sendResponse(res, new BlapiResponse([order]));
     return true;
   }
@@ -443,6 +480,8 @@ export class OrderPlaceOperation implements Operation {
     const userMatches: UserMatch[] = allMatches.filter(
       (match) => match._variant === MatchVariant.UserMatch,
     ) as UserMatch[];
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const returnCustomerItems = await this._customerItemStorage.getMany(
       returnOrderItems.map((orderItem) => String(orderItem.customerItem)),
     );
@@ -462,6 +501,8 @@ export class OrderPlaceOperation implements Operation {
   ): Promise<CustomerItem[]> {
     const addedCustomerItems = [];
     for (const customerItem of customerItems) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const ci = await this._customerItemStorage.add(customerItem, user);
       addedCustomerItems.push(ci);
     }
@@ -478,6 +519,8 @@ export class OrderPlaceOperation implements Operation {
       return ci.id.toString();
     });
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const userDetail = await this._userDetailStorage.get(customerId);
 
     let userDetailCustomerItemsIds = userDetail.customerItems
@@ -487,6 +530,8 @@ export class OrderPlaceOperation implements Operation {
     userDetailCustomerItemsIds =
       userDetailCustomerItemsIds.concat(customerItemIds);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await this._userDetailStorage.update(
       customerId,
       { customerItems: userDetailCustomerItemsIds },

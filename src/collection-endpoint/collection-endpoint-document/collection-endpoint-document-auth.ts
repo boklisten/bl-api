@@ -36,7 +36,11 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
           if (restriction.restricted) {
             if (
               !this._permissionService.haveRestrictedDocumentPermission(
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 blApiRequest.user.id,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 blApiRequest.user.permission,
                 doc,
                 restriction,
@@ -59,7 +63,11 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
 
           if (
             !this._permissionService.haveRestrictedDocumentPermission(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               blApiRequest.user.id,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               blApiRequest.user.permission,
               doc,
               restriction,
@@ -67,6 +75,8 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
             )
           ) {
             for (const id of doc.viewableFor) {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               if (id.toString() === blApiRequest.user.id.toString()) {
                 permissionValid = true;
                 break;
@@ -79,6 +89,8 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
           if (!permissionValid) {
             return Promise.reject(
               new BlError("document is not viewable for user")
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 .store("userId", blApiRequest.user.id)
                 .code(904),
             );

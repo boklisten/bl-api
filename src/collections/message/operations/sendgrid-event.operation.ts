@@ -27,10 +27,16 @@ export class SendgridEventOperation implements Operation {
 
   public async run(
     blApiRequest: BlApiRequest,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     req?: Request,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction,
   ): Promise<BlapiResponse> {
@@ -50,7 +56,11 @@ export class SendgridEventOperation implements Operation {
   }
 
   private async parseSendgridEvent(sendgridEvent: SendgridEvent) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const blMessageId = sendgridEvent["bl_message_id"];
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const messageType = sendgridEvent["bl_message_type"];
 
     if (!blMessageId) {

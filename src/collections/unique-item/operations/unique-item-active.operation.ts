@@ -26,13 +26,19 @@ export class UniqueItemActiveOperation implements Operation {
 
   async run(
     blApiRequest: BlApiRequest,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction,
   ): Promise<boolean> {
     let uniqueItem: UniqueItem;
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       uniqueItem = await this.uniqueItemStorage.get(blApiRequest.documentId);
     } catch (e) {
       throw new BlError("not found").code(702);
@@ -41,19 +47,27 @@ export class UniqueItemActiveOperation implements Operation {
     let activeCustomerItemIds;
     try {
       activeCustomerItemIds =
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         await this.customerItemActiveBlid.getActiveCustomerItemIds(
           uniqueItem.blid,
         );
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this.sendResponse(res, []);
       return true;
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this.sendResponse(res, activeCustomerItemIds);
     return true;
   }
 
   private sendResponse(res: Response, ids: string[]) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this.resHandler.sendResponse(res, new BlapiResponse(ids));
   }
 }

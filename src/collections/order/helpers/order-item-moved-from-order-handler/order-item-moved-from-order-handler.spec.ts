@@ -89,6 +89,8 @@ describe("OrderItemMovedFromOrderHandler", () => {
       });
 
       it('should reject if original order item already have "movedToOrder"', () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         testMovedFromOrder.orderItems[0]["movedToOrder"] = "anotherOrder";
         getOrderStub
           .withArgs(testMovedFromOrderId)

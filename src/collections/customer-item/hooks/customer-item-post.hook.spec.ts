@@ -47,6 +47,8 @@ describe("CustomerItemPostHook", () => {
       details: "userDetail1",
     } as AccessToken;
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     testUserDetail = {
       id: "userDetail1",
       name: "Alexander Hamilton",
@@ -116,13 +118,16 @@ describe("CustomerItemPostHook", () => {
   });
 
   const orderUpdateStub = sinon
-    .stub(orderStorage, "update")
+    .stub(orderStorage, "update") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((id: string, data: any) => {
       return Promise.resolve(testOrder);
     });
 
   sinon
     .stub(customerItemValidator, "validate")
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((customerItem: CustomerItem) => {
       if (!validateCustomerItem) {
         return Promise.reject("could not validate");
@@ -146,7 +151,8 @@ describe("CustomerItemPostHook", () => {
   });
 
   const userDetailStub = sinon
-    .stub(userDetailStorage, "update")
+    .stub(userDetailStorage, "update") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((id: string, data: any) => {
       return Promise.resolve(testUserDetail);
     });
@@ -154,6 +160,8 @@ describe("CustomerItemPostHook", () => {
   describe("before()", () => {
     it("should reject if customerItem parameter is undefined", () => {
       return expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         customerItemPostHook.before(undefined, testAccessToken),
       ).to.be.rejectedWith(BlError, /customerItem is undefined/);
     });
@@ -173,7 +181,11 @@ describe("CustomerItemPostHook", () => {
     });
 
     it("should reject if userDetail is not valid", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testUserDetail.name = null;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testUserDetail.dob = null;
 
       return expect(
@@ -199,6 +211,8 @@ describe("CustomerItemPostHook", () => {
 
     it("should update userDetail with the ids array if it was empty", (done) => {
       testUserDetail.customerItems = [];
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const ids = ["customerItem1"];
 
       customerItemPostHook
@@ -215,6 +229,8 @@ describe("CustomerItemPostHook", () => {
 
     it("should add the new id to the old userDetail.customerItem array", (done) => {
       testUserDetail.customerItems = ["customerItem2"];
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const ids = ["customerItem1"];
 
       customerItemPostHook

@@ -5,6 +5,8 @@ import { OrderItem, Item, Branch, BlError } from "@boklisten/bl-model";
 export class OrderItemPartlyPaymentValidator {
   public validate(
     orderItem: OrderItem,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     Item: Item,
     branch: Branch,
   ): Promise<boolean> {
@@ -20,9 +22,13 @@ export class OrderItemPartlyPaymentValidator {
       return Promise.reject(e);
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (!this.isPeriodSupported(orderItem.info.periodType, branch)) {
       return Promise.reject(
         new BlError(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           `partly-payment period "${orderItem.info.periodType}" not supported on branch`,
         ),
       );
@@ -58,6 +64,8 @@ export class OrderItemPartlyPaymentValidator {
 
     if (
       orderItem.info &&
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       isNullOrUndefined(orderItem.info["amountLeftToPay"])
     ) {
       throw new BlError("orderItem.info.amountLeftToPay not specified");

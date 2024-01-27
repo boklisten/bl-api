@@ -53,10 +53,14 @@ export class OrderItemRentPeriodValidator {
       return true;
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const period = orderItem.info.periodType;
 
     if (!isNullOrUndefined(orderItem.movedFromOrder)) {
       const branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         period,
         branchPaymentInfo,
       );
@@ -68,6 +72,8 @@ export class OrderItemRentPeriodValidator {
     }
 
     const branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       period,
       branchPaymentInfo,
     );
@@ -114,6 +120,8 @@ export class OrderItemRentPeriodValidator {
       return true;
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return this._orderStorage
       .get(orderItem.movedFromOrder as string)
       .then((order: Order) => {
@@ -134,6 +142,8 @@ export class OrderItemRentPeriodValidator {
           );
 
           if (
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             movedFromOrderItem.info.periodType === orderItem.info.periodType
           ) {
             if (movedFromOrderItem.amount > 0 && orderItem.amount !== 0) {

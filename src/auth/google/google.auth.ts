@@ -1,6 +1,10 @@
 import { BlError } from "@boklisten/bl-model";
 import { Router } from "express";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import passport from "passport";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { OAuth2Strategy } from "passport-google-oauth";
 
 import { APP_CONFIG } from "../../application-config";
@@ -14,7 +18,11 @@ export class GoogleAuth {
   private _googlePassportStrategySettings;
 
   constructor(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     private router: Router,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     private resHandler: SEResponseHandler,
   ) {
     this.apiPath = new ApiPath();
@@ -23,10 +31,16 @@ export class GoogleAuth {
     this._userProvider = new UserProvider();
 
     this._googlePassportStrategySettings = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       clientID: process.env.GOOGLE_CLIENT_ID,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       clientSecret: process.env.GOOGLE_SECRET,
       passReqToCallback: true,
       callbackURL:
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         process.env.BL_API_URI +
         this.apiPath.createPath("auth/google/callback"),
     };
@@ -39,8 +53,14 @@ export class GoogleAuth {
       new OAuth2Strategy(
         this._googlePassportStrategySettings,
         async (
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           req: unknown,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           accessToken: unknown,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           refreshToken: unknown,
           /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           profile: any,
@@ -77,7 +97,11 @@ export class GoogleAuth {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private retrieveUsername(profile): string {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const username = profile.emails.find((email) => email.verified)?.value;
 
     if (!username || username.length <= 0) {
@@ -99,12 +123,15 @@ export class GoogleAuth {
   private createCallbackGet(router: Router) {
     router.get(this.apiPath.createPath("auth/google/callback"), (req, res) => {
       passport.authenticate(
-        APP_CONFIG.login.google.name,
+        APP_CONFIG.login.google.name, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         (err, tokens, blError: BlError) => {
           const resHandler = new SEResponseHandler();
 
           if (!tokens && (err || blError)) {
             return res.redirect(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               process.env.CLIENT_URI +
                 APP_CONFIG.path.client.auth.socialLoginFailure,
             );
@@ -115,6 +142,8 @@ export class GoogleAuth {
               res,
               tokens.accessToken,
               tokens.refreshToken,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               this.apiPath.retrieveRefererPath(req.headers),
             );
           }

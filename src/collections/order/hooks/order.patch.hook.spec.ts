@@ -88,6 +88,8 @@ describe("OrderPatchHook", () => {
     return Promise.resolve(testOrder);
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   sinon.stub(orderPlacedHandler, "placeOrder").callsFake((order: Order) => {
     if (!orderPlacedConfirmed) {
       return Promise.reject(new BlError("could not place order"));
@@ -95,8 +97,11 @@ describe("OrderPatchHook", () => {
     return Promise.resolve({} as Order);
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const userDetailStorageUpdateStub = sinon
-    .stub(userDetailStorage, "update")
+    .stub(userDetailStorage, "update") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((id: string, data: any, user: any) => {
       if (!userDetailUpdated) {
         return Promise.reject(new BlError("could not update"));
@@ -116,8 +121,13 @@ describe("OrderPatchHook", () => {
     return Promise.resolve(testUserDetail);
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const orderStorageUpdateStub = sinon
-    .stub(orderStorage, "update")
+    .stub(orderStorage, "update") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((id: string, data: any, user: any) => {
       if (!orderUpdated) {
         return Promise.reject("could not update");
@@ -125,8 +135,12 @@ describe("OrderPatchHook", () => {
       return Promise.resolve(testOrder);
     });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const orderValidationValidateStub = sinon
     .stub(orderValidator, "validate")
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((order: Order) => {
       if (!orderValidated) {
         return Promise.reject(new BlError("could not validate"));
@@ -143,12 +157,16 @@ describe("OrderPatchHook", () => {
 
     it("should reject if accessToken is empty or undefined", () => {
       return expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         orderPatchHook.before({ placed: true }, undefined, "order1"),
       ).to.be.rejectedWith(BlError, /accessToken not defined/);
     });
 
     it("should reject if id is not defined", () => {
       return expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         orderPatchHook.before(testRequestBody, testAccessToken, null),
       ).to.be.rejectedWith(BlError, /id not defined/);
     });
@@ -157,6 +175,8 @@ describe("OrderPatchHook", () => {
   describe("after()", () => {
     it("should reject if accessToken is not defined", () => {
       return expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         orderPatchHook.after([testOrder], undefined),
       ).to.be.rejectedWith(BlError, /accessToken not defined/);
     });

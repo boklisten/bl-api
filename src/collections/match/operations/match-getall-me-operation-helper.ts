@@ -85,7 +85,11 @@ function addDetailsToMatch(
 
   return {
     ...(JSON.parse(JSON.stringify(match)) as UserMatch),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     senderDetails: selectMatchRelevantUserDetails(senderDetails),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     receiverDetails: selectMatchRelevantUserDetails(receiverDetails),
     customerItemToItemMap: mapCustomerItemIdsToItemIds(
       [...match.receivedCustomerItems, ...match.deliveredCustomerItems],

@@ -51,8 +51,12 @@ export class MatchGenerateOperation implements Operation {
       getMatchableSenders(
         matcherSpec.senderBranches,
         matcherSpec.deadlineBefore,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         this.customerItemStorage,
       ),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       getMatchableReceivers(matcherSpec.receiverBranches, this.orderStorage),
     ]);
     if (senders.length === 0 && receivers.length === 0) {
@@ -68,6 +72,8 @@ export class MatchGenerateOperation implements Operation {
       throw new BlError("No matches generated");
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const res = await this.matchStorage.addMany(matches);
     return new BlapiResponse(res.map((r) => r.id));
   }

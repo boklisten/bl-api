@@ -13,6 +13,8 @@ export class OrderPatchHook extends Hook {
   private orderPlacedHandler: OrderPlacedHandler;
 
   constructor(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     orderStorage?: BlDocumentStorage<Order>,
     orderValidator?: OrderValidator,
@@ -59,8 +61,12 @@ export class OrderPatchHook extends Hook {
     const order = orders[0];
 
     return new Promise((resolve, reject) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (order.placed) {
         this.orderPlacedHandler
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           .placeOrder(order, accessToken)
           .then((placedOrder) => {
             resolve([placedOrder]);
@@ -72,14 +78,22 @@ export class OrderPatchHook extends Hook {
           });
       } else {
         this.orderValidator
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           .validate(order)
           .then(() => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             resolve([order]);
           })
           .catch((validationError: BlError) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             if (order.placed) {
               this.orderStorage
                 .update(
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
                   order.id,
                   { placed: false },
                   {

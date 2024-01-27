@@ -10,6 +10,8 @@ import { orderSchema } from "../../../../order.schema";
 export class OrderItemRentValidator {
   private orderItemRentPeriodValidator: OrderItemRentPeriodValidator;
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   constructor(private _orderStorage?: BlDocumentStorage<Order>) {
     this._orderStorage = _orderStorage
       ? _orderStorage
@@ -26,6 +28,8 @@ export class OrderItemRentValidator {
       await this.validateOrderItemInfoFields(orderItem);
       await this.orderItemRentPeriodValidator.validate(
         orderItem,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         branch.paymentInfo,
         item.price,
       );

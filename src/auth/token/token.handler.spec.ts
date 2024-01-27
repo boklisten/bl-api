@@ -42,9 +42,13 @@ describe("TokenHandler", () => {
     context("when username is not valid", () => {
       it("should reject with BlError", () => {
         const username = undefined;
-        return tokenHandler
-          .createTokens(username)
-          .should.be.rejectedWith(BlError);
+        return (
+          tokenHandler
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .createTokens(username)
+            .should.be.rejectedWith(BlError)
+        );
       });
     });
 

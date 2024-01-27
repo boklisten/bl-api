@@ -6,6 +6,8 @@ const crypto = require("crypto");
 export class SaltGenerator {
   public generate(): Promise<string> {
     return new Promise((resolve, reject) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       crypto.randomBytes(256, (error, buffer) => {
         if (error)
           reject(

@@ -37,9 +37,17 @@ describe("OrderValidator", () => {
     orderUserDetailValidator,
   );
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let orderItemShouldResolve;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let orderPlacedShouldResolve;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let branchValidatorShouldResolve;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let orderUserDetailValidatorShouldResolve;
 
   sinon.stub(branchStorage, "get").callsFake((id: string) => {
@@ -50,28 +58,44 @@ describe("OrderValidator", () => {
     return Promise.resolve(testBranch);
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   sinon.stub(orderItemValidator, "validate").callsFake((order) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (!orderItemShouldResolve) {
       return Promise.reject(new BlError("orderItems not valid"));
     }
     return Promise.resolve(true);
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   sinon.stub(orderPlacedValidator, "validate").callsFake((order: Order) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (!orderPlacedShouldResolve) {
       return Promise.reject(new BlError("validation of order.placed failed"));
     }
     return Promise.resolve(true);
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   sinon.stub(branchValidator, "validate").callsFake((order: Order) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (!branchValidatorShouldResolve) {
       return Promise.reject(new BlError("validation of branch failed"));
     }
     return Promise.resolve(true);
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   sinon.stub(orderUserDetailValidator, "validate").callsFake((order: Order) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (!orderUserDetailValidatorShouldResolve) {
       return Promise.reject(new BlError("validation of UserDetail failed"));
     }
@@ -81,6 +105,8 @@ describe("OrderValidator", () => {
 
   describe("#validate()", () => {
     it("should reject if amount is null or undefined", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testOrder.amount = undefined;
       return expect(
         orderValidator.validate(testOrder),

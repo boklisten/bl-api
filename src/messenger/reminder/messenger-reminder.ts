@@ -30,6 +30,8 @@ export class MessengerReminder {
    *  Tries to remind all customers to return items that have the specified deadline
    *  @param deadline the deadline the reminder is for
    */
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public remindAll(deadline: Date) {
     throw new BlError("Not implemented!").code(200);
@@ -43,6 +45,8 @@ export class MessengerReminder {
       throw new BlError("customerId is null or undefined").code(701);
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (!message.info || message.info["deadline"] == null) {
       throw new BlError("deadline is null or undefined").code(701);
     }
@@ -50,6 +54,8 @@ export class MessengerReminder {
     const notReturnedCustomerItems =
       await this.customerItemHandler.getNotReturned(
         message.customerId,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         message.info["deadline"],
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         message.messageSubtype as any,

@@ -20,6 +20,8 @@ export class OrderItemValidator {
   private priceService: PriceService;
 
   constructor(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     branchStorage?: BlDocumentStorage<Branch>,
     itemStorage?: BlDocumentStorage<Item>,
     orderItemFieldValidator?: OrderFieldValidator,
@@ -65,6 +67,8 @@ export class OrderItemValidator {
         ),
       );
     }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return undefined;
   }
 
@@ -95,6 +99,8 @@ export class OrderItemValidator {
       case "extend":
         return await this.orderItemExtendValidator.validate(branch, orderItem);
     }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return undefined;
   }
 

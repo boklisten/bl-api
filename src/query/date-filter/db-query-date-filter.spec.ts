@@ -104,6 +104,8 @@ describe("DbQueryDateFilter", () => {
           const isoDate = moment(dateString, validDateFormat, true).toDate();
 
           const expectedOp = {};
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           expectedOp[validQuery.op] = isoDate;
 
           return expect(
@@ -124,7 +126,11 @@ describe("DbQueryDateFilter", () => {
 
       for (const validQuery of validQueries) {
         it("should resolve with correct date filter", () => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           const gtDateString = validQuery.creationTime[0].slice(1);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           const ltDateString = validQuery.creationTime[1].slice(1);
 
           const gtIsoDate = moment(

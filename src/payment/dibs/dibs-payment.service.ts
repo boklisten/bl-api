@@ -20,6 +20,8 @@ export class DibsPaymentService {
   private _httpHandler: HttpHandler;
 
   constructor(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     deliveryStorage?: BlDocumentStorage<Delivery>,
     httpHandler?: HttpHandler,
   ) {
@@ -31,13 +33,21 @@ export class DibsPaymentService {
     return new Promise((resolve, reject) => {
       this._httpHandler
         .post(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           process.env.DIBS_URI + APP_CONFIG.path.dibs.payment,
           dibsEasyOrder,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           process.env.DIBS_SECRET_KEY,
         )
         .then((responseData: string) => {
           if (responseData) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             if (responseData["paymentId"]) {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               return resolve(responseData["paymentId"]);
             }
           }
@@ -54,15 +64,23 @@ export class DibsPaymentService {
   public fetchDibsPaymentData(paymentId: string): Promise<DibsEasyPayment> {
     return this._httpHandler
       .get(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         process.env.DIBS_URI + APP_CONFIG.path.dibs.payment + "/" + paymentId,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         process.env.DIBS_SECRET_KEY,
       )
       .then((response) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (!response["payment"]) {
           throw new BlError(
             "dibs response did not include payment information",
           ).store("paymentId", paymentId);
         }
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         return TypedJSON.parse(response["payment"], DibsEasyPayment);
       })
       .catch((getDibsPaymentDetailError: BlError) => {
@@ -97,7 +115,11 @@ export class DibsPaymentService {
     const userDetailValid = this._userDetailHelper.isValid(userDetail);
 
     dibsEasyOrder.checkout = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       url: process.env.CLIENT_URI + APP_CONFIG.path.client.checkout,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       termsUrl: process.env.CLIENT_URI + APP_CONFIG.path.client.agreement.rent,
       ShippingCountries: [{ countryCode: "NOR" }],
       merchantHandlesConsumerData: userDetailValid, // if userDetail is not valid, the customer must reenter data

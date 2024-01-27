@@ -31,6 +31,8 @@ export class AccessTokenCreator {
         );
 
       this.refreshTokenValidator.validate(refreshToken).then(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (valid: boolean) => {
           this.jwt.sign(

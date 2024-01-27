@@ -62,13 +62,16 @@ describe("PaymentPatchHook", () => {
   });
 
   sinon
-    .stub(paymentDibsHandler, "handleDibsPayment")
+    .stub(paymentDibsHandler, "handleDibsPayment") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((payment, accessToken) => {
       return dibsPaymentCreated
         ? Promise.resolve(testPayment)
         : Promise.reject(new BlError("could not create dibs payment"));
     });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   sinon.stub(paymentValidator, "validate").callsFake((valid) => {
     return paymentValidated
       ? Promise.resolve(true)

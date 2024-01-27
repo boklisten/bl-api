@@ -125,7 +125,11 @@ export function printPerformanceMetrics(matches: CandidateMatch[]) {
   const groupedUsers = groupMatchesByUser(matches);
   const userCounts = {};
   for (const user of groupedUsers) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const prevValue = userCounts[user.matches.length];
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     userCounts[user.matches.length] =
       prevValue === undefined ? 1 : prevValue + 1;
   }
@@ -135,6 +139,8 @@ UserMatches: ${numberOfMatchesPerType.userMatches},
 StandMatches: ${numberOfMatchesPerType.standMatches},
 NoMatches Per User
 ${Object.keys(userCounts)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   .map((key) => key + ": " + userCounts[key] + " kunder,\n")
   .join("")}
 `);

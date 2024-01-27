@@ -2,7 +2,11 @@ import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import sinon from "sinon";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { BlError } from "@boklisten/bl-model";
 import { ApiPath } from "./api-path";
 import { APP_CONFIG } from "../application-config";

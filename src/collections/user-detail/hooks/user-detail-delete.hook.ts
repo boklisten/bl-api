@@ -32,6 +32,8 @@ export class UserDetailDeleteHook extends Hook {
   }
 
   public override async before(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any,
     accessToken: AccessToken,
@@ -42,8 +44,12 @@ export class UserDetailDeleteHook extends Hook {
       await this.checkActiveOrders(id);
       await this.checkActiveCustomerItems(id);
       await this.checkActiveInvoices(id);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await this.userDeleteAllInfo.deleteAllInfo(id, accessToken);
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       throw new BlError(`user "${id}" could not be deleted: ${e.message}`);
     }
 
@@ -54,6 +60,8 @@ export class UserDetailDeleteHook extends Hook {
     id: string,
     accessToken: AccessToken,
   ): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const canDelete = await this.userCanDeleteUserDetail.canDelete(
       id,
       accessToken,
@@ -69,6 +77,8 @@ export class UserDetailDeleteHook extends Hook {
 
   private async checkActiveInvoices(userId: string): Promise<boolean> {
     const haveActiveInvoices =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await this.customerInvoiceActive.haveActiveInvoices(userId);
     if (haveActiveInvoices) {
       throw new BlError("customer have active invoices");
@@ -78,6 +88,8 @@ export class UserDetailDeleteHook extends Hook {
 
   private async checkActiveCustomerItems(userId: string): Promise<boolean> {
     const haveActiveCustomerItems =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await this.customerHaveActiveCustomerItems.haveActiveCustomerItems(
         userId,
       );
@@ -90,6 +102,8 @@ export class UserDetailDeleteHook extends Hook {
   }
 
   private async checkActiveOrders(userId: string): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const haveActiveOrders = await this.orderActive.haveActiveOrders(userId);
     if (haveActiveOrders) {
       throw new BlError("customer have active orders");

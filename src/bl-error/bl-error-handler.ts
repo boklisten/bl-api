@@ -18,6 +18,8 @@ export class BlErrorHandler {
         );
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   public createBlapiErrorResponse(err): BlapiErrorResponse {
     let blError = err;
 

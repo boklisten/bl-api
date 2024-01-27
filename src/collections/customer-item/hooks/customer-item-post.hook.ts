@@ -22,6 +22,8 @@ export class CustomerItemPostHook extends Hook {
 
   constructor(
     customerItemValidator?: CustomerItemValidator,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     customerItemStorage?: BlDocumentStorage<CustomerItem>,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     orderStorage?: BlDocumentStorage<Order>,
@@ -41,8 +43,12 @@ export class CustomerItemPostHook extends Hook {
 
   public override before(
     customerItem: CustomerItem,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     accessToken: AccessToken,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     id?: string,
   ): Promise<boolean> {
@@ -89,6 +95,8 @@ export class CustomerItemPostHook extends Hook {
       );
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const customerItem: CustomerItem = customerItems[0];
 
     if (!customerItem.orders) {
@@ -126,6 +134,8 @@ export class CustomerItemPostHook extends Hook {
         return this._userDetailStorage.get(String(customerItem.customer));
       })
       .then((userDetail: UserDetail) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         let newCustomerItems = [];
 
         if (
@@ -138,11 +148,15 @@ export class CustomerItemPostHook extends Hook {
           userDetail.customerItems.length > 0
         ) {
           newCustomerItems = userDetail.customerItems;
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           newCustomerItems.push(customerItem.id);
         }
 
         return this._userDetailStorage.update(
           userDetail.id,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           { customerItems: newCustomerItems },
           { id: accessToken.sub, permission: accessToken.permission },
         );

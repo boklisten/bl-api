@@ -60,6 +60,8 @@ export class UserHandler {
                 );
               });
           } else {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             resolve(docs[0]);
           }
         },
@@ -79,6 +81,8 @@ export class UserHandler {
     // this issue came from multiple logins as it was created a new user for Facbook, Google and local
     // even with the same email
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     let selectedUser = null;
 
     for (const user of users) {
@@ -92,32 +96,40 @@ export class UserHandler {
     } else {
       selectedUser = users[0];
 
-      return this.userStorage
-        .update(selectedUser, { primary: true }, new SystemUser())
-        .then(() => {
-          const promiseArr = users.map((user) =>
-            this.userStorage.update(
-              user.id,
-              { movedToPrimary: selectedUser.id },
-              new SystemUser(),
-            ),
-          );
+      return (
+        this.userStorage
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .update(selectedUser, { primary: true }, new SystemUser())
+          .then(() => {
+            const promiseArr = users.map((user) =>
+              this.userStorage.update(
+                user.id,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                { movedToPrimary: selectedUser.id },
+                new SystemUser(),
+              ),
+            );
 
-          return Promise.all(promiseArr)
-            .then(() => {
-              return selectedUser;
-            })
-            .catch(() => {
-              throw new BlError(
-                `user with multiple entries could not update the other entries with invalid`,
-              );
-            });
-        })
-        .catch(() => {
-          throw new BlError(
-            "user with multiple entries could not update one to primary",
-          );
-        });
+            return Promise.all(promiseArr)
+              .then(() => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                return selectedUser;
+              })
+              .catch(() => {
+                throw new BlError(
+                  `user with multiple entries could not update the other entries with invalid`,
+                );
+              });
+          })
+          .catch(() => {
+            throw new BlError(
+              "user with multiple entries could not update one to primary",
+            );
+          })
+      );
     }
   }
 
@@ -141,6 +153,8 @@ export class UserHandler {
       this.userStorage
         .getByQuery(dbQuery)
         .then((users: User[]) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           resolve(users[0]);
         })
         .catch((error: BlError) => {
@@ -170,6 +184,8 @@ export class UserHandler {
     try {
       userExists = await this.getByUsername(username);
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       userExists = null;
     }
 

@@ -9,6 +9,8 @@ export class HashedPasswordGenerator {
     private seCrypto: SeCrypto,
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   public generate(password): Promise<{ hashedPassword: string; salt: string }> {
     return new Promise((resolve, reject) => {
       const blError = new BlError("")

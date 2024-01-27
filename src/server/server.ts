@@ -5,10 +5,16 @@ dotenv.config(); //adds the .env file to environment variables
 
 import path from "path";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import cookieParser from "cookie-parser";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import cors from "cors";
 import express, { Application, json, Request, Response, Router } from "express";
 import mongoose from "mongoose";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import passport from "passport";
 
 import * as packageJson from "../../package.json";
@@ -17,13 +23,19 @@ import { CollectionEndpointCreator } from "../collection-endpoint/collection-end
 import { logger } from "../logger/logger";
 
 export class Server {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   public app: Application;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private router: Router;
 
   constructor() {
     this.printServerStartMessage();
     this.initialServerConfig();
     this.initialPassportConfig();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     new BlAuth(this.router);
     this.generateEndpoints();
     this.connectToDbAndStartServer();
@@ -57,6 +69,8 @@ export class Server {
   private connectToMongoDb(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       logger.verbose(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         `trying to connect to mongodb: ${process.env.MONGODB_URI}`,
       );
 
@@ -72,13 +86,16 @@ export class Server {
         logger.error("mongoose connection has error");
       });
 
-      mongoose
+      mongoose // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         .connect(process.env.MONGODB_URI, {
           maxPoolSize: 10,
           connectTimeoutMS: 10000,
           socketTimeoutMS: 45000,
         })
         .then(() => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           logger.verbose(`connected to mongodb: ${process.env.MONGODB_URI}`);
           resolve(true);
         })
@@ -94,8 +111,8 @@ export class Server {
 
     process.on("unhandledRejection", (reason, p) => {
       logger.error(`unhandeled rejection at: ${p}, reason: ${reason}`);
-    });
-
+    }); // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const whitelist = process.env.URI_WHITELIST.split(" ");
     const allowedMethods = ["GET", "PUT", "PATCH", "POST", "DELETE"];
     const allowedHeaders = [
@@ -112,6 +129,8 @@ export class Server {
       optionsSuccessStatus: 204,
     };
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this.app.use(process.env.API_ENV === "staging" ? cors() : cors(corsConfig));
     this.app.use(cookieParser());
     this.app.use(passport.initialize());
@@ -123,6 +142,8 @@ export class Server {
         // no point in showing all the preflight requests
         logger.debug(`-> ${req.method} ${req.url}`);
         if (
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           !(req.url.includes("auth") && process.env.NODE_ENV === "production")
         ) {
           let body: string;
@@ -141,6 +162,8 @@ export class Server {
     this.app.get("*", (req, res, next) => {
       if (
         req.headers["x-forwarded-proto"] !== "https" &&
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         process.env.NODE_ENV === "production"
       ) {
         res.redirect("https://" + req.hostname + req.url);
@@ -173,6 +196,8 @@ export class Server {
   }
 
   private serverStart() {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this.app.set("port", process.env.PORT || 1337);
 
     // eslint-disable-next-line import/no-named-as-default-member
@@ -210,10 +235,18 @@ export class Server {
 
     logger.verbose(
       "server url:\t" +
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         process.env.SERVER_HOST +
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         process.env.SERVER_PORT +
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         process.env.SERVER_PATH,
     );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     logger.verbose("mongoDB path:\t" + process.env.MONGODB_URI);
   }
 }

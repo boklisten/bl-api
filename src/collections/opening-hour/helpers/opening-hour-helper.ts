@@ -23,6 +23,8 @@ export class OpeningHourHelper {
       throw new BlError("no opening hours found at branch");
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const openingHours = await this.openingHourStorage.getMany(
       branch.openingHours as string[],
     );

@@ -23,6 +23,8 @@ export class OrderToCustomerItemGenerator {
       return [];
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const customerDetail = await this._userDetailStorage.get(
       order.customer as string,
     );
@@ -34,6 +36,8 @@ export class OrderToCustomerItemGenerator {
           order,
           orderItem,
         );
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         customerItem.viewableFor = [customerDetail.blid];
         customerItems.push(customerItem);
       }
@@ -80,19 +84,27 @@ export class OrderToCustomerItemGenerator {
     orderItem: OrderItem,
   ): CustomerItem {
     return {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       id: null,
       type: "partly-payment",
       item: orderItem.item,
       blid: orderItem.blid,
       age: orderItem.age,
-      customer: order.customer,
+      customer: order.customer, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       deadline: orderItem.info.to,
       handout: true,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       handoutInfo: this.createHandoutInfo(order),
-      returned: false,
+      returned: false, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       amountLeftToPay: orderItem["info"]["amountLeftToPay"],
       totalAmount: orderItem.amount,
       orders: [order.id],
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       customerInfo: this.createCustomerInfo(customerDetail),
     };
   }
@@ -103,18 +115,25 @@ export class OrderToCustomerItemGenerator {
     orderItem: OrderItem,
   ): CustomerItem {
     return {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       id: null,
       type: "rent",
       item: orderItem.item,
       blid: orderItem.blid,
       age: orderItem.age,
-      customer: order.customer,
+      customer: order.customer, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       deadline: orderItem.info.to,
       handout: true,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       handoutInfo: this.createHandoutInfo(order),
       returned: false,
       totalAmount: orderItem.amount,
       orders: [order.id],
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       customerInfo: this.createCustomerInfo(customerDetail),
     };
   }
@@ -125,18 +144,25 @@ export class OrderToCustomerItemGenerator {
     orderItem: OrderItem,
   ): CustomerItem {
     return {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       id: null,
       type: "loan",
       item: orderItem.item,
       blid: orderItem.blid,
       age: orderItem.age,
-      customer: order.customer,
+      customer: order.customer, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       deadline: orderItem.info.to,
       handout: true,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       handoutInfo: this.createHandoutInfo(order),
       returned: false,
       totalAmount: orderItem.amount,
       orders: [order.id],
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       customerInfo: this.createCustomerInfo(customerDetail),
     };
   }

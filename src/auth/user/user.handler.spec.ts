@@ -85,6 +85,8 @@ describe("UserHandler", () => {
     .stub(userStorage, "getByQuery")
     .callsFake((query: SEDbQuery) => {
       return new Promise((resolve, reject) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (query.stringFilters[0].value !== testUser.username) {
           return reject(new BlError("not found").code(702));
         }
@@ -104,16 +106,24 @@ describe("UserHandler", () => {
 
       it("provider is null", () => {
         const provider = null;
-        return userHandler
-          .get(provider, testProviderId)
-          .should.rejectedWith(BlError);
+        return (
+          userHandler
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .get(provider, testProviderId)
+            .should.rejectedWith(BlError)
+        );
       });
 
       it("providerId is null", () => {
         const providerId = null;
-        return userHandler
-          .get(testProvider, providerId)
-          .should.rejectedWith(BlError);
+        return (
+          userHandler
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .get(testProvider, providerId)
+            .should.rejectedWith(BlError)
+        );
       });
 
       it("providerId is empty", () => {
@@ -129,9 +139,13 @@ describe("UserHandler", () => {
     context("when username is undefined", () => {
       it("should reject with BlError", () => {
         const username = undefined;
-        return userHandler
-          .getByUsername(username)
-          .should.be.rejectedWith(BlError);
+        return (
+          userHandler
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .getByUsername(username)
+            .should.be.rejectedWith(BlError)
+        );
       });
     });
 
@@ -158,6 +172,8 @@ describe("UserHandler", () => {
     context("when multiple users is found with same username", () => {
       it("should select the first one with primary if primary is set", () => {
         const username = "jimmy@dore.com";
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const testUsers = [
           { username: username, movedToPrimary: "someObjectId" },
           { username: username, primary: true },
@@ -179,9 +195,13 @@ describe("UserHandler", () => {
     describe("should reject whith BlError when", () => {
       it("username is undefined", () => {
         const username = undefined;
-        return userHandler
-          .create(username, testProvider, testProviderId)
-          .should.be.rejectedWith(BlError);
+        return (
+          userHandler
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .create(username, testProvider, testProviderId)
+            .should.be.rejectedWith(BlError)
+        );
       });
 
       it("provider is empty", () => {
@@ -258,6 +278,8 @@ describe("UserHandler", () => {
         .catch((blError: BlError) => {
           expect(blError.errorStack.length).to.be.gte(1);
 
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           expect(blError.errorStack[0].getMsg()).to.be.eq(
             "could not send out email validation link",
           );
@@ -288,9 +310,13 @@ describe("UserHandler", () => {
     describe("should reject with BlError when", () => {
       it("provider is undefined", () => {
         const provider = undefined;
-        return userHandler
-          .exists(provider, testProviderId)
-          .should.be.rejectedWith(BlError);
+        return (
+          userHandler
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .exists(provider, testProviderId)
+            .should.be.rejectedWith(BlError)
+        );
       });
 
       it("providerId is empty", () => {

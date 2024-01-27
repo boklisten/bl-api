@@ -32,6 +32,8 @@ export class DbQueryExpandFilter {
 
   private generateExpandFilter(
     expand: string | string[],
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     validExpandParams: string[],
   ): ExpandFilter[] {

@@ -61,6 +61,8 @@ export class DbQueryNumberFilter {
           "query includes syntax errors, reason: " + error.message,
         );
       throw new Error(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         "failure when parsing query for number operations" + error.message,
       );
     }

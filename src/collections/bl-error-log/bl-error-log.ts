@@ -1,11 +1,23 @@
 import { BlDocument, BlError } from "@boklisten/bl-model";
 
 export class BlErrorLog extends BlDocument {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   code: number;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   className: string;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   methodName: string;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   msg: string;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   errorStack: BlError[];
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   store: { key: string; value: any }[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

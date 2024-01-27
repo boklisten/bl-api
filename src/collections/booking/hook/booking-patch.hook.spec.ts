@@ -43,6 +43,10 @@ const testBooking4 = {
   to: new Date(),
 } as Booking;
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 sinon.stub(bookingStorage, "get").callsFake((id, userPermission) => {
   if (id == testBooking.id) {
     return Promise.resolve(testBooking);
@@ -59,6 +63,8 @@ sinon.stub(bookingStorage, "getByQuery").callsFake((query) => {
   if (query.objectIdFilters) {
     if (
       query.objectIdFilters.length &&
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       query.objectIdFilters[0].value[0] == testBooking3.customer
     ) {
       return Promise.resolve([testBooking3]);
@@ -237,6 +243,8 @@ describe("BookingPatchHook", () => {
       };
 
       return expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         bookingPatchHook.after([booking as Booking], {
           permission: "customer",
           details: testId3,

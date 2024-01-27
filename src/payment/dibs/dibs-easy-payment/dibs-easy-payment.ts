@@ -9,19 +9,29 @@ import { DibsEasyPaymentSummary } from "./dibs-easy-payment-summary/dibs-easy-pa
 @JsonObject
 export class DibsEasyPayment {
   @JsonMember({ type: String })
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   paymentId: string;
   @JsonMember({ type: DibsEasyPaymentSummary })
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   summary: DibsEasyPaymentSummary;
   @JsonMember({ type: DibsEasyPaymentConsumer })
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   consumer: DibsEasyPaymentConsumer;
   @JsonMember({ type: DibsEasyPaymentDetails })
   paymentDetails?: DibsEasyPaymentDetails;
   @JsonMember({ type: DibsEasyPaymentOrderDetails })
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   orderDetails: DibsEasyPaymentOrderDetails;
   checkout?: {
     url: string;
   };
   @JsonMember({ type: String })
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   created: string;
   @JsonMember({ elements: DibsEasyPaymentRefund })
   refunds?: DibsEasyPaymentRefund[];

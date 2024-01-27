@@ -25,6 +25,8 @@ export class CustomerInvoiceActive {
     );
     let invoices: Invoice[];
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       invoices = await this.invoiceStorage.getByQuery(dbQuery);
     } catch (e) {
       if (e instanceof BlError && e.getCode() == 702) {
@@ -32,6 +34,8 @@ export class CustomerInvoiceActive {
       }
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return invoices.some((invoice) => this.invoiceActive.isActive(invoice));
   }
 }

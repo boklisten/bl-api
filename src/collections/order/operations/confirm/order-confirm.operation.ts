@@ -79,6 +79,8 @@ export class OrderConfirmOperation implements Operation {
     );
 
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const existingOrders = await this._orderStorage.getByQuery(dbQuery);
       const alreadyOrderedItems =
         this.filterOrdersByAlreadyOrdered(existingOrders);
@@ -86,7 +88,8 @@ export class OrderConfirmOperation implements Operation {
       for (const orderItem of order.orderItems) {
         for (const alreadyOrderedItem of alreadyOrderedItems) {
           if (
-            String(orderItem.item) === String(alreadyOrderedItem.item) &&
+            String(orderItem.item) === String(alreadyOrderedItem.item) && // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             orderItem.info.to === alreadyOrderedItem.info.to
           ) {
             return true;
@@ -102,19 +105,29 @@ export class OrderConfirmOperation implements Operation {
 
   public async run(
     blApiRequest: BlApiRequest,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction,
   ): Promise<boolean> {
     const accessToken = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       details: blApiRequest.user.id,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       permission: blApiRequest.user.permission,
     } as AccessToken;
 
     let order;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       order = await this._orderStorage.get(blApiRequest.documentId);
     } catch (e) {
       throw new BlError(`order "${blApiRequest.documentId}" not found`);
@@ -132,14 +145,16 @@ export class OrderConfirmOperation implements Operation {
     let placedOrder;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       placedOrder = await this._orderPlacedHandler.placeOrder(
         order,
         accessToken,
       );
     } catch (e) {
       throw new BlError("order could not be placed:" + e);
-    }
-
+    } // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this._resHandler.sendResponse(res, new BlapiResponse([placedOrder]));
 
     return true;

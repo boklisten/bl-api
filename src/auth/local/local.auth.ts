@@ -1,6 +1,10 @@
 import { BlapiResponse, BlError } from "@boklisten/bl-model";
 import { Router } from "express";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import passport from "passport";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { Strategy } from "passport-local";
 
 import { LocalLoginValidator } from "./local-login.validator";
@@ -14,6 +18,8 @@ export class LocalAuth {
   constructor(
     router: Router,
     private resHandler: SEResponseHandler,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     private localLoginValidator: LocalLoginValidator,
     private tokenHandler: TokenHandler,
   ) {
@@ -78,6 +84,8 @@ export class LocalAuth {
         passport.authenticate(
           "local",
           (
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             error,
             jwTokens: { accessToken: string; refreshToken: string },
             blError: BlError,
@@ -97,6 +105,8 @@ export class LocalAuth {
               return this.resHandler.sendErrorResponse(res, blError);
             }
 
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             req.login(jwTokens, (error) => {
               if (error) return next(error);
               this.respondWithTokens(res, {
@@ -111,6 +121,8 @@ export class LocalAuth {
   }
 
   private respondWithTokens(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     res,
     tokens: { accessToken: string; refreshToken: string },
   ) {

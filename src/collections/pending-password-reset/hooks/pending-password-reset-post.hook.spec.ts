@@ -28,6 +28,8 @@ describe("PendingPasswordResetPostHook", () => {
   const testUsername = "albert@blapi.com";
   let testUser: User;
   let testPasswordResetRequest: PasswordResetRequest = { email: testUsername };
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testPendingPasswordReset: PendingPasswordReset;
   const testSalt = "salt";
   const testToken = "aLongRandomTokenString";
@@ -67,6 +69,8 @@ describe("PendingPasswordResetPostHook", () => {
     });
 
     it("should reject if passwordResetRequest.email is undefined", async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const passwordResetRequest: PasswordResetRequest = { email: undefined };
 
       await expect(

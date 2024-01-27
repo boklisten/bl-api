@@ -29,6 +29,8 @@ export class SEResponseHandler {
     referer?: string,
   ) {
     const redirectUrl = `${
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       referer ?? process.env.CLIENT_URI
     }auth/token;accessToken=${accessToken};refreshToken=${refreshToken}`;
     res.redirect(redirectUrl);

@@ -1,6 +1,8 @@
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { expect } from "chai";
 import { LocalLoginCreator } from "./local-login-creator";
 import { BlError } from "@boklisten/bl-model";
@@ -38,17 +40,25 @@ describe("LocalLoginCreator", () => {
       it("username is undefined", () => {
         const username = undefined;
         const password = "thisisavalidpassword";
-        return localLoginCreator
-          .create(username, password)
-          .should.be.rejectedWith(BlError);
+        return (
+          localLoginCreator
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .create(username, password)
+            .should.be.rejectedWith(BlError)
+        );
       });
 
       it("password is null", () => {
         const username = "bill@mail.com";
         const password = null;
-        return localLoginCreator
-          .create(username, password)
-          .should.be.rejectedWith(BlError);
+        return (
+          localLoginCreator
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .create(username, password)
+            .should.be.rejectedWith(BlError)
+        );
       });
 
       it("password is under 6 char", () => {
@@ -86,6 +96,8 @@ describe("LocalLoginCreator", () => {
               .property("hashedPassword")
               .and.have.length.gte(64);
           },
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           (error: any) => {},
         );
       });

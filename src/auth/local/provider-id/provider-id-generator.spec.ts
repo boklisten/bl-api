@@ -1,6 +1,8 @@
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { expect } from "chai";
 import { ProviderIdGenerator } from "./provider-id-generator";
 import { BlError } from "@boklisten/bl-model";
@@ -23,9 +25,13 @@ describe("ProviderIdGenerator", () => {
 
       it("username is undefined", () => {
         const username = undefined;
-        return providerIdGenerator
-          .generate(username)
-          .should.be.rejectedWith(BlError);
+        return (
+          providerIdGenerator
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .generate(username)
+            .should.be.rejectedWith(BlError)
+        );
       });
     });
 

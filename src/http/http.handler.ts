@@ -17,11 +17,16 @@ export class HttpHandler {
       };
 
       if (authorization) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         options["headers"]["Authorization"] = authorization;
       }
 
       logger.debug(`R-> POST ${url}`);
-
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       request.post(options, (err, res, body) => {
         if (err) {
           logger.verbose(`<-R ERROR ${err}`);
@@ -60,9 +65,13 @@ export class HttpHandler {
       logger.debug(`R-> GET ${options.uri}`);
 
       rp(options)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         .then((jsonResponse) => {
           resolve(jsonResponse);
         })
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         .catch((error) => {
           logger.verbose(`<-R ERROR ${error}`);
 
@@ -84,15 +93,21 @@ export class HttpHandler {
       };
 
       if (authorization) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         options["headers"]["Authorization"] = authorization;
       }
 
       logger.debug(`R-> GET ${options.uri}`);
 
       rp(options)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         .then((jsonResponse) => {
           resolve(jsonResponse);
         })
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         .catch((error) => {
           logger.verbose(`<-R ERROR ${error}`);
 

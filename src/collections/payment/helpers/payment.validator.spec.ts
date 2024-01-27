@@ -78,6 +78,8 @@ describe("PaymentValidator", () => {
   describe("#validate()", () => {
     it("should reject if payment is undefined", () => {
       return expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         paymentValidator.validate(undefined),
       ).to.eventually.be.rejectedWith(BlError, /payment is not defined/);
     });

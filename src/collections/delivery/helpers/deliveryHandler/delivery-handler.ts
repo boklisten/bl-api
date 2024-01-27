@@ -55,12 +55,16 @@ export class DeliveryHandler {
         return this.updateOrderWithDeliveryMethodBranch(
           delivery,
           order,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           accessToken,
         );
       case "bring":
         return this.updateOrderWithDeliveryMethodBring(
           delivery,
           order,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           accessToken,
         );
     }
@@ -159,6 +163,8 @@ export class DeliveryHandler {
     accessToken: AccessToken,
   ): Promise<Delivery> {
     return new Promise((resolve, reject) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this.branchStorage
         .get(order.branch as string)
         .then((branch: Branch) => {
@@ -168,17 +174,29 @@ export class DeliveryHandler {
 
           this.bringDeliveryService
             .getDeliveryInfoBring(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               delivery.info["facilityAddress"],
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               delivery.info["shipmentAddress"],
               items,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               freeDelivery,
             )
             .then((deliveryInfoBring: DeliveryInfoBring) => {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               if (delivery.info["trackingNumber"]) {
                 deliveryInfoBring["trackingNumber"] =
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
                   delivery.info["trackingNumber"];
               }
 
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               this.deliveryStorage
                 .update(
                   delivery.id,

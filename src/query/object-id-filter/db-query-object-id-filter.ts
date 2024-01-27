@@ -25,13 +25,19 @@ export class DbQueryObjectIdFilter {
       for (const param in query) {
         if (validStringParams.includes(param)) {
           if (Array.isArray(query[param])) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             const valueArr = [];
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             query[param].forEach((paramValue) => {
               valueArr.push(this.getStringParamValue(paramValue));
               valueArr.push(this.getObjectIdParamValue(paramValue));
             });
             objectIdFilters.push({
               fieldName: param,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               value: valueArr,
             });
           } else {
@@ -58,6 +64,8 @@ export class DbQueryObjectIdFilter {
 
       throw new Error(
         "could not parse the object-id parameters in query, reason: " +
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           error.message,
       );
     }
@@ -82,6 +90,8 @@ export class DbQueryObjectIdFilter {
   }
 
   private validateStringParam(param: string): boolean {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return (
       param &&
       new Types.ObjectId(param).toString() === param &&

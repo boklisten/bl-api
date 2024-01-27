@@ -7,8 +7,14 @@ import { BranchValidator } from "./branch-validator";
 chai.use(chaiAsPromised);
 
 describe("BranchValidator", () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testOrderItem: OrderItem;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testBranch: Branch;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const branchValidator: BranchValidator = new BranchValidator();
 
   beforeEach(() => {

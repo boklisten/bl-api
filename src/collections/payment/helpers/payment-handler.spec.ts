@@ -20,11 +20,19 @@ import { BlCollectionName } from "../../bl-collection";
 chai.use(chaiAsPromised);
 
 describe("PaymentHandler", () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testPayments: Payment[];
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testPayment1: Payment;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testPayment2: Payment;
   let testOrder: Order;
   let testAccessToken: AccessToken;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let userDetailHelperDibsPaymentUpdateSuccess: boolean;
   const paymentStorage = new BlDocumentStorage<Payment>(
     BlCollectionName.Payments,

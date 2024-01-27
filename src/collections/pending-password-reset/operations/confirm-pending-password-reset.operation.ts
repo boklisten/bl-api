@@ -36,7 +36,11 @@ export class ConfirmPendingPasswordResetOperation implements Operation {
     const passwordResetConfirmationRequest: unknown = blApiRequest.data;
     validatePasswordResetConfirmationRequest(passwordResetConfirmationRequest);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const pendingPasswordReset = await this.pendingPasswordResetStorage
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .get(pendingPasswordResetId)
       .catch((getPasswordResetError) => {
         throw new BlError(
@@ -51,17 +55,23 @@ export class ConfirmPendingPasswordResetOperation implements Operation {
     await verifyResetToken(
       passwordResetConfirmationRequest.resetToken,
       pendingPasswordReset,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this.seCrypto,
     );
 
     await updatePassword(
       pendingPasswordReset,
       passwordResetConfirmationRequest.newPassword,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this.localLoginHandler,
     );
 
     await deactivatePendingPasswordReset(
       pendingPasswordReset,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this.pendingPasswordResetStorage,
     );
 
@@ -72,28 +82,38 @@ export class ConfirmPendingPasswordResetOperation implements Operation {
 function validatePasswordResetConfirmationRequest(
   candidate: unknown,
 ): asserts candidate is PasswordResetConfirmationRequest {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if (!candidate || !candidate["resetToken"]) {
     throw new BlError(
       "blApiRequest.data.resetToken is null, empty or undefined",
     ).code(701);
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if (typeof candidate["resetToken"] !== "string") {
     throw new BlError("blApiRequest.data.resetToken is not a string").code(701);
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if (!candidate || !candidate["newPassword"]) {
     throw new BlError(
       "blApiRequest.data.newPassword is null, empty or undefined",
     ).code(701);
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if (typeof candidate["newPassword"] !== "string") {
     throw new BlError("blApiRequest.data.newPassword is not a string").code(
       701,
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const newPassword: string = candidate["newPassword"];
 
   if (newPassword.length < 6) {
@@ -126,6 +146,8 @@ function validatePendingPasswordResetNotExpired(
 ): void {
   const ms_in_week = 1000 * 60 * 60 * 24 * 7;
   if (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     new Date().getTime() - pendingPasswordReset.creationTime.getTime() >
     ms_in_week
   ) {

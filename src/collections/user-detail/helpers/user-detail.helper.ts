@@ -67,14 +67,23 @@ export class UserDetailHelper {
     const userDetailUpdateObject = {};
 
     if (isNullOrUndefined(userDetail.name) || userDetail.name.length <= 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (dibsUserDetail.firstName && dibsUserDetail.lastName) {
-        userDetailUpdateObject["name"] =
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        userDetailUpdateObject["name"] = // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           dibsUserDetail.firstName + " " + dibsUserDetail.lastName;
       }
     }
 
     if (isNullOrUndefined(userDetail.phone) || userDetail.phone.length <= 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (dibsUserDetail.phoneNumber && dibsUserDetail.phoneNumber.number) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         userDetailUpdateObject["phone"] = dibsUserDetail.phoneNumber.number;
       }
     }
@@ -83,10 +92,18 @@ export class UserDetailHelper {
       isNullOrUndefined(userDetail.address) ||
       userDetail.address.length <= 0
     ) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (dibsShippingAddress.addressLine1) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         userDetailUpdateObject["address"] =
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           dibsShippingAddress.addressLine1 +
           " " +
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           dibsShippingAddress.addressLine2;
       }
     }
@@ -95,7 +112,11 @@ export class UserDetailHelper {
       isNullOrUndefined(userDetail.postCity) ||
       userDetail.postCity.length <= 0
     ) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (dibsShippingAddress.city) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         userDetailUpdateObject["postCity"] = dibsShippingAddress.city;
       }
     }
@@ -104,7 +125,11 @@ export class UserDetailHelper {
       isNullOrUndefined(userDetail.postCode) ||
       userDetail.postCode.length <= 0
     ) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (dibsShippingAddress.postalCode) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         userDetailUpdateObject["postCode"] = dibsShippingAddress.postalCode;
       }
     }
@@ -115,6 +140,8 @@ export class UserDetailHelper {
   public isValid(userDetail: UserDetail): boolean {
     const invalidUserDetailFields = this.getInvalidUserDetailFields(userDetail);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return invalidUserDetailFields.length <= 0 && userDetail.active;
   }
 

@@ -35,6 +35,8 @@ describe("RefreshTokenCreator", () => {
   const refreshTokenCreator = new RefreshTokenCreator(tokenConfig);
 
   describe("createRefreshToken()", () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     let testUsername = "";
     let testUserid = "";
 
@@ -47,6 +49,8 @@ describe("RefreshTokenCreator", () => {
       it("username is undefined", (done) => {
         const username = undefined;
         refreshTokenCreator
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           .create(username, testUserid)
           .catch((blError: BlError) => {
             blError.getCode().should.be.eq(103);
@@ -57,6 +61,8 @@ describe("RefreshTokenCreator", () => {
       it("userid is null", (done) => {
         const userid = null;
         refreshTokenCreator
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           .create(testUserid, userid)
           .catch((blError: BlError) => {
             blError.getCode().should.be.eq(103);
@@ -74,6 +80,8 @@ describe("RefreshTokenCreator", () => {
             refreshToken.should.be.a("string").and.have.length.gte(50);
             done();
           })
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           .catch((err) => {});
       });
     });

@@ -64,6 +64,8 @@ describe("ConfirmPendingPasswordResetOperation", () => {
 
   sinon
     .stub(pendingPasswordResetStorage, "update")
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake(async (id, data: unknown) => {
       return Object.assign(testPendingPasswordReset, data);
     });

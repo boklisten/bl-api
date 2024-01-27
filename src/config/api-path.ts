@@ -7,8 +7,12 @@ export class ApiPath {
   private baseHost: string;
 
   constructor() {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (process.env.NODE_ENV == "production") {
       this.baseHost = APP_CONFIG.path.host;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
     } else if (process.env.NODE_ENV == "dev") {
       this.baseHost = APP_CONFIG.path.dev.host;
     } else {
@@ -17,6 +21,8 @@ export class ApiPath {
   }
 
   private getBasePath(): string {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return process.env.SERVER_PATH;
   }
 
@@ -24,6 +30,8 @@ export class ApiPath {
     return this.getBasePath() + customPath;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   public retrieveRefererPath(reqHeaders) {
     let refererUrl = null;
 

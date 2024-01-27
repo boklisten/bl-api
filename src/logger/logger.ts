@@ -23,7 +23,11 @@ export const logger = createLogger({
     format.printf((info: any) => {
       const colorizer = format.colorize();
       if (
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         process.env.NODE_ENV === "production" ||
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         process.env.NODE_ENV === "dev"
       ) {
         return `${info.level} ${info.message}`;
@@ -34,6 +38,8 @@ export const logger = createLogger({
       );
     }),
     format.colorize({
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       all: process.env.NODE_ENV !== "production",
     }),
   ),

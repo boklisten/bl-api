@@ -29,7 +29,11 @@ import { matchSchema } from "../match.schema";
 
 export class MatchTransferItemOperation implements Operation {
   constructor(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     private matchStorage?: BlDocumentStorage<Match>,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     private userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
     this.matchStorage =
@@ -62,6 +66,8 @@ export class MatchTransferItemOperation implements Operation {
       throw new BlError("blid is not a valid blid").code(803);
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const receiverUserDetailId = blApiRequest.user.details;
 
     const receiverMatches = await getAllMatchesForUser(receiverUserDetailId);
@@ -86,6 +92,8 @@ export class MatchTransferItemOperation implements Operation {
     const customerItem = activeCustomerItems[0];
 
     const receiverUserMatch = receiverUserMatches.find((userMatch) =>
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       userMatch.expectedItems.includes(String(customerItem.item)),
     );
 
@@ -93,17 +101,23 @@ export class MatchTransferItemOperation implements Operation {
       throw new BlError("Item not in receiver expectedItems").code(805);
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (receiverUserMatch.receivedCustomerItems.includes(customerItem.id)) {
       throw new BlError("Receiver has already received this item").code(806);
-    }
-
+    } // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const senderMatches = await getAllMatchesForUser(customerItem.customer);
     const senderUserMatches = senderMatches.filter(
       (match) => match._variant === MatchVariant.UserMatch,
     ) as UserMatch[];
     const senderUserMatch = senderUserMatches.find(
       (userMatch) =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         userMatch.expectedItems.includes(String(customerItem.item)) &&
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         !userMatch.deliveredCustomerItems.includes(String(customerItem.item)),
     );
 
@@ -136,6 +150,8 @@ export class MatchTransferItemOperation implements Operation {
       {
         receivedCustomerItems: [
           ...receiverUserMatch.receivedCustomerItems,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           customerItem.id,
         ],
       },
@@ -143,6 +159,8 @@ export class MatchTransferItemOperation implements Operation {
     );
 
     const receiverOrder = await createMatchOrder(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       customerItem,
       receiverUserDetailId,
       false,
@@ -163,6 +181,8 @@ export class MatchTransferItemOperation implements Operation {
         {
           deliveredCustomerItems: [
             ...senderUserMatch.deliveredCustomerItems,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             customerItem.id,
           ],
         },
@@ -170,7 +190,11 @@ export class MatchTransferItemOperation implements Operation {
       );
 
       const senderOrder = await createMatchOrder(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         customerItem,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         customerItem.customer,
         true,
       );
@@ -183,6 +207,8 @@ export class MatchTransferItemOperation implements Operation {
     }
 
     await customerItemStorage.update(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       customerItem.id,
       {
         returned: true,
@@ -199,6 +225,8 @@ export class MatchTransferItemOperation implements Operation {
       throw new BlError("Failed to create new customer item");
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await customerItemStorage.add(generatedCustomerItems[0], new SystemUser());
 
     return new BlapiResponse([{ feedback: userFeedback }]);

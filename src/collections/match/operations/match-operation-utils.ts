@@ -35,6 +35,8 @@ export async function createMatchOrder(
     branchSchema,
   );
   const branch = await branchStorage.get(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     String(customerItem.handoutInfo.handoutById),
   );
 
@@ -76,6 +78,8 @@ export async function createMatchOrder(
   }
 
   return {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     id: undefined,
     placed: true,
     payments: [],
@@ -84,6 +88,8 @@ export async function createMatchOrder(
     customer: userDetailId,
     byCustomer: true,
     orderItems: [
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       {
         movedFromOrder,
         item: item.id,

@@ -17,6 +17,8 @@ describe("OrderItemRentPeriodValidator", () => {
   );
 
   const orderStorageGetStub = sinon.stub(orderStorage, "get").callsFake(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return new Promise((resolve, reject) => {});
   });
 
