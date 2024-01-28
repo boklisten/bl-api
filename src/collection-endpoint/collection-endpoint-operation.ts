@@ -84,9 +84,7 @@ export class CollectionEndpointOperation {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         blApiRequest = {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          documentId: req.params.id,
+          documentId: req.params["id"],
           query: req.query,
           data: req.body,
           user: {

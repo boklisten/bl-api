@@ -18,14 +18,12 @@ export class BlErrorHandler {
         );
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  public createBlapiErrorResponse(err): BlapiErrorResponse {
-    let blError = err;
+  public createBlapiErrorResponse(err: unknown): BlapiErrorResponse {
+    const blError =
+      err instanceof BlError
+        ? err
+        : new BlError("unknown error").store("error", err);
 
-    if (!(err instanceof BlError)) {
-      blError = new BlError("unknown error").store("error", err);
-    }
     this.printErrorStack(blError);
     this.storeError(blError);
 
@@ -64,11 +62,6 @@ export class BlErrorHandler {
   }
 
   private printBlError(blError: BlError) {
-    if (!(blError instanceof BlError)) {
-      logger.warn(`! unknown error: ${blError}`);
-      return;
-    }
-
     if (blError.errorStack && blError.errorStack.length > 0) {
       for (const err of blError.errorStack) {
         this.printBlError(err);
@@ -252,7 +245,7 @@ export class BlErrorHandler {
   }
 
   private fakeSuccessResponse(underlyingError: BlError): BlapiErrorResponse {
-    const blapiErrorResponse: BlapiErrorResponse = {
+    return {
       httpStatus: 200,
       code: underlyingError.getCode(),
       msg:
@@ -260,7 +253,5 @@ export class BlErrorHandler {
         underlyingError.getMsg(),
       data: [],
     };
-
-    return blapiErrorResponse;
   }
 }

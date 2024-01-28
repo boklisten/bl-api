@@ -44,10 +44,8 @@ export class OrderActive {
   }
 
   private isOrderActive(order: Order): boolean {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     return (
-      order.placed &&
+      order.placed === true &&
       order.orderItems.some((orderItem) => this.isOrderItemActive(orderItem))
     );
   }

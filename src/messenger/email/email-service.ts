@@ -11,6 +11,7 @@ import {
   Item,
   Message,
   BlError,
+  DeliveryInfoBring,
 } from "@boklisten/bl-model";
 import {
   Recipient,
@@ -100,15 +101,13 @@ export class EmailService implements MessengerService {
       [],
     );
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const messageOptions: MessageOptions = {
       type: "generic",
       subtype: "none",
-      subject: message.subject,
-      sequence_number: message.sequenceNumber,
-      htmlContent: message.htmlContent,
-      textBlocks: message.textBlocks,
+      subject: message.subject ?? "",
+      sequence_number: message.sequenceNumber ?? 0,
+      htmlContent: message.htmlContent ?? "",
+      textBlocks: message.textBlocks ?? [],
       mediums: this.getMessageOptionMediums(message),
     };
 
@@ -150,9 +149,7 @@ export class EmailService implements MessengerService {
     } catch (e) {
       logger.error(`could not send booking confirmation: ${e}`);
     }
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return undefined;
+    return false;
   }
 
   public async sendMatch(
@@ -165,15 +162,13 @@ export class EmailService implements MessengerService {
       [],
     );
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const messageOptions: MessageOptions = {
       type: "match",
       subtype: "none",
-      subject: message.subject,
-      sequence_number: message.sequenceNumber,
-      htmlContent: message.htmlContent,
-      textBlocks: message.textBlocks,
+      subject: message.subject ?? "",
+      sequence_number: message.sequenceNumber ?? 0,
+      htmlContent: message.htmlContent ?? "",
+      textBlocks: message.textBlocks ?? [],
       mediums: this.getMessageOptionMediums(message),
     };
 
@@ -202,16 +197,14 @@ export class EmailService implements MessengerService {
       customerItems,
     );
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const messageOptions: MessageOptions = {
       type: message.messageType,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       subtype: message.messageSubtype as any,
-      sequence_number: message.sequenceNumber,
-      textBlocks: message.textBlocks,
+      sequence_number: message.sequenceNumber ?? 0,
+      textBlocks: message.textBlocks ?? [],
       mediums: this.getMessageOptionMediums(message),
-      customContent: message.customContent,
+      customContent: message.customContent ?? "",
     };
 
     try {
@@ -236,11 +229,11 @@ export class EmailService implements MessengerService {
     recipient: Recipient,
     messageOptions: MessageOptions,
   ): Promise<boolean> {
-    if (!customerDetail.guardian) {
-      return false;
-    }
-
-    if (!customerDetail.guardian.email || !customerDetail.guardian.phone) {
+    if (
+      !customerDetail.guardian ||
+      !customerDetail.guardian.email ||
+      !customerDetail.guardian.phone
+    ) {
       return false;
     }
 
@@ -433,21 +426,13 @@ export class EmailService implements MessengerService {
 
     let deliveryAddress = "";
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (delivery.info["shipmentAddress"]) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      deliveryAddress = delivery.info["shipmentAddress"].name;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      deliveryAddress += ", " + delivery.info["shipmentAddress"].address;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      deliveryAddress += ", " + delivery.info["shipmentAddress"].postalCode;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      deliveryAddress += " " + delivery.info["shipmentAddress"].postalCity;
+    if (
+      delivery.info instanceof DeliveryInfoBring &&
+      delivery.info.shipmentAddress !== undefined
+    ) {
+      const { name, address, postalCode, postalCity } =
+        delivery.info.shipmentAddress;
+      deliveryAddress = `${name}, ${address}, ${postalCode}, ${postalCity}`;
     }
 
     const emailOrder: EmailOrder = {
