@@ -1,4 +1,4 @@
-import moment = require("moment-timezone");
+import moment from "moment-timezone";
 
 type MomentLocation = "Europe/Oslo" | string;
 /*

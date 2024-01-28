@@ -12,7 +12,7 @@ import {
   BlError,
   Branch,
 } from "@boklisten/bl-model";
-import moment = require("moment-timezone");
+import moment from "moment-timezone";
 
 import { dateService } from "../../../blc/date.service";
 import { BlCollectionName } from "../../../collections/bl-collection";

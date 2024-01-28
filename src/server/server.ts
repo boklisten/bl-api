@@ -15,7 +15,6 @@ import mongoose from "mongoose";
 // @ts-ignore
 import passport from "passport";
 
-import * as packageJson from "../../package.json";
 import { BlAuth } from "../auth/bl.auth";
 import { CollectionEndpointCreator } from "../collection-endpoint/collection-endpoint-creator";
 import { logger } from "../logger/logger";
@@ -219,14 +218,8 @@ export class Server {
     logger.silly(" | '_ \\| |/ _` | '_ \\| |");
     logger.silly(" | |_) | | (_| | |_) | |");
     logger.silly(" |_.__/|_|\\__,_| .__/|_|");
-    logger.silly(`               |_| v${packageJson.version}`);
+    logger.silly("               |_|");
 
-    logger.verbose(
-      "server url:\t" +
-        process.env["SERVER_HOST"] +
-        process.env["SERVER_PORT"] +
-        process.env["SERVER_PATH"],
-    );
     logger.verbose("mongoDB path:\t" + process.env["MONGODB_URI"]);
   }
 }

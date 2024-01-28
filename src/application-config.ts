@@ -16,9 +16,6 @@ export const APP_CONFIG = {
       payment: "payments",
     },
     host: "boklisten",
-    dev: {
-      host: "test.boklisten",
-    },
     local: {
       host: "localhost",
     },
@@ -48,13 +45,6 @@ export const APP_CONFIG = {
       basePath: "mongodb://",
       host: "localhost",
       port: 27017,
-      dbName: "bl_dev_environment",
-    },
-    redis: {
-      basePath: "",
-      host: "",
-      port: 0,
-      dbName: "",
     },
   },
   prod: {
@@ -65,12 +55,6 @@ export const APP_CONFIG = {
       version: "",
     },
     mongoDb: {
-      basePath: "",
-      host: "",
-      port: 0,
-      dbName: "",
-    },
-    redis: {
       basePath: "",
       host: "",
       port: 0,
@@ -93,7 +77,7 @@ export const APP_CONFIG = {
     refresh: {
       iss: "boklisten.no",
       aud: "boklisten.no",
-      expiresIn: "365d", // 250d = aprox 8 months
+      expiresIn: "365d",
     },
     access: {
       iss: "boklisten.no",

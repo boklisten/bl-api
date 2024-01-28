@@ -1,8 +1,6 @@
 import moment from "moment";
 import { createLogger, format, transports } from "winston";
 
-import { getLogLevel } from "../server/commander/commander";
-
 function formatTimestamp(timestamp: string) {
   return moment(timestamp).format("HH:mm:ss.SSS");
 }
@@ -38,7 +36,7 @@ export const logger = createLogger({
   ),
   transports: [
     new transports.Console({
-      level: getLogLevel() || "info",
+      level: process.env["LOG_LEVEL"] ?? "info",
       handleExceptions: true,
     }),
   ],

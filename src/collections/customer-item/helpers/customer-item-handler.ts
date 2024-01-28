@@ -5,7 +5,7 @@ import {
   OrderItem,
   Period,
 } from "@boklisten/bl-model";
-import moment = require("moment-timezone");
+import moment from "moment-timezone";
 
 import { SystemUser } from "../../../auth/permission/permission.service";
 import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";

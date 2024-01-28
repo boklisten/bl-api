@@ -9,8 +9,6 @@ export class ApiPath {
   constructor() {
     if (process.env["NODE_ENV"] == "production") {
       this.baseHost = APP_CONFIG.path.host;
-    } else if (process.env["NODE_ENV"] == "dev") {
-      this.baseHost = APP_CONFIG.path.dev.host;
     } else {
       this.baseHost = APP_CONFIG.path.local.host;
     }

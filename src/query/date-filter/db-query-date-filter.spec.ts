@@ -3,7 +3,7 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import { DbQueryDateFilter } from "./db-query-date-filter";
-import moment = require("moment");
+import moment from "moment";
 
 chai.use(chaiAsPromised);
 

@@ -1,7 +1,7 @@
 import { isNullOrUndefined } from "util";
 
 import { BlError, DeliveryInfoBring, Item } from "@boklisten/bl-model";
-import moment = require("moment");
+import moment from "moment";
 
 import { BringDelivery } from "./bringDelivery";
 import { APP_CONFIG } from "../../../../application-config";

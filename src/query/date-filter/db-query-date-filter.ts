@@ -1,4 +1,4 @@
-import moment = require("moment");
+import moment from "moment";
 
 export type DateFilter = {
   fieldName: string;
