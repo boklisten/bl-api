@@ -2,6 +2,7 @@ import { isNullOrUndefined } from "util";
 
 import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { NextFunction, Request, Response } from "express";
+import isEmail from "validator/lib/isEmail";
 
 import { PermissionService } from "../../../../auth/permission/permission.service";
 import { UserHandler } from "../../../../auth/user/user.handler";
@@ -15,9 +16,6 @@ import { localLoginSchema } from "../../../local-login/local-login.schema";
 import { User } from "../../../user/user";
 import { UserSchema } from "../../../user/user.schema";
 import { userDetailSchema } from "../../user-detail.schema";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const emailValidator = require("validator");
 
 export class UserDetailChangeEmailOperation implements Operation {
   private _permissionService: PermissionService;
@@ -171,7 +169,7 @@ export class UserDetailChangeEmailOperation implements Operation {
   }
 
   private validateEmail(email: string) {
-    if (isNullOrUndefined(email) || !emailValidator.isEmail(email)) {
+    if (isNullOrUndefined(email) || !isEmail(email)) {
       throw new BlError("email is not valid").code(701);
     }
   }

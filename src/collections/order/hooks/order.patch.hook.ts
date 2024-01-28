@@ -29,8 +29,7 @@ export class OrderPatchHook extends Hook {
   }
 
   override before(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    body: any,
+    body: unknown,
     accessToken: AccessToken,
     id: string,
   ): Promise<boolean> {
@@ -61,12 +60,8 @@ export class OrderPatchHook extends Hook {
     const order = orders[0];
 
     return new Promise((resolve, reject) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      if (order.placed) {
+      if (order?.placed) {
         this.orderPlacedHandler
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           .placeOrder(order, accessToken)
           .then((placedOrder) => {
             resolve([placedOrder]);
@@ -87,13 +82,9 @@ export class OrderPatchHook extends Hook {
             resolve([order]);
           })
           .catch((validationError: BlError) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            if (order.placed) {
+            if (order?.placed) {
               this.orderStorage
                 .update(
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
                   order.id,
                   { placed: false },
                   {

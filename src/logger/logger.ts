@@ -19,8 +19,7 @@ const customLevels = {
 export const logger = createLogger({
   levels: customLevels,
   format: format.combine(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    format.printf((info: any) => {
+    format.printf((info) => {
       const colorizer = format.colorize();
       if (
         process.env["NODE_ENV"] === "production" ||
@@ -30,7 +29,7 @@ export const logger = createLogger({
       }
       return colorizer.colorize(
         info.level,
-        `${formatTimestamp(info.timestamp)} ${info.level} ${info.message}`,
+        `${formatTimestamp(info["timestamp"])} ${info.level} ${info.message}`,
       );
     }),
     format.colorize({
