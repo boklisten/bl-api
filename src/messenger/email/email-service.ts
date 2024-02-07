@@ -11,7 +11,6 @@ import {
   Item,
   Message,
   BlError,
-  DeliveryInfoBring,
 } from "@boklisten/bl-model";
 import {
   Recipient,
@@ -426,13 +425,21 @@ export class EmailService implements MessengerService {
 
     let deliveryAddress = "";
 
-    if (
-      delivery.info instanceof DeliveryInfoBring &&
-      delivery.info.shipmentAddress !== undefined
-    ) {
-      const { name, address, postalCode, postalCity } =
-        delivery.info.shipmentAddress;
-      deliveryAddress = `${name}, ${address}, ${postalCode}, ${postalCity}`;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (delivery.info["shipmentAddress"]) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      deliveryAddress = delivery.info["shipmentAddress"].name;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      deliveryAddress += ", " + delivery.info["shipmentAddress"].address;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      deliveryAddress += ", " + delivery.info["shipmentAddress"].postalCode;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      deliveryAddress += " " + delivery.info["shipmentAddress"].postalCity;
     }
 
     const emailOrder: EmailOrder = {

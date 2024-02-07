@@ -83,11 +83,9 @@ export class DbQueryObjectIdFilter {
     );
   }
 
-  private validateStringParam(param: string): boolean {
+  private validateStringParam(param?: string): boolean {
     return (
-      param.length > 0 &&
-      new Types.ObjectId(param).toString() === param &&
-      param.length > 0
+      (param?.length ?? 0) > 0 && new Types.ObjectId(param).toString() === param
     );
   }
 }
