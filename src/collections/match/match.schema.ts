@@ -1,17 +1,25 @@
 import {
   // used for jsdoc
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   MatchBase,
   // used for jsdoc
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   StandMatch,
   // used for jsdoc
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   UserMatch,
   // used for jsdoc
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Match,
   // used for jsdoc
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   MatchVariant,
 } from "@boklisten/bl-model";

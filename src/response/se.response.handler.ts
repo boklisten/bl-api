@@ -29,7 +29,7 @@ export class SEResponseHandler {
     referer?: string,
   ) {
     const redirectUrl = `${
-      referer ?? process.env.CLIENT_URI
+      referer ?? process.env["CLIENT_URI"]
     }auth/token;accessToken=${accessToken};refreshToken=${refreshToken}`;
     res.redirect(redirectUrl);
   }

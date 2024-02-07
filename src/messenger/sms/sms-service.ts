@@ -2,8 +2,8 @@ import twilio from "twilio";
 
 import { logger } from "../../logger/logger";
 
-const accountSid = process.env.TWILIO_SMS_SID;
-const authToken = process.env.TWILIO_SMS_AUTH_TOKEN;
+const accountSid = process.env["TWILIO_SMS_SID"];
+const authToken = process.env["TWILIO_SMS_AUTH_TOKEN"];
 const client = twilio(accountSid, authToken);
 
 /**

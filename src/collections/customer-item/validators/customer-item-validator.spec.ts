@@ -15,6 +15,8 @@ describe("CustomerItemValidator", () => {
   );
   const customerItemValidator = new CustomerItemValidator(customerItemStorage);
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testCustomerItem: CustomerItem;
 
   beforeEach(() => {
@@ -35,6 +37,8 @@ describe("CustomerItemValidator", () => {
   });
 
   it("should reject if sent customerItem is undefined", () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return expect(customerItemValidator.validate(undefined)).to.be.rejectedWith(
       BlError,
       /customerItem is undefined/,

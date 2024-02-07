@@ -42,6 +42,8 @@ export class UserDeleteAllInfo {
       { fieldName: "userDetail", type: "object-id" },
     ]);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const users = await this.userStorage.getByQuery(dbQuery);
 
     if (users.length > 1) {
@@ -51,12 +53,15 @@ export class UserDeleteAllInfo {
     }
 
     const user = users[0];
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await this.userStorage.remove(user.id, {
       id: accessToken.details,
       permission: accessToken.permission,
     });
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return user;
   }
 
@@ -70,9 +75,12 @@ export class UserDeleteAllInfo {
     );
 
     const localLogins =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await this.localLoginStorage.getByQuery(localLoginDbQuery);
     const localLogin = localLogins[0];
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await this.localLoginStorage.remove(localLogin.id, {
       id: accessToken.details,
       permission: accessToken.permission,

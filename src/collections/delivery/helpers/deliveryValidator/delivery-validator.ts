@@ -11,6 +11,8 @@ export class DeliveryValidator {
   private deliveryBringHandler: DeliveryBringHandler;
 
   constructor(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     orderStorage?: BlDocumentStorage<Order>,
     deliveryBranchHandler?: DeliveryBranchHandler,
     deliveryBringHandler?: DeliveryBringHandler,

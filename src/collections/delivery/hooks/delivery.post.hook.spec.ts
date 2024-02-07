@@ -108,7 +108,8 @@ describe("DeliveryPostHook", () => {
   });
 
   sinon
-    .stub(deliveryValidator, "validate")
+    .stub(deliveryValidator, "validate") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((delivery: Delivery, order: Order) => {
       if (!deliveryValidated) {
         return Promise.reject(new BlError("delivery could not be validated"));
@@ -117,7 +118,8 @@ describe("DeliveryPostHook", () => {
     });
 
   sinon
-    .stub(deliveryHandler, "updateOrderBasedOnMethod")
+    .stub(deliveryHandler, "updateOrderBasedOnMethod") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((delivery, order, accessToken) => {
       if (!orderUpdated) {
         return Promise.reject(new BlError("order could not be updated"));

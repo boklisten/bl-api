@@ -7,23 +7,23 @@ export class ApiPath {
   private baseHost: string;
 
   constructor() {
-    if (process.env.NODE_ENV == "production") {
+    if (process.env["NODE_ENV"] == "production") {
       this.baseHost = APP_CONFIG.path.host;
-    } else if (process.env.NODE_ENV == "dev") {
-      this.baseHost = APP_CONFIG.path.dev.host;
     } else {
       this.baseHost = APP_CONFIG.path.local.host;
     }
   }
 
   private getBasePath(): string {
-    return process.env.SERVER_PATH;
+    return process.env["SERVER_PATH"] ?? "";
   }
 
   public createPath(customPath: string): string {
     return this.getBasePath() + customPath;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   public retrieveRefererPath(reqHeaders) {
     let refererUrl = null;
 

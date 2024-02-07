@@ -11,10 +11,16 @@ import { SEDbQuery } from "../query/se.db-query";
 export class BlDocumentStorage<T extends BlDocument>
   implements BlStorageHandler<T>
 {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private mongoDbHandler: MongoDbBlStorageHandler<T>;
 
   constructor(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     private collectionName: BlCollectionName,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     private mongooseSchema?: Schema,
   ) {
     if (mongooseSchema) {
@@ -57,6 +63,8 @@ export class BlDocumentStorage<T extends BlDocument>
   getMany(
     ids: string[],
     userPermission?: UserPermission,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     nestedDocuments?: NestedDocument[],
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
@@ -73,6 +81,8 @@ export class BlDocumentStorage<T extends BlDocument>
 
   getAll(
     userPermission?: UserPermission,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     nestedDocuments?: NestedDocument[],
   ): Promise<T[]> {
     return new Promise((resolve, reject) => {
@@ -121,7 +131,11 @@ export class BlDocumentStorage<T extends BlDocument>
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   updateMany(docs: { id: string; data: Partial<T> }[]): Promise<T[]> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return new Promise((resolve, reject) => {
       reject(new BlError("not implemented"));
     });
@@ -151,7 +165,11 @@ export class BlDocumentStorage<T extends BlDocument>
     return this.mongoDbHandler.aggregate(aggregation);
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   removeMany(ids: string[]): Promise<T[]> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return new Promise((resolve, reject) => {
       reject(new BlError("not implemented"));
     });

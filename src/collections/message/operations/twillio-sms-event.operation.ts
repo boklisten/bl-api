@@ -22,10 +22,16 @@ export class TwilioSmsEventOperation implements Operation {
 
   public async run(
     blApiRequest: BlApiRequest,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     req?: Request,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction,
   ): Promise<BlapiResponse> {
@@ -38,11 +44,15 @@ export class TwilioSmsEventOperation implements Operation {
     if (
       !blApiRequest.query ||
       Object.keys(blApiRequest.query).length === 0 ||
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       !blApiRequest.query["bl_message_id"]
     ) {
       throw new BlError("blApiRequest.query.bl_message_id is empty").code(701);
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const blMessageId = blApiRequest.query["bl_message_id"];
 
     if (Array.isArray(blApiRequest.data)) {
@@ -56,6 +66,8 @@ export class TwilioSmsEventOperation implements Operation {
     return { documentName: "success", data: [] };
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private async parseAndAddTwilioEvent(twilioEvent, blMessageId: string) {
     if (!blMessageId) {
       logger.debug(`sendgrid event did not have a bl_message_id`);

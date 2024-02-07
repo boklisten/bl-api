@@ -1,7 +1,15 @@
 export class BringDelivery {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   frompostalcode: string; //from postal code
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   topostalcode: string; //to postal code
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   fromcountry: string;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   tocountry: string;
   weight?: number; //the weight of the packet
   width?: number; //the width of the packet

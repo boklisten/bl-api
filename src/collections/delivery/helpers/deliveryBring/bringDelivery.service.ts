@@ -1,7 +1,7 @@
 import { isNullOrUndefined } from "util";
 
 import { BlError, DeliveryInfoBring, Item } from "@boklisten/bl-model";
-import moment = require("moment");
+import moment from "moment";
 
 import { BringDelivery } from "./bringDelivery";
 import { APP_CONFIG } from "../../../../application-config";
@@ -62,8 +62,8 @@ export class BringDeliveryService {
     }
 
     const bringAuthHeaders = {
-      "X-MyBring-API-Key": process.env.BRING_API_KEY,
-      "X-MyBring-API-Uid": process.env.BRING_API_ID,
+      "X-MyBring-API-Key": process.env["BRING_API_KEY"],
+      "X-MyBring-API-Uid": process.env["BRING_API_ID"],
     };
 
     const postalInfoUrl = `https://api.bring.com/pickuppoint/api/postalCode/NO/getCityAndType/${shipmentAddress.postalCode}.json`;
@@ -73,6 +73,8 @@ export class BringDeliveryService {
         "",
         bringAuthHeaders,
       );
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       shipmentAddress.postalCity = postalInfo["postalCode"]["city"];
     } catch (e) {
       return Promise.reject(new BlError("fromPostalCode is not valid"));
@@ -158,6 +160,8 @@ export class BringDeliveryService {
     facilityAddress: FacilityAddress,
     shipmentAddress: ShipmentAddress,
     items: Item[],
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     product,
   ): BringDelivery {
     const totalWeightInGrams = this.calculateTotalWeight(items);
@@ -230,6 +234,8 @@ export class BringDeliveryService {
 
   private getBringProduct(
     deliveryInfoBring: DeliveryInfoBring,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     product,
   ): DeliveryInfoBring {
     const priceInfo = product["price"]["listPrice"];

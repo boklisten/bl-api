@@ -22,14 +22,16 @@ import { BlCollectionName } from "../../collections/bl-collection";
 
 class MockPostOffice extends PostOffice {
   constructor() {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     super(undefined, undefined);
     this.setConfig({
       reminder: { mediums: { email: false } },
       generic: { mediums: { email: false } },
       receipt: { mediums: { email: false } },
     });
-  }
-
+  } // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   public override async send(recipients: Recipient[], options: MessageOptions) {
     return true;
   }
@@ -252,7 +254,8 @@ describe("EmailService", () => {
       emailService
         .remind(message, customerDetail, customerItems)
         .then(() => {
-          const emailOrderItems =
+          const emailOrderItems = // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             postOfficeSendStub.lastCall.args[0][0].itemList.items;
 
           expect(emailOrderItems).to.eql([

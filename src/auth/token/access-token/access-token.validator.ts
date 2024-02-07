@@ -20,6 +20,8 @@ export class AccessTokenValidator {
         this.jwt.verify(
           accessToken,
           this.accessTokenSecret.get(),
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           (error, payload: AccessToken) => {
             if (error)
               return reject(

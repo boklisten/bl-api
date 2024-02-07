@@ -1,6 +1,10 @@
 import { BlError } from "@boklisten/bl-model";
 import { Router } from "express";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import passport from "passport";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { Strategy } from "passport-facebook";
 
 import { APP_CONFIG } from "../../application-config";
@@ -14,16 +18,18 @@ export class FacebookAuth {
   private facebookPassportStrategySettings;
 
   constructor(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     private router: Router,
     private resHandler: SEResponseHandler,
   ) {
     this.apiPath = new ApiPath();
 
     this.facebookPassportStrategySettings = {
-      clientID: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_SECRET,
+      clientID: process.env["FACEBOOK_CLIENT_ID"],
+      clientSecret: process.env["FACEBOOK_SECRET"],
       callbackURL:
-        process.env.BL_API_URI +
+        process.env["BL_API_URI"] +
         this.apiPath.createPath("auth/facebook/callback"),
       profileFields: ["id", "email", "name"],
       enableProof: true,
@@ -40,7 +46,11 @@ export class FacebookAuth {
       new Strategy(
         this.facebookPassportStrategySettings,
         async (
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           accessToken: unknown,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           refreshToken: unknown,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           profile: any,
@@ -72,6 +82,8 @@ export class FacebookAuth {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private extractUsername(profile): string {
     let username: string;
 
@@ -79,6 +91,8 @@ export class FacebookAuth {
       username = profile.emails[0].value;
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (!username) {
       throw new BlError("username not found from facebook").code(902);
     }
@@ -100,11 +114,12 @@ export class FacebookAuth {
       this.apiPath.createPath("auth/facebook/callback"),
       (req, res) => {
         passport.authenticate(
-          APP_CONFIG.login.facebook.name,
+          APP_CONFIG.login.facebook.name, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           (err, tokens, blError: BlError) => {
             if (!tokens && (err || blError)) {
               return res.redirect(
-                process.env.CLIENT_URI +
+                process.env["CLIENT_URI"] +
                   APP_CONFIG.path.client.auth.socialLoginFailure,
               );
             }
@@ -114,6 +129,8 @@ export class FacebookAuth {
                 res,
                 tokens.accessToken,
                 tokens.refreshToken,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 this.apiPath.retrieveRefererPath(req.headers),
               );
             }

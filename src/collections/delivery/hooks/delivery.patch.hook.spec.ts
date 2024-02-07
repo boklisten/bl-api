@@ -93,7 +93,8 @@ describe("DeliveryPatchHook", () => {
   });
 
   sinon
-    .stub(deliveryValidator, "validate")
+    .stub(deliveryValidator, "validate") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((delivery: Delivery, order: Order) => {
       if (!deliveryValidated) {
         return Promise.reject(new BlError("could not validate delivery"));

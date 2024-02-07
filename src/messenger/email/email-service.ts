@@ -47,7 +47,7 @@ export class EmailService implements MessengerService {
       ? emailHandler
       : new EmailHandler({
           sendgrid: {
-            apiKey: process.env.SENDGRID_API_KEY,
+            apiKey: process.env["SENDGRID_API_KEY"] ?? "",
           },
           locale: "nb",
         });
@@ -78,8 +78,12 @@ export class EmailService implements MessengerService {
   }
 
   public async sendMany(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     messages: Message[],
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     customerDetails: UserDetail[],
   ): Promise<void> {
@@ -99,10 +103,10 @@ export class EmailService implements MessengerService {
     const messageOptions: MessageOptions = {
       type: "generic",
       subtype: "none",
-      subject: message.subject,
-      sequence_number: message.sequenceNumber,
-      htmlContent: message.htmlContent,
-      textBlocks: message.textBlocks,
+      subject: message.subject ?? "",
+      sequence_number: message.sequenceNumber ?? 0,
+      htmlContent: message.htmlContent ?? "",
+      textBlocks: message.textBlocks ?? [],
       mediums: this.getMessageOptionMediums(message),
     };
 
@@ -144,7 +148,7 @@ export class EmailService implements MessengerService {
     } catch (e) {
       logger.error(`could not send booking confirmation: ${e}`);
     }
-    return undefined;
+    return false;
   }
 
   public async sendMatch(
@@ -160,10 +164,10 @@ export class EmailService implements MessengerService {
     const messageOptions: MessageOptions = {
       type: "match",
       subtype: "none",
-      subject: message.subject,
-      sequence_number: message.sequenceNumber,
-      htmlContent: message.htmlContent,
-      textBlocks: message.textBlocks,
+      subject: message.subject ?? "",
+      sequence_number: message.sequenceNumber ?? 0,
+      htmlContent: message.htmlContent ?? "",
+      textBlocks: message.textBlocks ?? [],
       mediums: this.getMessageOptionMediums(message),
     };
 
@@ -196,10 +200,10 @@ export class EmailService implements MessengerService {
       type: message.messageType,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       subtype: message.messageSubtype as any,
-      sequence_number: message.sequenceNumber,
-      textBlocks: message.textBlocks,
+      sequence_number: message.sequenceNumber ?? 0,
+      textBlocks: message.textBlocks ?? [],
       mediums: this.getMessageOptionMediums(message),
-      customContent: message.customContent,
+      customContent: message.customContent ?? "",
     };
 
     try {
@@ -224,11 +228,11 @@ export class EmailService implements MessengerService {
     recipient: Recipient,
     messageOptions: MessageOptions,
   ): Promise<boolean> {
-    if (!customerDetail.guardian) {
-      return false;
-    }
-
-    if (!customerDetail.guardian.email || !customerDetail.guardian.phone) {
+    if (
+      !customerDetail.guardian ||
+      !customerDetail.guardian.email ||
+      !customerDetail.guardian.phone
+    ) {
       return false;
     }
 
@@ -260,6 +264,8 @@ export class EmailService implements MessengerService {
   }
 
   public async remindMany(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     customerDetailsWithCustomerItems: CustomerDetailWithCustomerItem[],
   ): Promise<void> {
@@ -287,7 +293,9 @@ export class EmailService implements MessengerService {
       settings: {
         text: {
           deadline: message.info
-            ? this.formatDeadline(message.info["deadline"])
+            ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              this.formatDeadline(message.info["deadline"])
             : "",
         },
       },
@@ -313,8 +321,14 @@ export class EmailService implements MessengerService {
     } else {
       return {
         summary: {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           total: null,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           totalTax: null,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           taxPercentage: null,
         },
         items: await this.customerItemsToEmailItems(message, customerItems),
@@ -344,14 +358,16 @@ export class EmailService implements MessengerService {
     if (message.messageSubtype === "partly-payment") {
       return {
         id: this.getItemIsbn(item),
-        title: item.title,
+        title: item.title, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         deadline: this.formatDeadline(message.info["deadline"]),
         leftToPay: customerItem.amountLeftToPay + " NOK",
       };
     } else {
       return {
         id: this.getItemIsbn(item),
-        title: item.title,
+        title: item.title, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         deadline: this.formatDeadline(message.info["deadline"]),
       };
     }
@@ -369,6 +385,8 @@ export class EmailService implements MessengerService {
 
   private getCustomerItemLeftToPayTotal(customerItems: CustomerItem[]): number {
     return customerItems.reduce(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       (total, next) => total + next.amountLeftToPay,
       0,
     );
@@ -407,10 +425,20 @@ export class EmailService implements MessengerService {
 
     let deliveryAddress = "";
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (delivery.info["shipmentAddress"]) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       deliveryAddress = delivery.info["shipmentAddress"].name;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       deliveryAddress += ", " + delivery.info["shipmentAddress"].address;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       deliveryAddress += ", " + delivery.info["shipmentAddress"].postalCode;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       deliveryAddress += " " + delivery.info["shipmentAddress"].postalCity;
     }
 
@@ -419,15 +447,25 @@ export class EmailService implements MessengerService {
       showDeadline: false,
       showPrice: false,
       showStatus: true,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       currency: null,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       itemAmount: null,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       payment: null,
       showPayment: false,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       totalAmount: null,
       items: this.orderItemsToDeliveryInformationItems(order.orderItems),
       showDelivery: true,
       delivery: {
         method: "bring",
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         trackingNumber: delivery.info["trackingNumber"],
         estimatedDeliveryDate: null,
         address: deliveryAddress,
@@ -467,9 +505,7 @@ export class EmailService implements MessengerService {
       userId: customerDetail.id,
     };
 
-    let emailVerificationUri = process.env.CLIENT_URI
-      ? process.env.CLIENT_URI
-      : "localhost:4200/";
+    let emailVerificationUri = process.env["CLIENT_URI"] ?? "localhost:4200/";
     emailVerificationUri +=
       EMAIL_SETTINGS.types.emailConfirmation.path + confirmationCode;
 
@@ -492,9 +528,7 @@ export class EmailService implements MessengerService {
       userId: userId,
     };
 
-    let passwordResetUri = process.env.CLIENT_URI
-      ? process.env.CLIENT_URI
-      : "localhost:4200/";
+    let passwordResetUri = process.env["CLIENT_URI"] ?? "localhost:4200/";
     passwordResetUri +=
       EMAIL_SETTINGS.types.passwordReset.path +
       pendingPasswordResetId +

@@ -15,8 +15,7 @@ export class ProviderIdGenerator {
         .methodName("generate");
       if (!username || username.length <= 0)
         reject(blError.msg("username is empty or undefined"));
-
-      crypto.randomBytes(32, (error, buffer) => {
+      crypto.randomBytes(32, (error: Error | null, buffer: Buffer) => {
         if (error)
           reject(blError.msg("could not generate random bytes").data(error));
 

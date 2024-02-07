@@ -22,10 +22,16 @@ export class DeliveryPostHook extends Hook {
   constructor(
     deliveryValidator?: DeliveryValidator,
     deliveryHandler?: DeliveryHandler,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     deliveryStorage?: BlDocumentStorage<Delivery>,
     orderStorage?: BlDocumentStorage<Order>,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     itemStorage?: BlDocumentStorage<Item>,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     bringDeliveryService?: BringDeliveryService,
   ) {
@@ -52,12 +58,18 @@ export class DeliveryPostHook extends Hook {
     const delivery = deliveries[0];
     return new Promise((resolve, reject) => {
       this.orderStorage
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         .get(delivery.order as string)
         .then((order: Order) => {
           this.deliveryValidator
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             .validate(delivery, order)
             .then(() => {
               this.deliveryHandler
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 .updateOrderBasedOnMethod(delivery, order, accessToken)
                 .then((updatedDelivery: Delivery) => {
                   return resolve([updatedDelivery]);

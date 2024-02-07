@@ -25,6 +25,8 @@ export class OrderPlacedHandler {
   private _messenger: Messenger;
 
   constructor(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     customerItemStorage?: BlDocumentStorage<CustomerItem>,
     orderStorage?: BlDocumentStorage<Order>,
     paymentHandler?: PaymentHandler,
@@ -78,6 +80,8 @@ export class OrderPlacedHandler {
 
       return placedOrder;
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       throw new BlError("could not update order: " + e).add(e);
     }
   }
@@ -105,6 +109,8 @@ export class OrderPlacedHandler {
         if (customerItemId !== null) {
           if (orderItem.type === "extend") {
             await this._customerItemHandler.extend(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               customerItemId,
               orderItem,
               order.branch as string,
@@ -112,24 +118,32 @@ export class OrderPlacedHandler {
             );
           } else if (orderItem.type === "buyout") {
             await this._customerItemHandler.buyout(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               customerItemId,
               order.id,
               orderItem,
             );
           } else if (orderItem.type === "buyback") {
             await this._customerItemHandler.buyback(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               customerItemId,
               order.id,
               orderItem,
             );
           } else if (orderItem.type === "cancel") {
             await this._customerItemHandler.cancel(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               customerItemId,
               order.id,
               orderItem,
             );
           } else if (orderItem.type === "return") {
             await this._customerItemHandler.return(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               customerItemId,
               order.id,
               orderItem,

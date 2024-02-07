@@ -27,6 +27,8 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public async get(
     id: string,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     userPermission?: UserPermission,
   ): Promise<T> {
@@ -174,6 +176,8 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   public async update(
     id: string,
     data: Partial<T>,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
@@ -209,6 +213,8 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   }
 
   public updateMany(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     docs: { id: string; data: Partial<T> }[],
   ): Promise<T[]> {
@@ -217,6 +223,8 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public async put(id: string, data: unknown): Promise<void> {
     await this.mongooseModel
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .replaceOne({ _id: id }, data, {
         upsert: true,
       })
@@ -233,6 +241,8 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
 
   public async remove(
     id: string,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
@@ -252,6 +262,8 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     return doc;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public removeMany(ids: string[]): Promise<T[]> {
     throw new BlError("not implemented");
@@ -297,9 +309,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         ),
       );
     } catch (error) {
-      throw new BlError("could not retrieve nested documents")
-        .code(702)
-        .add(error);
+      throw (
+        new BlError("could not retrieve nested documents")
+          .code(702)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .add(error)
+      );
     }
   }
 
@@ -308,23 +324,28 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     nestedDocuments: NestedDocument[],
     userPermission?: UserPermission,
   ): Promise<T> {
-    const nestedDocumentsPromArray = nestedDocuments.flatMap(
-      (nestedDocument) =>
-        doc && doc[nestedDocument.field]
-          ? [
-              this.getNestedDocument(
-                doc[nestedDocument.field],
-                nestedDocument,
-                userPermission,
-              ),
-            ]
-          : [],
+    const nestedDocumentsPromArray = nestedDocuments.flatMap((nestedDocument) =>
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      doc && doc[nestedDocument.field]
+        ? [
+            this.getNestedDocument(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              doc[nestedDocument.field],
+              nestedDocument,
+              userPermission,
+            ),
+          ]
+        : [],
     );
 
     try {
       const nestedDocs = await Promise.all(nestedDocumentsPromArray);
 
       for (let i = 0; i < nestedDocuments.length; i++) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         doc[nestedDocuments[i].field] = nestedDocs[i];
       }
 

@@ -42,14 +42,20 @@ export class SEDbQuery {
     const orArr = [];
 
     for (const booleanFilter of this.booleanFilters) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       filterObj[booleanFilter.fieldName] = booleanFilter.value;
     }
 
     for (const dateFilter of this.dateFilters) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       filterObj[dateFilter.fieldName] = dateFilter.op;
     }
 
     for (const numberFilter of this.numberFilters) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       filterObj[numberFilter.fieldName] = numberFilter.op;
     }
 
@@ -58,10 +64,14 @@ export class SEDbQuery {
         const arr = stringFilter.value;
         for (const stringValue of arr) {
           const multipleValuesFilterObj = {};
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           multipleValuesFilterObj[stringFilter.fieldName] = stringValue;
           orArr.push(multipleValuesFilterObj);
         }
       } else {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         filterObj[stringFilter.fieldName] = stringFilter.value;
       }
     }
@@ -71,21 +81,29 @@ export class SEDbQuery {
         const arr = objectIdFilter.value;
         for (const stringValue of arr) {
           const multipleValuesFilterObj = {};
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           multipleValuesFilterObj[objectIdFilter.fieldName] = stringValue;
           orArr.push(multipleValuesFilterObj);
         }
       } else {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         filterObj[objectIdFilter.fieldName] = objectIdFilter.value;
       }
     }
 
     for (const regexFilter of this.regexFilters) {
       const regexFilterObj = {};
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       regexFilterObj[regexFilter.fieldName] = regexFilter.op;
       orArr.push(regexFilterObj);
     }
 
     if (orArr.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       filterObj["$or"] = orArr;
     }
 
@@ -96,6 +114,8 @@ export class SEDbQuery {
     const ogFilterObj = {};
 
     for (const ogFilter of this.onlyGetFilters) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       ogFilterObj[ogFilter.fieldName] = ogFilter.value;
     }
     return ogFilterObj;
@@ -117,6 +137,8 @@ export class SEDbQuery {
     const sortFilterObj = {};
 
     for (const sortFilter of this.sortFilters) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       sortFilterObj[sortFilter.fieldName] = sortFilter.direction;
     }
 

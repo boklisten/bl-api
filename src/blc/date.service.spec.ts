@@ -2,7 +2,7 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import { dateService } from "./date.service";
-import moment = require("moment-timezone");
+import moment from "moment-timezone";
 
 chai.use(chaiAsPromised);
 

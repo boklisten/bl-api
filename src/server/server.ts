@@ -5,25 +5,34 @@ dotenv.config(); //adds the .env file to environment variables
 
 import path from "path";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application, json, Request, Response, Router } from "express";
 import mongoose from "mongoose";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import passport from "passport";
 
-import * as packageJson from "../../package.json";
 import { BlAuth } from "../auth/bl.auth";
 import { CollectionEndpointCreator } from "../collection-endpoint/collection-endpoint-creator";
 import { logger } from "../logger/logger";
 
 export class Server {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   public app: Application;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private router: Router;
 
   constructor() {
     this.printServerStartMessage();
     this.initialServerConfig();
     this.initialPassportConfig();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     new BlAuth(this.router);
     this.generateEndpoints();
     this.connectToDbAndStartServer();
@@ -57,7 +66,7 @@ export class Server {
   private connectToMongoDb(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       logger.verbose(
-        `trying to connect to mongodb: ${process.env.MONGODB_URI}`,
+        `trying to connect to mongodb: ${process.env["MONGODB_URI"]}`,
       );
 
       mongoose.connection.on("disconnected", () => {
@@ -73,13 +82,13 @@ export class Server {
       });
 
       mongoose
-        .connect(process.env.MONGODB_URI, {
+        .connect(process.env["MONGODB_URI"] ?? "", {
           maxPoolSize: 10,
           connectTimeoutMS: 10000,
           socketTimeoutMS: 45000,
         })
         .then(() => {
-          logger.verbose(`connected to mongodb: ${process.env.MONGODB_URI}`);
+          logger.verbose(`connected to mongodb: ${process.env["MONGODB_URI"]}`);
           resolve(true);
         })
         .catch((err) => {
@@ -95,8 +104,7 @@ export class Server {
     process.on("unhandledRejection", (reason, p) => {
       logger.error(`unhandeled rejection at: ${p}, reason: ${reason}`);
     });
-
-    const whitelist = process.env.URI_WHITELIST.split(" ");
+    const whitelist = process.env["URI_WHITELIST"]?.split(" ");
     const allowedMethods = ["GET", "PUT", "PATCH", "POST", "DELETE"];
     const allowedHeaders = [
       "Content-Type",
@@ -112,7 +120,9 @@ export class Server {
       optionsSuccessStatus: 204,
     };
 
-    this.app.use(process.env.API_ENV === "staging" ? cors() : cors(corsConfig));
+    this.app.use(
+      process.env["API_ENV"] === "staging" ? cors() : cors(corsConfig),
+    );
     this.app.use(cookieParser());
     this.app.use(passport.initialize());
     this.app.use(passport.session());
@@ -123,7 +133,9 @@ export class Server {
         // no point in showing all the preflight requests
         logger.debug(`-> ${req.method} ${req.url}`);
         if (
-          !(req.url.includes("auth") && process.env.NODE_ENV === "production")
+          !(
+            req.url.includes("auth") && process.env["NODE_ENV"] === "production"
+          )
         ) {
           let body: string;
           try {
@@ -141,7 +153,7 @@ export class Server {
     this.app.get("*", (req, res, next) => {
       if (
         req.headers["x-forwarded-proto"] !== "https" &&
-        process.env.NODE_ENV === "production"
+        process.env["NODE_ENV"] === "production"
       ) {
         res.redirect("https://" + req.hostname + req.url);
       } else {
@@ -173,7 +185,7 @@ export class Server {
   }
 
   private serverStart() {
-    this.app.set("port", process.env.PORT || 1337);
+    this.app.set("port", process.env["PORT"] ?? 1337);
 
     // eslint-disable-next-line import/no-named-as-default-member
     this.app.use(express.static(path.join(__dirname, "../public")));
@@ -206,14 +218,8 @@ export class Server {
     logger.silly(" | '_ \\| |/ _` | '_ \\| |");
     logger.silly(" | |_) | | (_| | |_) | |");
     logger.silly(" |_.__/|_|\\__,_| .__/|_|");
-    logger.silly(`               |_| v${packageJson.version}`);
+    logger.silly("               |_|");
 
-    logger.verbose(
-      "server url:\t" +
-        process.env.SERVER_HOST +
-        process.env.SERVER_PORT +
-        process.env.SERVER_PATH,
-    );
-    logger.verbose("mongoDB path:\t" + process.env.MONGODB_URI);
+    logger.verbose("mongoDB path:\t" + process.env["MONGODB_URI"]);
   }
 }

@@ -159,6 +159,8 @@ export class BookingPatchHook extends Hook {
             await this.bookingEmailService.sendBookingEmail(
               accessToken.details,
               booking,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               subtype,
               { id: accessToken.details, permission: accessToken.permission },
             );

@@ -70,7 +70,10 @@ describe("", () => {
             iat: Math.floor(Date.now() / 1000) - 10000,
           },
           "test",
-          { expiresIn: "1s" },
+          { expiresIn: "1s" }, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           (error, accessToken) => {
             accessTokenValidator
               .validate(accessToken)

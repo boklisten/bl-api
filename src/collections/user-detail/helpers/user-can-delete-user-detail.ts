@@ -29,6 +29,8 @@ export class UserCanDeleteUserDetail {
     userIdToDelete: string,
     accessToken: AccessToken,
   ): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const userDetailToDelete = await this.userDetailStorage.get(userIdToDelete);
 
     if (userDetailToDelete.id === accessToken.details) {
@@ -44,13 +46,19 @@ export class UserCanDeleteUserDetail {
       [{ fieldName: "username", type: "string" }],
     );
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const users = await this.userStorage.getByQuery(dbQuery);
     const userToDelete = users[0];
 
     return !(
       !this.permissionService.isPermissionEqualOrOver(
         accessToken.permission,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         userToDelete.permission,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
       ) || accessToken.permission === userToDelete.permission
     );
   }

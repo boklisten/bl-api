@@ -75,6 +75,8 @@ export class CollectionEndpointMethod<T extends BlDocument> {
     this.createOperations(this._endpoint);
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public onRequest(blApiRequest: BlApiRequest) {
     return Promise.resolve([]);
@@ -99,12 +101,22 @@ export class CollectionEndpointMethod<T extends BlDocument> {
     let blApiRequest: BlApiRequest;
 
     this._collectionEndpointAuth
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .authenticate(this._endpoint.restriction, req, res, next)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .then((accessToken?: AccessToken) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         userAccessToken = accessToken;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         return this._endpoint.hook.before(
           req.body,
           accessToken,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           req.params.id,
           req.query,
         );
@@ -118,7 +130,11 @@ export class CollectionEndpointMethod<T extends BlDocument> {
           data = hookData;
         }
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         blApiRequest = {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           documentId: req.params.id,
           query: req.query,
           data: data,
@@ -133,13 +149,19 @@ export class CollectionEndpointMethod<T extends BlDocument> {
       })
       .then((docs: T[]) =>
         this._collectionEndpointDocumentAuth.validate(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           this._endpoint.restriction,
           docs,
           blApiRequest,
           this.documentPermission,
         ),
       )
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .then((docs: T[]) => this._endpoint.hook.after(docs, userAccessToken))
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .then((docs: T[]) =>
         this._responseHandler.sendResponse(res, new BlapiResponse(docs)),
       )

@@ -59,6 +59,8 @@ export class LocalLoginHandler {
               ).store("username", username),
             );
           }
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           return resolve(localLogins[0]);
         })
         .catch((error: BlError) => {

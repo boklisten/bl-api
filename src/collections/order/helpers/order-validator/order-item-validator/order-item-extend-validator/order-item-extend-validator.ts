@@ -58,48 +58,68 @@ export class OrderItemExtendValidator {
     branch: Branch,
     orderItem: OrderItem,
   ): Promise<boolean> {
-    return this.customerItemStorage
-      .get(orderItem.info.customerItem as string)
-      .then((customerItem: CustomerItem) => {
-        let totalOfSelectedPeriod = 0;
-        if (customerItem.periodExtends) {
-          for (const periodExtend of customerItem.periodExtends) {
-            if (periodExtend.periodType === orderItem.info.periodType) {
-              totalOfSelectedPeriod += 1;
-            }
-          }
-
-          for (const extendPeriod of branch.paymentInfo.extendPeriods) {
-            if (extendPeriod.type === orderItem.info.periodType) {
-              if (totalOfSelectedPeriod > extendPeriod.maxNumberOfPeriods) {
-                throw new BlError(
-                  "orderItem can not be extended any more times",
-                );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return (
+      this.customerItemStorage
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .get(orderItem.info.customerItem as string)
+        .then((customerItem: CustomerItem) => {
+          let totalOfSelectedPeriod = 0;
+          if (customerItem.periodExtends) {
+            for (const periodExtend of customerItem.periodExtends) {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              if (periodExtend.periodType === orderItem.info.periodType) {
+                totalOfSelectedPeriod += 1;
               }
             }
-          }
 
-          return true;
-        }
-        return undefined;
-      })
-      .catch((blError: BlError) => {
-        return Promise.reject(blError);
-      });
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            for (const extendPeriod of branch.paymentInfo.extendPeriods) {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              if (extendPeriod.type === orderItem.info.periodType) {
+                if (totalOfSelectedPeriod > extendPeriod.maxNumberOfPeriods) {
+                  throw new BlError(
+                    "orderItem can not be extended any more times",
+                  );
+                }
+              }
+            }
+
+            return true;
+          }
+          return undefined;
+        })
+        .catch((blError: BlError) => {
+          return Promise.reject(blError);
+        })
+    );
   }
 
   private checkPeriodType(orderItem: OrderItem, branch: Branch) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (!branch.paymentInfo.extendPeriods) {
       throw new BlError("the branch has no extendPeriods defined");
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     for (const extendPeriod of branch.paymentInfo.extendPeriods) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (extendPeriod.type === orderItem.info.periodType) {
         return true;
       }
     }
 
     throw new BlError(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       `orderItem.info.periodType is "${orderItem.info.periodType}" but it is not allowed by branch`,
     );
   }

@@ -12,7 +12,7 @@ import {
   BlError,
   Branch,
 } from "@boklisten/bl-model";
-import moment = require("moment-timezone");
+import moment from "moment-timezone";
 
 import { dateService } from "../../../blc/date.service";
 import { BlCollectionName } from "../../../collections/bl-collection";
@@ -25,6 +25,8 @@ import { EMAIL_SETTINGS } from "../email-settings";
 
 export class OrderEmailHandler {
   private defaultCurrency = "NOK";
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private standardDayFormat = "DD.MM.YY";
   private standardTimeFormat = "DD.MM.YYYY HH.mm.ss";
   private localeSetting = "nb";
@@ -32,6 +34,8 @@ export class OrderEmailHandler {
     "Dette er kun en reservasjon, du har ikke betalt enda. Du betaler først når du kommer til oss på stand.";
   private agreementTextBlock =
     "Vedlagt i denne mailen ligger en kontrakt som du trenger å skrive under på for å få lånt bøkene. Kontrakten må du ha med deg når du kommer til oss på stand.";
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private utcOffset = 120;
 
   constructor(
@@ -164,8 +168,12 @@ export class OrderEmailHandler {
       totalAmount: order.amount.toString(), // should include the totalAmount including the delivery amount
       items: this.orderItemsToEmailItems(order.orderItems),
       showDelivery: false,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       delivery: null,
       showPayment: false,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       payment: null,
     };
 
@@ -209,6 +217,8 @@ export class OrderEmailHandler {
     }
 
     const paymentPromises: Promise<Payment>[] = order.payments.map((payment) =>
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this._paymentStorage.get(
         typeof payment === "string" ? payment : payment.id,
       ),
@@ -230,10 +240,16 @@ export class OrderEmailHandler {
 
         if (
           emailPayment.payments[0] &&
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           emailPayment.payments[0]["info"] &&
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           emailPayment.payments[0]["info"]["orderDetails"]
         ) {
           emailPayment.currency =
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             emailPayment.payments[0]["info"]["orderDetails"].currency;
         }
 
@@ -252,6 +268,8 @@ export class OrderEmailHandler {
       return Promise.resolve({ delivery: null, showDelivery: false });
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return this._deliveryStorage
       .get(deliveryId)
       .then((delivery: Delivery) => {
@@ -276,8 +294,12 @@ export class OrderEmailHandler {
       method: "",
       amount: "",
       cardInfo: null,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       taxAmount: !isNaN(payment.taxAmount)
-        ? payment.taxAmount.toString()
+        ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          payment.taxAmount.toString()
         : null,
       paymentId: "",
       status: this.translatePaymentConfirmed(),
@@ -299,6 +321,8 @@ export class OrderEmailHandler {
           }
 
           if (paymentInfo.paymentDetails.cardDetails?.maskedPan) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             paymentObj.cardInfo = `***${this.stripTo4LastDigits(
               paymentInfo.paymentDetails.cardDetails.maskedPan,
             )}`;
@@ -337,12 +361,22 @@ export class OrderEmailHandler {
       method: delivery.method,
       currency: this.defaultCurrency,
       amount: delivery.amount,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       address: delivery.info["shipmentAddress"]
-        ? `${delivery.info["shipmentAddress"].name}, ${delivery.info["shipmentAddress"].address}, ${delivery.info["shipmentAddress"].postalCode} ${delivery.info["shipmentAddress"].postalCity}`
+        ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          `${delivery.info["shipmentAddress"].name}, ${delivery.info["shipmentAddress"].address}, ${delivery.info["shipmentAddress"].postalCode} ${delivery.info["shipmentAddress"].postalCity}`
         : null,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       trackingNumber: delivery.info["trackingNumber"],
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       estimatedDeliveryDate: delivery.info["estimatedDelivery"]
         ? dateService.toPrintFormat(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             delivery.info["estimatedDelivery"],
             "Europe/Oslo",
           )
@@ -353,12 +387,16 @@ export class OrderEmailHandler {
   private orderItemsToEmailItems(
     orderItems: OrderItem[],
   ): { title: string; status: string; deadline?: string; price?: string }[] {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return orderItems.map((orderItem) => ({
       title: orderItem.title,
       status: this.translateOrderItemType(orderItem.type, orderItem.handout),
       deadline:
         orderItem.type === "rent" || orderItem.type === "extend"
-          ? dateService.toPrintFormat(orderItem.info.to, "Europe/Oslo")
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            dateService.toPrintFormat(orderItem.info.to, "Europe/Oslo")
           : null,
       price:
         orderItem.type !== "return" && orderItem.amount
@@ -390,6 +428,8 @@ export class OrderEmailHandler {
         buyback: "tilbakekjøp",
         buyout: "utkjøp",
       };
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       return `${translations[orderItemType] ?? orderItemType}${
         handout && orderItemType !== "return" ? " - utlevert" : ""
       }`;
@@ -403,6 +443,8 @@ export class OrderEmailHandler {
     customerDetail: UserDetail,
     branchId: string,
   ): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const onlyHandout = order.orderItems[0].handout;
     const rentFound = order.orderItems.some(
       (orderItem) => orderItem.type === "rent",
@@ -432,9 +474,13 @@ export class OrderEmailHandler {
   }
 
   private isBranchResponsible(branchId: string): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return this._branchStorage
       .get(branchId)
       .then((branch: Branch) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         return branch.paymentInfo.responsible;
       })
       .catch((getBranchError: BlError) => {

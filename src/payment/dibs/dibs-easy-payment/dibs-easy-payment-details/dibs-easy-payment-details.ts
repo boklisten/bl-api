@@ -6,11 +6,17 @@ import { DibsEasyPaymentDetailsInvoiceDetail } from "./dibs-easy-payment-details
 @JsonObject
 export class DibsEasyPaymentDetails {
   @JsonMember({ type: String })
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   paymentType: string;
   @JsonMember({ type: String })
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   paymentMethod: string;
   @JsonMember({ type: DibsEasyPaymentDetailsInvoiceDetail })
   invoiceDetails?: DibsEasyPaymentDetailsInvoiceDetail;
   @JsonMember({ type: DibsEasyPaymentDetailsCard })
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   cardDetails: DibsEasyPaymentDetailsCard;
 }

@@ -2,7 +2,11 @@ import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import sinon from "sinon";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { BlError } from "@boklisten/bl-model";
 import { ApiPath } from "./api-path";
 import { APP_CONFIG } from "../application-config";
@@ -60,9 +64,9 @@ describe("ApiPath", () => {
       const apiPath = new ApiPath();
       return expect(
         apiPath.retrieveRefererPath({
-          referer: "http://web.test.boklisten.no/auth/login",
+          referer: "http://staging.boklisten.no/auth/login",
         }),
-      ).to.be.eq("http://web.test.boklisten.no/");
+      ).to.be.eq("http://staging.boklisten.no/");
     });
 
     it("should return refererPath if url includes our basePath", () => {
@@ -70,9 +74,9 @@ describe("ApiPath", () => {
       const apiPath = new ApiPath();
       return expect(
         apiPath.retrieveRefererPath({
-          referer: "http://bladmin.test.boklisten.no/auth/login",
+          referer: "http://staging.bladmin.boklisten.no/auth/login",
         }),
-      ).to.be.eq("http://bladmin.test.boklisten.no/");
+      ).to.be.eq("http://staging.bladmin.boklisten.no/");
     });
 
     it("should return refererPath if url includes our local basePath", () => {

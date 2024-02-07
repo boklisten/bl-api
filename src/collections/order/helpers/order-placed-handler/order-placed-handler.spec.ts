@@ -75,6 +75,8 @@ describe("OrderPlacedHandler", () => {
     return Promise.resolve(testUserDetail);
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   sinon.stub(userDetailStorage, "update").callsFake((id: string, data: any) => {
     if (userDeatilUpdate) {
       if (data["orders"]) {
@@ -183,6 +185,8 @@ describe("OrderPlacedHandler", () => {
       orderPlacedHandler
         .placeOrder(testOrder, testAccessToken)
         .catch((err: BlError) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           expect(err.errorStack[0].getMsg()).to.be.eq("could not update order");
 
           done();
@@ -195,6 +199,8 @@ describe("OrderPlacedHandler", () => {
       orderPlacedHandler
         .placeOrder(testOrder, testAccessToken)
         .catch((err: BlError) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           expect(err.errorStack[0].getMsg()).to.be.eq(
             "could not confirm payments",
           );
@@ -208,6 +214,8 @@ describe("OrderPlacedHandler", () => {
       try {
         return await orderPlacedHandler.placeOrder(testOrder, testAccessToken);
       } catch (e) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         return expect(e.errorStack[0].getMsg()).to.eq(
           'customer "notFoundUserDetails" not found',
         );
@@ -220,6 +228,8 @@ describe("OrderPlacedHandler", () => {
       orderPlacedHandler
         .placeOrder(testOrder, testAccessToken)
         .catch((err: BlError) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           expect(err.errorStack[0].getMsg()).to.be.eq(
             "could not update userDetail with placed order",
           );

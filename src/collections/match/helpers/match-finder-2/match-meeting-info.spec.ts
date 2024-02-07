@@ -30,21 +30,32 @@ const elRi = createFakeMatchableUser("elRi", "Spirituell Spire");
  * Prints data about how many matches each location has at each timeslot
  * @param matches matches that have been assigned a location and a timeslot
  */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 function printLocationMetrics(matches: MatchWithMeetingInfo[]) {
-  const aggregatedLocationInfo = matches
+  const aggregatedLocationInfo = matches // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .sort((a, b) => (a.meetingInfo.date > b.meetingInfo.date ? 1 : -1))
     .reduce((acc, match) => {
       const { location, date } = match.meetingInfo;
       return {
         ...acc,
         [location]: {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           ...acc[location],
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           count:
+            // @ts-ignore
             acc[location]?.count === undefined ? 1 : acc[location].count + 1,
           [String(date)]:
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             acc[location]?.[String(date)] === undefined
               ? 1
-              : acc[location][String(date)] + 1,
+              : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                acc[location][String(date)] + 1,
         },
       };
     }, {});
@@ -84,12 +95,16 @@ describe("Simple Matches", () => {
       .map((match) => match.meetingInfo.date);
 
     const distinctMeetingTimes = Array.from(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       new Set(meetingTimes.map((d) => d.getTime())),
     ).map((t) => new Date(t));
 
     for (const distinctMeetingTime of distinctMeetingTimes) {
       const simultaneousMatches = meetingTimes.filter(
         (meetingTime) =>
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           meetingTime.getTime() === distinctMeetingTime.getTime(),
       ).length;
 

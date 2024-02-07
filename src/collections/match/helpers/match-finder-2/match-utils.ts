@@ -184,6 +184,8 @@ export function countItemOccurrences(users: MatchableUser[]): {
     .reduce(
       (acc, next) => ({
         ...acc,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         [next]: next in acc ? acc[next] + 1 : 1,
       }),
       {},

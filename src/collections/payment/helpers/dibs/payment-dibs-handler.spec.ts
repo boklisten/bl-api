@@ -50,6 +50,8 @@ describe("PaymentDibsHandler", () => {
     let getDibsEasyOrderConfirm: boolean;
     let testPaymentId: string;
     let orderUpdated: boolean;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     let testDelivery: Delivery;
 
     beforeEach(() => {
@@ -144,12 +146,16 @@ describe("PaymentDibsHandler", () => {
 
     sinon
       .stub(dibsPaymentService, "getPaymentId")
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .callsFake((dibsEasyOrder: DibsEasyOrder) => {
         return getPaymentIdConfirm
           ? Promise.resolve(testPaymentId)
           : Promise.reject(new BlError("could not create paymentId"));
       });
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     sinon.stub(paymentStorage, "update").callsFake((id: string, data: any) => {
       if (!paymentUpdated) {
         return Promise.reject(new BlError("could not update payment"));
@@ -166,6 +172,8 @@ describe("PaymentDibsHandler", () => {
         : Promise.reject(new BlError("order not found"));
     });
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     sinon.stub(orderStorage, "update").callsFake((id: string, data: any) => {
       if (!orderUpdated) {
         return Promise.reject(new BlError("could not update"));
@@ -208,6 +216,8 @@ describe("PaymentDibsHandler", () => {
       paymentDibsHandler
         .handleDibsPayment(testPayment, testAccessToken)
         .then((payment: Payment) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           expect(payment.info["paymentId"]).to.eql(testPaymentId);
           done();
         });

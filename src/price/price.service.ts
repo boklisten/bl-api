@@ -3,8 +3,8 @@ export class PriceService {
   private down: boolean;
 
   constructor(config?: { roundUp?: boolean; roundDown?: boolean }) {
-    this.up = config && config.roundUp ? config.roundUp : false;
-    this.down = config && config.roundDown ? config.roundDown : false;
+    this.up = config?.roundUp ?? false;
+    this.down = config?.roundDown ?? false;
   }
 
   public sanitize(price: number): number {

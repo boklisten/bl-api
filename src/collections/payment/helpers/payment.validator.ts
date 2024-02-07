@@ -12,6 +12,8 @@ export class PaymentValidator {
 
   constructor(
     orderStorage?: BlDocumentStorage<Order>,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     paymentStorage?: BlDocumentStorage<Payment>,
     deliveryStorage?: BlDocumentStorage<Delivery>,
   ) {
@@ -33,6 +35,8 @@ export class PaymentValidator {
 
     let order: Order;
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return this.orderStorage
       .get(payment.order as string)
       .then((orderInStorage: Order) => {
@@ -61,6 +65,8 @@ export class PaymentValidator {
       return Promise.resolve(true);
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return this.deliveryStorage
       .get(order.delivery as string)
       .then((delivery: Delivery) => {
@@ -94,28 +100,44 @@ export class PaymentValidator {
   }
 
   private validatePaymentDibs(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     payment: Payment,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     order: Order,
   ): Promise<boolean> {
     return Promise.resolve(true);
   }
 
   private validatePaymentCard(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     payment: Payment,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     order: Order,
   ): Promise<boolean> {
     return Promise.resolve(true);
   }
 
   private validatePaymentVipps(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     payment: Payment,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     order: Order,
   ): Promise<boolean> {
     return Promise.resolve(true);
   }
 
   private validatePaymentCash(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     payment: Payment,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     order: Order,
   ): Promise<boolean> {
     return Promise.resolve(true);

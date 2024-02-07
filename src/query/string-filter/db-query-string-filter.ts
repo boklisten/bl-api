@@ -38,6 +38,8 @@ export class DbQueryStringFilter {
 
       throw new Error(
         "could not parse the string parameters in query, reason: " +
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           error.message,
       );
     }
@@ -53,6 +55,8 @@ export class DbQueryStringFilter {
   }
 
   private validateStringParam(param: string): boolean {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return param && typeof param === "string" && param.length > 0;
   }
 }

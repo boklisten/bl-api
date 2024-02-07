@@ -26,6 +26,8 @@ export class PendingPasswordResetPostHook extends Hook {
   ): Promise<PendingPasswordReset> {
     validatePasswordResetRequest(passwordResetRequest);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const user = await this.userHandler
       .getByUsername(passwordResetRequest.email)
       .catch((getUserError: BlError) => {
@@ -38,14 +40,24 @@ export class PendingPasswordResetPostHook extends Hook {
       throw new BlError("user.active is false").code(10703);
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const id = this.seCrypto.random();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const token = this.seCrypto.random();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const salt = this.seCrypto.random();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const tokenHash = await this.seCrypto.hash(token, salt);
 
     // We should really wait to send the email until the password reset has been successfully written to the
     // database, but it would be poor security to save the unhashed token in the database, and we have no other way
     // of passing information from before to after, so this is the lesser evil.
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await this.messenger
       .passwordReset(user.id, passwordResetRequest.email, id, token)
       .catch(() => {
@@ -71,12 +83,16 @@ export class PendingPasswordResetPostHook extends Hook {
 function validatePasswordResetRequest(
   candidate: unknown,
 ): asserts candidate is PasswordResetRequest {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if (!candidate || !candidate["email"]) {
     throw new BlError(
       "passwordResetRequest.email is null, empty or undefined",
     ).code(701);
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if (typeof candidate["email"] !== "string") {
     throw new BlError("passwordResetRequest.email is not a string").code(701);
   }

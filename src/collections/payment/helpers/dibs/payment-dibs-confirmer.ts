@@ -32,11 +32,17 @@ export class PaymentDibsConfirmer {
 
       try {
         dibsEasyPaymentDetails =
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           await this._dibsPaymentService.fetchDibsPaymentData(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             payment.info["paymentId"],
           );
       } catch (getDibsPaymentError) {
         throw new BlError("could not get dibs payment from dibs api").add(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           getDibsPaymentError,
         );
       }
@@ -45,8 +51,12 @@ export class PaymentDibsConfirmer {
     }
 
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await this._paymentStorage.update(
         payment.id,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         { info: dibsEasyPaymentDetails },
         { id: accessToken.details, permission: accessToken.permission },
       );
@@ -57,39 +67,6 @@ export class PaymentDibsConfirmer {
     }
 
     return true;
-    /*
-
-    let updatedPayment;
-    try {
-      updatedPayment = await this._paymentStorage.update(
-        payment.id,
-        {info: dibsEasyPayment},
-        {id: accessToken.sub, permission: accessToken.permission},
-      );
-    } catch (updatePaymentError) {
-      throw new BlError('could not update payment with DibsEasyPayment').add(
-        updatePaymentError,
-      );
-    }
-    return true;
-       */
-    /*
-    try {
-      await this._userDetailHelper.updateUserDetailBasedOnDibsEasyPayment(
-        payment.customer as string,
-        updatedPayment.info as DibsEasyPayment,
-        accessToken,
-      );
-      return true;
-    } catch (updateUserDetailError) {
-      throw new BlError(
-        'could not update user details based on dibsEasyPayment',
-      )
-        .store('userDetailId', payment.customer)
-        .store('paymentId', payment.id)
-        .add(updateUserDetailError);
-    }
-       */
   }
 
   private validateDibsEasyPayment(
@@ -124,6 +101,8 @@ export class PaymentDibsConfirmer {
   private validatePaymentInfo(payment: Payment): boolean {
     if (
       isNullOrUndefined(payment.info) ||
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       isNullOrUndefined(payment.info["paymentId"])
     ) {
       throw new BlError(

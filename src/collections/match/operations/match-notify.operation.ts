@@ -33,6 +33,8 @@ export class MatchNotifyOperation implements Operation {
       throw new BlError("Message must be set");
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const matches = await this.matchStorage.getAll();
     if (matches.length === 0) {
       throw new BlError("Could not find any matches!");
@@ -48,11 +50,16 @@ export class MatchNotifyOperation implements Operation {
       ),
     );
 
-    const customerPhoneNumbers = (
-      await this.userDetailStorage.getMany(matchedCustomerIds)
-    )
-      .flatMap((customer) => [customer?.guardian?.phone, customer?.phone])
-      .filter((phoneNumber) => phoneNumber?.length > 0);
+    const customerPhoneNumbers =
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      (await this.userDetailStorage.getMany(matchedCustomerIds))
+        .flatMap((customer) => [customer?.guardian?.phone, customer?.phone])
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .filter((phoneNumber) => phoneNumber?.length > 0);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const status = await massSendSMS(customerPhoneNumbers, message);
     return new BlapiResponse(status);
   }

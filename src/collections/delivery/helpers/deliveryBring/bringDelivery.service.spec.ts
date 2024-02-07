@@ -11,10 +11,14 @@ chai.use(chaiAsPromised);
 
 describe("BringDeliveryService", () => {
   const httpHandler = new HttpHandler();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const bringDeliveryService = new BringDeliveryService(httpHandler);
 
   let testBringResponse: any;
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testItem: Item;
 
   beforeEach(() => {
@@ -65,7 +69,10 @@ describe("BringDeliveryService", () => {
   });
 
   sinon
-    .stub(httpHandler, "getWithQuery")
+    .stub(httpHandler, "getWithQuery") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((url: string, queryString: string, headers: object) => {
       return new Promise((resolve, reject) => {
         if (url === APP_CONFIG.url.bring.shipmentInfo) {

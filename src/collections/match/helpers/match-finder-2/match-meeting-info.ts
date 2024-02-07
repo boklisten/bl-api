@@ -56,13 +56,19 @@ function findEarliestLocationTime(
   }
   const prevMeetingTime = existingMeetingTimes?.at(-1);
   const simultaneousMatches = existingMeetingTimes.filter(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     (meetingTime) => meetingTime.getTime() === prevMeetingTime.getTime(),
   );
 
   if (simultaneousMatches.length < location.simultaneousMatchLimit) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return prevMeetingTime;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   return new Date(prevMeetingTime.getTime() + MEETING_DURATION_IN_MS);
 }
 
@@ -143,6 +149,8 @@ function verifyUserMatches(
         userMatchLocations
           .map((location) => location.name)
           .includes(createdMeetingInfoMatch.meetingInfo.location) &&
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         createdMeetingInfoMatch.meetingInfo.date >= startTime
       );
     })
@@ -157,7 +165,11 @@ function verifyUserMatches(
       (match) =>
         match.senderId === userMatchWithMeetingInfo.senderId &&
         match.receiverId !== userMatchWithMeetingInfo.receiverId &&
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         match.meetingInfo.date.getTime() ===
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           userMatchWithMeetingInfo.meetingInfo.date.getTime() &&
         match.meetingInfo.location !==
           userMatchWithMeetingInfo.meetingInfo.location,
@@ -166,7 +178,11 @@ function verifyUserMatches(
       (match) =>
         match.receiverId === userMatchWithMeetingInfo.receiverId &&
         match.senderId !== userMatchWithMeetingInfo.senderId &&
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         match.meetingInfo.date.getTime() ===
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           userMatchWithMeetingInfo.meetingInfo.date.getTime() &&
         match.meetingInfo.location !==
           userMatchWithMeetingInfo.meetingInfo.location,
@@ -238,7 +254,11 @@ function assignMeetingInfoToMatches(
     locationIndex = (locationIndex + 1) % userMatchLocations.length;
 
     const earliestLocationTime = findEarliestLocationTime(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       location,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       locationMeetingTimes[location.name],
       startTime,
     );
@@ -252,14 +272,22 @@ function assignMeetingInfoToMatches(
       userMeetingTimes,
     );
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     userMeetingTimes[senderWithMatches.senderId].push(earliestPossibleTime);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     locationMeetingTimes[location.name].push(earliestPossibleTime);
     for (const match of senderWithMatches.matches) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       userMeetingTimes[match.receiverId].push(earliestPossibleTime);
 
       userMatchesWithMeetingInfo.push({
         ...match,
         meetingInfo: {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           location: location.name,
           date: earliestPossibleTime,
         },

@@ -47,6 +47,8 @@ describe("RefreshTokenValidator", () => {
     it("should reject with BlError when refreshToken is not valid", (done) => {
       const refreshToken = "this is not a valid token";
       refreshTokenValidator.validate(refreshToken).then(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         (valid: boolean) => {
           valid.should.not.be.fulfilled;
           done();
@@ -65,7 +67,10 @@ describe("RefreshTokenValidator", () => {
         jwt.sign(
           { username: "test", iat: Math.floor(Date.now() / 1000) - 10000 },
           "test",
-          { expiresIn: "1s" },
+          { expiresIn: "1s" }, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           (error, refreshToken) => {
             refreshTokenValidator
               .validate(refreshToken)
@@ -86,6 +91,8 @@ describe("RefreshTokenValidator", () => {
         refreshTokenCreator.create(username, userid).then(
           (refreshToken: string) => {
             refreshTokenValidator.validate(refreshToken).then(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               (refreshToken: RefreshToken) => {
                 refreshToken.aud.should.be.eq(tokenConfig.refreshToken.aud);
                 refreshToken.iss.should.be.eq(tokenConfig.refreshToken.iss);

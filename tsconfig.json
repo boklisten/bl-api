@@ -14,18 +14,18 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
 
-    /* This should be set to true in the future */
-    "strict": false,
-    /* Stricter type checking, some of these might be redundant when strict is set to true */
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "alwaysStrict": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
     "noImplicitReturns": true,
-    "noImplicitThis": true,
+    "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "strictBindCallApply": true
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

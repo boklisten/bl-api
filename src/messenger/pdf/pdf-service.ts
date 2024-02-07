@@ -5,7 +5,7 @@ import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
 import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
 import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
 import { Order, UserDetail } from "@boklisten/bl-model";
-import moment = require("moment");
+import moment from "moment";
 
 import { OrderEmailHandler } from "../email/order-email/order-email-handler";
 

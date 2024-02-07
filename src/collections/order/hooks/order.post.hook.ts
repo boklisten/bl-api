@@ -71,8 +71,8 @@ export class OrderPostHook extends Hook {
       return Promise.reject(new BlError("orderIds included more than one id"));
     }
 
-    const order = orders[0];
-
+    const order = orders[0]; // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return this.validateOrder(order).then(() => {
       return [order];
     });

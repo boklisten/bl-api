@@ -10,6 +10,8 @@ export class CollectionEndpointGetAll<T extends BlDocument>
   extends CollectionEndpointMethod<T>
   implements CollectionEndpointOnRequest<T>
 {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   public override onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
     if (
       blApiRequest.query &&
@@ -27,9 +29,13 @@ export class CollectionEndpointGetAll<T extends BlDocument>
           this._endpoint.validQueryParams,
         );
       } catch (e) {
-        throw new BlError("could not create query from request query string")
-          .add(e)
-          .store("query", blApiRequest.query);
+        throw (
+          new BlError("could not create query from request query string")
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .add(e)
+            .store("query", blApiRequest.query)
+        );
       }
 
       return this._documentStorage
@@ -47,14 +53,18 @@ export class CollectionEndpointGetAll<T extends BlDocument>
         permission = blApiRequest.user.permission;
       }
 
-      return this._documentStorage
-        .getAll(permission)
-        .then((docs: T[]) => {
-          return docs;
-        })
-        .catch((blError: BlError) => {
-          throw blError;
-        });
+      return (
+        this._documentStorage
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .getAll(permission)
+          .then((docs: T[]) => {
+            return docs;
+          })
+          .catch((blError: BlError) => {
+            throw blError;
+          })
+      );
     }
   }
 }

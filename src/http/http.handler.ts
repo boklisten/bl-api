@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { BlError } from "@boklisten/bl-model";
+import { Response } from "express";
 import { stringify } from "qs";
 
 import { logger } from "../logger/logger";
@@ -17,12 +18,13 @@ export class HttpHandler {
       };
 
       if (authorization) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         options["headers"]["Authorization"] = authorization;
       }
 
       logger.debug(`R-> POST ${url}`);
-
-      request.post(options, (err, res, body) => {
+      request.post(options, (err: unknown, res: Response, body: unknown) => {
         if (err) {
           logger.verbose(`<-R ERROR ${err}`);
           return reject(new BlError(`error on request to "${url}"`));
@@ -30,7 +32,7 @@ export class HttpHandler {
 
         if (res && res.statusCode) {
           if (res.statusCode == 200 || res.statusCode === 201) {
-            return resolve(body);
+            return resolve(String(body));
           }
 
           logger.verbose(`<-R ERROR ${err}`);
@@ -60,10 +62,10 @@ export class HttpHandler {
       logger.debug(`R-> GET ${options.uri}`);
 
       rp(options)
-        .then((jsonResponse) => {
+        .then((jsonResponse: unknown) => {
           resolve(jsonResponse);
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           logger.verbose(`<-R ERROR ${error}`);
 
           reject(
@@ -84,16 +86,18 @@ export class HttpHandler {
       };
 
       if (authorization) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         options["headers"]["Authorization"] = authorization;
       }
 
       logger.debug(`R-> GET ${options.uri}`);
 
       rp(options)
-        .then((jsonResponse) => {
+        .then((jsonResponse: unknown) => {
           resolve(jsonResponse);
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           logger.verbose(`<-R ERROR ${error}`);
 
           reject(

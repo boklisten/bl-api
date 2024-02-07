@@ -2,6 +2,7 @@ import { isNullOrUndefined } from "util";
 
 import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { NextFunction, Request, Response } from "express";
+import isEmail from "validator/lib/isEmail";
 
 import { PermissionService } from "../../../../auth/permission/permission.service";
 import { UserHandler } from "../../../../auth/user/user.handler";
@@ -15,9 +16,6 @@ import { localLoginSchema } from "../../../local-login/local-login.schema";
 import { User } from "../../../user/user";
 import { UserSchema } from "../../../user/user.schema";
 import { userDetailSchema } from "../../user-detail.schema";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const emailValidator = require("validator");
 
 export class UserDetailChangeEmailOperation implements Operation {
   private _permissionService: PermissionService;
@@ -45,38 +43,69 @@ export class UserDetailChangeEmailOperation implements Operation {
 
   async run(
     blApiRequest: BlApiRequest,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction,
   ): Promise<boolean> {
     const emailChange = blApiRequest.data["email"];
 
     this.validateEmail(emailChange);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const userDetail = await this._userDetailStorage.get(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       blApiRequest.documentId,
     );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const user = await this.getUser(userDetail.email, userDetail.blid);
     const localLogin = await this.getLocalLogin(userDetail.email);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this.validatePermission(blApiRequest.user.permission, user.permission);
     await this.checkIfAlreadyAdded(emailChange);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await this._userDetailStorage.update(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       userDetail["_id"],
       { email: emailChange },
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       blApiRequest.user,
     );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await this._userStorage.update(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       user["_id"],
       { username: emailChange },
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       blApiRequest.user,
     );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await this._localLoginStorage.update(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       localLogin["_id"],
       { username: emailChange },
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       blApiRequest.user,
     );
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this._resHandler.sendResponse(res, new BlapiResponse([{ success: true }]));
     return true;
   }
@@ -85,6 +114,8 @@ export class UserDetailChangeEmailOperation implements Operation {
     let alreadyAddedUser;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       alreadyAddedUser = await this._userHandler.getByUsername(email);
       // eslint-disable-next-line no-empty
     } catch (e) {}
@@ -97,7 +128,11 @@ export class UserDetailChangeEmailOperation implements Operation {
   }
 
   private validatePermission(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     userPermission,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     permissionToEmailChangeUser,
   ): boolean {
     if (
@@ -112,21 +147,29 @@ export class UserDetailChangeEmailOperation implements Operation {
   }
 
   private async getUser(email: string, blid: string): Promise<User> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const users = await this._userStorage.aggregate([
       { $match: { username: email, blid: blid } },
     ]);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return users[0];
   }
 
   private async getLocalLogin(username: string): Promise<LocalLogin> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const localLogins = await this._localLoginStorage.aggregate([
       { $match: { username: username } },
     ]);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return localLogins[0];
   }
 
   private validateEmail(email: string) {
-    if (isNullOrUndefined(email) || !emailValidator.isEmail(email)) {
+    if (isNullOrUndefined(email) || !isEmail(email)) {
       throw new BlError("email is not valid").code(701);
     }
   }

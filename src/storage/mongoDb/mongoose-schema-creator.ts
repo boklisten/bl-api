@@ -61,11 +61,11 @@ export class MongooseModelCreator<T> {
     //remove fields that the client shall not see
     schema.set("toJSON", {
       transform: function (_doc, ret) {
-        ret.id = ret._id;
-        delete ret.user;
-        delete ret._id;
-        delete ret.__v;
-        delete ret.viewableFor;
+        ret["id"] = ret["_id"];
+        delete ret["user"];
+        delete ret["_id"];
+        delete ret["__v"];
+        delete ret["viewableFor"];
       },
     });
 

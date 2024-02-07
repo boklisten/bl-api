@@ -54,7 +54,11 @@ export class PermissionService {
     document: BlDocument,
   ) {
     return (
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this.isPermissionOver(userPermission, document.user.permission) ||
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       userPermission === document.user.permission
     );
   }
@@ -63,11 +67,17 @@ export class PermissionService {
     userId: string,
     userPermission: UserPermission,
     document: BlDocument,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     endpointRestriction: BlEndpointRestriction,
     documentPermission?: BlDocumentPermission,
   ): boolean {
     if (
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       document.user.id === userId ||
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this.isPermissionOver(userPermission, document.user.permission)
     ) {
       return true;

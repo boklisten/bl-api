@@ -20,6 +20,8 @@ export class OrderItemBuyValidator {
   }
 
   public async validate(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     branch: Branch,
     orderItem: OrderItem,
     item: Item,
@@ -35,6 +37,8 @@ export class OrderItemBuyValidator {
       return Promise.reject(
         new BlError(
           "unknown error, could not validate price of orderItems, error: " +
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             e.message,
         ).store("error", e),
       );
@@ -101,6 +105,8 @@ export class OrderItemBuyValidator {
       .catch(() => {
         return false;
       });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return undefined;
   }
 

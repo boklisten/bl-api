@@ -87,6 +87,8 @@ describe("OrderToCustomerItemGenerator", () => {
           type: "partly-payment",
           age: orderItem.age,
           customer: order.customer,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           deadline: orderItem.info.to,
           handout: true,
           handoutInfo: {
@@ -95,7 +97,8 @@ describe("OrderToCustomerItemGenerator", () => {
             handoutEmployee: order.employee,
             time: today,
           },
-          returned: false,
+          returned: false, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           amountLeftToPay: orderItem["info"]["amountLeftToPay"],
           totalAmount: orderItem.amount,
           blid: orderItem.blid,
@@ -181,6 +184,8 @@ describe("OrderToCustomerItemGenerator", () => {
           type: "partly-payment",
           age: orderItem.age,
           customer: order.customer,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           deadline: orderItem.info.to,
           handout: true,
           handoutInfo: {
@@ -190,7 +195,8 @@ describe("OrderToCustomerItemGenerator", () => {
             time: today,
           },
           returned: false,
-          blid: orderItem.blid,
+          blid: orderItem.blid, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           amountLeftToPay: orderItem["info"]["amountLeftToPay"],
           totalAmount: orderItem.amount,
           viewableFor: [userDetail.blid],
@@ -212,6 +218,8 @@ describe("OrderToCustomerItemGenerator", () => {
           age: orderItem2.age,
           blid: orderItem2.blid,
           customer: order.customer,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           deadline: orderItem2.info.to,
           viewableFor: [userDetail.blid],
           handout: true,
@@ -221,7 +229,8 @@ describe("OrderToCustomerItemGenerator", () => {
             handoutEmployee: order.employee,
             time: today,
           },
-          returned: false,
+          returned: false, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           amountLeftToPay: orderItem2["info"]["amountLeftToPay"],
           totalAmount: orderItem2.amount,
           orders: [order.id],
@@ -342,6 +351,8 @@ describe("OrderToCustomerItemGenerator", () => {
           type: "rent",
           age: orderItem.age,
           customer: order.customer,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           deadline: orderItem.info.to,
           handout: true,
           viewableFor: [userDetail.blid],
@@ -431,6 +442,8 @@ describe("OrderToCustomerItemGenerator", () => {
           type: "rent",
           age: orderItem.age,
           customer: order.customer,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           deadline: orderItem.info.to,
           viewableFor: [userDetail.blid],
           blid: orderItem.blid,
@@ -460,6 +473,8 @@ describe("OrderToCustomerItemGenerator", () => {
           type: "rent",
           age: orderItem2.age,
           customer: order.customer,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           deadline: orderItem2.info.to,
           viewableFor: [userDetail.blid],
           blid: orderItem2.blid,
@@ -549,6 +564,8 @@ describe("OrderToCustomerItemGenerator", () => {
           type: "loan",
           age: orderItem.age,
           customer: order.customer,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           deadline: orderItem.info.to,
           viewableFor: [userDetail.blid],
           blid: orderItem.blid,
@@ -578,6 +595,8 @@ describe("OrderToCustomerItemGenerator", () => {
           type: "loan",
           age: orderItem2.age,
           customer: order.customer,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           deadline: orderItem2.info.to,
           viewableFor: [userDetail.blid],
           blid: orderItem2.blid,
@@ -703,6 +722,8 @@ describe("OrderToCustomerItemGenerator", () => {
           type: "loan",
           age: orderItem.age,
           customer: order.customer,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           deadline: orderItem.info.to,
           viewableFor: [userDetail.blid],
           blid: orderItem.blid,
@@ -732,6 +753,8 @@ describe("OrderToCustomerItemGenerator", () => {
           type: "rent",
           age: orderItem2.age,
           customer: order.customer,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           deadline: orderItem2.info.to,
           viewableFor: [userDetail.blid],
           blid: orderItem2.blid,
@@ -761,6 +784,8 @@ describe("OrderToCustomerItemGenerator", () => {
           type: "partly-payment",
           age: orderItem3.age,
           customer: order.customer,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           deadline: orderItem3.info.to,
           viewableFor: [userDetail.blid],
           blid: orderItem3.blid,
@@ -771,7 +796,8 @@ describe("OrderToCustomerItemGenerator", () => {
             handoutEmployee: order.employee,
             time: today,
           },
-          returned: false,
+          returned: false, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           amountLeftToPay: orderItem3["info"]["amountLeftToPay"],
           totalAmount: orderItem3.amount,
           orders: [order.id],

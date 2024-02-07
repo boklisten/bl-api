@@ -25,6 +25,8 @@ describe("OrderItemExtendValidator", () => {
   );
 
   let testOrder: Order;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testItem: Item;
   let testBranch: Branch;
   let testCustomerItem: CustomerItem;
@@ -38,14 +40,22 @@ describe("OrderItemExtendValidator", () => {
     });
 
     it('should reject if orderItem.type is not "extend"', () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testOrder.orderItems[0].type = "rent";
       return expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0]),
       ).to.be.rejectedWith(BlError, /orderItem.type "rent" is not "extend"/);
     });
 
     it("should reject if orderItem.info.periodType is not allowed at branch", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testOrder.orderItems[0].info["periodType"] = "year";
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testBranch.paymentInfo.extendPeriods = [
         {
           type: "semester",
@@ -56,6 +66,8 @@ describe("OrderItemExtendValidator", () => {
       ];
 
       return expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0]),
       ).to.be.rejectedWith(
         BlError,
@@ -64,7 +76,11 @@ describe("OrderItemExtendValidator", () => {
     });
 
     it("should reject if orderItem.info.numberOfPeriods is greater than the maxNumberOfPeriods on branch", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testOrder.orderItems[0].info["numberOfPeriods"] = 3;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testBranch.paymentInfo.extendPeriods = [
         {
           type: "semester",
@@ -76,17 +92,27 @@ describe("OrderItemExtendValidator", () => {
     });
 
     it("should reject if orderItem.info is not defined", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testOrder.orderItems[0].info = null;
 
       return expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0]),
       ).to.be.rejectedWith(BlError, /orderItem.info is not defined/);
     });
 
     it("should reject if orderItem.customerItem is not defined", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testOrder.orderItems[0].info.customerItem = null;
 
       return expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0]),
       ).to.be.rejectedWith(
         BlError,
@@ -96,6 +122,8 @@ describe("OrderItemExtendValidator", () => {
 
     it("should reject when customerItem have been extended to many times", () => {
       testCustomerItem.id = "maxExtendedCustomerItem";
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testBranch.paymentInfo.extendPeriods = [
         {
           type: "semester",
@@ -118,11 +146,13 @@ describe("OrderItemExtendValidator", () => {
           periodType: "semester",
           time: new Date(),
         },
-      ];
-
+      ]; // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testOrder.orderItems[0].info.customerItem = "maxExtendedCustomerItem";
 
       return expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         orderItemExtendValidator.validate(testBranch, testOrder.orderItems[0]),
       ).to.be.rejectedWith(
         BlError,

@@ -25,8 +25,8 @@ export class DbQueryObjectIdFilter {
       for (const param in query) {
         if (validStringParams.includes(param)) {
           if (Array.isArray(query[param])) {
-            const valueArr = [];
-            query[param].forEach((paramValue) => {
+            const valueArr: (string | Types.ObjectId)[] = [];
+            query[param].forEach((paramValue: string) => {
               valueArr.push(this.getStringParamValue(paramValue));
               valueArr.push(this.getObjectIdParamValue(paramValue));
             });
@@ -58,6 +58,8 @@ export class DbQueryObjectIdFilter {
 
       throw new Error(
         "could not parse the object-id parameters in query, reason: " +
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           error.message,
       );
     }
@@ -81,11 +83,9 @@ export class DbQueryObjectIdFilter {
     );
   }
 
-  private validateStringParam(param: string): boolean {
+  private validateStringParam(param?: string): boolean {
     return (
-      param &&
-      new Types.ObjectId(param).toString() === param &&
-      param.length > 0
+      (param?.length ?? 0) > 0 && new Types.ObjectId(param).toString() === param
     );
   }
 }

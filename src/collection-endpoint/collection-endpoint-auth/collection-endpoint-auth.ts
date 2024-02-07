@@ -2,6 +2,8 @@ import { isNullOrUndefined } from "util";
 
 import { AccessToken, BlError } from "@boklisten/bl-model";
 import { NextFunction, Request, Response } from "express";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import passport from "passport";
 
 import { BlEndpointRestriction } from "../../collections/bl-collection";
@@ -19,7 +21,8 @@ export class CollectionEndpointAuth {
       if (restriction || !isNullOrUndefined(req.headers["authorization"])) {
         // it is a restriction on this endpoint and authentication is required, also try if there are sent with a auth header
         passport.authenticate(
-          this._authStrategy,
+          this._authStrategy, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           (err, tokens: { accessToken: AccessToken }) => {
             try {
               this.validateAuth(restriction, tokens.accessToken);

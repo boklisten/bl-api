@@ -31,8 +31,12 @@ export class BranchBookingTimesOperation implements Operation {
 
   async run(
     blApiRequest: BlApiRequest,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     req?: Request,
     res?: Response,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next?: NextFunction,
   ): Promise<boolean> {
@@ -66,6 +70,8 @@ export class BranchBookingTimesOperation implements Operation {
     ];
 
     try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       bookingTimes = await this.bookingStorage.aggregate(aggregation);
     } catch (e) {
       console.log("could not handle", e);
@@ -83,7 +89,11 @@ export class BranchBookingTimesOperation implements Operation {
         };
       });
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this.resHandler.sendResponse(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         res,
         new BlapiResponse([cleanedBookingTimes]),
       );

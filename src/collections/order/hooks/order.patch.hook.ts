@@ -13,6 +13,8 @@ export class OrderPatchHook extends Hook {
   private orderPlacedHandler: OrderPlacedHandler;
 
   constructor(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     orderStorage?: BlDocumentStorage<Order>,
     orderValidator?: OrderValidator,
@@ -27,8 +29,7 @@ export class OrderPatchHook extends Hook {
   }
 
   override before(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    body: any,
+    body: unknown,
     accessToken: AccessToken,
     id: string,
   ): Promise<boolean> {
@@ -59,7 +60,7 @@ export class OrderPatchHook extends Hook {
     const order = orders[0];
 
     return new Promise((resolve, reject) => {
-      if (order.placed) {
+      if (order?.placed) {
         this.orderPlacedHandler
           .placeOrder(order, accessToken)
           .then((placedOrder) => {
@@ -72,12 +73,16 @@ export class OrderPatchHook extends Hook {
           });
       } else {
         this.orderValidator
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           .validate(order)
           .then(() => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             resolve([order]);
           })
           .catch((validationError: BlError) => {
-            if (order.placed) {
+            if (order?.placed) {
               this.orderStorage
                 .update(
                   order.id,

@@ -63,6 +63,8 @@ describe("BlErrorHandler", () => {
 
       const errorLog = errorLogStorageAddSpy.lastCall.args[0];
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       return expect(errorLog.store[0].value.age).to.eql(10);
     });
   });

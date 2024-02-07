@@ -22,6 +22,8 @@ describe("DibsPaymentService", () => {
     httpHandler,
   );
   let testOrder: Order;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   let testDibsEasyOrder: DibsEasyOrder;
   const testUser = {} as any;
 
@@ -83,6 +85,8 @@ describe("DibsPaymentService", () => {
 
   describe("#orderToDibsEasyOrder", () => {
     it("should throw error if order.id is not defined", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testOrder.id = null;
 
       expect(() => {
@@ -109,7 +113,11 @@ describe("DibsPaymentService", () => {
     });
 
     it("should return a total amount of 10000 when item costs 100kr", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testOrder.orderItems[0].amount = 100;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       testOrder.orderItems[0].unitPrice = 100;
       const deo: DibsEasyOrder = dibsPaymentService.orderToDibsEasyOrder(
         testUser,
@@ -131,6 +139,8 @@ describe("DibsPaymentService", () => {
     context("dibsEasyOrder.items should be valid", () => {
       it('should have name of "signatur 3"', () => {
         const title = "signatur 3";
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         testOrder.orderItems[0].title = title;
 
         const deo = dibsPaymentService.orderToDibsEasyOrder(
@@ -138,11 +148,17 @@ describe("DibsPaymentService", () => {
           testOrder,
         );
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         expect(deo.order.items[0].name).to.eql(title);
       });
 
       it("should have grossTotalAmount of 15000", () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         testOrder.orderItems[0].amount = 150;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         testOrder.orderItems[0].unitPrice = 150;
         testOrder.amount = 150;
         const deo = dibsPaymentService.orderToDibsEasyOrder(
@@ -150,12 +166,20 @@ describe("DibsPaymentService", () => {
           testOrder,
         );
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         expect(deo.order.items[0].grossTotalAmount).to.eql(15000);
       });
 
       it("should have taxAmount equal to 5000", () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         testOrder.orderItems[0].unitPrice = 100;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         testOrder.orderItems[0].taxRate = 0.5;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         testOrder.orderItems[0].taxAmount = 50;
 
         const deo = dibsPaymentService.orderToDibsEasyOrder(
@@ -163,11 +187,17 @@ describe("DibsPaymentService", () => {
           testOrder,
         );
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         expect(deo.order.items[0].taxAmount).to.eql(5000);
       });
 
       it("should have taxRate equal to 2500", () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         testOrder.orderItems[0].unitPrice = 100;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         testOrder.orderItems[0].taxRate = 0.25;
 
         const deo = dibsPaymentService.orderToDibsEasyOrder(
@@ -175,6 +205,8 @@ describe("DibsPaymentService", () => {
           testOrder,
         );
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         expect(deo.order.items[0].taxRate).to.eql(2500);
       });
     });
@@ -216,7 +248,8 @@ describe("DibsPaymentService", () => {
   });
 
   sinon
-    .stub(httpHandler, "get")
+    .stub(httpHandler, "get") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     .callsFake((url: string, authorization?: string) => {
       if (!httpHandlerGetSuccess) {
         return Promise.reject(new BlError("could not get resource"));
@@ -244,6 +277,8 @@ describe("DibsPaymentService", () => {
       dibsPaymentService
         .fetchDibsPaymentData("dibsPaymentId1")
         .catch((err: BlError) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           expect(err.errorStack[0].getMsg()).to.be.eq(
             "dibs response did not include payment information",
           );
