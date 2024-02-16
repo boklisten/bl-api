@@ -83,6 +83,7 @@ export const invoiceSchema = new Schema<Invoice>({
         vat: Number,
         discount: Number,
       },
+      totalIncludingFee: Number,
     },
     required: true,
   },
