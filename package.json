@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev ./src/index.ts",
     "build": "tsc -p tsconfig.build.json",
-    "serve": "node ./dist/src/index.js",
+    "serve": "node ./dist/index.js",
     "prettier": "prettier --write . --ignore-path=.gitignore",
     "prettier:check": "prettier --check . --ignore-path=.gitignore",
     "lint": "eslint .",
