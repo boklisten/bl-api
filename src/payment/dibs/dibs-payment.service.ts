@@ -37,7 +37,7 @@ export class DibsPaymentService {
           dibsEasyOrder,
           process.env["DIBS_SECRET_KEY"],
         )
-        .then((responseData: string) => {
+        .then((responseData) => {
           if (responseData) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore

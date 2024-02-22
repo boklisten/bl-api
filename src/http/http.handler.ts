@@ -9,7 +9,7 @@ const request = require("request");
 const rp = require("request-promise");
 
 export class HttpHandler {
-  post(url: string, data: unknown, authorization?: string): Promise<string> {
+  post(url: string, data: unknown, authorization?: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
       const options = {
         url: url,
@@ -32,7 +32,7 @@ export class HttpHandler {
 
         if (res && res.statusCode) {
           if (res.statusCode == 200 || res.statusCode === 201) {
-            return resolve(String(body));
+            return resolve(body);
           }
 
           logger.verbose(`<-R ERROR ${err}`);
