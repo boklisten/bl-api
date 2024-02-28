@@ -37,7 +37,6 @@ export class OrderPatchHook extends Hook {
     accessToken: AccessToken,
     id: string,
   ): Promise<boolean> {
-    console.log("ORDER PATCH HOOK");
     if (!body) {
       return Promise.reject(new BlError("body not defined"));
     }

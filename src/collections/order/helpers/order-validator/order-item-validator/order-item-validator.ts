@@ -151,18 +151,29 @@ export class OrderItemValidator {
 
   private validateDeadlines(orderItems: OrderItem[]) {
     const now = new Date();
+    const yesterday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 1,
+    );
     const twoYearsFromNow = new Date(
       now.getFullYear() + 2,
       now.getMonth(),
       now.getDate(),
     );
     const hasExpiredDeadlines = orderItems.some((item) => {
-      const deadline = new Date(item.info?.to ?? "");
-      return now > deadline;
+      if (!item.info?.to) {
+        return false;
+      }
+      const deadline = new Date(item.info.to);
+      return yesterday > deadline;
     });
 
     const hasDeadlinesTooFarInTheFuture = orderItems.some((item) => {
-      const deadline = new Date(item.info?.to ?? "");
+      if (!item.info?.to) {
+        return false;
+      }
+      const deadline = new Date(item.info.to);
       return deadline > twoYearsFromNow;
     });
 
