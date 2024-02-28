@@ -332,7 +332,7 @@ describe("OrderItemValidator", () => {
         .eventually.be.fulfilled;
     });
 
-    it("should fulfil if deadline is more than two years into the future and user is admin", () => {
+    it("should fulfill if deadline is more than two years into the future and user is admin", () => {
       const deadline = new Date();
       deadline.setFullYear(deadline.getFullYear() + 2);
       deadline.setDate(deadline.getDate() + 1);
