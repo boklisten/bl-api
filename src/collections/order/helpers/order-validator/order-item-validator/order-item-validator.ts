@@ -46,8 +46,15 @@ export class OrderItemValidator {
       orderItemPartlyPaymentValidator ?? new OrderItemPartlyPaymentValidator();
   }
 
-  public async validate(branch: Branch, order: Order): Promise<boolean> {
+  public async validate(
+    branch: Branch,
+    order: Order,
+    isAdmin: boolean,
+  ): Promise<boolean> {
     try {
+      if (!isAdmin) {
+        this.validateDeadlines(order.orderItems ?? []);
+      }
       await this.orderItemFieldValidator.validate(order);
       this.validateAmount(order);
 
@@ -140,5 +147,44 @@ export class OrderItemValidator {
     }
 
     return true;
+  }
+
+  private validateDeadlines(orderItems: OrderItem[]) {
+    const now = new Date();
+    const yesterday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 1,
+    );
+    const twoYearsFromNow = new Date(
+      now.getFullYear() + 2,
+      now.getMonth(),
+      now.getDate(),
+    );
+    const hasExpiredDeadlines = orderItems.some((item) => {
+      if (!item.info?.to) {
+        return false;
+      }
+      const deadline = new Date(item.info.to);
+      return yesterday > deadline;
+    });
+
+    const hasDeadlinesTooFarInTheFuture = orderItems.some((item) => {
+      if (!item.info?.to) {
+        return false;
+      }
+      const deadline = new Date(item.info.to);
+      return deadline > twoYearsFromNow;
+    });
+
+    if (hasExpiredDeadlines) {
+      throw new BlError("orderItem deadlines must be in the future").code(809);
+    }
+
+    if (hasDeadlinesTooFarInTheFuture) {
+      throw new BlError(
+        "orderItem deadlines must less than two years into the future",
+      ).code(810);
+    }
   }
 }

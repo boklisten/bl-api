@@ -170,7 +170,7 @@ export class MatchTransferItemOperation implements Operation {
       receiverOrder,
       new SystemUser(),
     );
-    await orderValidator.validate(placedReceiverOrder);
+    await orderValidator.validate(placedReceiverOrder, false);
 
     const orderMovedToHandler = new OrderItemMovedFromOrderHandler();
     await orderMovedToHandler.updateOrderItems(placedReceiverOrder);
@@ -203,7 +203,7 @@ export class MatchTransferItemOperation implements Operation {
         senderOrder,
         new SystemUser(),
       );
-      await orderValidator.validate(placedSenderOrder);
+      await orderValidator.validate(placedSenderOrder, false);
     }
 
     await customerItemStorage.update(

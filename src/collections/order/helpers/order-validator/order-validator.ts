@@ -45,7 +45,7 @@ export class OrderValidator {
       : new OrderUserDetailValidator();
   }
 
-  public async validate(order: Order): Promise<boolean> {
+  public async validate(order: Order, isAdmin: boolean): Promise<boolean> {
     try {
       if (this.mustHaveCustomer(order)) {
         await this.orderUserDetailValidator.validate(order);
@@ -54,7 +54,7 @@ export class OrderValidator {
       await this.orderFieldValidator.validate(order);
       const branch = await this.branchStorage.get(order.branch as string);
 
-      await this.orderItemValidator.validate(branch, order);
+      await this.orderItemValidator.validate(branch, order, isAdmin);
       await this.branchValidator.validate(order);
       await this.orderPlacedValidator.validate(order);
     } catch (e) {

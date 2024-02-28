@@ -1,5 +1,6 @@
 import { AccessToken, BlError, Order, UserDetail } from "@boklisten/bl-model";
 
+import { PermissionService } from "../../../auth/permission/permission.service";
 import { Hook } from "../../../hook/hook";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
@@ -11,6 +12,7 @@ export class OrderPatchHook extends Hook {
   private orderValidator: OrderValidator;
   private orderStorage: BlDocumentStorage<Order>;
   private orderPlacedHandler: OrderPlacedHandler;
+  private permissionService: PermissionService;
 
   constructor(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -19,6 +21,7 @@ export class OrderPatchHook extends Hook {
     orderStorage?: BlDocumentStorage<Order>,
     orderValidator?: OrderValidator,
     orderPlacedHandler?: OrderPlacedHandler,
+    permissionService?: PermissionService,
   ) {
     super();
     this.orderStorage =
@@ -26,6 +29,7 @@ export class OrderPatchHook extends Hook {
       new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
     this.orderValidator = orderValidator ?? new OrderValidator();
     this.orderPlacedHandler = orderPlacedHandler ?? new OrderPlacedHandler();
+    this.permissionService = permissionService ?? new PermissionService();
   }
 
   override before(
@@ -56,6 +60,10 @@ export class OrderPatchHook extends Hook {
     if (!accessToken) {
       return Promise.reject(new BlError("accessToken not defined"));
     }
+    const isAdmin = this.permissionService.isPermissionEqualOrOver(
+      accessToken.permission,
+      "admin",
+    );
 
     const order = orders[0];
 
@@ -75,7 +83,7 @@ export class OrderPatchHook extends Hook {
         this.orderValidator
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          .validate(order)
+          .validate(order, isAdmin)
           .then(() => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore

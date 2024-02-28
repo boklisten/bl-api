@@ -109,23 +109,22 @@ describe("OrderValidator", () => {
       // @ts-ignore
       testOrder.amount = undefined;
       return expect(
-        orderValidator.validate(testOrder),
+        orderValidator.validate(testOrder, false),
       ).to.eventually.be.rejectedWith(BlError, /order.amount is undefined/);
     });
 
     it("should reject if branch is not found", () => {
       testOrder.branch = "notFoundBranch";
 
-      return expect(orderValidator.validate(testOrder)).to.be.rejectedWith(
-        BlError,
-        "not found",
-      );
+      return expect(
+        orderValidator.validate(testOrder, false),
+      ).to.be.rejectedWith(BlError, "not found");
     });
 
     it("should reject if orderItems is empty or undefined", () => {
       testOrder.orderItems = [];
       return expect(
-        orderValidator.validate(testOrder),
+        orderValidator.validate(testOrder, false),
       ).to.eventually.be.rejectedWith(
         BlError,
         /order.orderItems is empty or undefined/,
@@ -137,7 +136,7 @@ describe("OrderValidator", () => {
         orderItemShouldResolve = false;
 
         return expect(
-          orderValidator.validate(testOrder),
+          orderValidator.validate(testOrder, false),
         ).to.eventually.be.rejectedWith(BlError, /orderItems not valid/);
       });
     });
@@ -147,7 +146,7 @@ describe("OrderValidator", () => {
         orderPlacedShouldResolve = false;
 
         return expect(
-          orderValidator.validate(testOrder),
+          orderValidator.validate(testOrder, false),
         ).to.eventually.be.rejectedWith(
           BlError,
           /validation of order.placed failed/,
@@ -159,7 +158,7 @@ describe("OrderValidator", () => {
       it("should reject with error", () => {
         branchValidatorShouldResolve = false;
         return expect(
-          orderValidator.validate(testOrder),
+          orderValidator.validate(testOrder, false),
         ).to.eventually.be.rejectedWith(BlError, /validation of branch failed/);
       });
     });
@@ -168,10 +167,9 @@ describe("OrderValidator", () => {
       it("should reject with error", () => {
         orderUserDetailValidatorShouldResolve = false;
 
-        return expect(orderValidator.validate(testOrder)).to.be.rejectedWith(
-          BlError,
-          /validation of UserDetail failed/,
-        );
+        return expect(
+          orderValidator.validate(testOrder, false),
+        ).to.be.rejectedWith(BlError, /validation of UserDetail failed/);
       });
     });
   });

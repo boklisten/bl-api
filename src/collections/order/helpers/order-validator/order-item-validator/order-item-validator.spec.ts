@@ -62,6 +62,9 @@ describe("OrderItemValidator", () => {
     return Promise.resolve({} as Item);
   });
 
+  const legalDeadline = new Date();
+  legalDeadline.setFullYear(legalDeadline.getFullYear() + 1);
+
   beforeEach(() => {
     testOrder = {
       id: "order1",
@@ -78,7 +81,7 @@ describe("OrderItemValidator", () => {
           type: "rent",
           info: {
             from: new Date(),
-            to: new Date(),
+            to: legalDeadline,
             numberOfPeriods: 1,
             periodType: "semester",
           },
@@ -135,7 +138,7 @@ describe("OrderItemValidator", () => {
           testOrder.orderItems[0].amount = 250;
 
           return expect(
-            orderItemValidator.validate(testBranch, testOrder),
+            orderItemValidator.validate(testBranch, testOrder, false),
           ).to.be.rejectedWith(
             BlError,
             /order.amount is "500" but total of orderItems amount is "250"/,
@@ -149,7 +152,7 @@ describe("OrderItemValidator", () => {
           testOrder.orderItems[0].amount = 780;
 
           return expect(
-            orderItemValidator.validate(testBranch, testOrder),
+            orderItemValidator.validate(testBranch, testOrder, false),
           ).to.be.rejectedWith(
             BlError,
             /order.amount is "100" but total of orderItems amount is "780"/,
@@ -168,13 +171,16 @@ describe("OrderItemValidator", () => {
           unitPrice: 100,
           taxRate: 0.25,
           taxAmount: 25, // this should be (unitPrice * taxRate)
+          info: {
+            to: legalDeadline,
+          },
         },
       ];
 
       testOrder.amount = 100;
 
       return expect(
-        orderItemValidator.validate(testBranch, testOrder),
+        orderItemValidator.validate(testBranch, testOrder, false),
       ).to.be.rejectedWith(
         BlError,
         /orderItem.amount "100" is not equal to orderItem.unitPrice "100" \+ orderItem.taxAmount "25"/,
@@ -191,13 +197,16 @@ describe("OrderItemValidator", () => {
           unitPrice: 100,
           taxRate: 0.25,
           taxAmount: 25, // this should be (unitPrice * taxRate)
+          info: {
+            to: legalDeadline,
+          },
         },
       ];
 
       testOrder.amount = 160;
 
       return expect(
-        orderItemValidator.validate(testBranch, testOrder),
+        orderItemValidator.validate(testBranch, testOrder, false),
       ).to.be.rejectedWith(
         BlError,
         /orderItem.amount "160" is not equal to orderItem.unitPrice "100" \+ orderItem.taxAmount "25"/,
@@ -214,13 +223,16 @@ describe("OrderItemValidator", () => {
           unitPrice: 100,
           taxRate: 0.25,
           taxAmount: 0, // this should be (unitPrice * taxRate)
+          info: {
+            to: legalDeadline,
+          },
         },
       ];
 
       testOrder.amount = 100;
 
       return expect(
-        orderItemValidator.validate(testBranch, testOrder),
+        orderItemValidator.validate(testBranch, testOrder, false),
       ).to.be.rejectedWith(
         BlError,
         /orderItem.taxAmount "0" is not equal to orderItem.unitPrice "100" \* orderItem.taxRate "0.25"/,
@@ -237,13 +249,110 @@ describe("OrderItemValidator", () => {
           unitPrice: 100,
           taxRate: 0.25,
           taxAmount: 25,
+          info: {
+            to: legalDeadline,
+          },
         },
       ];
 
       testOrder.amount = 125;
 
-      return expect(orderItemValidator.validate(testBranch, testOrder)).to.be
-        .fulfilled;
+      return expect(orderItemValidator.validate(testBranch, testOrder, false))
+        .to.be.fulfilled;
+    });
+
+    it("should reject if deadline is in the past and user is not admin", () => {
+      testOrder.orderItems = [
+        {
+          type: "rent",
+          item: "item1",
+          title: "signatur 3",
+          amount: 125,
+          unitPrice: 100,
+          taxRate: 0.25,
+          taxAmount: 25,
+          info: {
+            to: new Date(1234567891011), // Friday, February 13th 2009
+          },
+        },
+      ];
+      testOrder.amount = 125;
+      return expect(
+        orderItemValidator.validate(testBranch, testOrder, false),
+      ).to.eventually.be.rejectedWith(
+        BlError,
+        /orderItem deadlines must be in the future/,
+      );
+    });
+
+    it("should reject if deadline is more than two years into the future and user is not admin", () => {
+      const deadline = new Date();
+      deadline.setFullYear(deadline.getFullYear() + 2);
+      deadline.setDate(deadline.getDate() + 1);
+      testOrder.orderItems = [
+        {
+          type: "rent",
+          item: "item1",
+          title: "signatur 3",
+          amount: 125,
+          unitPrice: 100,
+          taxRate: 0.25,
+          taxAmount: 25,
+          info: {
+            to: deadline,
+          },
+        },
+      ];
+      testOrder.amount = 125;
+      return expect(
+        orderItemValidator.validate(testBranch, testOrder, false),
+      ).to.eventually.be.rejectedWith(
+        BlError,
+        /orderItem deadlines must less than two years into the future/,
+      );
+    });
+
+    it("should fulfill if deadline is in the past and user is admin", () => {
+      testOrder.orderItems = [
+        {
+          type: "rent",
+          item: "item1",
+          title: "signatur 3",
+          amount: 125,
+          unitPrice: 100,
+          taxRate: 0.25,
+          taxAmount: 25,
+          info: {
+            to: new Date(1234567891011), // Friday, February 13th 2009
+          },
+        },
+      ];
+      testOrder.amount = 125;
+      return expect(orderItemValidator.validate(testBranch, testOrder, true)).to
+        .eventually.be.fulfilled;
+    });
+
+    it("should fulfill if deadline is more than two years into the future and user is admin", () => {
+      const deadline = new Date();
+      deadline.setFullYear(deadline.getFullYear() + 2);
+      deadline.setDate(deadline.getDate() + 1);
+      testOrder.orderItems = [
+        {
+          type: "rent",
+          item: "item1",
+          title: "signatur 3",
+          amount: 125,
+          unitPrice: 100,
+          taxRate: 0.25,
+          taxAmount: 25,
+          info: {
+            to: deadline,
+          },
+        },
+      ];
+      testOrder.amount = 125;
+      return expect(orderItemValidator.validate(testBranch, testOrder, true)).to
+        .eventually.be.fulfilled;
     });
   });
 });

@@ -168,6 +168,16 @@ export class BlErrorHandler {
           "Kan ikke sende e-post-påminnelse med egendefinert tekst, bare SMS";
         blapiErrorResponse.httpStatus = 400;
         break;
+      case 809:
+        blapiErrorResponse.msg =
+          "Noen av bøkene i handlekurven har utgått frist og kan derfor ikke deles ut/samles inn. Ta kontakt med administrator for mer informasjon";
+        blapiErrorResponse.httpStatus = 400;
+        break;
+      case 810:
+        blapiErrorResponse.msg =
+          "Noen av bøkene i handlekurven har frist mer enn to år i fremtiden og kan derfor ikke deles ut/samles inn. Ta kontakt med administrator for mer informasjon";
+        blapiErrorResponse.httpStatus = 400;
+        break;
     }
 
     return blapiErrorResponse;
