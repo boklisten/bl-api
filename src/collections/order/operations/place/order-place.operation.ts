@@ -14,7 +14,10 @@ import {
 } from "@boklisten/bl-model";
 import { NextFunction, Request, Response } from "express";
 
-import { SystemUser } from "../../../../auth/permission/permission.service";
+import {
+  PermissionService,
+  SystemUser,
+} from "../../../../auth/permission/permission.service";
 import { Operation } from "../../../../operation/operation";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
 import { BlApiRequest } from "../../../../request/bl-api-request";
@@ -31,6 +34,7 @@ import { orderSchema } from "../../order.schema";
 
 export class OrderPlaceOperation implements Operation {
   private _queryBuilder: SEDbQueryBuilder;
+  private _permissionService: PermissionService;
 
   constructor(
     private _resHandler?: SEResponseHandler,
@@ -79,6 +83,7 @@ export class OrderPlaceOperation implements Operation {
     );
 
     this._queryBuilder = new SEDbQueryBuilder();
+    this._permissionService = new PermissionService();
   }
 
   private filterOrdersByAlreadyOrdered(orders: Order[]) {
@@ -440,9 +445,16 @@ export class OrderPlaceOperation implements Operation {
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } as any);
 
+    const isAdmin =
+      blApiRequest.user?.permission !== undefined &&
+      this._permissionService.isPermissionEqualOrOver(
+        blApiRequest.user?.permission,
+        "admin",
+      );
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    await this._orderValidator.validate(order);
+    await this._orderValidator.validate(order, isAdmin);
 
     if (customerItems && customerItems.length > 0) {
       try {

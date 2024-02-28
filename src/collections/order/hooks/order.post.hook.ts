@@ -1,6 +1,7 @@
 import { BlError, Order, UserDetail, AccessToken } from "@boklisten/bl-model";
 
 import { OrderHookBefore } from "./order-hook-before";
+import { PermissionService } from "../../../auth/permission/permission.service";
 import { Hook } from "../../../hook/hook";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
@@ -13,12 +14,14 @@ export class OrderPostHook extends Hook {
   private orderHookBefore: OrderHookBefore;
   private userDetailStorage: BlDocumentStorage<UserDetail>;
   private userDetailHelper: UserDetailHelper;
+  private permissionService: PermissionService;
 
   constructor(
     orderValidator?: OrderValidator,
     orderHookBefore?: OrderHookBefore,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     userDetailHelper?: UserDetailHelper,
+    permissionService?: PermissionService,
   ) {
     super();
     this.orderValidator = orderValidator ?? new OrderValidator();
@@ -27,6 +30,7 @@ export class OrderPostHook extends Hook {
       userDetailStorage ??
       new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
     this.userDetailHelper = userDetailHelper ?? new UserDetailHelper();
+    this.permissionService = permissionService ?? new PermissionService();
   }
 
   public override async before(
@@ -71,17 +75,22 @@ export class OrderPostHook extends Hook {
       return Promise.reject(new BlError("orderIds included more than one id"));
     }
 
-    const order = orders[0]; // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    const order = orders[0];
+    const isAdmin = this.permissionService.isPermissionEqualOrOver(
+      accessToken.permission,
+      "admin",
+    );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return this.validateOrder(order).then(() => {
+    return this.validateOrder(order, isAdmin).then(() => {
       return [order];
     });
   }
 
-  private validateOrder(order: Order): Promise<Order> {
+  private validateOrder(order: Order, isAdmin: boolean): Promise<Order> {
     return new Promise((resolve, reject) => {
       this.orderValidator
-        .validate(order)
+        .validate(order, isAdmin)
         .then(() => {
           if (order.placed) {
             return reject(
