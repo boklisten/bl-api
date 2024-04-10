@@ -9,6 +9,8 @@ export class CollectionEndpointGetId<T extends BlDocument>
   implements CollectionEndpointOnRequest<T>
 {
   public override onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return new Promise((resolve, reject) => {
       this._documentStorage // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -20,5 +22,11 @@ export class CollectionEndpointGetId<T extends BlDocument>
           reject(blError);
         });
     });
+  }
+
+  override async validateDocumentPermission(
+    blApiRequest: BlApiRequest,
+  ): Promise<BlApiRequest> {
+    return blApiRequest;
   }
 }

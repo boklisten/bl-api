@@ -61,4 +61,10 @@ export class CollectionEndpointGetAll<T extends BlDocument>
       );
     }
   }
+
+  override async validateDocumentPermission(
+    blApiRequest: BlApiRequest,
+  ): Promise<BlApiRequest> {
+    return blApiRequest;
+  }
 }

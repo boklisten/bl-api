@@ -74,6 +74,10 @@ export abstract class CollectionEndpointMethod<T extends BlDocument> {
 
   abstract onRequest(blApiRequest: BlApiRequest): Promise<T[]>;
 
+  abstract validateDocumentPermission(
+    blApiRequest: BlApiRequest,
+  ): Promise<BlApiRequest>;
+
   private createOperations(endpoint: BlEndpoint) {
     if (endpoint.operations) {
       for (const operation of endpoint.operations) {
@@ -113,8 +117,7 @@ export abstract class CollectionEndpointMethod<T extends BlDocument> {
           req.query,
         );
       })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .then((hookData?: any) => {
+      .then((hookData?: unknown) => {
         // this is the endpoint specific request handler
         let data = req.body;
 
@@ -122,12 +125,8 @@ export abstract class CollectionEndpointMethod<T extends BlDocument> {
           data = hookData;
         }
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         blApiRequest = {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          documentId: req.params.id,
+          documentId: req.params["id"],
           query: req.query,
           data: data,
           user: {
@@ -137,8 +136,9 @@ export abstract class CollectionEndpointMethod<T extends BlDocument> {
           },
         };
 
-        return this.onRequest(blApiRequest);
+        return this.validateDocumentPermission(blApiRequest);
       })
+      .then((blApiRequest: BlApiRequest) => this.onRequest(blApiRequest))
       .then((docs: T[]) =>
         this._collectionEndpointDocumentAuth.validate(
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment

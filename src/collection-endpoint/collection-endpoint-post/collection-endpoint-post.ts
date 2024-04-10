@@ -26,4 +26,10 @@ export class CollectionEndpointPost<T extends BlDocument>
       throw new BlError("could not add document").add(blError as BlError);
     }
   }
+
+  override async validateDocumentPermission(
+    blApiRequest: BlApiRequest,
+  ): Promise<BlApiRequest> {
+    return blApiRequest;
+  }
 }
