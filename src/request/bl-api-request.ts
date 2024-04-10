@@ -1,13 +1,14 @@
 import { UserPermission } from "@boklisten/bl-model";
 
 export class BlApiRequest {
-  documentId?: string;
+  documentId?: string | undefined;
   query?: unknown;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: any;
-  user?: {
-    id: string;
-    details: string;
-    permission: UserPermission;
-  };
+  data?: unknown;
+  user?:
+    | {
+        id: string;
+        details: string;
+        permission: UserPermission;
+      }
+    | undefined;
 }

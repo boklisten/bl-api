@@ -1,6 +1,4 @@
-import { BlError } from "@boklisten/bl-model";
-
-import { UserPermission } from "../user/user-permission";
+import { BlError, UserPermission } from "@boklisten/bl-model";
 
 export type JwtPayload = {
   iss: string;

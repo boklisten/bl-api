@@ -1,7 +1,5 @@
-import { isNullOrUndefined } from "util";
-
 import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 import { PermissionService } from "../../../../auth/permission/permission.service";
 import { Operation } from "../../../../operation/operation";
@@ -36,24 +34,14 @@ export class UserDetailPermissionOperation implements Operation {
 
   async run(
     blApiRequest: BlApiRequest,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    req?: Request,
+    _req?: Request,
     res?: Response,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction,
   ): Promise<boolean> {
-    if (
-      isNullOrUndefined(blApiRequest.data) ||
-      isNullOrUndefined(blApiRequest.data["permission"]) ||
-      !this._permissionService.isPermission(blApiRequest.data["permission"])
-    ) {
+    if (!this._permissionService.hasPermissionField(blApiRequest.data)) {
       throw new BlError("permission is not valid or not provided").code(701);
     }
 
-    const permissionChange = blApiRequest.data["permission"];
+    const permissionChange = blApiRequest.data.permission;
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

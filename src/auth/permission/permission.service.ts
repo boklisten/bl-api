@@ -11,7 +11,7 @@ export class SystemUser {
 }
 
 export class PermissionService {
-  private validPermissions = [
+  private validPermissions: UserPermission[] = [
     "customer",
     "employee",
     "manager",
@@ -19,8 +19,21 @@ export class PermissionService {
     "super",
   ];
 
-  public isPermission(permission: string): boolean {
-    return this.validPermissions.includes(permission);
+  public isPermission(permission: unknown): permission is UserPermission {
+    return (
+      typeof permission === "string" &&
+      this.validPermissions.includes(permission as UserPermission)
+    );
+  }
+  public hasPermissionField(
+    obj: unknown,
+  ): obj is { permission: UserPermission } {
+    return (
+      typeof obj === "object" &&
+      obj !== null &&
+      "permission" in obj &&
+      this.isPermission(obj.permission)
+    );
   }
 
   public getLowestPermission(

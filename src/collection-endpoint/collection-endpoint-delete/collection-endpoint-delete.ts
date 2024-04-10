@@ -1,4 +1,4 @@
-import { BlDocument } from "@boklisten/bl-model";
+import { BlDocument, BlError } from "@boklisten/bl-model";
 
 import { BlApiRequest } from "../../request/bl-api-request";
 import { CollectionEndpointMethod } from "../collection-endpoint-method";
@@ -8,8 +8,6 @@ export class CollectionEndpointDelete<T extends BlDocument>
   extends CollectionEndpointMethod<T>
   implements CollectionEndpointOnRequest<T>
 {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   override onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
     return (
       this._documentStorage
@@ -30,5 +28,21 @@ export class CollectionEndpointDelete<T extends BlDocument>
           throw blError;
         })
     );
+  }
+
+  override async validateDocumentPermission(
+    blApiRequest: BlApiRequest,
+  ): Promise<BlApiRequest> {
+    const doc = await this._documentStorage.get(blApiRequest.documentId ?? "");
+    if (
+      doc &&
+      blApiRequest.user?.permission === "customer" &&
+      doc.user?.id !== blApiRequest.user.id
+    ) {
+      throw new BlError(
+        `user "${blApiRequest.user?.id}" cannot delete document owned by ${doc.user?.id}`,
+      ).code(904);
+    }
+    return blApiRequest;
   }
 }

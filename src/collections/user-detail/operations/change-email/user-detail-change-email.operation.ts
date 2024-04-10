@@ -1,7 +1,7 @@
 import { isNullOrUndefined } from "util";
 
 import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import isEmail from "validator/lib/isEmail";
 
 import { PermissionService } from "../../../../auth/permission/permission.service";
@@ -43,15 +43,11 @@ export class UserDetailChangeEmailOperation implements Operation {
 
   async run(
     blApiRequest: BlApiRequest,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    req?: Request,
+    _req?: Request,
     res?: Response,
+  ): Promise<boolean> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction,
-  ): Promise<boolean> {
     const emailChange = blApiRequest.data["email"];
 
     this.validateEmail(emailChange);

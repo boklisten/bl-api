@@ -1,4 +1,4 @@
-import { BlDocument } from "@boklisten/bl-model";
+import { BlDocument, BlError } from "@boklisten/bl-model";
 
 import { BlApiRequest } from "../../request/bl-api-request";
 import { CollectionEndpointMethod } from "../collection-endpoint-method";
@@ -15,5 +15,21 @@ export class CollectionEndpointPut<T extends BlDocument>
     // @ts-ignore
     await this._documentStorage.put(blApiRequest.documentId, blApiRequest.data);
     return [];
+  }
+
+  override async validateDocumentPermission(
+    blApiRequest: BlApiRequest,
+  ): Promise<BlApiRequest> {
+    const doc = await this._documentStorage.get(blApiRequest.documentId ?? "");
+    if (
+      doc &&
+      blApiRequest.user?.permission === "customer" &&
+      doc.user?.id !== blApiRequest.user.id
+    ) {
+      throw new BlError(
+        `user "${blApiRequest.user?.id}" cannot put document owned by ${doc.user?.id}`,
+      ).code(904);
+    }
+    return blApiRequest;
   }
 }

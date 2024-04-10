@@ -1,4 +1,4 @@
-import { UserPermission } from "../../auth/user/user-permission";
+import { UserPermission } from "@boklisten/bl-model";
 
 export type User = {
   id: string;

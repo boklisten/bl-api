@@ -1,5 +1,5 @@
 import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
@@ -17,10 +17,6 @@ export class UserDetailValidOperation implements Operation {
   constructor(
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     resHandler?: SEResponseHandler,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    userDetailHelper?: UserDetailHelper,
   ) {
     this._userDetailStorage = userDetailStorage
       ? userDetailStorage
@@ -31,14 +27,8 @@ export class UserDetailValidOperation implements Operation {
 
   async run(
     blApiRequest: BlApiRequest,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    req?: Request,
+    _req?: Request,
     res?: Response,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction,
   ): Promise<boolean> {
     try {
       const userDetail = await this._userDetailStorage.get(

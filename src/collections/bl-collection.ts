@@ -1,4 +1,5 @@
 import { UserPermission } from "@boklisten/bl-model";
+import { Schema } from "mongoose";
 
 import { Hook } from "../hook/hook";
 import { Operation } from "../operation/operation";
@@ -31,8 +32,7 @@ export enum BlCollectionName {
 
 export interface BlCollection {
   collectionName: BlCollectionName; //the name determines the path to the collection like /api/vi/collectionName
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mongooseSchema: any; //the mongooseSchema for this collection
+  mongooseSchema: Schema; //the mongooseSchema for this collection
   documentPermission?: BlDocumentPermission;
   endpoints: BlEndpoint[]; //a list of the valid endpoints for this collection;
 }
