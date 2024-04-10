@@ -36,24 +36,6 @@ export class PermissionService {
     );
   }
 
-  public typeGuard<T>(
-    obj: unknown,
-    validator: (obj: unknown) => obj is T,
-  ): obj is T {
-    return validator(obj);
-  }
-  public hasField<T>(
-    obj: unknown,
-    validator: (p: unknown) => p is T,
-  ): obj is T {
-    return (
-      typeof obj === "object" &&
-      obj !== null &&
-      "permission" in obj &&
-      validator(obj)
-    );
-  }
-
   public getLowestPermission(
     userPermissions: UserPermission[],
   ): UserPermission {
