@@ -1,5 +1,5 @@
 import { BlapiResponse, UserDetail } from "@boklisten/bl-model";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 import { PermissionService } from "../../../../auth/permission/permission.service";
 import { Operation } from "../../../../operation/operation";
@@ -32,14 +32,8 @@ export class UserDetailReadPermissionOperation implements Operation {
 
   async run(
     blApiRequest: BlApiRequest,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    req?: Request,
+    _req?: Request,
     res?: Response,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    next?: NextFunction,
   ): Promise<boolean> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

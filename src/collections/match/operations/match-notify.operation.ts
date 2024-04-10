@@ -28,7 +28,9 @@ export class MatchNotifyOperation implements Operation {
   }
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
-    const message = blApiRequest.data.message;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const message = blApiRequest.data?.["message"];
     if (!message || typeof message !== "string") {
       throw new BlError("Message must be set");
     }

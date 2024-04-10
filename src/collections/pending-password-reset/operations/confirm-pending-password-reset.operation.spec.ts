@@ -91,6 +91,7 @@ describe("ConfirmPendingPasswordResetOperation", () => {
     });
 
     it("should reject if token does not match", async () => {
+      // @ts-ignore
       testBlApiRequest.data["resetToken"] = "notAValidToken";
 
       await expect(
@@ -102,6 +103,7 @@ describe("ConfirmPendingPasswordResetOperation", () => {
     });
 
     it("should reject if blApiRequest.data.newPassword is null, empty or undefined", async () => {
+      // @ts-ignore
       testBlApiRequest.data["newPassword"] = null;
 
       await expect(
@@ -113,6 +115,7 @@ describe("ConfirmPendingPasswordResetOperation", () => {
     });
 
     it("should reject if blApiRequest.data.newPassword is under length of 6", async () => {
+      // @ts-ignore
       testBlApiRequest.data["newPassword"] = "abcde";
 
       await expect(

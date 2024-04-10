@@ -10,9 +10,7 @@ export class CollectionEndpointGetAll<T extends BlDocument>
   extends CollectionEndpointMethod<T>
   implements CollectionEndpointOnRequest<T>
 {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  public override onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
+  public override async onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
     if (
       blApiRequest.query &&
       Object.getOwnPropertyNames(blApiRequest.query).length > 0 &&
@@ -38,14 +36,10 @@ export class CollectionEndpointGetAll<T extends BlDocument>
         );
       }
 
-      return this._documentStorage
-        .getByQuery(dbQuery, this._endpoint.nestedDocuments)
-        .then((docs: T[]) => {
-          return docs;
-        })
-        .catch((blError: BlError) => {
-          throw blError;
-        });
+      return await this._documentStorage.getByQuery(
+        dbQuery,
+        this._endpoint.nestedDocuments,
+      );
     } else {
       // if no query, give back all objects in collection
       let permission = null;

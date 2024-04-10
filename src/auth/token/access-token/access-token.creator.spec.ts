@@ -2,12 +2,11 @@ import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { AccessTokenCreator } from "./access-token.creator";
-import { UserPermission } from "../../user/user-permission";
-import { BlError } from "@boklisten/bl-model";
 import { RefreshTokenCreator } from "../refresh/refresh-token.creator";
 import { RefreshToken } from "../refresh/refresh-token";
 import { AccessToken } from "./access-token";
 import { TokenConfig } from "../token.config";
+import { BlError, UserPermission } from "@boklisten/bl-model";
 
 chai.use(chaiAsPromised);
 

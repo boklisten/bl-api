@@ -57,7 +57,9 @@ export class MatchTransferItemOperation implements Operation {
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
     let userFeedback;
-    const blid = blApiRequest?.data?.blid;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const blid = blApiRequest?.data?.["blid"];
     if (!blid || typeof blid !== "string" || blid.length === 0) {
       throw new BlError(
         "blid must be a string with length greater than 0",

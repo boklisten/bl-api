@@ -18,10 +18,7 @@ import { BlApiRequest } from "../request/bl-api-request";
 import { SEResponseHandler } from "../response/se.response.handler";
 import { BlDocumentStorage } from "../storage/blDocumentStorage";
 
-// eslint-disable-next-line
-declare let onRequest: any;
-
-export class CollectionEndpointMethod<T extends BlDocument> {
+export abstract class CollectionEndpointMethod<T extends BlDocument> {
   protected _collectionUri: string;
   protected _collectionEndpointAuth: CollectionEndpointAuth;
   protected _responseHandler: SEResponseHandler;
@@ -75,12 +72,7 @@ export class CollectionEndpointMethod<T extends BlDocument> {
     this.createOperations(this._endpoint);
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public onRequest(blApiRequest: BlApiRequest) {
-    return Promise.resolve([]);
-  }
+  abstract onRequest(blApiRequest: BlApiRequest): Promise<T[]>;
 
   private createOperations(endpoint: BlEndpoint) {
     if (endpoint.operations) {

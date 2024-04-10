@@ -8,8 +8,6 @@ export class CollectionEndpointGetId<T extends BlDocument>
   extends CollectionEndpointMethod<T>
   implements CollectionEndpointOnRequest<T>
 {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   public override onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this._documentStorage // eslint-disable-next-line @typescript-eslint/ban-ts-comment

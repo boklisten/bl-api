@@ -8,23 +8,22 @@ export class CollectionEndpointPost<T extends BlDocument>
   extends CollectionEndpointMethod<T>
   implements CollectionEndpointOnRequest<T>
 {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  override onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
-    return this._documentStorage
-      .add(blApiRequest.data, {
+  override async onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
+    if (blApiRequest.data == null || blApiRequest.user == null) {
+      throw new BlError("data is required for post operations").code(400);
+    }
+
+    try {
+      return [
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        id: blApiRequest.user.id,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        permission: blApiRequest.user.permission,
-      })
-      .then((doc: T) => {
-        return [doc];
-      })
-      .catch((blError) => {
-        throw new BlError("could not add document").add(blError);
-      });
+        await this._documentStorage.add(blApiRequest.data, {
+          id: blApiRequest.user.id,
+          permission: blApiRequest.user.permission,
+        }),
+      ];
+    } catch (blError) {
+      throw new BlError("could not add document").add(blError as BlError);
+    }
   }
 }
