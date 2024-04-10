@@ -536,4 +536,20 @@ export class EmailService implements MessengerService {
 
     await this._emailHandler.sendPasswordReset(emailSetting, passwordResetUri);
   }
+
+  public async requestGuardianSignature(
+    customerDetail: UserDetail,
+  ): Promise<void> {
+    const emailSetting: EmailSetting = {
+      toEmail: customerDetail.guardian?.email ?? "",
+      fromEmail: EMAIL_SETTINGS.types.guardianSignature.fromEmail,
+      subject: EMAIL_SETTINGS.types.guardianSignature.subject,
+      userId: customerDetail.id,
+      userFullName: customerDetail.name,
+    };
+    await this._emailHandler.sendGuardianSignatureRequest(
+      emailSetting,
+      EMAIL_SETTINGS.types.guardianSignature.path + customerDetail.id,
+    );
+  }
 }

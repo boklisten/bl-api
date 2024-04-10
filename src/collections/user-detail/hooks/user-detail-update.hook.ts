@@ -23,8 +23,16 @@ export class UserDetailUpdateHook extends Hook {
     if (!validateUserDetailUpdateType(body)) {
       throw new BlError("Invalid UserDetailUpdateType request body").code(701);
     }
-    const { name, address, postCity, dob, postCode, phone, emailConfirmed } =
-      body;
+    const {
+      name,
+      address,
+      postCity,
+      dob,
+      postCode,
+      phone,
+      emailConfirmed,
+      guardian,
+    } = body;
     if (emailConfirmed !== undefined && accessToken.permission === "customer") {
       throw new BlError(
         "bruker kan ikke endre egen e-post-bekreftet-status",
@@ -43,6 +51,7 @@ export class UserDetailUpdateHook extends Hook {
       ...(postCode !== undefined && { postCode }),
       ...(phone !== undefined && { phone }),
       ...(emailConfirmed !== undefined && { emailConfirmed }),
+      ...(guardian !== undefined && { guardian }),
     };
   }
 }
@@ -50,7 +59,13 @@ export class UserDetailUpdateHook extends Hook {
 export type UserDetailPatch = Partial<
   Pick<
     UserDetail,
-    "name" | "address" | "postCity" | "postCode" | "phone" | "emailConfirmed"
+    | "name"
+    | "address"
+    | "postCity"
+    | "postCode"
+    | "phone"
+    | "emailConfirmed"
+    | "guardian"
   > & { dob: string } // DOB is otherwise Date
 >;
 
@@ -75,7 +90,8 @@ const validateUserDetailUpdateType = (
     ] as const;
     return (
       stringKeys.every((key) => isTypeOrUndefined(key, "string")) &&
-      isTypeOrUndefined("emailConfirmed", "boolean")
+      isTypeOrUndefined("emailConfirmed", "boolean") &&
+      isTypeOrUndefined("guardian", "object")
     );
   } catch {
     return false;
