@@ -549,7 +549,9 @@ export class EmailService implements MessengerService {
     };
     await this._emailHandler.sendGuardianSignatureRequest(
       emailSetting,
-      EMAIL_SETTINGS.types.guardianSignature.path + customerDetail.id,
+      (process.env["CLIENT_URI"] ?? "localhost:4200/") +
+        EMAIL_SETTINGS.types.guardianSignature.path +
+        customerDetail.id,
     );
   }
 }
