@@ -10,7 +10,9 @@ export class CollectionEndpointPost<T extends BlDocument>
 {
   override async onRequest(blApiRequest: BlApiRequest): Promise<T[]> {
     if (blApiRequest.data == null || blApiRequest.user == null) {
-      throw new BlError("data is required for post operations").code(400);
+      throw new BlError("data and user is required for post operations").code(
+        701,
+      );
     }
 
     try {
