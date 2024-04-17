@@ -540,6 +540,9 @@ export class EmailService implements MessengerService {
   public async requestGuardianSignature(
     customerDetail: UserDetail,
   ): Promise<void> {
+    if (!customerDetail.guardian?.email) {
+      throw new Error("Guardian email is required");
+    }
     const emailSetting: EmailSetting = {
       toEmail: customerDetail.guardian?.email ?? "",
       fromEmail: EMAIL_SETTINGS.types.guardianSignature.fromEmail,
