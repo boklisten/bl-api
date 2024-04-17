@@ -1,8 +1,7 @@
-import { isNullOrUndefined } from "util";
-
 import { Branch, OrderItem, Item, BlError, Order } from "@boklisten/bl-model";
 
 import { OrderItemRentPeriodValidator } from "./order-item-rent-period-validator/order-item-rent-period-validator";
+import { isNullish } from "../../../../../../helper/typescript-helpers";
 import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../../../bl-collection";
 import { orderSchema } from "../../../../order.schema";
@@ -47,7 +46,7 @@ export class OrderItemRentValidator {
   }
 
   private validateOrderItemInfoFields(orderItem: OrderItem): boolean {
-    if (isNullOrUndefined(orderItem.info)) {
+    if (isNullish(orderItem.info)) {
       throw new BlError(
         'orderItem.info is not set when orderItem.type is "rent"',
       );

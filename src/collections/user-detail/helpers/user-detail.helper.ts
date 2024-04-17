@@ -1,7 +1,6 @@
-import { isNullOrUndefined } from "util";
-
 import { AccessToken, BlError, UserDetail } from "@boklisten/bl-model";
 
+import { isNullish } from "../../../helper/typescript-helpers";
 import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
@@ -66,7 +65,7 @@ export class UserDetailHelper {
 
     const userDetailUpdateObject = {};
 
-    if (isNullOrUndefined(userDetail.name) || userDetail.name.length <= 0) {
+    if (isNullish(userDetail.name) || userDetail.name.length <= 0) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       if (dibsUserDetail.firstName && dibsUserDetail.lastName) {
@@ -78,7 +77,7 @@ export class UserDetailHelper {
       }
     }
 
-    if (isNullOrUndefined(userDetail.phone) || userDetail.phone.length <= 0) {
+    if (isNullish(userDetail.phone) || userDetail.phone.length <= 0) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       if (dibsUserDetail.phoneNumber && dibsUserDetail.phoneNumber.number) {
@@ -88,10 +87,7 @@ export class UserDetailHelper {
       }
     }
 
-    if (
-      isNullOrUndefined(userDetail.address) ||
-      userDetail.address.length <= 0
-    ) {
+    if (isNullish(userDetail.address) || userDetail.address.length <= 0) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       if (dibsShippingAddress.addressLine1) {
@@ -108,10 +104,7 @@ export class UserDetailHelper {
       }
     }
 
-    if (
-      isNullOrUndefined(userDetail.postCity) ||
-      userDetail.postCity.length <= 0
-    ) {
+    if (isNullish(userDetail.postCity) || userDetail.postCity.length <= 0) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       if (dibsShippingAddress.city) {
@@ -121,10 +114,7 @@ export class UserDetailHelper {
       }
     }
 
-    if (
-      isNullOrUndefined(userDetail.postCode) ||
-      userDetail.postCode.length <= 0
-    ) {
+    if (isNullish(userDetail.postCode) || userDetail.postCode.length <= 0) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       if (dibsShippingAddress.postalCode) {
@@ -166,44 +156,35 @@ export class UserDetailHelper {
   public getInvalidUserDetailFields(userDetail: UserDetail) {
     const invalidFields = [];
 
-    if (isNullOrUndefined(userDetail.name) || userDetail.name.length <= 0) {
+    if (isNullish(userDetail.name) || userDetail.name.length <= 0) {
       invalidFields.push("name");
     }
 
-    if (
-      isNullOrUndefined(userDetail.address) ||
-      userDetail.address.length <= 0
-    ) {
+    if (isNullish(userDetail.address) || userDetail.address.length <= 0) {
       invalidFields.push("address");
     }
 
-    if (
-      isNullOrUndefined(userDetail.postCode) ||
-      userDetail.postCode.length <= 0
-    ) {
+    if (isNullish(userDetail.postCode) || userDetail.postCode.length <= 0) {
       invalidFields.push("postCode");
     }
 
-    if (
-      isNullOrUndefined(userDetail.postCity) ||
-      userDetail.postCity.length <= 0
-    ) {
+    if (isNullish(userDetail.postCity) || userDetail.postCity.length <= 0) {
       invalidFields.push("postCity");
     }
 
-    if (isNullOrUndefined(userDetail.phone) || userDetail.phone.length <= 0) {
+    if (isNullish(userDetail.phone) || userDetail.phone.length <= 0) {
       invalidFields.push("phone");
     }
     /*
     if (
-      isNullOrUndefined(userDetail.emailConfirmed) ||
+      isNullish(userDetail.emailConfirmed) ||
       !userDetail.emailConfirmed
     ) {
       invalidFields.push('emailConfirmed');
     }
     */
 
-    if (isNullOrUndefined(userDetail.dob)) {
+    if (isNullish(userDetail.dob)) {
       invalidFields.push("dob");
     }
 

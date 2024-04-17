@@ -1,9 +1,8 @@
-import { isNullOrUndefined } from "util";
-
 import { BlError, Order, OrderItem, Period } from "@boklisten/bl-model";
 import { BranchPaymentInfo } from "@boklisten/bl-model/branch/branch-payment-info";
 
 import { APP_CONFIG } from "../../../../../../../application-config";
+import { isNotNullish } from "../../../../../../../helper/typescript-helpers";
 import { PriceService } from "../../../../../../../price/price.service";
 import { BlDocumentStorage } from "../../../../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../../../../bl-collection";
@@ -57,7 +56,7 @@ export class OrderItemRentPeriodValidator {
     // @ts-ignore
     const period = orderItem.info.periodType;
 
-    if (!isNullOrUndefined(orderItem.movedFromOrder)) {
+    if (isNotNullish(orderItem.movedFromOrder)) {
       const branchPaymentPeriod = this.getRentPeriodFromBranchPaymentInfo(
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore

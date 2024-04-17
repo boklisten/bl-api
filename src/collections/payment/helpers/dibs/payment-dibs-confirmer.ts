@@ -1,7 +1,6 @@
-import { isNullOrUndefined } from "util";
-
 import { Order, Payment, AccessToken, BlError } from "@boklisten/bl-model";
 
+import { isNullish } from "../../../../helper/typescript-helpers";
 import { DibsEasyPayment } from "../../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.service";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
@@ -75,7 +74,7 @@ export class PaymentDibsConfirmer {
     dibsEasyPaymentDetails: DibsEasyPayment,
   ): boolean {
     if (
-      isNullOrUndefined(dibsEasyPaymentDetails.orderDetails) ||
+      isNullish(dibsEasyPaymentDetails.orderDetails) ||
       dibsEasyPaymentDetails.orderDetails.reference !== order.id
     ) {
       throw new BlError(
@@ -84,8 +83,8 @@ export class PaymentDibsConfirmer {
     }
 
     if (
-      isNullOrUndefined(dibsEasyPaymentDetails.summary) ||
-      isNullOrUndefined(dibsEasyPaymentDetails.summary.reservedAmount) ||
+      isNullish(dibsEasyPaymentDetails.summary) ||
+      isNullish(dibsEasyPaymentDetails.summary.reservedAmount) ||
       parseInt("" + dibsEasyPaymentDetails.summary.reservedAmount, 10) !==
         payment.amount * 100
     ) {
@@ -100,10 +99,10 @@ export class PaymentDibsConfirmer {
 
   private validatePaymentInfo(payment: Payment): boolean {
     if (
-      isNullOrUndefined(payment.info) ||
+      isNullish(payment.info) ||
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      isNullOrUndefined(payment.info["paymentId"])
+      isNullish(payment.info["paymentId"])
     ) {
       throw new BlError(
         'payment.method is "dibs" but payment.info.paymentId is undefined',

@@ -1,11 +1,10 @@
-import { isNullOrUndefined } from "util";
-
 import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { Request, Response } from "express";
 import isEmail from "validator/lib/isEmail";
 
 import { PermissionService } from "../../../../auth/permission/permission.service";
 import { UserHandler } from "../../../../auth/user/user.handler";
+import { isNotNullish, isNullish } from "../../../../helper/typescript-helpers";
 import { Operation } from "../../../../operation/operation";
 import { BlApiRequest } from "../../../../request/bl-api-request";
 import { SEResponseHandler } from "../../../../response/se.response.handler";
@@ -116,7 +115,7 @@ export class UserDetailChangeEmailOperation implements Operation {
       // eslint-disable-next-line no-empty
     } catch (e) {}
 
-    if (!isNullOrUndefined(alreadyAddedUser)) {
+    if (isNotNullish(alreadyAddedUser)) {
       throw new BlError("email is already present in database").code(701);
     }
 
@@ -165,7 +164,7 @@ export class UserDetailChangeEmailOperation implements Operation {
   }
 
   private validateEmail(email: string) {
-    if (isNullOrUndefined(email) || !isEmail(email)) {
+    if (isNullish(email) || !isEmail(email)) {
       throw new BlError("email is not valid").code(701);
     }
   }

@@ -1,6 +1,6 @@
-import { isNullOrUndefined } from "util";
-
 import { BlError } from "@boklisten/bl-model";
+
+import { isNullish } from "../../../helper/typescript-helpers";
 export class OrderHookBefore {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   validate(requestJsonBody: any): Promise<boolean> {
@@ -34,7 +34,7 @@ export class OrderHookBefore {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private checkMinimumRequiredFields(requestBody: any): boolean {
-    if (isNullOrUndefined(requestBody["amount"])) {
+    if (isNullish(requestBody["amount"])) {
       throw new BlError("required field amount in order is not specified");
     }
 

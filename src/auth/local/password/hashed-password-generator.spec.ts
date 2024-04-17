@@ -7,9 +7,6 @@ import { expect } from "chai";
 import { HashedPasswordGenerator } from "./hashed-password-generator";
 import { SaltGenerator } from "../salt/salt-generator";
 import { BlError } from "@boklisten/bl-model";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { isNullOrUndefined } from "util";
 import { SeCrypto } from "../../../crypto/se.crypto";
 
 chai.use(chaiAsPromised);

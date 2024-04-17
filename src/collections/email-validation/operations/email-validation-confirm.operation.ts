@@ -1,9 +1,8 @@
-import { isNullOrUndefined } from "util";
-
 import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { NextFunction, Request, Response } from "express";
 
 import { SystemUser } from "../../../auth/permission/permission.service";
+import { isNullish } from "../../../helper/typescript-helpers";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { SEResponseHandler } from "../../../response/se.response.handler";
@@ -47,7 +46,7 @@ export class EmailValidationConfirmOperation implements Operation {
     next?: NextFunction,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (isNullOrUndefined(blApiRequest.documentId)) {
+      if (isNullish(blApiRequest.documentId)) {
         return reject(new BlError("no documentId provided"));
       }
 

@@ -18,6 +18,7 @@ import {
   PermissionService,
   SystemUser,
 } from "../../../../auth/permission/permission.service";
+import { isNotNullish } from "../../../../helper/typescript-helpers";
 import { Operation } from "../../../../operation/operation";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
 import { BlApiRequest } from "../../../../request/bl-api-request";
