@@ -539,9 +539,10 @@ export class EmailService implements MessengerService {
 
   public async requestGuardianSignature(
     customerDetail: UserDetail,
+    branchName?: string,
   ): Promise<void> {
     if (!customerDetail.guardian?.email) {
-      throw new Error("Guardian email is required");
+      throw new BlError("Guardian email is required").code(200);
     }
     const emailSetting: EmailSetting = {
       toEmail: customerDetail.guardian?.email ?? "",
@@ -555,6 +556,7 @@ export class EmailService implements MessengerService {
       (process.env["CLIENT_URI"] ?? "localhost:4200/") +
         EMAIL_SETTINGS.types.guardianSignature.path +
         customerDetail.id,
+      branchName,
     );
   }
 }
