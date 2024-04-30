@@ -17,23 +17,22 @@ import { orderSchema } from "../../order.schema";
 
 export class OrderConfirmOperation implements Operation {
   private _queryBuilder: SEDbQueryBuilder;
+  private readonly _resHandler: SEResponseHandler;
+  private readonly _orderStorage: BlDocumentStorage<Order>;
+  private readonly _orderPlacedHandler: OrderPlacedHandler;
 
   constructor(
-    private _resHandler?: SEResponseHandler,
-    private _orderStorage?: BlDocumentStorage<Order>,
-    private _orderPlacedHandler?: OrderPlacedHandler,
+    resHandler?: SEResponseHandler,
+    orderStorage?: BlDocumentStorage<Order>,
+    orderPlacedHandler?: OrderPlacedHandler,
   ) {
-    this._resHandler = this._resHandler
-      ? this._resHandler
-      : new SEResponseHandler();
+    this._resHandler = resHandler ?? new SEResponseHandler();
 
-    this._orderStorage = this._orderStorage
-      ? this._orderStorage
-      : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
+    this._orderStorage =
+      orderStorage ??
+      new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
 
-    this._orderPlacedHandler = this._orderPlacedHandler
-      ? this._orderPlacedHandler
-      : new OrderPlacedHandler();
+    this._orderPlacedHandler = orderPlacedHandler ?? new OrderPlacedHandler();
 
     this._queryBuilder = new SEDbQueryBuilder();
   }
@@ -145,8 +144,6 @@ export class OrderConfirmOperation implements Operation {
     let placedOrder;
 
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       placedOrder = await this._orderPlacedHandler.placeOrder(
         order,
         accessToken,

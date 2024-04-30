@@ -59,14 +59,9 @@ export class MongooseModelCreator<T> {
     });
 
     //remove fields that the client shall not see
-    schema.set("toJSON", {
-      transform: function (_doc, ret) {
-        ret["id"] = ret["_id"];
-        delete ret["user"];
-        delete ret["_id"];
-        delete ret["__v"];
-        delete ret["viewableFor"];
-      },
+    schema.set("toJSON", { transform: MongooseModelCreator.transformObject });
+    schema.set("toObject", {
+      transform: MongooseModelCreator.transformObject,
     });
 
     // Enable automatic timestamps
@@ -76,5 +71,27 @@ export class MongooseModelCreator<T> {
     });
 
     return schema;
+  }
+
+  public static transformObject(doc: unknown, ret?: unknown): void {
+    // Mongoose isn't sure which parameter to use, so try both :/
+    if (!ret && doc) ret = doc;
+    if (!ret) return;
+    if (Array.isArray(ret)) {
+      ret.forEach((document) =>
+        MongooseModelCreator.transformObject({}, document),
+      );
+    } else if (typeof ret === "object") {
+      const document = ret as Record<string, unknown>;
+      // Translate _id to id only if id does not already exist
+      // (embedded documents such as BlDocument.user may have an id field which is different from the _id field)
+      if ("_id" in document && !("id" in document))
+        document["id"] = document["_id"];
+      if (document["id"] instanceof mongoose.Types.ObjectId) {
+        document["id"] = document["id"].toString();
+      }
+      delete document["_id"];
+      delete document["__v"];
+    }
   }
 }

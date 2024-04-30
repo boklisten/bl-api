@@ -48,6 +48,7 @@ describe("PaymentValidator", () => {
       branch: "branch1",
       orderItems: [],
       byCustomer: true,
+      pendingSignature: false,
     };
 
     testDelivery = {

@@ -61,6 +61,7 @@ describe("PaymentHandler", () => {
       byCustomer: true,
       payments: ["payment1"],
       delivery: "delivery1",
+      pendingSignature: false,
     } as Order;
 
     testPayment1 = {

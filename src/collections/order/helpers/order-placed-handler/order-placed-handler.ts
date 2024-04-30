@@ -3,6 +3,8 @@ import {
   BlError,
   CustomerItem,
   Order,
+  OrderItem,
+  OrderItemType,
   UserDetail,
 } from "@boklisten/bl-model";
 
@@ -12,14 +14,20 @@ import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../bl-collection";
 import { CustomerItemHandler } from "../../../customer-item/helpers/customer-item-handler";
 import { PaymentHandler } from "../../../payment/helpers/payment-handler";
+import { userHasValidSignature } from "../../../signature/helpers/signature.helper";
+import {
+  Signature,
+  signatureSchema,
+} from "../../../signature/signature.schema";
 import { userDetailSchema } from "../../../user-detail/user-detail.schema";
 import { orderSchema } from "../../order.schema";
 import { OrderItemMovedFromOrderHandler } from "../order-item-moved-from-order-handler/order-item-moved-from-order-handler";
 
 export class OrderPlacedHandler {
-  private orderStorage: BlDocumentStorage<Order>;
-  private paymentHandler: PaymentHandler;
-  private userDetailStorage: BlDocumentStorage<UserDetail>;
+  private readonly orderStorage: BlDocumentStorage<Order>;
+  private readonly paymentHandler: PaymentHandler;
+  private readonly userDetailStorage: BlDocumentStorage<UserDetail>;
+  private readonly _signatureStorage: BlDocumentStorage<Signature>;
   private _customerItemHandler: CustomerItemHandler;
   private _orderItemMovedFromOrderHandler: OrderItemMovedFromOrderHandler;
   private _messenger: Messenger;
@@ -34,6 +42,7 @@ export class OrderPlacedHandler {
     messenger?: Messenger,
     customerItemHandler?: CustomerItemHandler,
     orderItemMovedFromOrderHandler?: OrderItemMovedFromOrderHandler,
+    signatureStorage?: BlDocumentStorage<Signature>,
   ) {
     this.orderStorage =
       orderStorage ??
@@ -47,6 +56,9 @@ export class OrderPlacedHandler {
       customerItemHandler ?? new CustomerItemHandler();
     this._orderItemMovedFromOrderHandler =
       orderItemMovedFromOrderHandler ?? new OrderItemMovedFromOrderHandler();
+    this._signatureStorage =
+      signatureStorage ??
+      new BlDocumentStorage(BlCollectionName.Signatures, signatureSchema);
   }
 
   public async placeOrder(
@@ -54,6 +66,8 @@ export class OrderPlacedHandler {
     accessToken: AccessToken,
   ): Promise<Order> {
     try {
+      const pendingSignature = await this.isSignaturePending(order);
+
       const payments = await this.paymentHandler.confirmPayments(
         order,
         accessToken,
@@ -63,7 +77,7 @@ export class OrderPlacedHandler {
 
       const placedOrder = await this.orderStorage.update(
         order.id,
-        { placed: true, payments: paymentIds },
+        { placed: true, payments: paymentIds, pendingSignature },
         {
           id: accessToken.sub,
           permission: accessToken.permission,
@@ -217,4 +231,54 @@ export class OrderPlacedHandler {
       await this._messenger.orderPlaced(customerDetail, order);
     }
   }
+
+  /**
+   * Find out whether an order will require signature to become valid
+   *
+   * @throws BlError if an orderItem is a handout without a valid signature, which happens if the customer does not
+   * have a signature currently and the original order for the item is pending signature.
+   */
+  public async isSignaturePending(order: Order): Promise<boolean> {
+    const userDetail = await this.userDetailStorage.get(
+      order.customer as string,
+    );
+
+    const hasValidSignature = await userHasValidSignature(
+      userDetail,
+      this._signatureStorage,
+    );
+    if (hasValidSignature) {
+      return false;
+    }
+
+    for (const orderItem of this.orderItemsWhichRequireSignature(order)) {
+      if (orderItem.handout) {
+        if (orderItem.movedFromOrder) {
+          const originalOrder = await this.orderStorage.get(
+            orderItem.movedFromOrder as string,
+          );
+          if (!originalOrder.pendingSignature) continue;
+        }
+        throw new BlError(
+          "Tried to hand out item without active signature",
+        ).code(811);
+      } else {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private orderItemsWhichRequireSignature(order: Order): OrderItem[] {
+    return order.orderItems.filter((orderItem) =>
+      orderItemTypesWhichRequireSignature.has(orderItem.type),
+    );
+  }
 }
+
+const orderItemTypesWhichRequireSignature: Set<OrderItemType> = new Set([
+  "buy",
+  "rent",
+  "loan",
+]);

@@ -45,6 +45,7 @@ describe("PaymentPostHook", () => {
       customer: "customer1",
       byCustomer: true,
       payments: [],
+      pendingSignature: false,
     };
 
     testPayment = {

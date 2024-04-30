@@ -78,6 +78,7 @@ describe("OrderToCustomerItemGenerator", () => {
         payments: [],
         delivery: "delivery1",
         creationTime: today,
+        pendingSignature: false,
       };
 
       const expectedResult = [
@@ -175,6 +176,7 @@ describe("OrderToCustomerItemGenerator", () => {
         payments: [],
         delivery: "delivery1",
         creationTime: today,
+        pendingSignature: false,
       };
 
       const expectedResult = [
@@ -303,6 +305,7 @@ describe("OrderToCustomerItemGenerator", () => {
         payments: [],
         delivery: "delivery1",
         creationTime: today,
+        pendingSignature: false,
       };
 
       const result = generator.generate(order);
@@ -342,6 +345,7 @@ describe("OrderToCustomerItemGenerator", () => {
         payments: [],
         delivery: "delivery1",
         creationTime: today,
+        pendingSignature: false,
       };
 
       const expectedResult = [
@@ -433,6 +437,7 @@ describe("OrderToCustomerItemGenerator", () => {
         payments: [],
         delivery: "delivery1",
         creationTime: today,
+        pendingSignature: false,
       };
 
       const expectedResult = [
@@ -555,6 +560,7 @@ describe("OrderToCustomerItemGenerator", () => {
         payments: [],
         delivery: "delivery1",
         creationTime: today,
+        pendingSignature: false,
       };
 
       const expectedResult = [
@@ -713,6 +719,7 @@ describe("OrderToCustomerItemGenerator", () => {
         payments: [],
         delivery: "delivery1",
         creationTime: today,
+        pendingSignature: false,
       };
 
       const expectedResult = [

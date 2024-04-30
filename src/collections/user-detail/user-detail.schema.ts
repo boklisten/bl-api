@@ -53,4 +53,5 @@ export const userDetailSchema = new Schema<UserDetail>({
   },
   customerItems: [Schema.Types.ObjectId],
   orders: [Schema.Types.ObjectId],
+  signatures: [Schema.Types.ObjectId],
 });

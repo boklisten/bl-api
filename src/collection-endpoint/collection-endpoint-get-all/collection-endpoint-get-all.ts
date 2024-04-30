@@ -33,6 +33,7 @@ export class CollectionEndpointGetAll<T extends BlDocument>
             // @ts-ignore
             .add(e)
             .store("query", blApiRequest.query)
+            .code(701)
         );
       }
 
@@ -42,23 +43,19 @@ export class CollectionEndpointGetAll<T extends BlDocument>
       );
     } else {
       // if no query, give back all objects in collection
-      let permission = null;
+      let permission = undefined;
       if (blApiRequest.user) {
         permission = blApiRequest.user.permission;
       }
 
-      return (
-        this._documentStorage
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          .getAll(permission)
-          .then((docs: T[]) => {
-            return docs;
-          })
-          .catch((blError: BlError) => {
-            throw blError;
-          })
-      );
+      return this._documentStorage
+        .getAll(permission)
+        .then((docs: T[]) => {
+          return docs;
+        })
+        .catch((blError: BlError) => {
+          throw blError;
+        });
     }
   }
 

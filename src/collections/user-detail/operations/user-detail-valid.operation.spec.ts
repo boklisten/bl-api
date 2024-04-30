@@ -85,6 +85,7 @@ describe("UserDetailValidOperation", () => {
           dob: new Date(1946, 9, 5),
           branch: "branch1",
           emailConfirmed: true,
+          signatures: [],
         };
       });
 
@@ -120,6 +121,7 @@ describe("UserDetailValidOperation", () => {
           dob: new Date(1946, 9, 5),
           branch: "branch1",
           emailConfirmed: true,
+          signatures: [],
         };
       });
 

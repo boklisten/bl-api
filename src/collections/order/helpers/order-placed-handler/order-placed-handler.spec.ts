@@ -137,6 +137,7 @@ describe("OrderPlacedHandler", () => {
       placed: true,
       payments: [],
       delivery: "delivery1",
+      pendingSignature: false,
     };
 
     testPayment = {
@@ -175,6 +176,7 @@ describe("OrderPlacedHandler", () => {
       dob: new Date(),
       emailConfirmed: true,
       branch: "branch1",
+      signatures: [],
     };
   });
 
@@ -216,9 +218,7 @@ describe("OrderPlacedHandler", () => {
       } catch (e) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        return expect(e.errorStack[0].getMsg()).to.eq(
-          'customer "notFoundUserDetails" not found',
-        );
+        return expect(e.errorStack[0].getMsg()).to.eq("user detail not found");
       }
     });
 

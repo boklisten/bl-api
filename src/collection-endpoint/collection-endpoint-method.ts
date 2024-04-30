@@ -156,7 +156,7 @@ export abstract class CollectionEndpointMethod<T extends BlDocument> {
       .then((docs: T[]) =>
         this._responseHandler.sendResponse(res, new BlapiResponse(docs)),
       )
-      .catch((blError: BlError) =>
+      .catch((blError: unknown) =>
         this._responseHandler.sendErrorResponse(res, blError),
       );
   }

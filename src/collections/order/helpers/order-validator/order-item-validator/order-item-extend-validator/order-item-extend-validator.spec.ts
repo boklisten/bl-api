@@ -210,6 +210,7 @@ describe("OrderItemExtendValidator", () => {
       delivery: "delivery1",
       branch: "branch1",
       byCustomer: true,
+      pendingSignature: false,
     };
 
     testBranch = {

@@ -33,6 +33,7 @@ describe("UserDetailHelper", () => {
       country: "",
       dob: new Date(),
       branch: "branch1",
+      signatures: [],
     };
 
     testAccessToken = {

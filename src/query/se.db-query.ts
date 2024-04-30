@@ -1,3 +1,6 @@
+import { BlError } from "@boklisten/bl-model";
+import { ObjectId } from "mongodb";
+
 import { BooleanFilter } from "./boolean-filter/db-query-boolean-filter";
 import { DateFilter } from "./date-filter/db-query-date-filter";
 import { ExpandFilter } from "./expand-filter/db-query-expand-filter";
@@ -80,6 +83,8 @@ export class SEDbQuery {
       if (Array.isArray(objectIdFilter.value)) {
         const arr = objectIdFilter.value;
         for (const stringValue of arr) {
+          if (!ObjectId.isValid(stringValue))
+            throw new BlError(`Invalid ObjectID: ${stringValue}`).code(701);
           const multipleValuesFilterObj = {};
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -87,6 +92,10 @@ export class SEDbQuery {
           orArr.push(multipleValuesFilterObj);
         }
       } else {
+        if (!ObjectId.isValid(objectIdFilter.value))
+          throw new BlError(`Invalid ObjectID: ${objectIdFilter.value}`).code(
+            701,
+          );
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         filterObj[objectIdFilter.fieldName] = objectIdFilter.value;

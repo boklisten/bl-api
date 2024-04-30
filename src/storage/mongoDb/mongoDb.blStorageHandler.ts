@@ -1,5 +1,5 @@
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
-import { Error, Model, PipelineStage, Schema, Types } from "mongoose";
+import { Model, PipelineStage, Schema, Types } from "mongoose";
 
 import { MongooseModelCreator } from "./mongoose-schema-creator";
 import { PermissionService } from "../../auth/permission/permission.service";
@@ -32,15 +32,16 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     userPermission?: UserPermission,
   ): Promise<T> {
-    const doc = await this.mongooseModel
+    const doc = (await this.mongooseModel
       .findById<T>(id)
+      .lean({ transform: MongooseModelCreator.transformObject })
       .exec()
       .catch((error) => {
         throw this.handleError(
           new BlError(`error when trying to find document with id "${id}"`),
           error,
         );
-      });
+      })) as T;
 
     if (!doc) {
       throw new BlError(`object "${id}" not found`).code(702);
@@ -59,18 +60,19 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         dbQuery.getSortFilter(),
       )})`,
     );
-    const docs = await this.mongooseModel
+    const docs = (await this.mongooseModel
       .find<T>(dbQuery.getFilter(), dbQuery.getOgFilter())
       .limit(dbQuery.getLimitFilter())
       .skip(dbQuery.getSkipFilter())
       .sort(dbQuery.getSortFilter())
+      .lean({ transform: MongooseModelCreator.transformObject })
       .exec()
       .catch((error) => {
         throw this.handleError(
           new BlError(`could not find document by the provided query`),
           error,
         );
-      });
+      })) as T[];
 
     if (docs.length <= 0) {
       throw new BlError("not found").code(702);
@@ -100,7 +102,10 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
           ? { _id: { $in: idArr } }
           : { _id: { $in: idArr }, active: true };
 
-      return await this.mongooseModel.find<T>(filter).exec();
+      return (await this.mongooseModel
+        .find<T>(filter)
+        .lean({ transform: MongooseModelCreator.transformObject })
+        .exec()) as T[];
     } catch (error) {
       throw this.handleError(
         new BlError("error when trying to find documents"),
@@ -110,7 +115,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
   }
 
   public async aggregate(aggregation: PipelineStage[]): Promise<T[]> {
-    const doc = await this.mongooseModel
+    const docs = await this.mongooseModel
       .aggregate<T>(aggregation)
       .exec()
       .catch((error) => {
@@ -120,10 +125,11 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         );
       });
 
-    if (!doc) {
+    if (!docs) {
       throw new BlError(`aggregation returned null`);
     }
-    return doc;
+    MongooseModelCreator.transformObject({}, docs);
+    return docs;
   }
 
   public async getAll(userPermission?: UserPermission): Promise<T[]> {
@@ -131,15 +137,16 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       userPermission && this.permissionService.isAdmin(userPermission)
         ? {}
         : { active: true };
-    const doc = await this.mongooseModel
+    const doc = (await this.mongooseModel
       .find<T>(filter)
+      .lean({ transform: MongooseModelCreator.transformObject })
       .exec()
       .catch((error) => {
         throw this.handleError(
           new BlError("failed to get all documents"),
           error,
         );
-      });
+      })) as T[];
 
     if (!doc) {
       throw new BlError(`getAll returned null`);
@@ -160,7 +167,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         ...doc,
         ...(doc.id && { _id: doc.id }),
       });
-      return await newDocument.save();
+      return (await newDocument.save()).toObject();
     } catch (error) {
       throw this.handleError(
         new BlError("error when trying to add document").data(doc),
@@ -169,8 +176,9 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     }
   }
 
-  public addMany(docs: T[]): Promise<T[]> {
-    return this.mongooseModel.insertMany(docs);
+  public async addMany(docs: T[]): Promise<T[]> {
+    const insertedDocs = await this.mongooseModel.insertMany(docs);
+    return insertedDocs.map((doc) => doc.toObject());
   }
 
   public async update(
@@ -187,12 +195,13 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       );
     }
 
-    const doc = await this.mongooseModel
+    const doc = (await this.mongooseModel
       .findOneAndUpdate<T>(
         { _id: id },
         { ...data, lastUpdated: new Date() },
         { new: true },
       )
+      .lean({ transform: MongooseModelCreator.transformObject })
       .exec()
       .catch((error) => {
         logger.error(`failed to update document: ${error}`);
@@ -203,7 +212,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
           ),
           error,
         );
-      });
+      })) as T;
 
     if (!doc) {
       throw new BlError(`could not find document with id "${id}"`).code(702);
@@ -221,10 +230,8 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     throw new BlError("not implemented");
   }
 
-  public async put(id: string, data: unknown): Promise<void> {
+  public async put(id: string, data: T): Promise<void> {
     await this.mongooseModel
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       .replaceOne({ _id: id }, data, {
         upsert: true,
       })
@@ -246,15 +253,16 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
-    const doc = await this.mongooseModel
+    const doc = (await this.mongooseModel
       .findByIdAndDelete<T>(id)
+      .lean({ transform: MongooseModelCreator.transformObject })
       .exec()
       .catch((error) => {
         throw this.handleError(
           new BlError(`could not remove document with id "${id}"`),
           error,
         );
-      });
+      })) as T;
 
     if (!doc) {
       throw new BlError(`could not remove document with id "${id}"`).code(702);

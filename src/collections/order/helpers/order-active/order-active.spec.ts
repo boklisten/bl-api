@@ -37,6 +37,7 @@ describe("OrderActive", () => {
         customer: testUserId,
         byCustomer: true,
         placed: false,
+        pendingSignature: false,
       };
 
       getOrderByQueryStub.resolves([nonActiveOrder]);
@@ -54,6 +55,7 @@ describe("OrderActive", () => {
         customer: testUserId,
         byCustomer: true,
         placed: false,
+        pendingSignature: false,
       };
 
       const activeOrder: Order = {
@@ -76,6 +78,7 @@ describe("OrderActive", () => {
         customer: testUserId,
         byCustomer: true,
         placed: true,
+        pendingSignature: false,
       };
 
       getOrderByQueryStub.resolves([nonActiveOrder, activeOrder]);
@@ -105,6 +108,7 @@ describe("OrderActive", () => {
         customer: testUserId,
         byCustomer: true,
         placed: true,
+        pendingSignature: false,
       };
 
       const nonActiveOrder2: Order = {
@@ -127,6 +131,7 @@ describe("OrderActive", () => {
         customer: testUserId,
         byCustomer: true,
         placed: true,
+        pendingSignature: false,
       };
 
       getOrderByQueryStub.resolves([nonActiveOrder, nonActiveOrder2]);

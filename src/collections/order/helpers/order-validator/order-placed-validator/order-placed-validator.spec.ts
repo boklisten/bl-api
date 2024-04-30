@@ -54,6 +54,7 @@ describe("OrderPlacedValidator", () => {
         branch: "b1",
         byCustomer: true,
         payments: ["payment1"],
+        pendingSignature: false,
       };
     });
 

@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 
 export type ObjectIdFilter = {
   fieldName: string;
-  value: Types.ObjectId | string | unknown[];
+  value: Types.ObjectId | string | (Types.ObjectId | string)[];
 };
 
 export class DbQueryObjectIdFilter {
