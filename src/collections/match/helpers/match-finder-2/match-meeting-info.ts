@@ -9,8 +9,6 @@ import {
   UserMatchWithMeetingInfo,
 } from "./match-types";
 
-const MEETING_DURATION_IN_MS = 60 * 15 * 1000; // 15 minutes
-
 interface SenderWithMatches {
   senderId: string;
   matches: CandidateUserMatch[];
@@ -42,11 +40,13 @@ function groupMatchesBySender(
  * @param location a location with a corresponding limit towards how many matches can be assigned to that location at a given time
  * @param existingMeetingTimes an ascending list of previous meeting times for the location
  * @param startTime the earliest possible timeslot
+ * @param meetingDurationInMS the estimated duration of the meeting
  */
 function findEarliestLocationTime(
   location: MatchLocation,
   existingMeetingTimes: Date[],
   startTime: Date,
+  meetingDurationInMS: number,
 ): Date {
   if (
     !location.simultaneousMatchLimit ||
@@ -69,7 +69,7 @@ function findEarliestLocationTime(
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return new Date(prevMeetingTime.getTime() + MEETING_DURATION_IN_MS);
+  return new Date(prevMeetingTime.getTime() + meetingDurationInMS);
 }
 
 /**
@@ -77,18 +77,20 @@ function findEarliestLocationTime(
  * @param users the users to find a timeslot for
  * @param startTime the earliest possible timeslot
  * @param userMeetingTimes an ascending list of previous meeting times for each user
+ * @param meetingDurationInMS the estimated duration of the meeting
  */
 function findEarliestPossibleMeetingTime(
   users: string[],
   startTime: Date,
   userMeetingTimes: { [userId: string]: Date[] },
+  meetingDurationInMS: number,
 ): Date {
   let earliestPossibleTime = startTime;
   for (const user of users) {
     const prevUserTime = userMeetingTimes[user]?.at(-1);
     if (prevUserTime && prevUserTime >= earliestPossibleTime) {
       earliestPossibleTime = new Date(
-        prevUserTime.getTime() + MEETING_DURATION_IN_MS,
+        prevUserTime.getTime() + meetingDurationInMS,
       );
     }
   }
@@ -202,12 +204,14 @@ function verifyUserMatches(
  * @param standLocation the location of the stand
  * @param userMatchLocations the allowed locations for user matches, optionally with a limit on how many simultaneous matches can fit there
  * @param startTime the first allowed meeting time
+ * @param meetingDurationInMS the estimated duration of the meeting
  */
 function assignMeetingInfoToMatches(
   matches: CandidateMatch[],
   standLocation: string,
   userMatchLocations: MatchLocation[],
   startTime: Date,
+  meetingDurationInMS: number,
 ): MatchWithMeetingInfo[] {
   const standMatches: CandidateStandMatch[] = matches
     .filter((match) => match.variant === CandidateMatchVariant.StandMatch)
@@ -261,6 +265,7 @@ function assignMeetingInfoToMatches(
       // @ts-ignore
       locationMeetingTimes[location.name],
       startTime,
+      meetingDurationInMS,
     );
 
     const receivers = senderWithMatches.matches.map(
@@ -270,6 +275,7 @@ function assignMeetingInfoToMatches(
       [senderWithMatches.senderId, ...receivers],
       earliestLocationTime,
       userMeetingTimes,
+      meetingDurationInMS,
     );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
