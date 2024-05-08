@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ObjectId = require("mongodb").ObjectID;
 
@@ -11,7 +13,7 @@ module.exports = [
     viewableFor: [],
     editableFor: [],
     archived: false,
-    userDetail: ObjectId("61cded5a8f6c5c0047a21b4a"),
+    userDetail: new ObjectId("61cded5a8f6c5c0047a21b4a"),
     permission: "customer",
     blid: "u#cafac7b249c46e13bdb2e77b61b6f856",
     username: "richard.stallman@protonmail.com",
@@ -33,7 +35,7 @@ module.exports = [
     viewableFor: [],
     editableFor: [],
     archived: false,
-    userDetail: ObjectId("61d35c6b48bf8900475f88f9"),
+    userDetail: new ObjectId("61d35c6b48bf8900475f88f9"),
     permission: "admin",
     blid: "u#a780f3f6113eebf992af700d7b834ed5",
     username: "admin@adminsen.no",

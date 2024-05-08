@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ObjectId = require("mongodb").ObjectID;
 
@@ -16,7 +18,7 @@ module.exports = [
     archived: false,
     from: new Date(today - 5 * dayInMs - 10 * hourInMs),
     to: new Date(today - 5 * dayInMs - 16 * hourInMs),
-    branch: ObjectId("5b6442ebd2e733002fae8a2f"),
+    branch: new ObjectId("5b6442ebd2e733002fae8a2f"),
     user: { id: "u#dd3ca358e9721cf8f0aa71da8549bbf6", permission: "admin" },
     comments: [],
     __v: 0,
@@ -31,7 +33,7 @@ module.exports = [
     archived: false,
     from: new Date(today + 5 * dayInMs + 11 * hourInMs),
     to: new Date(today + 5 * dayInMs + 15 * hourInMs),
-    branch: ObjectId("5b6442ebd2e733002fae8a2f"),
+    branch: new ObjectId("5b6442ebd2e733002fae8a2f"),
     user: { id: "u#dd3ca358e9721cf8f0aa71da8549bbf6", permission: "admin" },
     comments: [],
     __v: 0,
@@ -46,7 +48,7 @@ module.exports = [
     archived: false,
     from: new Date(today + 7 * dayInMs + 9 * hourInMs),
     to: new Date(today + 7 * dayInMs + 12 * hourInMs),
-    branch: ObjectId("5b6442ebd2e733002fae8a2f"),
+    branch: new ObjectId("5b6442ebd2e733002fae8a2f"),
     user: { id: "u#dd3ca358e9721cf8f0aa71da8549bbf6", permission: "admin" },
     comments: [],
     __v: 0,
@@ -61,7 +63,7 @@ module.exports = [
     archived: false,
     from: new Date(today + 7 * dayInMs + 9 * hourInMs),
     to: new Date(today + 7 * dayInMs + 12 * hourInMs),
-    branch: ObjectId("5b6442ebd2e733002fae1a1a"),
+    branch: new ObjectId("5b6442ebd2e733002fae1a1a"),
     user: { id: "u#dd3ca358e9721cf8f0aa71da8549bbf6", permission: "admin" },
     comments: [],
     __v: 0,
