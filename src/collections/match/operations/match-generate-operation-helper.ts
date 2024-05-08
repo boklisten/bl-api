@@ -19,12 +19,12 @@ import {
  * The information required to generate matches.
  */
 export interface MatcherSpec {
-  senderBranches: string[];
-  receiverBranches: string[];
+  branches: string[];
   standLocation: string;
   userMatchLocations: MatchLocation[];
   startTime: string;
   deadlineBefore: string;
+  matchMeetingDurationInMS: number;
 }
 
 export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
@@ -145,21 +145,13 @@ export function verifyMatcherSpec(
     m &&
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    Array.isArray(m.senderBranches) &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    Array.isArray(m.receiverBranches) &&
+    Array.isArray(m.branches) &&
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     Array.isArray(m.userMatchLocations) &&
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    m.senderBranches.every(
-      (branchId) => typeof branchId === "string" && branchId.length === 24,
-    ) &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    m.receiverBranches.every(
+    m.branches.every(
       (branchId) => typeof branchId === "string" && branchId.length === 24,
     ) &&
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -192,7 +184,13 @@ export function verifyMatcherSpec(
     !isNaN(new Date(m.deadlineBefore).getTime()) &&
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    new Date(m.deadlineBefore).getTime() > new Date().getTime()
+    new Date(m.deadlineBefore).getTime() > new Date().getTime() &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    typeof m.matchMeetingDurationInMS === "number" &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    !isNaN(m.matchMeetingDurationInMS)
   );
 }
 

@@ -73,6 +73,7 @@ describe("Simple Matches", () => {
       standLocation,
       [{ name: "Sal 1" }, { name: "Sal 2" }],
       new Date("2023-02-02T12:00:00+0100"),
+      900000, // 15 minutes
     );
   });
 
@@ -89,6 +90,7 @@ describe("Simple Matches", () => {
       standLocation,
       [{ name: "Sal 1", simultaneousMatchLimit }, { name: "Sal 2" }],
       new Date("2023-02-02T12:00:00+0100"),
+      900000, // 15 minutes
     );
     const meetingTimes = updatedMatches
       .filter((match) => match.meetingInfo.location === "Sal 1")
@@ -140,6 +142,7 @@ describe("Large User Groups", () => {
         { name: "Fysikk-labben", simultaneousMatchLimit: 5 },
       ],
       new Date("2023-02-02T12:00:00+0100"),
+      900000, // 15 minutes
     );
   });
 });

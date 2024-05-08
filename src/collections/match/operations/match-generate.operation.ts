@@ -49,7 +49,7 @@ export class MatchGenerateOperation implements Operation {
     }
     const [senders, receivers] = await Promise.all([
       getMatchableSenders(
-        matcherSpec.senderBranches,
+        matcherSpec.branches,
         matcherSpec.deadlineBefore,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -57,7 +57,7 @@ export class MatchGenerateOperation implements Operation {
       ),
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      getMatchableReceivers(matcherSpec.receiverBranches, this.orderStorage),
+      getMatchableReceivers(matcherSpec.branches, this.orderStorage),
     ]);
     if (senders.length === 0 && receivers.length === 0) {
       throw new BlError("No senders or receivers");
@@ -67,6 +67,7 @@ export class MatchGenerateOperation implements Operation {
       matcherSpec.standLocation,
       matcherSpec.userMatchLocations,
       new Date(matcherSpec.startTime),
+      matcherSpec.matchMeetingDurationInMS,
     ).map((candidate) => candidateMatchToMatch(candidate));
     if (matches.length === 0) {
       throw new BlError("No matches generated");
