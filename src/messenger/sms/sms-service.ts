@@ -4,7 +4,7 @@ import { logger } from "../../logger/logger";
 
 const accountSid = process.env["TWILIO_SMS_SID"];
 const authToken = process.env["TWILIO_SMS_AUTH_TOKEN"];
-const client = twilio(accountSid, authToken);
+const client = twilio(accountSid ?? "ACSid", authToken ?? "authToken");
 
 /**
  * Send a single SMS to a single recipient

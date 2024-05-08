@@ -14,6 +14,11 @@ export const EMAIL_SETTINGS = {
       subject: "Tilbakestill passordet hos Boklisten.no",
       path: "auth/reset/",
     },
+    guardianSignature: {
+      fromEmail: "ikkesvar@boklisten.no",
+      subject: "Signer låneavtale hos Boklisten.no",
+      path: "u/sign-agreement/",
+    },
     deliveryInformation: {
       fromEmail: "ikkesvar@boklisten.no",
       subject: "Dine bøker er på vei",
