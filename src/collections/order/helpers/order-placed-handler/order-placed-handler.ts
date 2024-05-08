@@ -259,9 +259,12 @@ export class OrderPlacedHandler {
           );
           if (!originalOrder.pendingSignature) continue;
         }
-        throw new BlError(
-          "Tried to hand out item without active signature",
-        ).code(811);
+        // TODO: remove this return and uncomment throw to enforce signature
+        //       requirement on handout
+        return true;
+        // throw new BlError(
+        //   "Tried to hand out item without active signature",
+        // ).code(811);
       } else {
         return true;
       }
