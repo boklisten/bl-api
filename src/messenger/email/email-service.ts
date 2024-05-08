@@ -539,7 +539,7 @@ export class EmailService implements MessengerService {
 
   public async requestGuardianSignature(
     customerDetail: UserDetail,
-    branchName?: string,
+    branchName: string,
   ): Promise<void> {
     if (!customerDetail.guardian?.email) {
       throw new BlError("Guardian email is required").code(200);

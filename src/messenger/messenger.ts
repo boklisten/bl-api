@@ -171,7 +171,7 @@ export class Messenger implements MessengerService {
    */
   public async requestGuardianSignature(
     customerDetail: UserDetail,
-    branchName?: string,
+    branchName: string,
   ): Promise<void> {
     const guardianPhone = customerDetail.guardian?.phone;
     const guardianEmail = customerDetail.guardian?.email;
@@ -186,14 +186,13 @@ export class Messenger implements MessengerService {
         moment(new Date()).subtract(18, "years"),
       )
     ) {
-      await this._emailService.requestGuardianSignature(customerDetail);
+      await this._emailService.requestGuardianSignature(
+        customerDetail,
+        branchName,
+      );
       await sendSMS(
         guardianPhone,
-        `Hei. ${customerDetail.name} har nylig bestilt bøker hos Boklisten${
-          branchName ? ` (${branchName})` : ""
-        }. Siden ${
-          customerDetail.name
-        } er under 18 år, krever vi at du som foresatt signerer låneavtalen. Vi har derfor sendt en epost til ${guardianEmail} med lenke til signering. Ta kontakt på info@boklisten.no om du har spørsmål. Mvh. Boklisten`,
+        `Hei. ${customerDetail.name} har nylig bestilt bøker fra ${branchName} gjennom Boklisten.no. Siden ${customerDetail.name} er under 18 år, krever vi at du som foresatt signerer låneavtalen. Vi har derfor sendt en epost til ${guardianEmail} med lenke til signering. Ta kontakt på info@boklisten.no om du har spørsmål. Mvh. Boklisten`,
       );
     }
   }

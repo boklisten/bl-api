@@ -27,5 +27,8 @@ export interface MessengerService {
     pendingPasswordResetId: string,
     resetToken: string,
   ): void;
-  requestGuardianSignature(customerDetail: UserDetail): void;
+  requestGuardianSignature(
+    customerDetail: UserDetail,
+    branchName: string,
+  ): void;
 }
