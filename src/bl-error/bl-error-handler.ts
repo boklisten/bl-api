@@ -23,10 +23,10 @@ export class BlErrorHandler {
       err instanceof BlError
         ? err
         : err instanceof Error
-        ? new BlError(
-            `unknown error: ${err.message}, stack:\n${err.stack}`,
-          ).store("error", err)
-        : new BlError(`unknown error: ${err}`).store("error", err);
+          ? new BlError(
+              `unknown error: ${err.message}, stack:\n${err.stack}`,
+            ).store("error", err)
+          : new BlError(`unknown error: ${err}`).store("error", err);
 
     this.printErrorStack(blError);
     this.storeError(blError);
