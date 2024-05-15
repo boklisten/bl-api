@@ -1,6 +1,6 @@
-import { isNullOrUndefined } from "util";
-
 import { OrderItem, Item, Branch, BlError } from "@boklisten/bl-model";
+
+import { isNullish } from "../../../../../../helper/typescript-helpers";
 
 export class OrderItemPartlyPaymentValidator {
   public validate(
@@ -54,11 +54,11 @@ export class OrderItemPartlyPaymentValidator {
   }
 
   private validateFields(orderItem: OrderItem) {
-    if (isNullOrUndefined(orderItem.info)) {
+    if (isNullish(orderItem.info)) {
       throw new BlError("orderItem.info not specified");
     }
 
-    if (orderItem.info && isNullOrUndefined(orderItem.info.to)) {
+    if (orderItem.info && isNullish(orderItem.info.to)) {
       throw new BlError("orderItem.info.to not specified");
     }
 
@@ -66,7 +66,7 @@ export class OrderItemPartlyPaymentValidator {
       orderItem.info &&
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      isNullOrUndefined(orderItem.info["amountLeftToPay"])
+      isNullish(orderItem.info["amountLeftToPay"])
     ) {
       throw new BlError("orderItem.info.amountLeftToPay not specified");
     }

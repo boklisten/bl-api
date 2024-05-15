@@ -57,6 +57,7 @@ describe("OrderPatchHook", () => {
       dob: new Date(),
       branch: "branch1",
       orders: [],
+      signatures: [],
     };
 
     testOrder = {
@@ -67,6 +68,7 @@ describe("OrderPatchHook", () => {
       customer: "customer1",
       byCustomer: true,
       placed: false,
+      pendingSignature: false,
     };
 
     testAccessToken = {

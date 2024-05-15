@@ -120,4 +120,8 @@ export const orderSchema = new Schema<Order>({
     type: Schema.Types.Mixed,
     required: false,
   },
+  pendingSignature: {
+    type: Boolean,
+    required: true,
+  },
 });

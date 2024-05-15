@@ -21,10 +21,10 @@
     puppeteer "^9.1.1"
     typescript "^2.6.2"
 
-"@boklisten/bl-model@^0.25.30":
-  version "0.25.30"
-  resolved "https://registry.yarnpkg.com/@boklisten/bl-model/-/bl-model-0.25.30.tgz#8989f5fba19d8aa5486d8488d5be7e12f3778083"
-  integrity sha512-rh250euu/zLldrFNxB9rfTATQ0e3eS6wAFiMJGQ2AUSJTkOXUe9+ozm1/Ft6xkx7Pn7LWsmnLHzuadHLYA/g0A==
+"@boklisten/bl-model@^0.25.37":
+  version "0.25.37"
+  resolved "https://registry.yarnpkg.com/@boklisten/bl-model/-/bl-model-0.25.37.tgz#53cf9ea5b38bc953ada24b3d1c353707d83496fc"
+  integrity sha512-+KgdcMqD390D9HCQ/3x5uRpSJdSdbj1s/1mjEbmo6oy48IDwnS9qJbzUFXZ4V0G+4QmrG+cE6AJ3MCC8UNiiBA==
   dependencies:
     typescript "^5.2.2"
 
@@ -64,6 +64,20 @@
     colorspace "1.1.x"
     enabled "2.0.x"
     kuler "^2.0.0"
+
+"@emnapi/core@^0.45.0":
+  version "0.45.0"
+  resolved "https://registry.yarnpkg.com/@emnapi/core/-/core-0.45.0.tgz#e58dc1f70ab3af3f6708991ba56d988088daf204"
+  integrity sha512-DPWjcUDQkCeEM4VnljEOEcXdAD7pp8zSZsgOujk/LGIwCXWbXJngin+MO4zbH429lzeC3WbYLGjE2MaUOwzpyw==
+  dependencies:
+    tslib "^2.4.0"
+
+"@emnapi/runtime@^0.45.0":
+  version "0.45.0"
+  resolved "https://registry.yarnpkg.com/@emnapi/runtime/-/runtime-0.45.0.tgz#e754de04c683263f34fd0c7f32adfe718bbe4ddd"
+  integrity sha512-Txumi3td7J4A/xTTwlssKieHKTGl3j4A1tglBx72auZ49YK7ePY6XZricgIg9mnZT4xPfA+UPCUdnhRuEFDL+w==
+  dependencies:
+    tslib "^2.4.0"
 
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0":
   version "4.4.0"
@@ -165,6 +179,102 @@
   integrity sha512-8zJ8N1x51xo9hwPh6AWnKdLGEC5N3lDa6kms1YHmFBoRhTpJR6HG8wWk0td1MVCu9cD4YBrvjZEtd5Obw0Fbnw==
   dependencies:
     sparse-bitfield "^3.0.3"
+
+"@mongodb-js/saslprep@^1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@mongodb-js/saslprep/-/saslprep-1.1.5.tgz#0c48a96c8d799e81fae311b7251aa5c1dc7c6e95"
+  integrity sha512-XLNOMH66KhJzUJNwT/qlMnS4WsNDWD5ASdyaSH3EtK+F4r/CFGa3jT4GNi4mfOitGvWXtdLgQJkQjxSVrio+jA==
+  dependencies:
+    sparse-bitfield "^3.0.3"
+
+"@napi-rs/image-android-arm64@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-android-arm64/-/image-android-arm64-1.8.0.tgz#d4006bec46b694e193ad665a27f57fe4f53e6201"
+  integrity sha512-iSlEFSG3lJ0hhSogLnIxevJVUoHDJfCEVUwSE/oBojCQPso3/olF5FxHvgB7uVw87grylJWLUBraKcHKAZVtoQ==
+
+"@napi-rs/image-darwin-arm64@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-darwin-arm64/-/image-darwin-arm64-1.8.0.tgz#7382f4030a5fc6ae3714c317e37cd8766e188724"
+  integrity sha512-xukyzmfJClOikHeP4gN3/umiTSFZuJ2xuZFoabAc0xoprG3txthLS2TcL39fb5CWTWTLEOBi3mvSQAY2gYLY+g==
+
+"@napi-rs/image-darwin-x64@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-darwin-x64/-/image-darwin-x64-1.8.0.tgz#0015f3d60e6a2a523b0bd44a7c5930ed685fb6ef"
+  integrity sha512-bPFatP+noPDmoUaJC62zgDqiL1rrNTevhqOnenm725ZQetDjaGndF63xCdKTSiyf6gOaIjZrQiBzzQ40zRoltg==
+
+"@napi-rs/image-freebsd-x64@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-freebsd-x64/-/image-freebsd-x64-1.8.0.tgz#d21793dea9d233d3f9e93f2ae5fcb901ed3b858b"
+  integrity sha512-aaQMJP5CCcd2Qq8GQn3M0X9bTv366jKrNDGdSLzmqR9nMeOplN6sd5R0++xaTNGOt5yAorjhzPkF3F11lYZlAQ==
+
+"@napi-rs/image-linux-arm-gnueabihf@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-linux-arm-gnueabihf/-/image-linux-arm-gnueabihf-1.8.0.tgz#4d12a00652e8aded8d7be29e19b393551563fff6"
+  integrity sha512-hpF/EuHYozh7q0RQb+TBlzNGSvmYPijadZAatLGYqU6ndOrcMS7KOS7okD8CG3WynoU3M3F+Dp4bpR09K//zaw==
+
+"@napi-rs/image-linux-arm64-gnu@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-linux-arm64-gnu/-/image-linux-arm64-gnu-1.8.0.tgz#91d7fbe84985f0822eb5cc5b2496d24f6da87c9b"
+  integrity sha512-VpaFIsy2CGkBbCdccpjEMBQJtfcQWP19JvmWtV9teDRdPBhLKdSSa/1QqjYVJ3jYFyLKIR1gNVNCYBUhvtbFug==
+
+"@napi-rs/image-linux-arm64-musl@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-linux-arm64-musl/-/image-linux-arm64-musl-1.8.0.tgz#14cadc3aa13658b74ccefa10dada000ef12ff8e0"
+  integrity sha512-3DH5vT0EMNKkLYQft3nu8pKZOqRq6PySYJz7p84WM36oskMCqQz7K7n71JAXsDWcxzx3AHD8AdlkcTraYr5DPQ==
+
+"@napi-rs/image-linux-x64-gnu@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-linux-x64-gnu/-/image-linux-x64-gnu-1.8.0.tgz#85cc09314acbbea3b9e2bffd051a4ac950e5f70b"
+  integrity sha512-vh+J6lQiAsi84ugv969L5iS4ap6d4E1eYgdOZ8q+K7DmNe+xwMID2hTSWK3SVP8OK0NHjfd2YDj9Cc4C+yub3g==
+
+"@napi-rs/image-linux-x64-musl@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-linux-x64-musl/-/image-linux-x64-musl-1.8.0.tgz#9c9354227e2f8615372e5f51b9c2334ddfce36ba"
+  integrity sha512-ut9xwrHvmkXVb37ICvmSNqzWw3SOu+zqaxCYgLplybVLl13DF5rCsGZg1SCRqjnxQ4OTLhEWbT5RSBWMdh5obA==
+
+"@napi-rs/image-wasm32-wasi@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-wasm32-wasi/-/image-wasm32-wasi-1.8.0.tgz#ec71c35638d52610600c2468992e441adfda92a7"
+  integrity sha512-qReLc68rYp6c0wiRma/HgjdAF8/tcBINzBmYrniEXSRdGpjmSXrRY8REan2q/JxfonhC8raHJUVPF5w5+ex56g==
+  dependencies:
+    "@napi-rs/wasm-runtime" "^0.1.1"
+
+"@napi-rs/image-win32-ia32-msvc@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-win32-ia32-msvc/-/image-win32-ia32-msvc-1.8.0.tgz#ba8e26a130e06c3bc3cb2d838d79f2bfde915d9e"
+  integrity sha512-yixQewIGbECjVS7uma38Ya+AVFJgmFqKyj/r5jNwwDXd3ErpCfqHYZdTnu9+2rDdx9b5nNDo1hxgbklooZE6vQ==
+
+"@napi-rs/image-win32-x64-msvc@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image-win32-x64-msvc/-/image-win32-x64-msvc-1.8.0.tgz#e473fc8708e6b90791ca6b92c7b1415b4f25b871"
+  integrity sha512-/+wvlPcpObA3E18OTvFtasOFs4nbp8zIqR2bem5tP7VNzw0b9Iw5LJv+BLpCyDT1zBqm2wKFzYQaBla/5nGOdA==
+
+"@napi-rs/image@^1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@napi-rs/image/-/image-1.8.0.tgz#204294a449cf0df663b000592759e74986dad8f8"
+  integrity sha512-2zgeWCP6KgHGuvQhOwbSet4X3zhlfxIFhYCgJBdM+jNWGz10hQxbJaiuNZtPVOYCQR3wwu8WxYDBGDvydB9tvQ==
+  optionalDependencies:
+    "@napi-rs/image-android-arm64" "1.8.0"
+    "@napi-rs/image-darwin-arm64" "1.8.0"
+    "@napi-rs/image-darwin-x64" "1.8.0"
+    "@napi-rs/image-freebsd-x64" "1.8.0"
+    "@napi-rs/image-linux-arm-gnueabihf" "1.8.0"
+    "@napi-rs/image-linux-arm64-gnu" "1.8.0"
+    "@napi-rs/image-linux-arm64-musl" "1.8.0"
+    "@napi-rs/image-linux-x64-gnu" "1.8.0"
+    "@napi-rs/image-linux-x64-musl" "1.8.0"
+    "@napi-rs/image-wasm32-wasi" "1.8.0"
+    "@napi-rs/image-win32-ia32-msvc" "1.8.0"
+    "@napi-rs/image-win32-x64-msvc" "1.8.0"
+
+"@napi-rs/wasm-runtime@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-0.1.1.tgz#ec090e2f46bee2ed0c8486dd9d97ddca836ae30e"
+  integrity sha512-ATj9ua659JgrkICjJscaeZdmPr44cb/KFjNWuD0N6pux0SpzaM7+iOuuK11mAnQM2N9q0DT4REu6NkL8ZEhopw==
+  dependencies:
+    "@emnapi/core" "^0.45.0"
+    "@emnapi/runtime" "^0.45.0"
+    "@tybys/wasm-util" "^0.8.1"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -322,6 +432,13 @@
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.2.tgz#423c77877d0569db20e1fc80885ac4118314010e"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
+
+"@tybys/wasm-util@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@tybys/wasm-util/-/wasm-util-0.8.1.tgz#10360976b7f679497ea8526791006417ff304abb"
+  integrity sha512-GSsTwyBl4pIzsxAY5wroZdyQKyhXk0d8PCRZtrSZ2WEB1cBdrp2EgGBwHOGCZtIIPun/DL3+AykCv+J6fyRH4Q==
+  dependencies:
+    tslib "^2.4.0"
 
 "@types/body-parser@*":
   version "1.19.2"
@@ -1096,6 +1213,11 @@ bson@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/bson/-/bson-6.2.0.tgz#4b6acafc266ba18eeee111373c2699304a9ba0a3"
   integrity sha512-ID1cI+7bazPDyL9wYy9GaQ8gEEohWvcUl/Yf0dIdutJxnmInEEyCsb4awy/OiBfall7zBA179Pahi3vCdFze3Q==
+
+bson@^6.4.0, bson@^6.5.0:
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-6.6.0.tgz#f225137eb49fe19bee4d87949a0515c05176e2ad"
+  integrity sha512-BVINv2SgcMjL4oYbBuCQTpE3/VKOSxrOA8Cj/wQP7izSzlBGVomdm+TcUd0Pzy0ytLSSDweCKQ6X3f5veM5LQA==
 
 buffer-crc32@~0.2.3:
   version "0.2.13"
@@ -3449,10 +3571,10 @@ jws@^3.2.2:
     jwa "^1.4.1"
     safe-buffer "^5.0.1"
 
-kareem@2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/kareem/-/kareem-2.5.1.tgz#7b8203e11819a8e77a34b3517d3ead206764d15d"
-  integrity sha512-7jFxRVm+jD+rkq3kY0iZDJfsO2/t4BBPeEb2qKn2lR/9KhuksYk5hxzfRYWMPV8P/x2d0kHD306YyWLzjjH+uA==
+kareem@2.6.3:
+  version "2.6.3"
+  resolved "https://registry.yarnpkg.com/kareem/-/kareem-2.6.3.tgz#23168ec8ffb6c1abfd31b7169a6fb1dd285992ac"
+  integrity sha512-C3iHfuGUXK2u8/ipq9LfjFfXFxAZMQJJq7vLS45r3D9Y2xQ/m4S8zaR4zMLFWh9AsNPXmcFfUDhTEO8UIC/V6Q==
 
 kuler@^2.0.0:
   version "2.0.0"
@@ -3824,13 +3946,13 @@ mongodb-connection-string-url@^3.0.0:
     "@types/whatwg-url" "^11.0.2"
     whatwg-url "^13.0.0"
 
-mongodb@6.3.0, mongodb@^6.3.0:
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-6.3.0.tgz#ec9993b19f7ed2ea715b903fcac6171c9d1d38ca"
-  integrity sha512-tt0KuGjGtLUhLoU263+xvQmPHEGTw5LbcNC73EoFRYgSHwZt5tsoJC110hDyO1kjQzpgNrpdcSza9PknWN4LrA==
+mongodb@6.5.0:
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-6.5.0.tgz#3735b4fba085b26ca06f7744e9639bc538e93d87"
+  integrity sha512-Fozq68InT+JKABGLqctgtb8P56pRrJFkbhW0ux+x1mdHeyinor8oNzJqwLjV/t5X5nJGfTlluxfyMnOXNggIUA==
   dependencies:
-    "@mongodb-js/saslprep" "^1.1.0"
-    bson "^6.2.0"
+    "@mongodb-js/saslprep" "^1.1.5"
+    bson "^6.4.0"
     mongodb-connection-string-url "^3.0.0"
 
 mongodb@^3.6.9:
@@ -3846,14 +3968,23 @@ mongodb@^3.6.9:
   optionalDependencies:
     saslprep "^1.0.0"
 
-mongoose@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-8.1.0.tgz#25be9a39295c0cbffc971fdd4fb6302dceeb2ded"
-  integrity sha512-kOA4Xnq2goqNpN9EmYElGNWfxA9H80fxcr7UdJKWi3UMflza0R7wpTihCpM67dE/0MNFljoa0sjQtlXVkkySAQ==
+mongodb@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-6.3.0.tgz#ec9993b19f7ed2ea715b903fcac6171c9d1d38ca"
+  integrity sha512-tt0KuGjGtLUhLoU263+xvQmPHEGTw5LbcNC73EoFRYgSHwZt5tsoJC110hDyO1kjQzpgNrpdcSza9PknWN4LrA==
   dependencies:
+    "@mongodb-js/saslprep" "^1.1.0"
     bson "^6.2.0"
-    kareem "2.5.1"
-    mongodb "6.3.0"
+    mongodb-connection-string-url "^3.0.0"
+
+mongoose@^8.3.2:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-8.3.2.tgz#88d7eceecb1284c67c0d2e64d352442bc75f0aae"
+  integrity sha512-3JcpDjFI25cF/3xpu+4+9nM0lURQTNLcP86X83+LvuICdn453QQLmhSrUr2IPM/ffLiDE9KPl9slNb2s0hZPpg==
+  dependencies:
+    bson "^6.5.0"
+    kareem "2.6.3"
+    mongodb "6.5.0"
     mpath "0.9.0"
     mquery "5.0.0"
     ms "2.1.3"

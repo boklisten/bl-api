@@ -961,6 +961,7 @@ describe("OrderEmailHandler", () => {
           taxAmount: 0,
         },
       ],
+      pendingSignature: false,
     };
   });
 });

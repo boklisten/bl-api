@@ -205,6 +205,7 @@ describe("OrderValidator", () => {
       branch: "branch1",
       byCustomer: true,
       payments: ["payment1"],
+      pendingSignature: false,
     };
 
     testBranch = {

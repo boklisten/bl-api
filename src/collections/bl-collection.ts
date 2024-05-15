@@ -25,6 +25,7 @@ export enum BlCollectionName {
   Orders = "orders",
   PendingPasswordResets = "pendingpasswordresets",
   Payments = "payments",
+  Signatures = "signatures",
   UniqueItems = "uniqueitems",
   UserDetails = "userdetails",
   Users = "users",

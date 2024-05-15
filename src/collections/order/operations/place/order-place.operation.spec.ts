@@ -1,15 +1,24 @@
-import "mocha";
+import {
+  BlError,
+  CustomerItem,
+  Match,
+  Order,
+  SignatureMetadata,
+  UserDetail,
+} from "@boklisten/bl-model";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import "mocha";
+import moment from "moment-timezone";
 import sinon from "sinon";
 import { SEResponseHandler } from "../../../../response/se.response.handler";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
+import { BlCollectionName } from "../../../bl-collection";
 import { OrderToCustomerItemGenerator } from "../../../customer-item/helpers/order-to-customer-item-generator";
-import { OrderPlaceOperation } from "./order-place.operation";
-import { BlError, CustomerItem, Match, Order } from "@boklisten/bl-model";
+import { Signature } from "../../../signature/signature.schema";
 import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
 import { OrderValidator } from "../../helpers/order-validator/order-validator";
-import { BlCollectionName } from "../../../bl-collection";
+import { OrderPlaceOperation } from "./order-place.operation";
 
 chai.use(chaiAsPromised);
 
@@ -21,7 +30,22 @@ describe("OrderPlaceOperation", () => {
     BlCollectionName.CustomerItems,
   );
   const matchesStorage = new BlDocumentStorage<Match>(BlCollectionName.Matches);
-  const orderPlacedHandler = new OrderPlacedHandler();
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails,
+  );
+  const signatureStorage = new BlDocumentStorage<Signature>(
+    BlCollectionName.Signatures,
+  );
+  const orderPlacedHandler = new OrderPlacedHandler(
+    undefined,
+    orderStorage,
+    undefined,
+    userDetailStorage,
+    undefined,
+    undefined,
+    undefined,
+    signatureStorage,
+  );
   const orderValidator = new OrderValidator();
 
   const orderPlaceOperation = new OrderPlaceOperation(
@@ -31,7 +55,7 @@ describe("OrderPlaceOperation", () => {
     customerItemStorage,
     orderPlacedHandler,
     orderValidator,
-    undefined,
+    userDetailStorage,
     matchesStorage,
   );
 
@@ -46,6 +70,8 @@ describe("OrderPlaceOperation", () => {
   );
   const validateOrderStub = sinon.stub(orderValidator, "validate");
   const getAllMatchesStub = sinon.stub(matchesStorage, "getAll");
+  const getUserDetailStub = sinon.stub(userDetailStorage, "get");
+  const getSignatureStub = sinon.stub(signatureStorage, "get");
 
   describe("run()", () => {
     beforeEach(() => {
@@ -57,9 +83,11 @@ describe("OrderPlaceOperation", () => {
       generateCustomerItemStub.reset();
       validateOrderStub.reset();
       getAllMatchesStub.reset();
+      getUserDetailStub.reset();
+      getSignatureStub.reset();
     });
 
-    const validOrder = {
+    const validOrder: Order = {
       id: "validOrder1",
       amount: 100,
 
@@ -87,7 +115,32 @@ describe("OrderPlaceOperation", () => {
       placed: false,
       payments: ["payment1"],
       delivery: "delivery1",
-    } as Order;
+      pendingSignature: false,
+    };
+
+    const userDetailWithSignatures: UserDetail = {
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      postCode: "",
+      postCity: "",
+      country: "",
+      dob: new Date(),
+      branch: "",
+      signatures: ["validSignature"],
+      id: "customer1",
+    };
+
+    const validSignature: Signature = {
+      image: Buffer.from("test"),
+      signingName: "",
+      signedByGuardian: true,
+      id: "validSignature",
+      creationTime: moment()
+        .subtract(SignatureMetadata.NUM_MONTHS_VALID / 2, "months")
+        .toDate(),
+    };
 
     it("should reject if order is not found", () => {
       getOrderStub.rejects(new BlError('order "randomOrder" not found'));
@@ -102,6 +155,8 @@ describe("OrderPlaceOperation", () => {
       placeOrderStub.rejects(new BlError("order could not be placed"));
       getAllMatchesStub.resolves([]);
       getManyCustomerItemsStub.resolves([]);
+      getUserDetailStub.resolves(userDetailWithSignatures);
+      getSignatureStub.resolves(validSignature);
 
       return expect(
         orderPlaceOperation.run({
@@ -117,6 +172,8 @@ describe("OrderPlaceOperation", () => {
       validateOrderStub.rejects(new BlError("order not valid!"));
       getAllMatchesStub.resolves([]);
       getManyCustomerItemsStub.resolves([]);
+      getSignatureStub.resolves(validSignature);
+      getUserDetailStub.resolves(userDetailWithSignatures);
 
       return expect(
         orderPlaceOperation.run({
@@ -145,6 +202,8 @@ describe("OrderPlaceOperation", () => {
       generateCustomerItemStub.resolves([]);
       placeOrderStub.resolves(order);
       validateOrderStub.resolves(true);
+      getSignatureStub.resolves(validSignature);
+      getUserDetailStub.resolves(userDetailWithSignatures);
 
       const result = await orderPlaceOperation.run({
         documentId: validOrder.id,

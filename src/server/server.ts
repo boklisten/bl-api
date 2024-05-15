@@ -99,10 +99,13 @@ export class Server {
 
   private initialServerConfig() {
     this.app = express();
-    this.app.use(json());
+    this.app.use(json({ limit: "1mb" }));
 
     process.on("unhandledRejection", (reason, p) => {
-      logger.error(`unhandeled rejection at: ${p}, reason: ${reason}`);
+      logger.error(
+        `unhandled rejection at: ${p}, reason: ${reason}` +
+          (reason instanceof Error ? `, stack: ${reason.stack}` : ""),
+      );
     });
     const whitelist = process.env["URI_WHITELIST"]?.split(" ");
     const allowedMethods = ["GET", "PUT", "PATCH", "POST", "DELETE"];

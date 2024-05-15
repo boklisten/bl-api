@@ -20,6 +20,7 @@ describe("DeliveryBringHandler", () => {
       customer: "customer1",
       branch: "branch1",
       byCustomer: true,
+      pendingSignature: false,
     };
 
     testDelivery = {

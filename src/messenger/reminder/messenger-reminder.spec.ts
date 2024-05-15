@@ -110,6 +110,7 @@ describe("MessengerReminder", () => {
         postCity: "oslo",
         country: "norway",
         dob: new Date(),
+        signatures: [],
       };
 
       const textBlocks = [

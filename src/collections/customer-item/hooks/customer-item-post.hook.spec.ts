@@ -105,6 +105,7 @@ describe("CustomerItemPostHook", () => {
       employee: "employee1",
       placed: true,
       payments: [],
+      pendingSignature: false,
     };
 
     validateCustomerItem = true;

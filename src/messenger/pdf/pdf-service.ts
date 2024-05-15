@@ -1,5 +1,3 @@
-import { isNullOrUndefined } from "util";
-
 import { EmailAttachment, EmailHandler, PdfHandler } from "@boklisten/bl-email";
 import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
 import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
@@ -7,6 +5,7 @@ import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
 import { Order, UserDetail } from "@boklisten/bl-model";
 import moment from "moment";
 
+import { isNotNullish } from "../../helper/typescript-helpers";
 import { OrderEmailHandler } from "../email/order-email/order-email-handler";
 
 export class PdfService {
@@ -31,7 +30,7 @@ export class PdfService {
 
     const emailUser: EmailUser = {
       id: customerDetail.id,
-      dob: !isNullOrUndefined(customerDetail.dob)
+      dob: isNotNullish(customerDetail.dob)
         ? moment(customerDetail.dob)
             .utcOffset(this._utcOffset)
             .format(this._standardDayFormat)
@@ -59,7 +58,7 @@ export class PdfService {
 
     const emailUser: EmailUser = {
       id: customerDetail.id,
-      dob: !isNullOrUndefined(customerDetail.dob)
+      dob: isNotNullish(customerDetail.dob)
         ? moment(customerDetail.dob)
             .utcOffset(this._utcOffset)
             .format(this._standardDayFormat)

@@ -22,7 +22,11 @@ export class BlErrorHandler {
     const blError =
       err instanceof BlError
         ? err
-        : new BlError("unknown error").store("error", err);
+        : err instanceof Error
+          ? new BlError(
+              `unknown error: ${err.message}, stack:\n${err.stack}`,
+            ).store("error", err)
+          : new BlError(`unknown error: ${err}`).store("error", err);
 
     this.printErrorStack(blError);
     this.storeError(blError);
@@ -57,25 +61,34 @@ export class BlErrorHandler {
       });
   }
 
-  private printErrorStack(blError: BlError) {
-    this.printBlError(blError);
+  private printErrorStack(blError: unknown) {
+    this.printError(blError);
   }
 
-  private printBlError(blError: BlError) {
-    if (blError.errorStack && blError.errorStack.length > 0) {
-      for (const err of blError.errorStack) {
-        this.printBlError(err);
+  private printError(error: unknown) {
+    if (error instanceof BlError) {
+      if (error.errorStack && error.errorStack.length > 0) {
+        for (const err of error.errorStack) {
+          this.printError(err);
+        }
       }
-    }
 
-    logger.verbose(`! (${blError.getCode()}): ${blError.getMsg()}`);
+      logger.verbose(
+        `! (${error.getCode()}): ${error.getMsg()}` +
+          (error.stack ? `, stack:\n${error.stack}` : ""),
+      );
 
-    if (blError.getStore() && blError.getStore().length > 0) {
-      for (const storeData of blError.getStore()) {
-        logger.verbose(
-          `! (${blError.getCode()}) ${JSON.stringify(storeData.value)}`,
-        );
+      if (error.getStore() && error.getStore().length > 0) {
+        for (const storeData of error.getStore()) {
+          logger.verbose(
+            `! (${error.getCode()}) ${JSON.stringify(storeData.value)}`,
+          );
+        }
       }
+    } else if (error instanceof Error) {
+      logger.verbose(`! (err) ${error.message}\n${error.stack}`);
+    } else {
+      logger.verbose(`! (???) ${error}`);
     }
   }
 
@@ -177,6 +190,17 @@ export class BlErrorHandler {
         blapiErrorResponse.msg =
           "Noen av bøkene i handlekurven har frist mer enn to år i fremtiden og kan derfor ikke deles ut/samles inn. Ta kontakt med administrator for mer informasjon";
         blapiErrorResponse.httpStatus = 400;
+        break;
+      case 811:
+        blapiErrorResponse.msg =
+          "Kunden har ikke en gyldig underskrift på låneavtalen, be foreldre sjekke e-post";
+        blapiErrorResponse.httpStatus = 409;
+        break;
+      case 812:
+        blapiErrorResponse.msg =
+          "Forsørger prøvde å signere for myndig, eller mindreårig prøve å signere for seg" +
+          " selv";
+        blapiErrorResponse.httpStatus = 409;
         break;
     }
 

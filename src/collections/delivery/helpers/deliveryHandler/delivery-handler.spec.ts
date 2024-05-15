@@ -28,6 +28,7 @@ describe("DeliveryHandler", () => {
       branch: "branch1",
       customer: "customer1",
       byCustomer: true,
+      pendingSignature: false,
     };
 
     testAccessToken = {

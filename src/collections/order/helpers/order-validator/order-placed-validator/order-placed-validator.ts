@@ -1,7 +1,6 @@
-import { isNullOrUndefined } from "util";
-
 import { Order, Delivery, Payment, BlError } from "@boklisten/bl-model";
 
+import { isNullish } from "../../../../../helper/typescript-helpers";
 import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../../bl-collection";
 import { deliverySchema } from "../../../../delivery/delivery.schema";
@@ -37,11 +36,11 @@ export class OrderPlacedValidator {
         );
       }
 
-      if (isNullOrUndefined(order.payments) || order.payments.length <= 0) {
+      if (isNullish(order.payments) || order.payments.length <= 0) {
         return resolve(true); // if there are no payments, there is no need do do more validation
       }
 
-      if (isNullOrUndefined(order.delivery)) {
+      if (isNullish(order.delivery)) {
         // if there are payments but no delivery
         return this.validatePayments(order);
       } else {

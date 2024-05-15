@@ -79,6 +79,7 @@ describe("DeliveryValidator", () => {
         customer: "customer1",
         byCustomer: true,
         orderItems: [],
+        pendingSignature: false,
       };
     });
 

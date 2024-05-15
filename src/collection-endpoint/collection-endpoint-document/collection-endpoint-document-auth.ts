@@ -1,5 +1,3 @@
-import { isNullOrUndefined } from "util";
-
 import { BlDocument, BlError } from "@boklisten/bl-model";
 
 import { PermissionService } from "../../auth/permission/permission.service";
@@ -7,6 +5,7 @@ import {
   BlDocumentPermission,
   BlEndpointRestriction,
 } from "../../collections/bl-collection";
+import { isNullish } from "../../helper/typescript-helpers";
 import { BlApiRequest } from "../../request/bl-api-request";
 
 export class CollectionEndpointDocumentAuth<T extends BlDocument> {
@@ -23,16 +22,16 @@ export class CollectionEndpointDocumentAuth<T extends BlDocument> {
     documentPermission?: BlDocumentPermission,
   ): Promise<T[]> {
     if (restriction) {
-      if (isNullOrUndefined(docs)) {
+      if (isNullish(docs)) {
         return Promise.reject(new BlError("docs is undefined"));
       }
 
-      if (isNullOrUndefined(blApiRequest)) {
+      if (isNullish(blApiRequest)) {
         return Promise.reject(new BlError("blApiRequest is null or undefined"));
       }
 
       for (const doc of docs) {
-        if (isNullOrUndefined(doc.viewableFor) || doc.viewableFor.length <= 0) {
+        if (isNullish(doc.viewableFor) || doc.viewableFor.length <= 0) {
           if (restriction.restricted) {
             if (
               !this._permissionService.haveRestrictedDocumentPermission(

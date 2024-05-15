@@ -1,10 +1,9 @@
-import { isNullOrUndefined } from "util";
-
 import { BlError, DeliveryInfoBring, Item } from "@boklisten/bl-model";
 import moment from "moment";
 
 import { BringDelivery } from "./bringDelivery";
 import { APP_CONFIG } from "../../../../application-config";
+import { isNullish } from "../../../../helper/typescript-helpers";
 import { HttpHandler } from "../../../../http/http.handler";
 
 export type ShipmentAddress = {
@@ -37,10 +36,7 @@ export class BringDeliveryService {
     items: Item[],
     freeDelivery: boolean,
   ): Promise<DeliveryInfoBring> {
-    if (
-      isNullOrUndefined(facilityAddress) ||
-      isNullOrUndefined(shipmentAddress)
-    ) {
+    if (isNullish(facilityAddress) || isNullish(shipmentAddress)) {
       return Promise.reject(
         new BlError(
           "required fields facilityAddress or shipmentAddress are null or undefined",

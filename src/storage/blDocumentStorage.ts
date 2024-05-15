@@ -141,7 +141,7 @@ export class BlDocumentStorage<T extends BlDocument>
     });
   }
 
-  async put(id: string, data: unknown): Promise<void> {
+  async put(id: string, data: T): Promise<void> {
     await this.mongoDbHandler.put(id, data);
   }
 

@@ -18,6 +18,7 @@ import {
   PermissionService,
   SystemUser,
 } from "../../../../auth/permission/permission.service";
+import { isNotNullish } from "../../../../helper/typescript-helpers";
 import { Operation } from "../../../../operation/operation";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
 import { BlApiRequest } from "../../../../request/bl-api-request";
@@ -35,52 +36,49 @@ import { orderSchema } from "../../order.schema";
 export class OrderPlaceOperation implements Operation {
   private _queryBuilder: SEDbQueryBuilder;
   private _permissionService: PermissionService;
+  private readonly _resHandler: SEResponseHandler;
+  private readonly _orderToCustomerItemGenerator: OrderToCustomerItemGenerator;
+  private readonly _orderStorage: BlDocumentStorage<Order>;
+  private readonly _customerItemStorage: BlDocumentStorage<CustomerItem>;
+  private readonly _orderPlacedHandler: OrderPlacedHandler;
+  private readonly _orderValidator: OrderValidator;
+  private readonly _userDetailStorage: BlDocumentStorage<UserDetail>;
+  private readonly _matchStorage: BlDocumentStorage<Match>;
 
   constructor(
-    private _resHandler?: SEResponseHandler,
-    private _orderToCustomerItemGenerator?: OrderToCustomerItemGenerator,
-    private _orderStorage?: BlDocumentStorage<Order>,
-    private _customerItemStorage?: BlDocumentStorage<CustomerItem>,
-    private _orderPlacedHandler?: OrderPlacedHandler,
-    private _orderValidator?: OrderValidator,
-    private _userDetailStorage?: BlDocumentStorage<UserDetail>,
-    private _matchStorage?: BlDocumentStorage<Match>,
+    resHandler?: SEResponseHandler,
+    orderToCustomerItemGenerator?: OrderToCustomerItemGenerator,
+    orderStorage?: BlDocumentStorage<Order>,
+    customerItemStorage?: BlDocumentStorage<CustomerItem>,
+    orderPlacedHandler?: OrderPlacedHandler,
+    orderValidator?: OrderValidator,
+    userDetailStorage?: BlDocumentStorage<UserDetail>,
+    matchStorage?: BlDocumentStorage<Match>,
   ) {
-    this._resHandler = this._resHandler
-      ? this._resHandler
-      : new SEResponseHandler();
+    this._resHandler = resHandler ?? new SEResponseHandler();
 
-    this._orderToCustomerItemGenerator = this._orderToCustomerItemGenerator
-      ? this._orderToCustomerItemGenerator
-      : new OrderToCustomerItemGenerator();
+    this._orderToCustomerItemGenerator =
+      orderToCustomerItemGenerator ?? new OrderToCustomerItemGenerator();
 
-    this._orderStorage = this._orderStorage
-      ? this._orderStorage
-      : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
+    this._orderStorage =
+      orderStorage ??
+      new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
 
-    this._customerItemStorage = this._customerItemStorage
-      ? this._customerItemStorage
-      : new BlDocumentStorage(
-          BlCollectionName.CustomerItems,
-          customerItemSchema,
-        );
+    this._customerItemStorage =
+      customerItemStorage ??
+      new BlDocumentStorage(BlCollectionName.CustomerItems, customerItemSchema);
 
-    this._orderPlacedHandler = this._orderPlacedHandler
-      ? this._orderPlacedHandler
-      : new OrderPlacedHandler();
+    this._orderPlacedHandler = orderPlacedHandler ?? new OrderPlacedHandler();
 
-    this._orderValidator = this._orderValidator
-      ? this._orderValidator
-      : new OrderValidator();
+    this._orderValidator = orderValidator ?? new OrderValidator();
 
-    this._userDetailStorage = this._userDetailStorage
-      ? this._userDetailStorage
-      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+    this._userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
 
-    this._matchStorage ??= new BlDocumentStorage(
-      BlCollectionName.Matches,
-      matchSchema,
-    );
+    this._matchStorage =
+      matchStorage ??
+      new BlDocumentStorage(BlCollectionName.Matches, matchSchema);
 
     this._queryBuilder = new SEDbQueryBuilder();
     this._permissionService = new PermissionService();
@@ -281,16 +279,16 @@ export class OrderPlaceOperation implements Operation {
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const returnCustomerItems = await this._customerItemStorage.getMany(
-      returnOrderItems.map((orderItem) => String(orderItem.customerItem)),
+      returnOrderItems
+        .map((orderItem) => orderItem.customerItem as string | undefined)
+        .filter(isNotNullish),
     );
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const handoutCustomerItems = await this._customerItemStorage.getMany(
-      handoutOrderItems.map((orderItem) => String(orderItem.customerItem)),
+      handoutOrderItems
+        .map((orderItem) => orderItem.customerItem as string | undefined)
+        .filter(isNotNullish),
     );
 
     const standMatches: StandMatch[] = allMatches.filter(
@@ -364,6 +362,10 @@ export class OrderPlaceOperation implements Operation {
     } catch (e) {
       throw new ReferenceError(`order "${blApiRequest.documentId}" not found`);
     }
+
+    const pendingSignature =
+      await this._orderPlacedHandler.isSignaturePending(order);
+
     if (order.byCustomer) {
       const orderContainsActiveCustomerItems =
         await this.hasOpenOrderWithOrderItems(order);
@@ -386,7 +388,7 @@ export class OrderPlaceOperation implements Operation {
         orderItem.type === "return" || orderItem.type === "buyback",
     );
     const handoutOrderItems = order.orderItems.filter(
-      (orderItem) => orderItem.type === "rent",
+      (orderItem) => orderItem.handout && orderItem.type === "rent",
     );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -420,7 +422,10 @@ export class OrderPlaceOperation implements Operation {
       // @ts-ignore
       await this._orderStorage.update(
         order.id,
-        { orderItems: order.orderItems },
+        {
+          orderItems: order.orderItems,
+          pendingSignature,
+        },
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         blApiRequest.user,

@@ -1,5 +1,3 @@
-import { isBoolean, isNullOrUndefined } from "util";
-
 import {
   AccessToken,
   BlapiResponse,
@@ -13,6 +11,7 @@ import { CollectionEndpointDocumentAuth } from "./collection-endpoint-document/c
 import { CollectionEndpointOperation } from "./collection-endpoint-operation";
 import { BlDocumentPermission, BlEndpoint } from "../collections/bl-collection";
 import { ApiPath } from "../config/api-path";
+import { isBoolean, isNotNullish } from "../helper/typescript-helpers";
 import { Hook } from "../hook/hook";
 import { BlApiRequest } from "../request/bl-api-request";
 import { SEResponseHandler } from "../response/se.response.handler";
@@ -121,7 +120,7 @@ export abstract class CollectionEndpointMethod<T extends BlDocument> {
         // this is the endpoint specific request handler
         let data = req.body;
 
-        if (!isNullOrUndefined(hookData) && !isBoolean(hookData)) {
+        if (isNotNullish(hookData) && !isBoolean(hookData)) {
           data = hookData;
         }
 
@@ -157,7 +156,7 @@ export abstract class CollectionEndpointMethod<T extends BlDocument> {
       .then((docs: T[]) =>
         this._responseHandler.sendResponse(res, new BlapiResponse(docs)),
       )
-      .catch((blError: BlError) =>
+      .catch((blError: unknown) =>
         this._responseHandler.sendErrorResponse(res, blError),
       );
   }

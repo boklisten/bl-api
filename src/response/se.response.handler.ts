@@ -1,8 +1,4 @@
-import {
-  BlapiResponse,
-  BlapiErrorResponse,
-  BlError,
-} from "@boklisten/bl-model";
+import { BlapiResponse, BlapiErrorResponse } from "@boklisten/bl-model";
 import { Response } from "express";
 
 import { BlErrorHandler } from "../bl-error/bl-error-handler";
@@ -34,7 +30,7 @@ export class SEResponseHandler {
     res.redirect(redirectUrl);
   }
 
-  public sendErrorResponse(res: Response, blError: BlError) {
+  public sendErrorResponse(res: Response, blError: unknown) {
     const blapiErrorRes: BlapiErrorResponse =
       this.errorHandler.createBlapiErrorResponse(blError);
 

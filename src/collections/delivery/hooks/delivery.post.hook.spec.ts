@@ -91,6 +91,7 @@ describe("DeliveryPostHook", () => {
       amount: 100,
       byCustomer: true,
       branch: "branch1",
+      pendingSignature: false,
       orderItems: [
         {
           item: "item1",

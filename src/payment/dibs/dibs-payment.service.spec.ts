@@ -54,6 +54,7 @@ describe("DibsPaymentService", () => {
       },
       lastUpdated: new Date(),
       creationTime: new Date(),
+      pendingSignature: false,
     };
 
     testDibsEasyOrder = {

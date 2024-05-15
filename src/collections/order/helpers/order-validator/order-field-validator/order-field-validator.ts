@@ -1,6 +1,6 @@
-import { isNullOrUndefined, isNumber } from "util";
-
 import { Order, OrderItem, BlError } from "@boklisten/bl-model";
+
+import { isNullish, isNumber } from "../../../../../helper/typescript-helpers";
 
 export class OrderFieldValidator {
   validate(order: Order): Promise<boolean> {
@@ -26,11 +26,11 @@ export class OrderFieldValidator {
   }
 
   private validateOrderFields(order: Order): boolean {
-    if (isNullOrUndefined(order.amount)) {
+    if (isNullish(order.amount)) {
       throw new BlError("order.amount is undefined");
     }
 
-    if (isNullOrUndefined(order.orderItems) || order.orderItems.length <= 0) {
+    if (isNullish(order.orderItems) || order.orderItems.length <= 0) {
       throw new BlError("order.orderItems is empty or undefined");
     }
     return true;
@@ -61,7 +61,7 @@ export class OrderFieldValidator {
       throw new BlError("orderItem.taxRate is not defined");
     }
 
-    if (isNullOrUndefined(orderItem.type)) {
+    if (isNullish(orderItem.type)) {
       throw new BlError("orderItem.type is not defined");
     }
 

@@ -1,21 +1,22 @@
 import {
+  Booking,
   Branch,
   BranchItem,
+  Company,
   CustomerItem,
   Delivery,
   EditableText,
+  Invoice,
   Item,
+  Match,
+  Message,
   OpeningHour,
   Order,
   Payment,
-  UserDetail,
-  Message,
-  Invoice,
-  Company,
-  Match,
-  Booking,
-  UniqueItem,
   PendingPasswordReset,
+  SerializedSignature,
+  UniqueItem,
+  UserDetail,
 } from "@boklisten/bl-model";
 import { Router } from "express";
 
@@ -39,6 +40,7 @@ import { OpeningHourCollection } from "../collections/opening-hour/opening-hour.
 import { OrderCollection } from "../collections/order/order.collection";
 import { PaymentCollection } from "../collections/payment/payment.collection";
 import { PendingPasswordResetCollection } from "../collections/pending-password-reset/pending-password-reset.collection";
+import { SignatureCollection } from "../collections/signature/signature.collection";
 import { UniqueItemCollection } from "../collections/unique-item/unique-item.collection";
 import { UserDetailCollection } from "../collections/user-detail/user-detail.collection";
 import { SEResponseHandler } from "../response/se.response.handler";
@@ -99,6 +101,10 @@ export class CollectionEndpointCreator {
       new CollectionEndpoint<EditableText>(
         this._router,
         new EditableTextCollection(),
+      ),
+      new CollectionEndpoint<SerializedSignature>(
+        this._router,
+        new SignatureCollection(),
       ),
     ];
 

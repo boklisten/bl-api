@@ -1,5 +1,3 @@
-import { isNullOrUndefined } from "util";
-
 import { BlapiErrorResponse, BlError } from "@boklisten/bl-model";
 import isEmail from "validator/lib/isEmail";
 
@@ -10,6 +8,7 @@ import { BlCollectionName } from "../../collections/bl-collection";
 import { LocalLogin } from "../../collections/local-login/local-login";
 import { localLoginSchema } from "../../collections/local-login/local-login.schema";
 import { SeCrypto } from "../../crypto/se.crypto";
+import { isNullish } from "../../helper/typescript-helpers";
 import { SEDbQuery } from "../../query/se.db-query";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import { SystemUser } from "../permission/permission.service";
@@ -122,7 +121,7 @@ export class LocalLoginHandler {
 
   public setPassword(username: string, password: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (isNullOrUndefined(password) || password.length < 6) {
+      if (isNullish(password) || password.length < 6) {
         return reject(new BlError("localLogin password to short"));
       }
 

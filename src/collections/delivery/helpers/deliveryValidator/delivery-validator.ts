@@ -1,7 +1,6 @@
-import { isNullOrUndefined } from "util";
-
 import { Delivery, BlError, Order } from "@boklisten/bl-model";
 
+import { isNullish } from "../../../../helper/typescript-helpers";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { DeliveryBranchHandler } from "../deliveryBranch/delivery-branch-handler";
 import { DeliveryBringHandler } from "../deliveryBring/delivery-bring-handler";
@@ -26,7 +25,7 @@ export class DeliveryValidator {
   }
 
   public validate(delivery: Delivery, order: Order): Promise<boolean> {
-    if (isNullOrUndefined(delivery.method)) {
+    if (isNullish(delivery.method)) {
       return Promise.reject(new BlError("delivery.method not defined"));
     }
 

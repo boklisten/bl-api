@@ -65,6 +65,7 @@ describe("OrderPostHook", () => {
       dob: new Date(),
       branch: "branch1",
       orders: [],
+      signatures: [],
     };
 
     testOrder = {
@@ -102,6 +103,7 @@ describe("OrderPostHook", () => {
       },
       lastUpdated: new Date(),
       creationTime: new Date(),
+      pendingSignature: false,
     };
   });
 
