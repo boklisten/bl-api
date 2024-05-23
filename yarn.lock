@@ -28,10 +28,10 @@
   dependencies:
     typescript "^5.2.2"
 
-"@boklisten/bl-post-office@^0.5.53":
-  version "0.5.53"
-  resolved "https://registry.yarnpkg.com/@boklisten/bl-post-office/-/bl-post-office-0.5.53.tgz#c5f016cee7bda895092e9883d146932b1e624c00"
-  integrity sha512-qF94DulYX8WopEmzvZ1AFqWR7W8rnUB1IXyXgVr2EmhWXA7u8WNoHvPYG+9kaWXY1y8bXue5hyFQQ2tWNEWcpg==
+"@boklisten/bl-post-office@^0.5.56":
+  version "0.5.56"
+  resolved "https://registry.yarnpkg.com/@boklisten/bl-post-office/-/bl-post-office-0.5.56.tgz#1cc67bb13f30d240c83e6d65d151626d85d7a981"
+  integrity sha512-vkQojANsNau3QQmj0bQJC+05DcmSyRFi7Y3ZUZYEnm3yexKD5qT2uwdLz/W0mUbbdOs1L/kgdkOHvQeVmY5VJg==
   dependencies:
     "@sendgrid/mail" "^6.3.1"
     "@types/mustache" "^0.8.32"

@@ -189,18 +189,12 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     user: { id: string; permission: UserPermission },
   ): Promise<T> {
-    if (data["user"]) {
-      throw new BlError("can not change user restrictions after creation").code(
-        701,
-      );
-    }
+    const newData = { ...data, lastUpdated: new Date() };
+    // Don't update the user of a document after creation
+    delete newData["user"];
 
     const doc = (await this.mongooseModel
-      .findOneAndUpdate<T>(
-        { _id: id },
-        { ...data, lastUpdated: new Date() },
-        { new: true },
-      )
+      .findOneAndUpdate<T>({ _id: id }, newData, { new: true })
       .lean({ transform: MongooseModelCreator.transformObject })
       .exec()
       .catch((error) => {
@@ -208,7 +202,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
         throw this.handleError(
           new BlError(`failed to update document with id ${id}`).store(
             "data",
-            data,
+            newData,
           ),
           error,
         );
