@@ -87,6 +87,7 @@ export async function createMatchOrder(
     branch: branch.id,
     customer: userDetailId,
     byCustomer: true,
+    pendingSignature: false,
     orderItems: [
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
