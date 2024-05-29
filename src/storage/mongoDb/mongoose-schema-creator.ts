@@ -87,11 +87,19 @@ export class MongooseModelCreator<T> {
       // (embedded documents such as BlDocument.user may have an id field which is different from the _id field)
       if ("_id" in document && !("id" in document))
         document["id"] = document["_id"];
-      if (document["id"] instanceof mongoose.Types.ObjectId) {
-        document["id"] = document["id"].toString();
-      }
       delete document["_id"];
       delete document["__v"];
+      for (const key of Object.keys(document)) {
+        const value = document[key];
+        if (value instanceof mongoose.Types.ObjectId) {
+          document[key] = value.toString();
+        }
+        if (Array.isArray(value)) {
+          document[key] = value.map((entry) =>
+            entry instanceof mongoose.Types.ObjectId ? entry.toString() : entry,
+          );
+        }
+      }
     }
   }
 }
