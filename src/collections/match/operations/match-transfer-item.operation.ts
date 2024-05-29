@@ -94,7 +94,7 @@ export class MatchTransferItemOperation implements Operation {
     const customerItem = activeCustomerItems[0];
 
     const receiverUserMatch = receiverUserMatches.find((userMatch) =>
-      userMatch.expectedItems.includes(String(customerItem?.item)),
+      userMatch.expectedItems.includes(customerItem?.item as string),
     );
 
     if (!receiverUserMatch) {

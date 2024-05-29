@@ -81,6 +81,12 @@ export class MongooseModelCreator<T> {
       ret.forEach((document) =>
         MongooseModelCreator.transformObject({}, document),
       );
+      for (let i = 0; i < ret.length; i++) {
+        const value = ret[i];
+        if (value instanceof mongoose.Types.ObjectId) {
+          ret[i] = value.toString();
+        }
+      }
     } else if (typeof ret === "object") {
       const document = ret as Record<string, unknown>;
       // Translate _id to id only if id does not already exist
