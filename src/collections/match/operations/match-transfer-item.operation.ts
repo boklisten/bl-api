@@ -94,9 +94,7 @@ export class MatchTransferItemOperation implements Operation {
     const customerItem = activeCustomerItems[0];
 
     const receiverUserMatch = receiverUserMatches.find((userMatch) =>
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      userMatch.expectedItems.includes(String(customerItem.item)),
+      userMatch.expectedItems.includes(customerItem?.item as string),
     );
 
     if (!receiverUserMatch) {
