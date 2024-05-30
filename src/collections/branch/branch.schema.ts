@@ -79,6 +79,7 @@ export const branchSchema = new Schema<Branch>({
           maxNumberOfPeriods: Number,
           date: Date,
           percentage: Number,
+          price: Number,
         },
       ],
       default: [],
