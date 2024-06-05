@@ -69,9 +69,7 @@ export class UserDetailChangeEmailOperation implements Operation {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     await this._userDetailStorage.update(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      userDetail["_id"],
+      userDetail.id,
       { email: emailChange },
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -80,9 +78,7 @@ export class UserDetailChangeEmailOperation implements Operation {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     await this._userStorage.update(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      user["_id"],
+      user.id,
       { username: emailChange },
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -91,9 +87,7 @@ export class UserDetailChangeEmailOperation implements Operation {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     await this._localLoginStorage.update(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      localLogin["_id"],
+      localLogin.id,
       { username: emailChange },
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore

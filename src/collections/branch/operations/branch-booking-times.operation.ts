@@ -82,7 +82,7 @@ export class BranchBookingTimesOperation implements Operation {
       const cleanedBookingTimes = bookingTimes.map((bookingTime) => {
         return {
           from: this.dateService.toDate(
-            bookingTime["_id"],
+            bookingTime.id,
             "DDMMYYYY",
             "Europe/Oslo",
           ),
