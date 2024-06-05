@@ -91,7 +91,7 @@ export class UserDetailPermissionOperation implements Operation {
     await this._userStorage.update(
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      user["_id"],
+      user.id,
       { permission: permissionChange },
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
