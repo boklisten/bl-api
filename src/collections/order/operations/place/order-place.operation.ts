@@ -299,6 +299,7 @@ export class OrderPlaceOperation implements Operation {
     for (const customerItem of returnCustomerItems) {
       const foundStandMatch = standMatches.find(
         (standMatch) =>
+          standMatch.customer === customerItem.customer &&
           standMatch.expectedHandoffItems.includes(String(customerItem.item)) &&
           !standMatch.deliveredItems.includes(String(customerItem.item)),
       );
