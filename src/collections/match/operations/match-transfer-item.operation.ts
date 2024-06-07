@@ -91,7 +91,7 @@ export class MatchTransferItemOperation implements Operation {
     if (activeCustomerItems.length !== 1) {
       throw new BlError("blid not active").code(804);
     }
-    const customerItem = activeCustomerItems[0];
+    const customerItem = activeCustomerItems[0]!;
 
     const receiverUserMatch = receiverUserMatches.find((userMatch) =>
       userMatch.expectedItems.includes(customerItem?.item as string),
@@ -101,24 +101,19 @@ export class MatchTransferItemOperation implements Operation {
       throw new BlError("Item not in receiver expectedItems").code(805);
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     if (receiverUserMatch.receivedCustomerItems.includes(customerItem.id)) {
       throw new BlError("Receiver has already received this item").code(806);
-    } // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const senderMatches = await getAllMatchesForUser(customerItem.customer);
+    }
+    const senderMatches = await getAllMatchesForUser(
+      customerItem.customer as string,
+    );
     const senderUserMatches = senderMatches.filter(
       (match) => match._variant === MatchVariant.UserMatch,
     ) as UserMatch[];
     const senderUserMatch = senderUserMatches.find(
       (userMatch) =>
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        userMatch.expectedItems.includes(String(customerItem.item)) &&
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        !userMatch.deliveredCustomerItems.includes(String(customerItem.item)),
+        userMatch.expectedItems.includes(customerItem.item as string) &&
+        !userMatch.deliveredCustomerItems.includes(customerItem.item as string),
     );
 
     if (
@@ -150,8 +145,6 @@ export class MatchTransferItemOperation implements Operation {
       {
         receivedCustomerItems: [
           ...receiverUserMatch.receivedCustomerItems,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           customerItem.id,
         ],
       },
@@ -159,8 +152,6 @@ export class MatchTransferItemOperation implements Operation {
     );
 
     const receiverOrder = await createMatchOrder(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       customerItem,
       receiverUserDetailId,
       false,
@@ -181,8 +172,6 @@ export class MatchTransferItemOperation implements Operation {
         {
           deliveredCustomerItems: [
             ...senderUserMatch.deliveredCustomerItems,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             customerItem.id,
           ],
         },
@@ -190,12 +179,8 @@ export class MatchTransferItemOperation implements Operation {
       );
 
       const senderOrder = await createMatchOrder(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         customerItem,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        customerItem.customer,
+        customerItem.customer as string,
         true,
       );
 
@@ -207,8 +192,6 @@ export class MatchTransferItemOperation implements Operation {
     }
 
     await customerItemStorage.update(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       customerItem.id,
       {
         returned: true,
