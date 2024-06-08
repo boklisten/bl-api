@@ -76,7 +76,9 @@ export class MatchGenerateOperation implements Operation {
       matcherSpec.userMatchLocations,
       new Date(matcherSpec.startTime),
       matcherSpec.matchMeetingDurationInMS,
-    ).map((candidate) => candidateMatchToMatch(candidate));
+    ).map((candidate) =>
+      candidateMatchToMatch(candidate, matcherSpec.deadlineOverrides),
+    );
     if (matches.length === 0) {
       throw new BlError("No matches generated");
     }

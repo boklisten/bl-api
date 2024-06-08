@@ -286,9 +286,9 @@ describe("OrderItemValidator", () => {
       );
     });
 
-    it("should reject if deadline is more than two years into the future and user is not admin", () => {
+    it("should reject if deadline is more than four years into the future and user is not admin", () => {
       const deadline = new Date();
-      deadline.setFullYear(deadline.getFullYear() + 2);
+      deadline.setFullYear(deadline.getFullYear() + 4);
       deadline.setDate(deadline.getDate() + 1);
       testOrder.orderItems = [
         {
@@ -333,9 +333,9 @@ describe("OrderItemValidator", () => {
         .eventually.be.fulfilled;
     });
 
-    it("should fulfill if deadline is more than two years into the future and user is admin", () => {
+    it("should fulfill if deadline is more than four years into the future and user is admin", () => {
       const deadline = new Date();
-      deadline.setFullYear(deadline.getFullYear() + 2);
+      deadline.setFullYear(deadline.getFullYear() + 4);
       deadline.setDate(deadline.getDate() + 1);
       testOrder.orderItems = [
         {

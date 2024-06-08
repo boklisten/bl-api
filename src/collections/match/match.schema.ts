@@ -79,6 +79,9 @@ const userMatchSchema = {
     type: Boolean,
     default: undefined,
   },
+  // if receiver items have overrides, the generated customer items will
+  // get the deadline specified in the override instead of using the branch defined deadline
+  deadlineOverrides: [{ item: String, deadline: Date }],
 };
 
 /** @see StandMatch */

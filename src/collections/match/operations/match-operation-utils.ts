@@ -19,6 +19,7 @@ export async function createMatchOrder(
   customerItem: CustomerItem,
   userDetailId: string,
   isSender: boolean,
+  deadlineOverrides?: { item: string; deadline: string }[],
 ): Promise<Order> {
   const itemStorage = new BlDocumentStorage<Item>(
     BlCollectionName.Items,
@@ -76,6 +77,9 @@ export async function createMatchOrder(
 
     movedFromOrder = originalReceiverOrder.id;
   }
+  const deadlineOverride = deadlineOverrides?.find(
+    (override) => override.item === item.id,
+  );
 
   return {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -103,7 +107,9 @@ export async function createMatchOrder(
         taxAmount: 0,
         info: {
           from: new Date(),
-          to: newRentPeriod.date,
+          to: deadlineOverride
+            ? new Date(deadlineOverride.deadline)
+            : newRentPeriod.date,
           numberOfPeriods: 1,
           periodType: "semester",
         },

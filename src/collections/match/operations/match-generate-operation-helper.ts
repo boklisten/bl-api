@@ -28,9 +28,13 @@ export interface MatcherSpec {
   matchMeetingDurationInMS: number;
   includeSenderItemsFromOtherBranches: boolean;
   additionalReceiverItems: string[];
+  deadlineOverrides: { item: string; deadline: string }[];
 }
 
-export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
+export function candidateMatchToMatch(
+  candidate: MatchWithMeetingInfo,
+  deadlineOverrides: { item: string; deadline: string }[],
+): Match {
   switch (candidate.variant) {
     case CandidateMatchVariant.StandMatch:
       return new StandMatch(
@@ -45,6 +49,7 @@ export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
         candidate.receiverId,
         Array.from(candidate.items),
         candidate.meetingInfo,
+        deadlineOverrides,
       );
   }
 }
@@ -197,6 +202,14 @@ export function verifyMatcherSpec(
     Array.isArray(m["additionalReceiverItems"]) &&
     m["additionalReceiverItems"].every(
       (itemId) => typeof itemId === "string" && itemId.length === 24,
+    ) &&
+    Array.isArray(m["deadlineOverrides"]) &&
+    m["deadlineOverrides"].every(
+      (override) =>
+        typeof override["item"] === "string" &&
+        override["item"].length === 24 &&
+        typeof override["deadline"] === "string" &&
+        !isNaN(new Date(override["deadline"]).getTime()),
     )
   );
 }

@@ -155,6 +155,7 @@ export class MatchTransferItemOperation implements Operation {
       customerItem,
       receiverUserDetailId,
       false,
+      receiverUserMatch.deadlineOverrides,
     );
 
     const placedReceiverOrder = await orderStorage.add(
