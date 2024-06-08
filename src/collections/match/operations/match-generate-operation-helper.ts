@@ -7,6 +7,7 @@ import {
 } from "@boklisten/bl-model";
 import { ObjectId } from "mongodb";
 
+import { isBoolean } from "../../../helper/typescript-helpers";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import {
   CandidateMatchVariant,
@@ -25,6 +26,7 @@ export interface MatcherSpec {
   startTime: string;
   deadlineBefore: string;
   matchMeetingDurationInMS: number;
+  includeSenderItemsFromOtherBranches: boolean;
 }
 
 export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
@@ -51,17 +53,26 @@ export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
  *
  * @param branchIds The IDs of branches to search for users and items
  * @param deadlineBefore Select customer items that have a deadlineBefore between now() and this deadlineBefore
+ * @param includeSenderItemsFromOtherBranches whether the remainder of the items that a customer has in possession should be added to the match, even though they were not handed out at the specified branchIds
  * @param customerItemStorage
  */
 export async function getMatchableSenders(
   branchIds: string[],
   deadlineBefore: string,
+  includeSenderItemsFromOtherBranches: boolean,
   customerItemStorage: BlDocumentStorage<CustomerItem>,
 ): Promise<MatchableUser[]> {
-  const branchCustomerItems = await customerItemStorage.aggregate([
+  const groupByCustomerStep = {
+    $group: {
+      _id: "$customer",
+      id: { $first: "$customer" },
+      items: { $push: "$item" },
+    },
+  };
+
+  const matchableUsers = (await customerItemStorage.aggregate([
     {
       $match: {
-        // TODO: Check that the book is going to be returned this match session/semester
         returned: false,
         buyout: false,
         cancel: false,
@@ -73,13 +84,26 @@ export async function getMatchableSenders(
         deadline: { $gt: new Date(), $lte: new Date(deadlineBefore) },
       },
     },
-  ]);
+    groupByCustomerStep,
+  ])) as MatchableUser[];
 
-  return groupItemsByUser(
-    branchCustomerItems,
-    (customerItem) => customerItem.customer.toString(),
-    (customerItem) => [customerItem.item.toString()],
-  );
+  if (includeSenderItemsFromOtherBranches) {
+    return (await customerItemStorage.aggregate([
+      {
+        $match: {
+          customer: { $in: matchableUsers.map((mu) => mu.id) },
+          returned: false,
+          buyout: false,
+          cancel: false,
+          buyback: false,
+          deadline: { $gt: new Date(), $lte: new Date(deadlineBefore) },
+        },
+      },
+      groupByCustomerStep,
+    ])) as MatchableUser[];
+  }
+
+  return matchableUsers;
 }
 
 /**
@@ -92,7 +116,7 @@ export async function getMatchableReceivers(
   branchIds: string[],
   orderStorage: BlDocumentStorage<Order>,
 ): Promise<MatchableUser[]> {
-  const branchOrders = await orderStorage.aggregate([
+  const branchOrders = (await orderStorage.aggregate([
     {
       $match: {
         placed: true,
@@ -129,7 +153,7 @@ export async function getMatchableReceivers(
         },
       },
     },
-  ]);
+  ])) as Order[];
   return groupItemsByUser(
     branchOrders,
     (order) => order.customer.toString(),
@@ -143,26 +167,14 @@ export function verifyMatcherSpec(
   const m = matcherSpec as Record<string, unknown>;
   return (
     m &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    Array.isArray(m.branches) &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    Array.isArray(m.userMatchLocations) &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    m.branches.every(
+    Array.isArray(m["branches"]) &&
+    Array.isArray(m["userMatchLocations"]) &&
+    m["branches"].every(
       (branchId) => typeof branchId === "string" && branchId.length === 24,
     ) &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    typeof m.standLocation === "string" &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    m.standLocation.length > 0 &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    m.userMatchLocations.every(
+    typeof m["standLocation"] === "string" &&
+    m["standLocation"].length > 0 &&
+    m["userMatchLocations"].every(
       (location) =>
         typeof location.name === "string" &&
         location.name.length > 0 &&
@@ -170,27 +182,14 @@ export function verifyMatcherSpec(
           (Number.isInteger(location.simultaneousMatchLimit) &&
             location.simultaneousMatchLimit > 0)),
     ) &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    typeof m.startTime === "string" &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    !isNaN(new Date(m.startTime).getTime()) &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    typeof m.deadlineBefore === "string" &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    !isNaN(new Date(m.deadlineBefore).getTime()) &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    new Date(m.deadlineBefore).getTime() > new Date().getTime() &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    typeof m.matchMeetingDurationInMS === "number" &&
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    !isNaN(m.matchMeetingDurationInMS)
+    typeof m["startTime"] === "string" &&
+    !isNaN(new Date(m["startTime"]).getTime()) &&
+    typeof m["deadlineBefore"] === "string" &&
+    !isNaN(new Date(m["deadlineBefore"]).getTime()) &&
+    new Date(m["deadlineBefore"]).getTime() > new Date().getTime() &&
+    typeof m["matchMeetingDurationInMS"] === "number" &&
+    !isNaN(m["matchMeetingDurationInMS"]) &&
+    isBoolean(m["includeSenderItemsFromOtherBranches"])
   );
 }
 

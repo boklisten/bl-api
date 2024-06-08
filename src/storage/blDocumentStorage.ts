@@ -161,7 +161,7 @@ export class BlDocumentStorage<T extends BlDocument>
     });
   }
 
-  aggregate(aggregation: PipelineStage[]): Promise<T[]> {
+  aggregate(aggregation: PipelineStage[]): Promise<unknown[]> {
     return this.mongoDbHandler.aggregate(aggregation);
   }
 

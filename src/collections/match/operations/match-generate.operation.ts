@@ -51,6 +51,7 @@ export class MatchGenerateOperation implements Operation {
       getMatchableSenders(
         matcherSpec.branches,
         matcherSpec.deadlineBefore,
+        matcherSpec.includeSenderItemsFromOtherBranches,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.customerItemStorage,
