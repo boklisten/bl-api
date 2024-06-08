@@ -123,7 +123,7 @@ export class MatchFinder {
       );
       if (sender) {
         if (hasDifference(intersect(sentItems, sender.items), sentItems)) {
-          throw "Sender cannot give away more books than they have!";
+          throw new Error("Sender cannot give away more books than they have!");
         }
         sender.items = difference(sender.items, sentItems);
         originalSenders = removeFullyMatchedUsers(originalSenders);
@@ -146,10 +146,17 @@ export class MatchFinder {
         if (
           hasDifference(intersect(receivedItems, receiver.items), receivedItems)
         ) {
-          throw "Receiver cannot receive more books than they want!";
+          throw new Error("Receiver cannot receive more books than they want!");
         }
         receiver.items = difference(receiver.items, receivedItems);
         originalReceivers = removeFullyMatchedUsers(originalReceivers);
+      }
+
+      if (
+        senderId === receiverId &&
+        match.variant === CandidateMatchVariant.UserMatch
+      ) {
+        throw new Error("Receiver and sender cannot be the same person");
       }
     }
 

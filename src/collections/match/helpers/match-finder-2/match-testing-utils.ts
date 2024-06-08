@@ -115,6 +115,16 @@ export const shuffler =
     return list;
   };
 
+export function createMatchableUsersWithIdPrefix(
+  rawData: { id: string; items: { $numberLong: string }[] }[],
+  idPrefix: string,
+): MatchableUser[] {
+  return rawData.map(({ id, items }) => ({
+    id: id + idPrefix,
+    items: new Set(items.map((item) => item["$numberLong"])),
+  }));
+}
+
 /**
  * Utility method to print some stats about the matching
  * so that one can evaluate the performance of the matcher

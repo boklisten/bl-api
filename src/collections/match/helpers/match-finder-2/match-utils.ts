@@ -114,7 +114,8 @@ export function tryFindOneWayMatch(
   receivers: MatchableUser[],
 ): MatchableUser | null {
   return receivers.reduce((best: MatchableUser | null, next) => {
-    return !hasDifference(sender.items, next.items) &&
+    return sender.id !== next.id &&
+      !hasDifference(sender.items, next.items) &&
       (best === null || next.items.size < best.items.size)
       ? next
       : best;
@@ -135,6 +136,7 @@ export function tryFindTwoWayMatch(
   return (
     receivers.find(
       (receiver) =>
+        sender.id !== receiver.id &&
         !hasDifference(sender.items, receiver.items) &&
         !hasDifference(receiver.items, sender.items),
     ) ?? null
@@ -153,6 +155,9 @@ export function tryFindPartialMatch(
 ): MatchableUser | null {
   let bestReceiver: MatchableUser | null = null;
   for (const receiver of receivers) {
+    if (sender.id === receiver.id) {
+      continue;
+    }
     const matchableItems = intersect(sender.items, receiver.items);
     const bestMatchableItems = intersect(
       sender.items,
