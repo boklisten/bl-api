@@ -27,6 +27,7 @@ export interface MatcherSpec {
   deadlineBefore: string;
   matchMeetingDurationInMS: number;
   includeSenderItemsFromOtherBranches: boolean;
+  additionalReceiverItems: string[];
 }
 
 export function candidateMatchToMatch(candidate: MatchWithMeetingInfo): Match {
@@ -66,11 +67,11 @@ export async function getMatchableSenders(
     $group: {
       _id: "$customer",
       id: { $first: "$customer" },
-      items: { $push: "$item" },
+      items: { $addToSet: "$item" },
     },
   };
 
-  const matchableUsers = (await customerItemStorage.aggregate([
+  let aggregatedSenders = (await customerItemStorage.aggregate([
     {
       $match: {
         returned: false,
@@ -85,13 +86,13 @@ export async function getMatchableSenders(
       },
     },
     groupByCustomerStep,
-  ])) as MatchableUser[];
+  ])) as { id: string; items: string[] }[];
 
   if (includeSenderItemsFromOtherBranches) {
-    return (await customerItemStorage.aggregate([
+    aggregatedSenders = (await customerItemStorage.aggregate([
       {
         $match: {
-          customer: { $in: matchableUsers.map((mu) => mu.id) },
+          customer: { $in: aggregatedSenders.map((sender) => sender.id) },
           returned: false,
           buyout: false,
           cancel: false,
@@ -100,10 +101,13 @@ export async function getMatchableSenders(
         },
       },
       groupByCustomerStep,
-    ])) as MatchableUser[];
+    ])) as { id: string; items: string[] }[];
   }
 
-  return matchableUsers;
+  return aggregatedSenders.map((sender) => ({
+    id: sender.id,
+    items: new Set(sender.items),
+  }));
 }
 
 /**
@@ -189,7 +193,11 @@ export function verifyMatcherSpec(
     new Date(m["deadlineBefore"]).getTime() > new Date().getTime() &&
     typeof m["matchMeetingDurationInMS"] === "number" &&
     !isNaN(m["matchMeetingDurationInMS"]) &&
-    isBoolean(m["includeSenderItemsFromOtherBranches"])
+    isBoolean(m["includeSenderItemsFromOtherBranches"]) &&
+    Array.isArray(m["additionalReceiverItems"]) &&
+    m["additionalReceiverItems"].every(
+      (itemId) => typeof itemId === "string" && itemId.length === 24,
+    )
   );
 }
 

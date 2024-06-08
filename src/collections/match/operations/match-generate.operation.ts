@@ -63,6 +63,13 @@ export class MatchGenerateOperation implements Operation {
     if (senders.length === 0 && receivers.length === 0) {
       throw new BlError("No senders or receivers");
     }
+    if (matcherSpec.additionalReceiverItems) {
+      for (const receiverItem of matcherSpec.additionalReceiverItems) {
+        for (const receiver of receivers) {
+          receiver.items.add(receiverItem);
+        }
+      }
+    }
     const matches = assignMeetingInfoToMatches(
       new MatchFinder(senders, receivers).generateMatches(),
       matcherSpec.standLocation,
