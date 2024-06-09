@@ -120,7 +120,7 @@ export class MatchTransferItemOperation implements Operation {
       senderUserMatch === undefined ||
       receiverUserMatch.id !== senderUserMatch.id
     ) {
-      userFeedback = `Boken du har scannet tilhørte opprinnelig en annen kunde. Boken er nå registrert på deg, men avsender må fortsatt levere sin opprinnelige bok. Ta kontakt med stand for spørsmål.`;
+      userFeedback = `Boken du har mottatt tilhørte opprinnelig noen andre enn den som ga deg boka. Den har nå blitt registrert på deg, men den som ga deg boka må fortsatt levere sin opprinnelige bok. Ta kontakt med stand for spørsmål.`;
     }
 
     const matchStorage = new BlDocumentStorage<Match>(
