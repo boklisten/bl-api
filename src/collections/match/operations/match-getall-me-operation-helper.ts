@@ -13,6 +13,7 @@ import {
 } from "@boklisten/bl-model";
 
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { CustomerItemActiveBlid } from "../../customer-item/helpers/customer-item-active-blid";
 
 function selectMatchRelevantUserDetails({
   name,
@@ -24,12 +25,12 @@ function selectMatchRelevantUserDetails({
   };
 }
 
-function mapCustomerItemIdsToItemIds(
-  customerItemIds: string[],
+function mapBlIdsToItemIds(
+  blIds: string[],
   customerItemsMap: Map<string, CustomerItem>,
 ): { [customerItemId: string]: string } {
   return Object.fromEntries(
-    customerItemIds.map(String).map((customerItemId) => {
+    blIds.map(String).map((customerItemId) => {
       const customerItem = customerItemsMap.get(customerItemId);
       if (customerItem === undefined) {
         throw new BlError(`No customerItem with id ${customerItemId} found`);
@@ -91,8 +92,8 @@ function addDetailsToMatch(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     receiverDetails: selectMatchRelevantUserDetails(receiverDetails),
-    customerItemToItemMap: mapCustomerItemIdsToItemIds(
-      [...match.receivedCustomerItems, ...match.deliveredCustomerItems],
+    blIdToItemMap: mapBlIdsToItemIds(
+      [...match.receivedBlIds, ...match.deliveredBlIds],
       customerItemsMap,
     ),
     itemDetails: mapItemIdsToItemDetails(match.expectedItems, itemsMap),
@@ -124,16 +125,12 @@ export async function addDetailsToAllMatches(
     ),
   );
 
-  const customerItemsToMap = Array.from(
+  const blIdsToMap = Array.from(
     matches.reduce(
-      (customerItems, match) =>
+      (blIds, match) =>
         match._variant === MatchVariant.UserMatch
-          ? new Set([
-              ...customerItems,
-              ...match.receivedCustomerItems.map(String),
-              ...match.deliveredCustomerItems.map(String),
-            ])
-          : customerItems,
+          ? new Set([...blIds, ...match.receivedBlIds, ...match.deliveredBlIds])
+          : blIds,
       new Set<string>(),
     ),
   );
@@ -150,17 +147,21 @@ export async function addDetailsToAllMatches(
       new Set<string>(),
     ),
   );
-  const customerItemsMap = new Map(
+  const blIdsToCustomerItemMap = new Map(
     await Promise.all(
-      customerItemsToMap.map((id) =>
-        customerItemStorage
-          .get(id)
-          .then((customerItem): [string, CustomerItem] => [id, customerItem]),
+      blIdsToMap.map((blId) =>
+        new CustomerItemActiveBlid(customerItemStorage)
+          .getActiveCustomerItems(blId)
+          .then((customerItems): [string, CustomerItem] => [
+            blId,
+            // There should never be more than one active customerItem related to a blId
+            customerItems[0]!,
+          ]),
       ),
     ),
   );
   const itemsToMapFromCustomerItems = Array.from(
-    Array.from(customerItemsMap.values()).reduce(
+    Array.from(blIdsToCustomerItemMap.values()).reduce(
       (itemIds, customerItem) =>
         new Set([...itemIds, String(customerItem.item)]),
       new Set<string>(),
@@ -177,6 +178,6 @@ export async function addDetailsToAllMatches(
   );
 
   return matches.map((match) =>
-    addDetailsToMatch(match, userDetailsMap, customerItemsMap, itemsMap),
+    addDetailsToMatch(match, userDetailsMap, blIdsToCustomerItemMap, itemsMap),
   );
 }
