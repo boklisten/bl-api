@@ -27,7 +27,7 @@ export interface MatcherSpec {
   deadlineBefore: string;
   matchMeetingDurationInMS: number;
   includeSenderItemsFromOtherBranches: boolean;
-  additionalReceiverItems: string[];
+  additionalReceiverItems: { branch: string; items: string[] }[];
   deadlineOverrides: { item: string; deadline: string }[];
 }
 
@@ -120,12 +120,12 @@ export async function getMatchableSenders(
  *
  * @param branchIds The IDs of branches to search for users and items
  * @param orderStorage
- * @param additionalReceiverItems items that all receivers want
+ * @param additionalReceiverItems items that all receivers in the predefined branches want
  */
 export async function getMatchableReceivers(
   branchIds: string[],
   orderStorage: BlDocumentStorage<Order>,
-  additionalReceiverItems: string[],
+  additionalReceiverItems: { branch: string; items: string[] }[],
 ): Promise<MatchableUser[]> {
   const aggregatedReceivers = (await orderStorage.aggregate([
     {
@@ -177,9 +177,11 @@ export async function getMatchableReceivers(
     },
   ])) as { id: string; items: string[]; branches: string[] }[];
 
-  for (const receiverItem of additionalReceiverItems) {
+  for (const branchReceiverItems of additionalReceiverItems) {
     for (const receiver of aggregatedReceivers) {
-      receiver.items.push(receiverItem);
+      if (receiver.branches.includes(branchReceiverItems.branch)) {
+        receiver.items = [...receiver.items, ...branchReceiverItems.items];
+      }
     }
   }
 
@@ -220,7 +222,13 @@ export function verifyMatcherSpec(
     isBoolean(m["includeSenderItemsFromOtherBranches"]) &&
     Array.isArray(m["additionalReceiverItems"]) &&
     m["additionalReceiverItems"].every(
-      (itemId) => typeof itemId === "string" && itemId.length === 24,
+      (entry) =>
+        typeof entry["branch"] === "string" &&
+        entry["branch"].length === 24 &&
+        Array.isArray(entry["items"]) &&
+        entry["items"].every(
+          (itemId) => typeof itemId === "string" && itemId.length === 24,
+        ),
     ) &&
     Array.isArray(m["deadlineOverrides"]) &&
     m["deadlineOverrides"].every(
