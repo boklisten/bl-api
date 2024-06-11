@@ -61,24 +61,19 @@ const userMatchSchema = {
     ref: BlCollectionName.Items,
     default: undefined,
   },
-  // customerItems owned by sender which have been given to anyone. May differ from receivedCustomerItems
+  // unique items owned by sender which have been given to anyone. May differ from receivedBlIds
   // when a book is borrowed and handed over to someone other than the technical owner's match
-  deliveredCustomerItems: {
-    type: [ObjectId],
-    ref: BlCollectionName.CustomerItems,
-    default: undefined,
-  },
-  // items which have been received by the receiver from anyone
-  receivedCustomerItems: {
-    type: [ObjectId],
-    ref: BlCollectionName.CustomerItems,
-    default: undefined,
-  },
+  deliveredBlIds: [String],
+  // unique items which have been received by the receiver from anyone
+  receivedBlIds: [String],
   // if true, disallow handing the items out or in at a stand, only allow match exchange
   itemsLockedToMatch: {
     type: Boolean,
     default: undefined,
   },
+  // if receiver items have overrides, the generated customer items will
+  // get the deadline specified in the override instead of using the branch defined deadline
+  deadlineOverrides: [{ item: String, deadline: Date }],
 };
 
 /** @see StandMatch */

@@ -22,6 +22,7 @@ import {
   groupMatchesByUser,
   seededRandom,
   shuffler,
+  createMatchableUsersWithIdPrefix,
 } from "./match-testing-utils";
 
 chai.use(chaiAsPromised);
@@ -32,9 +33,17 @@ const andrine = createFakeMatchableUser("andrine", "book1", "book2", "book3");
 const beate = createFakeMatchableUser("beate", "book1", "book2", "book3");
 
 const monika = createFakeMatchableUser("monika", "book4");
+const mons = createFakeMatchableUser("mons", "book4");
 
 const mathias = createFakeMatchableUser(
   "mathias",
+  "book1",
+  "book2",
+  "book3",
+  "book4",
+);
+const mathea = createFakeMatchableUser(
+  "mathea",
   "book1",
   "book2",
   "book3",
@@ -87,7 +96,7 @@ describe("Full User Match", () => {
   it("should be able to create multiple full matches with overlapping books", () => {
     const matchFinder = new MatchFinder(
       [monika, mathias],
-      [mathias, monika, mathias],
+      [mathea, mons, mathea],
     );
     matchFinder.generateMatches();
     expect(
@@ -100,6 +109,18 @@ describe("Full User Match", () => {
         (receiver) => receiver.items.size !== 0,
       ).length,
     ).to.equal(0);
+  });
+
+  it("should not be able to match users with themselves", () => {
+    const matchFinder = new MatchFinder([andrine], [andrine]);
+    const matches = matchFinder.generateMatches();
+
+    const andrineXstand = createFakeStandMatch(
+      andrine,
+      andrine.items,
+      andrine.items,
+    );
+    assert.deepEqual(matches, [andrineXstand]);
   });
 });
 
@@ -290,14 +311,15 @@ describe("Large User Groups", () => {
   it("can sufficiently match realistic user data with itself", () => {
     const shuffle = shuffler(seededRandom(12345));
     const rawData = ullern_test_users;
-    const test_users: MatchableUser[] = rawData.map(({ id, items }) => ({
-      id,
-      items: new Set(items.map((item) => item["$numberLong"])),
-    }));
+    const test_senders = createMatchableUsersWithIdPrefix(rawData, "_sender");
+    const test_receivers = createMatchableUsersWithIdPrefix(
+      rawData,
+      "_receiver",
+    );
 
     const matchFinder = new MatchFinder(
-      shuffle(test_users.slice()),
-      shuffle(test_users.slice()),
+      shuffle(test_senders.slice()),
+      shuffle(test_receivers.slice()),
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -305,24 +327,25 @@ describe("Large User Groups", () => {
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
-      test_users.length * 1.4,
+      test_senders.length * 1.4,
     );
     expect(numberOfMatchesPerType.standMatches).to.be.lessThanOrEqual(
-      test_users.length * 0.1,
+      test_senders.length * 0.1,
     );
   });
 
   it("can sufficiently match realistic user data with a modified version of itself", () => {
     const shuffle = shuffler(seededRandom(123454332));
     const rawData = ullern_test_users;
-    const test_users: MatchableUser[] = rawData.map(({ id, items }) => ({
-      id,
-      items: new Set(items.map((item) => item["$numberLong"])),
-    }));
+    const test_senders = createMatchableUsersWithIdPrefix(rawData, "_sender");
+    const test_receivers = createMatchableUsersWithIdPrefix(
+      rawData,
+      "_receiver",
+    );
 
     const matchFinder = new MatchFinder(
-      shuffle(test_users.slice()).slice(33),
-      shuffle(test_users.slice()).slice(20),
+      shuffle(test_senders.slice()).slice(33),
+      shuffle(test_receivers.slice()).slice(20),
     );
 
     const matches = Array.from(matchFinder.generateMatches());
@@ -330,10 +353,10 @@ describe("Large User Groups", () => {
     const numberOfMatchesPerType = calculateNumberOfMatchesPerType(matches);
 
     expect(numberOfMatchesPerType.userMatches).to.be.lessThan(
-      test_users.flat().length * 1.4,
+      test_senders.flat().length * 1.4,
     );
     expect(numberOfMatchesPerType.standMatches).to.be.lessThanOrEqual(
-      test_users.flat().length * 0.2,
+      test_senders.flat().length * 0.2,
     );
   });
 

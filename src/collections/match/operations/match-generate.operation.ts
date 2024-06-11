@@ -51,13 +51,18 @@ export class MatchGenerateOperation implements Operation {
       getMatchableSenders(
         matcherSpec.branches,
         matcherSpec.deadlineBefore,
+        matcherSpec.includeSenderItemsFromOtherBranches,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.customerItemStorage,
       ),
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      getMatchableReceivers(matcherSpec.branches, this.orderStorage),
+      getMatchableReceivers(
+        matcherSpec.branches,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        this.orderStorage,
+        matcherSpec.additionalReceiverItems,
+      ),
     ]);
     if (senders.length === 0 && receivers.length === 0) {
       throw new BlError("No senders or receivers");
@@ -68,7 +73,9 @@ export class MatchGenerateOperation implements Operation {
       matcherSpec.userMatchLocations,
       new Date(matcherSpec.startTime),
       matcherSpec.matchMeetingDurationInMS,
-    ).map((candidate) => candidateMatchToMatch(candidate));
+    ).map((candidate) =>
+      candidateMatchToMatch(candidate, matcherSpec.deadlineOverrides),
+    );
     if (matches.length === 0) {
       throw new BlError("No matches generated");
     }

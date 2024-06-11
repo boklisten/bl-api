@@ -101,7 +101,7 @@ export class MatchTransferItemOperation implements Operation {
       throw new BlError("Item not in receiver expectedItems").code(805);
     }
 
-    if (receiverUserMatch.receivedCustomerItems.includes(customerItem.id)) {
+    if (receiverUserMatch.receivedBlIds.includes(customerItem.blid!)) {
       throw new BlError("Receiver has already received this item").code(806);
     }
     const senderMatches = await getAllMatchesForUser(
@@ -113,14 +113,14 @@ export class MatchTransferItemOperation implements Operation {
     const senderUserMatch = senderUserMatches.find(
       (userMatch) =>
         userMatch.expectedItems.includes(customerItem.item as string) &&
-        !userMatch.deliveredCustomerItems.includes(customerItem.item as string),
+        !userMatch.deliveredBlIds.includes(customerItem.blid!),
     );
 
     if (
       senderUserMatch === undefined ||
       receiverUserMatch.id !== senderUserMatch.id
     ) {
-      userFeedback = `Boken du har scannet tilhørte opprinnelig en annen kunde. Boken er nå registrert på deg, men avsender må fortsatt levere sin opprinnelige bok. Ta kontakt med stand for spørsmål.`;
+      userFeedback = `Boken du har mottatt tilhørte opprinnelig noen andre enn den som ga deg boka. Den har nå blitt registrert på deg, men den som ga deg boka må fortsatt levere sin opprinnelige bok. Ta kontakt med stand for spørsmål.`;
     }
 
     const matchStorage = new BlDocumentStorage<Match>(
@@ -143,10 +143,7 @@ export class MatchTransferItemOperation implements Operation {
     await matchStorage.update(
       receiverUserMatch.id,
       {
-        receivedCustomerItems: [
-          ...receiverUserMatch.receivedCustomerItems,
-          customerItem.id,
-        ],
+        receivedBlIds: [...receiverUserMatch.receivedBlIds, customerItem.blid!],
       },
       new SystemUser(),
     );
@@ -155,6 +152,7 @@ export class MatchTransferItemOperation implements Operation {
       customerItem,
       receiverUserDetailId,
       false,
+      receiverUserMatch.deadlineOverrides,
     );
 
     const placedReceiverOrder = await orderStorage.add(
@@ -170,9 +168,9 @@ export class MatchTransferItemOperation implements Operation {
       await matchStorage.update(
         senderUserMatch.id,
         {
-          deliveredCustomerItems: [
-            ...senderUserMatch.deliveredCustomerItems,
-            customerItem.id,
+          deliveredBlIds: [
+            ...senderUserMatch.deliveredBlIds,
+            customerItem.blid!,
           ],
         },
         new SystemUser(),

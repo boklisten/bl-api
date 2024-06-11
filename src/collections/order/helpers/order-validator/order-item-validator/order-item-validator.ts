@@ -156,8 +156,8 @@ export class OrderItemValidator {
       now.getMonth(),
       now.getDate() - 10,
     );
-    const twoYearsFromNow = new Date(
-      now.getFullYear() + 2,
+    const fourYearsFromNow = new Date(
+      now.getFullYear() + 4,
       now.getMonth(),
       now.getDate(),
     );
@@ -174,7 +174,7 @@ export class OrderItemValidator {
         return false;
       }
       const deadline = new Date(item.info.to);
-      return deadline > twoYearsFromNow;
+      return deadline > fourYearsFromNow;
     });
 
     if (hasExpiredDeadlines) {
