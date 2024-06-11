@@ -71,11 +71,9 @@ export async function createMatchOrder(
           (orderItem) => String(orderItem.item) === String(customerItem.item),
         ),
     );
-    if (!originalReceiverOrder) {
-      throw new BlError("Could not find original receiver order");
+    if (originalReceiverOrder) {
+      movedFromOrder = originalReceiverOrder.id;
     }
-
-    movedFromOrder = originalReceiverOrder.id;
   }
   const deadlineOverride = deadlineOverrides?.find(
     (override) => override.item === item.id,
