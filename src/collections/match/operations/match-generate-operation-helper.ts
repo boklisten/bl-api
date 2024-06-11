@@ -120,12 +120,14 @@ export async function getMatchableSenders(
  *
  * @param branchIds The IDs of branches to search for users and items
  * @param orderStorage
+ * @param additionalReceiverItems items that all receivers want
  */
 export async function getMatchableReceivers(
   branchIds: string[],
   orderStorage: BlDocumentStorage<Order>,
+  additionalReceiverItems: string[],
 ): Promise<MatchableUser[]> {
-  const branchOrders = (await orderStorage.aggregate([
+  const aggregatedReceivers = (await orderStorage.aggregate([
     {
       $match: {
         placed: true,
@@ -162,12 +164,29 @@ export async function getMatchableReceivers(
         },
       },
     },
-  ])) as Order[];
-  return groupItemsByUser(
-    branchOrders,
-    (order) => order.customer.toString(),
-    (order) => order.orderItems.map((oi) => oi.item.toString()),
-  );
+    {
+      $unwind: "$orderItems",
+    },
+    {
+      $group: {
+        _id: "$customer",
+        id: { $first: "$customer" },
+        items: { $addToSet: "$orderItems.item" },
+        branches: { $addToSet: "$branch" },
+      },
+    },
+  ])) as { id: string; items: string[]; branches: string[] }[];
+
+  for (const receiverItem of additionalReceiverItems) {
+    for (const receiver of aggregatedReceivers) {
+      receiver.items.push(receiverItem);
+    }
+  }
+
+  return aggregatedReceivers.map((receiver) => ({
+    id: receiver.id,
+    items: new Set(receiver.items),
+  }));
 }
 
 export function verifyMatcherSpec(
@@ -212,34 +231,4 @@ export function verifyMatcherSpec(
         !isNaN(new Date(override["deadline"]).getTime()),
     )
   );
-}
-
-/**
- * Reduce a set of documents to a list of users and their associated items.
- *
- * Which user is associated with which document and what their items are is
- * defined by the provided selectors. If items are added to a user from several
- * documents, all the unique ones are included in the result.
- *
- * @param fromDocuments The list of documents to gather users and items from
- * @param selectUserId A function which given a document returns the user
- * associated with that document
- * @param selectItems A function which given a document returns the items
- * the user is associated with through that document
- */
-function groupItemsByUser<T>(
-  fromDocuments: T[],
-  selectUserId: (document: T) => string,
-  selectItems: (document: T) => string[],
-): MatchableUser[] {
-  const itemsByUserId: Map<string, string[]> = new Map();
-  for (const document of fromDocuments) {
-    const items = itemsByUserId.get(selectUserId(document)) ?? [];
-    itemsByUserId.set(selectUserId(document), items);
-    items.push(...selectItems(document));
-  }
-  return Array.from(itemsByUserId.entries()).map(([id, items]) => ({
-    id,
-    items: new Set(items),
-  }));
 }
