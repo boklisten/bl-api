@@ -295,7 +295,8 @@ export class OrderPlaceOperation implements Operation {
       (match) => match._variant === MatchVariant.StandMatch,
     ) as StandMatch[];
 
-    // Register items as delivered
+    // Discover items to register delivery of
+    const matchToDeliveredItemsMap = new Map<string, Set<string>>();
     for (const customerItem of returnCustomerItems) {
       const foundStandMatch = standMatches.find(
         (standMatch) =>
@@ -304,22 +305,33 @@ export class OrderPlaceOperation implements Operation {
           !standMatch.deliveredItems.includes(String(customerItem.item)),
       );
       if (foundStandMatch) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        await this._matchStorage.update(
+        matchToDeliveredItemsMap.set(
           foundStandMatch.id,
-          {
-            deliveredItems: [
-              ...foundStandMatch.deliveredItems,
-              customerItem.item as string,
-            ],
-          },
-          new SystemUser(),
+          new Set([
+            ...(matchToDeliveredItemsMap.get(foundStandMatch.id) ?? []),
+            ...foundStandMatch.deliveredItems,
+            customerItem.item as string,
+          ]),
         );
       }
     }
 
-    // Register items as received
+    // Register delivery
+    for (const [
+      standMatchId,
+      deliveredItems,
+    ] of matchToDeliveredItemsMap.entries()) {
+      await this._matchStorage.update(
+        standMatchId,
+        {
+          deliveredItems: Array.from(deliveredItems),
+        },
+        new SystemUser(),
+      );
+    }
+
+    // Discover items to register receiving of
+    const matchToReceivedItemsMap = new Map<string, Set<string>>();
     for (const customerItem of handoutCustomerItems) {
       const foundStandMatch = standMatches.find(
         (standMatch) =>
@@ -328,19 +340,29 @@ export class OrderPlaceOperation implements Operation {
           !standMatch.receivedItems.includes(String(customerItem.item)),
       );
       if (foundStandMatch) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        await this._matchStorage.update(
+        matchToReceivedItemsMap.set(
           foundStandMatch.id,
-          {
-            receivedItems: [
-              ...foundStandMatch.receivedItems,
-              customerItem.item as string,
-            ],
-          },
-          new SystemUser(),
+          new Set([
+            ...(matchToReceivedItemsMap.get(foundStandMatch.id) ?? []),
+            ...foundStandMatch.receivedItems,
+            customerItem.item as string,
+          ]),
         );
       }
+    }
+
+    // Register receiving
+    for (const [
+      standMatchId,
+      receivedItems,
+    ] of matchToReceivedItemsMap.entries()) {
+      await this._matchStorage.update(
+        standMatchId,
+        {
+          receivedItems: Array.from(receivedItems),
+        },
+        new SystemUser(),
+      );
     }
   }
 
