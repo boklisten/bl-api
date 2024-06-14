@@ -1,5 +1,14 @@
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
-import { Model, PipelineStage, Schema, Types } from "mongoose";
+import {
+  FilterQuery,
+  Model,
+  PipelineStage,
+  Schema,
+  Types,
+  UpdateQuery,
+  UpdateWithAggregationPipeline,
+  UpdateWriteOpResult,
+} from "mongoose";
 
 import { MongooseModelCreator } from "./mongoose-schema-creator";
 import { PermissionService } from "../../auth/permission/permission.service";
@@ -215,13 +224,11 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     return doc;
   }
 
-  public updateMany(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    docs: { id: string; data: Partial<T> }[],
-  ): Promise<T[]> {
-    throw new BlError("not implemented");
+  public async updateMany(
+    filter: FilterQuery<T>,
+    update: UpdateWithAggregationPipeline | UpdateQuery<T>,
+  ): Promise<UpdateWriteOpResult> {
+    return this.mongooseModel.updateMany(filter, update);
   }
 
   public async put(id: string, data: T): Promise<void> {

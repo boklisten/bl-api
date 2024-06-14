@@ -1,5 +1,11 @@
 import { BlDocument, UserPermission } from "@boklisten/bl-model";
-import { PipelineStage } from "mongoose";
+import {
+  FilterQuery,
+  PipelineStage,
+  UpdateQuery,
+  UpdateWithAggregationPipeline,
+  UpdateWriteOpResult,
+} from "mongoose";
 
 import { NestedDocument } from "./nested-document";
 import { SEDbQuery } from "../query/se.db-query";
@@ -37,7 +43,10 @@ export interface BlStorageHandler<T extends BlDocument> {
     user: { id: string; permission: UserPermission },
   ): Promise<T>;
 
-  updateMany(docs: { id: string; data: Partial<T> }[]): Promise<T[]>;
+  updateMany(
+    ids: FilterQuery<T>,
+    update: UpdateWithAggregationPipeline | UpdateQuery<T>,
+  ): Promise<UpdateWriteOpResult>;
 
   remove(
     id: string,

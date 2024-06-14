@@ -21,6 +21,8 @@ export class DbQueryStringFilter {
         if (validStringParams.includes(param)) {
           stringFilters.push({
             fieldName: param,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             value: Array.isArray(query[param])
               ? query[param]
               : this.getStringParamValue(query[param]),

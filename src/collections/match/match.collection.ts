@@ -1,6 +1,7 @@
 import { matchSchema } from "./match.schema";
 import { MatchGenerateOperation } from "./operations/match-generate.operation";
 import { GetMyMatchesOperation } from "./operations/match-getall-me.operation";
+import { MatchLockOperation } from "./operations/match-lock.operation";
 import { MatchNotifyOperation } from "./operations/match-notify.operation";
 import { MatchTransferItemOperation } from "./operations/match-transfer-item.operation";
 import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
@@ -28,6 +29,11 @@ export class MatchCollection implements BlCollection {
           restriction: {
             permissions: ["customer", "employee", "admin", "super"],
           },
+        },
+        {
+          name: "lock",
+          operation: new MatchLockOperation(),
+          restriction: { permissions: ["admin", "super"] },
         },
       ],
       restriction: {

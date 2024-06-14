@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BlDocument, BlError, UserPermission } from "@boklisten/bl-model";
-import { PipelineStage, Schema } from "mongoose";
+import {
+  FilterQuery,
+  PipelineStage,
+  Schema,
+  UpdateQuery,
+  UpdateWithAggregationPipeline,
+  UpdateWriteOpResult,
+} from "mongoose";
 
 import { BlStorageHandler } from "./blStorageHandler";
 import { MongoDbBlStorageHandler } from "./mongoDb/mongoDb.blStorageHandler";
@@ -131,14 +138,11 @@ export class BlDocumentStorage<T extends BlDocument>
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  updateMany(docs: { id: string; data: Partial<T> }[]): Promise<T[]> {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return new Promise((resolve, reject) => {
-      reject(new BlError("not implemented"));
-    });
+  updateMany(
+    filter: FilterQuery<T>,
+    update: UpdateWithAggregationPipeline | UpdateQuery<T>,
+  ): Promise<UpdateWriteOpResult> {
+    return this.mongoDbHandler.updateMany(filter, update);
   }
 
   async put(id: string, data: T): Promise<void> {
