@@ -20,7 +20,8 @@ import {
  * The information required to generate matches.
  */
 export interface MatcherSpec {
-  branches: string[];
+  senderBranches: string[];
+  receiverBranches: string[];
   standLocation: string;
   userMatchLocations: MatchLocation[];
   startTime: string;
@@ -197,11 +198,15 @@ export function verifyMatcherSpec(
   const m = matcherSpec as Record<string, unknown>;
   return (
     m &&
-    Array.isArray(m["branches"]) &&
-    Array.isArray(m["userMatchLocations"]) &&
-    m["branches"].every(
-      (branchId) => typeof branchId === "string" && branchId.length === 24,
+    Array.isArray(m["senderBranches"]) &&
+    Array.isArray(m["receiverBranches"]) &&
+    m["senderBranches"].every(
+      (branchId) => typeof branchId === "string" && ObjectId.isValid(branchId),
     ) &&
+    m["receiverBranches"].every(
+      (branchId) => typeof branchId === "string" && ObjectId.isValid(branchId),
+    ) &&
+    Array.isArray(m["userMatchLocations"]) &&
     typeof m["standLocation"] === "string" &&
     m["standLocation"].length > 0 &&
     m["userMatchLocations"].every(
@@ -224,17 +229,17 @@ export function verifyMatcherSpec(
     m["additionalReceiverItems"].every(
       (entry) =>
         typeof entry["branch"] === "string" &&
-        entry["branch"].length === 24 &&
+        ObjectId.isValid(entry["branch"]) &&
         Array.isArray(entry["items"]) &&
         entry["items"].every(
-          (itemId) => typeof itemId === "string" && itemId.length === 24,
+          (itemId) => typeof itemId === "string" && ObjectId.isValid(itemId),
         ),
     ) &&
     Array.isArray(m["deadlineOverrides"]) &&
     m["deadlineOverrides"].every(
       (override) =>
         typeof override["item"] === "string" &&
-        override["item"].length === 24 &&
+        ObjectId.isValid(override["item"]) &&
         typeof override["deadline"] === "string" &&
         !isNaN(new Date(override["deadline"]).getTime()),
     )
