@@ -107,15 +107,9 @@ function verifyStandMatches(
   standLocation: string,
 ) {
   if (
-    standMatches.some(
-      (match) =>
-        match.meetingInfo.date !== null ||
-        match.meetingInfo.location !== standLocation,
-    )
+    standMatches.some((match) => match.meetingInfo.location !== standLocation)
   ) {
-    throw new Error(
-      "All stand matches must have correct location and no assigned time slot",
-    );
+    throw new Error("All stand matches must have correct location");
   }
 }
 
@@ -213,19 +207,6 @@ function assignMeetingInfoToMatches(
   startTime: Date,
   meetingDurationInMS: number,
 ): MatchWithMeetingInfo[] {
-  const standMatches: CandidateStandMatch[] = matches
-    .filter((match) => match.variant === CandidateMatchVariant.StandMatch)
-    .map((match) => match as CandidateStandMatch);
-
-  const standMatchesWithMeetingInfo: StandMatchWithMeetingInfo[] =
-    standMatches.map((match) => ({
-      ...match,
-      meetingInfo: {
-        location: standLocation,
-        date: null,
-      },
-    }));
-
   const userMatches: CandidateUserMatch[] = matches
     .filter((match) => match.variant === CandidateMatchVariant.UserMatch)
     .map((match) => match as CandidateUserMatch);
@@ -300,14 +281,39 @@ function assignMeetingInfoToMatches(
       });
     }
   }
-
-  verifyStandMatches(standMatchesWithMeetingInfo, standLocation);
   verifyUserMatches(
     userMatches,
     userMatchesWithMeetingInfo,
     startTime,
     userMatchLocations,
   );
+
+  const standMatches: CandidateStandMatch[] = matches
+    .filter((match) => match.variant === CandidateMatchVariant.StandMatch)
+    .map((match) => match as CandidateStandMatch);
+
+  const standMatchesWithMeetingInfo: StandMatchWithMeetingInfo[] =
+    standMatches.map((match) => ({
+      ...match,
+      meetingInfo: {
+        location: standLocation,
+        date: new Date(
+          userMatchesWithMeetingInfo
+            .filter(
+              (matchWithMeetingInfo) =>
+                matchWithMeetingInfo.senderId === match.userId ||
+                matchWithMeetingInfo.receiverId === match.userId,
+            )
+            .reduce((latestTime, next) => {
+              const potentialTime =
+                next.meetingInfo.date.getTime() + meetingDurationInMS;
+              return potentialTime > latestTime ? potentialTime : latestTime;
+            }, startTime.getTime()),
+        ),
+      },
+    }));
+
+  verifyStandMatches(standMatchesWithMeetingInfo, standLocation);
 
   return [...userMatchesWithMeetingInfo, ...standMatchesWithMeetingInfo];
 }

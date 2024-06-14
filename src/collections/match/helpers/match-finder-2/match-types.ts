@@ -27,7 +27,7 @@ export type CandidateMatch = CandidateStandMatch | CandidateUserMatch;
 interface MatchMeetingInfo {
   meetingInfo: {
     location: string;
-    date: Date | null;
+    date: Date;
   };
 }
 
