@@ -10,7 +10,11 @@ import {
   shuffler,
 } from "./match-testing-utils";
 import assignMeetingInfoToMatches from "./match-meeting-info";
-import { MatchableUser, MatchWithMeetingInfo } from "./match-types";
+import {
+  CandidateMatchVariant,
+  MatchableUser,
+  MatchWithMeetingInfo,
+} from "./match-types";
 import otto_treider_test_users_year_0 from "./test-data/test_users_year_0.json";
 import otto_treider_test_users_year_1 from "./test-data/test_users_year_1.json";
 
@@ -75,6 +79,59 @@ describe("Simple Matches", () => {
       new Date("2023-02-02T12:00:00+0100"),
       900000, // 15 minutes
     );
+  });
+
+  it("should assign users to a stand match time slot right after their final match", () => {
+    const matchFinder = new MatchFinder([audun, kristine], [siri]);
+    const matches = matchFinder.generateMatches();
+    const standLocation = "Resepsjonen";
+    const meetingDuration = 900000; // 15 minutes
+    const matchesWithMeetingInfo = assignMeetingInfoToMatches(
+      matches,
+      standLocation,
+      [{ name: "Sal 1" }, { name: "Sal 2" }],
+      new Date("2024-06-12T12:00:00+0100"),
+      meetingDuration,
+    );
+    for (const matchWithMeetingInfo of matchesWithMeetingInfo) {
+      if (matchWithMeetingInfo.variant === CandidateMatchVariant.UserMatch)
+        continue;
+      const latestUserMatchForStandMatchCustomer = matchesWithMeetingInfo
+        .filter(
+          (match) =>
+            match.variant === CandidateMatchVariant.UserMatch &&
+            (match.senderId === matchWithMeetingInfo.userId ||
+              match.receiverId === matchWithMeetingInfo.userId),
+        )
+        .reduce((latest, next) =>
+          next.meetingInfo.date.getTime() > latest.meetingInfo.date.getTime()
+            ? next
+            : latest,
+        );
+      const latestUserMatchTime =
+        latestUserMatchForStandMatchCustomer.meetingInfo.date.getTime();
+      expect(matchWithMeetingInfo.meetingInfo.date.getTime()).to.eq(
+        latestUserMatchTime + meetingDuration,
+      );
+    }
+  });
+
+  it("should assign the StandMatch date to startTime if the user only has Stand Matches", () => {
+    const matchFinder = new MatchFinder([audun], [elRi]);
+    const matches = matchFinder.generateMatches();
+    const startTime = new Date("2024-06-12T12:00:00+0100");
+    const matchesWithMeetingInfo = assignMeetingInfoToMatches(
+      matches,
+      "Resepsjonen",
+      [{ name: "Sal 1" }, { name: "Sal 2" }],
+      startTime,
+      900000,
+    );
+    for (const matchWithMeetingInfo of matchesWithMeetingInfo) {
+      expect(matchWithMeetingInfo.meetingInfo.date.getTime()).to.eq(
+        startTime.getTime(),
+      );
+    }
   });
 
   it("should not be able to be more matches than the location limit at a given time", () => {

@@ -38,8 +38,7 @@ const matchBaseSchema = {
   },
   meetingInfo: {
     location: { type: String, required: true },
-    // Can be null in case of a StandMatch
-    date: Date,
+    date: { type: Date, required: true },
   },
 };
 
