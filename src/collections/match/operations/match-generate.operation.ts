@@ -49,7 +49,7 @@ export class MatchGenerateOperation implements Operation {
     }
     const [senders, receivers] = await Promise.all([
       getMatchableSenders(
-        matcherSpec.branches,
+        matcherSpec.senderBranches,
         matcherSpec.deadlineBefore,
         matcherSpec.includeSenderItemsFromOtherBranches,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -57,7 +57,7 @@ export class MatchGenerateOperation implements Operation {
         this.customerItemStorage,
       ),
       getMatchableReceivers(
-        matcherSpec.branches,
+        matcherSpec.receiverBranches,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.orderStorage,
