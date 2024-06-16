@@ -1,6 +1,5 @@
 import {
   BlError,
-  CustomerItem,
   Item,
   Match,
   MatchRelevantItemDetails,
@@ -8,12 +7,13 @@ import {
   MatchVariant,
   MatchWithDetails,
   StandMatch,
+  UniqueItem,
   UserDetail,
   UserMatch,
 } from "@boklisten/bl-model";
 
+import { SEDbQuery } from "../../../query/se.db-query";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { CustomerItemActiveBlid } from "../../customer-item/helpers/customer-item-active-blid";
 
 function selectMatchRelevantUserDetails({
   name,
@@ -27,15 +27,15 @@ function selectMatchRelevantUserDetails({
 
 function mapBlIdsToItemIds(
   blIds: string[],
-  customerItemsMap: Map<string, CustomerItem>,
+  blIdsToItemIdsMap: Map<string, string>,
 ): { [customerItemId: string]: string } {
   return Object.fromEntries(
-    blIds.map(String).map((customerItemId) => {
-      const customerItem = customerItemsMap.get(customerItemId);
-      if (customerItem === undefined) {
-        throw new BlError(`No customerItem with id ${customerItemId} found`);
+    blIds.map(String).map((blId) => {
+      const itemId = blIdsToItemIdsMap.get(blId);
+      if (itemId === undefined) {
+        throw new BlError(`No uniqueitem with id ${blId} found`);
       }
-      return [customerItemId, String(customerItem.item)];
+      return [blId, itemId];
     }),
   );
 }
@@ -64,7 +64,7 @@ function mapItemIdsToItemDetails(
 function addDetailsToMatch(
   match: Match,
   detailsMap: Map<string, UserDetail>,
-  customerItemsMap: Map<string, CustomerItem>,
+  blIdsToItemIdMap: Map<string, string>,
   itemsMap: Map<string, Item>,
 ): MatchWithDetails {
   if (match._variant === MatchVariant.StandMatch) {
@@ -94,7 +94,7 @@ function addDetailsToMatch(
     receiverDetails: selectMatchRelevantUserDetails(receiverDetails),
     blIdToItemMap: mapBlIdsToItemIds(
       [...match.receivedBlIds, ...match.deliveredBlIds],
-      customerItemsMap,
+      blIdsToItemIdMap,
     ),
     itemDetails: mapItemIdsToItemDetails(match.expectedItems, itemsMap),
   };
@@ -104,7 +104,7 @@ export async function addDetailsToAllMatches(
   matches: Match[],
   userDetailStorage: BlDocumentStorage<UserDetail>,
   itemStorage: BlDocumentStorage<Item>,
-  customerItemStorage: BlDocumentStorage<CustomerItem>,
+  uniqueItemStorage: BlDocumentStorage<UniqueItem>,
 ): Promise<MatchWithDetails[]> {
   const userIds = Array.from(
     matches.reduce(
@@ -147,28 +147,28 @@ export async function addDetailsToAllMatches(
       new Set<string>(),
     ),
   );
-  const blIdsToCustomerItemMap = new Map(
+  const blIdsToItemIdMap = new Map(
     await Promise.all(
-      blIdsToMap.map((blId) =>
-        new CustomerItemActiveBlid(customerItemStorage)
-          .getActiveCustomerItems(blId)
-          .then((customerItems): [string, CustomerItem] => [
+      blIdsToMap.map((blId) => {
+        const uniqueItemQuery = new SEDbQuery();
+        uniqueItemQuery.stringFilters = [{ fieldName: "blid", value: blId }];
+        return uniqueItemStorage
+          .getByQuery(uniqueItemQuery)
+          .then((uniqueItems): [string, string] => [
             blId,
-            // There should never be more than one active customerItem related to a blId
-            customerItems[0]!,
-          ]),
-      ),
+            uniqueItems[0]!.item,
+          ]);
+      }),
     ),
   );
-  const itemsToMapFromCustomerItems = Array.from(
-    Array.from(blIdsToCustomerItemMap.values()).reduce(
-      (itemIds, customerItem) =>
-        new Set([...itemIds, String(customerItem.item)]),
+  const itemsToMapFromBlIds = Array.from(
+    Array.from(blIdsToItemIdMap.values()).reduce(
+      (itemIds, itemId) => new Set([...itemIds, itemId]),
       new Set<string>(),
     ),
   );
   const itemsToMap = Array.from(
-    new Set([...itemsToMapFromExpectedItems, ...itemsToMapFromCustomerItems]),
+    new Set([...itemsToMapFromExpectedItems, ...itemsToMapFromBlIds]),
   );
   const itemsMap = new Map(
     (await itemStorage.getMany(itemsToMap)).map((item) => [
@@ -178,6 +178,6 @@ export async function addDetailsToAllMatches(
   );
 
   return matches.map((match) =>
-    addDetailsToMatch(match, userDetailsMap, blIdsToCustomerItemMap, itemsMap),
+    addDetailsToMatch(match, userDetailsMap, blIdsToItemIdMap, itemsMap),
   );
 }
