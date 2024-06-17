@@ -7,7 +7,7 @@ import {
 } from "@boklisten/bl-model";
 import { ObjectId } from "mongodb";
 
-import { isBoolean } from "../../../helper/typescript-helpers";
+import { isBoolean, isNotNullish } from "../../../helper/typescript-helpers";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import {
   CandidateMatchVariant,
@@ -28,13 +28,13 @@ export interface MatcherSpec {
   deadlineBefore: string;
   matchMeetingDurationInMS: number;
   includeSenderItemsFromOtherBranches: boolean;
-  additionalReceiverItems: { branch: string; items: string[] }[];
-  deadlineOverrides: { item: string; deadline: string }[];
+  additionalReceiverItems: { [branch: string]: string[] };
+  deadlineOverrides: { [item: string]: string };
 }
 
 export function candidateMatchToMatch(
   candidate: MatchWithMeetingInfo,
-  deadlineOverrides: { item: string; deadline: string }[],
+  deadlineOverrides: { [item: string]: string },
 ): Match {
   switch (candidate.variant) {
     case CandidateMatchVariant.StandMatch:
@@ -121,12 +121,12 @@ export async function getMatchableSenders(
  *
  * @param branchIds The IDs of branches to search for users and items
  * @param orderStorage
- * @param additionalReceiverItems items that all receivers in the predefined branches want
+ * @param additionalReceiverItems items that should get even without an order (known required courses)
  */
 export async function getMatchableReceivers(
   branchIds: string[],
   orderStorage: BlDocumentStorage<Order>,
-  additionalReceiverItems: { branch: string; items: string[] }[],
+  additionalReceiverItems: { [branch: string]: string[] },
 ): Promise<MatchableUser[]> {
   const aggregatedReceivers = (await orderStorage.aggregate([
     {
@@ -178,10 +178,12 @@ export async function getMatchableReceivers(
     },
   ])) as { id: string; items: string[]; branches: string[] }[];
 
-  for (const branchReceiverItems of additionalReceiverItems) {
+  for (const [branchId, receiverItems] of Object.entries(
+    additionalReceiverItems,
+  )) {
     for (const receiver of aggregatedReceivers) {
-      if (receiver.branches.includes(branchReceiverItems.branch)) {
-        receiver.items = [...receiver.items, ...branchReceiverItems.items];
+      if (receiver.branches.includes(branchId)) {
+        receiver.items = [...receiver.items, ...receiverItems];
       }
     }
   }
@@ -225,23 +227,25 @@ export function verifyMatcherSpec(
     typeof m["matchMeetingDurationInMS"] === "number" &&
     !isNaN(m["matchMeetingDurationInMS"]) &&
     isBoolean(m["includeSenderItemsFromOtherBranches"]) &&
-    Array.isArray(m["additionalReceiverItems"]) &&
-    m["additionalReceiverItems"].every(
+    typeof m["additionalReceiverItems"] === "object" &&
+    isNotNullish(m["additionalReceiverItems"]) &&
+    Object.entries(m["additionalReceiverItems"]).every(
       (entry) =>
-        typeof entry["branch"] === "string" &&
-        ObjectId.isValid(entry["branch"]) &&
-        Array.isArray(entry["items"]) &&
-        entry["items"].every(
+        typeof entry[0] === "string" &&
+        ObjectId.isValid(entry[0]) &&
+        Array.isArray(entry[1]) &&
+        entry[1].every(
           (itemId) => typeof itemId === "string" && ObjectId.isValid(itemId),
         ),
     ) &&
-    Array.isArray(m["deadlineOverrides"]) &&
-    m["deadlineOverrides"].every(
-      (override) =>
-        typeof override["item"] === "string" &&
-        ObjectId.isValid(override["item"]) &&
-        typeof override["deadline"] === "string" &&
-        !isNaN(new Date(override["deadline"]).getTime()),
+    typeof m["deadlineOverrides"] === "object" &&
+    isNotNullish(m["deadlineOverrides"]) &&
+    Object.entries(m["deadlineOverrides"]).every(
+      (deadlineOverride) =>
+        typeof deadlineOverride[0] === "string" &&
+        ObjectId.isValid(deadlineOverride[0]) &&
+        typeof deadlineOverride[1] === "string" &&
+        !isNaN(new Date(deadlineOverride[1]).getTime()),
     )
   );
 }

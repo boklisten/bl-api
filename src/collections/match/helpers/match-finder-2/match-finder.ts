@@ -1,3 +1,5 @@
+import { BlError } from "@boklisten/bl-model";
+
 import {
   MatchableUser,
   CandidateMatch,
@@ -101,7 +103,7 @@ export class MatchFinder {
     this.receivers = removeFullyMatchedUsers(this.receivers);
 
     if (this.senders.length > 0 || this.receivers.length > 0) {
-      throw new Error("Some senders or receivers did not receive a match!");
+      throw new BlError("Some senders or receivers did not receive a match!");
     }
 
     let originalSenders = copyUsers(this._senders);
@@ -123,7 +125,9 @@ export class MatchFinder {
       );
       if (sender) {
         if (hasDifference(intersect(sentItems, sender.items), sentItems)) {
-          throw new Error("Sender cannot give away more books than they have!");
+          throw new BlError(
+            "Sender cannot give away more books than they have!",
+          );
         }
         sender.items = difference(sender.items, sentItems);
         originalSenders = removeFullyMatchedUsers(originalSenders);
@@ -146,22 +150,24 @@ export class MatchFinder {
         if (
           hasDifference(intersect(receivedItems, receiver.items), receivedItems)
         ) {
-          throw new Error("Receiver cannot receive more books than they want!");
+          throw new BlError(
+            "Receiver cannot receive more books than they want!",
+          );
         }
         receiver.items = difference(receiver.items, receivedItems);
         originalReceivers = removeFullyMatchedUsers(originalReceivers);
       }
 
       if (
-        senderId === receiverId &&
-        match.variant === CandidateMatchVariant.UserMatch
+        match.variant === CandidateMatchVariant.UserMatch &&
+        senderId === receiverId
       ) {
-        throw new Error("Receiver and sender cannot be the same person");
+        throw new BlError("Receiver and sender cannot be the same person");
       }
     }
 
     if (originalSenders.length > 0 || originalReceivers.length > 0) {
-      throw new Error("Some senders or receivers did not get fulfilled");
+      throw new BlError("Some senders or receivers did not get fulfilled");
     }
   }
 

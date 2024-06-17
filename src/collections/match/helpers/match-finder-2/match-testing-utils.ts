@@ -67,12 +67,12 @@ export function createFakeMatchableUser(
 }
 
 export function createUserGroup(
-  idPrefix: string,
+  idSuffix: string,
   size: number,
   ...items: string[]
 ): MatchableUser[] {
   return [...Array(size)].map((_, id) =>
-    createFakeMatchableUser(idPrefix + id, ...items),
+    createFakeMatchableUser(idSuffix + id, ...items),
   );
 }
 
@@ -115,12 +115,12 @@ export const shuffler =
     return list;
   };
 
-export function createMatchableUsersWithIdPrefix(
+export function createMatchableUsersWithIdSuffix(
   rawData: { id: string; items: { $numberLong: string }[] }[],
-  idPrefix: string,
+  idSuffix: string,
 ): MatchableUser[] {
   return rawData.map(({ id, items }) => ({
-    id: id + idPrefix,
+    id: id + idSuffix,
     items: new Set(items.map((item) => item["$numberLong"])),
   }));
 }
