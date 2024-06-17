@@ -65,6 +65,50 @@ export class MatchTransferItemOperation implements Operation {
     return false;
   }
 
+  private async updateMatches(
+    customerItem: CustomerItem,
+    senderUserMatch: UserMatch | undefined,
+    senderMatches: Match[],
+  ): Promise<void> {
+    if (senderUserMatch !== undefined) {
+      await this._matchStorage.update(
+        senderUserMatch.id,
+        {
+          deliveredBlIds: [
+            ...senderUserMatch.deliveredBlIds,
+            customerItem.blid!,
+          ],
+        },
+        new SystemUser(),
+      );
+      return;
+    }
+
+    const senderStandMatch = senderMatches
+      .filter((match) => match._variant === MatchVariant.StandMatch)
+      .find(
+        (standMatch) =>
+          standMatch.expectedHandoffItems.includes(
+            customerItem.item as string,
+          ) && !standMatch.deliveredItems.includes(customerItem.blid!),
+      );
+
+    if (senderStandMatch === undefined) {
+      return;
+    }
+
+    await this._matchStorage.update(
+      senderStandMatch.id,
+      {
+        deliveredItems: [
+          ...senderStandMatch.deliveredItems,
+          customerItem.item as string,
+        ],
+      },
+      new SystemUser(),
+    );
+  }
+
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
     let userFeedback;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -135,7 +179,7 @@ export class MatchTransferItemOperation implements Operation {
     );
     const senderUserMatches = senderMatches.filter(
       (match) => match._variant === MatchVariant.UserMatch,
-    ) as UserMatch[];
+    );
     const senderUserMatch = senderUserMatches.find(
       (userMatch) =>
         userMatch.expectedItems.includes(customerItem.item as string) &&
@@ -175,30 +219,19 @@ export class MatchTransferItemOperation implements Operation {
     const orderMovedToHandler = new OrderItemMovedFromOrderHandler();
     await orderMovedToHandler.updateOrderItems(placedReceiverOrder);
 
-    if (senderUserMatch !== undefined) {
-      await this._matchStorage.update(
-        senderUserMatch.id,
-        {
-          deliveredBlIds: [
-            ...senderUserMatch.deliveredBlIds,
-            customerItem.blid!,
-          ],
-        },
-        new SystemUser(),
-      );
+    await this.updateMatches(customerItem, senderUserMatch, senderMatches);
 
-      const senderOrder = await createMatchOrder(
-        customerItem,
-        customerItem.customer as string,
-        true,
-      );
+    const senderOrder = await createMatchOrder(
+      customerItem,
+      customerItem.customer as string,
+      true,
+    );
 
-      const placedSenderOrder = await this._orderStorage.add(
-        senderOrder,
-        new SystemUser(),
-      );
-      await orderValidator.validate(placedSenderOrder, false);
-    }
+    const placedSenderOrder = await this._orderStorage.add(
+      senderOrder,
+      new SystemUser(),
+    );
+    await orderValidator.validate(placedSenderOrder, false);
 
     await this._customerItemStorage.update(
       customerItem.id,
