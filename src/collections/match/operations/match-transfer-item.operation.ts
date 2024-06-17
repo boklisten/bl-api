@@ -5,7 +5,7 @@ import {
   Match,
   MatchVariant,
   Order,
-  UserDetail,
+  UniqueItem,
   UserMatch,
 } from "@boklisten/bl-model";
 
@@ -15,6 +15,7 @@ import {
 } from "./match-operation-utils";
 import { SystemUser } from "../../../auth/permission/permission.service";
 import { Operation } from "../../../operation/operation";
+import { SEDbQuery } from "../../../query/se.db-query";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
@@ -24,24 +25,33 @@ import { OrderToCustomerItemGenerator } from "../../customer-item/helpers/order-
 import { OrderItemMovedFromOrderHandler } from "../../order/helpers/order-item-moved-from-order-handler/order-item-moved-from-order-handler";
 import { OrderValidator } from "../../order/helpers/order-validator/order-validator";
 import { orderSchema } from "../../order/order.schema";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { uniqueItemSchema } from "../../unique-item/unique-item.schema";
 import { matchSchema } from "../match.schema";
 
 export class MatchTransferItemOperation implements Operation {
+  private readonly _matchStorage: BlDocumentStorage<Match>;
+  private readonly _orderStorage: BlDocumentStorage<Order>;
+  private readonly _customerItemStorage: BlDocumentStorage<CustomerItem>;
+  private readonly _uniqueItemStorage: BlDocumentStorage<UniqueItem>;
+
   constructor(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    private matchStorage?: BlDocumentStorage<Match>,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    private userDetailStorage?: BlDocumentStorage<UserDetail>,
+    matchStorage?: BlDocumentStorage<Match>,
+    orderStorage?: BlDocumentStorage<Order>,
+    customerItemStorage?: BlDocumentStorage<CustomerItem>,
+    uniqueItemStorage?: BlDocumentStorage<UniqueItem>,
   ) {
-    this.matchStorage =
+    this._matchStorage =
       matchStorage ??
       new BlDocumentStorage(BlCollectionName.Matches, matchSchema);
-    this.userDetailStorage =
-      userDetailStorage ??
-      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+    this._orderStorage =
+      orderStorage ??
+      new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
+    this._customerItemStorage =
+      customerItemStorage ??
+      new BlDocumentStorage(BlCollectionName.CustomerItems, customerItemSchema);
+    this._uniqueItemStorage =
+      uniqueItemStorage ??
+      new BlDocumentStorage(BlCollectionName.UniqueItems, uniqueItemSchema);
   }
 
   private isValidBlid(scannedText: string): boolean {
@@ -68,11 +78,12 @@ export class MatchTransferItemOperation implements Operation {
       throw new BlError("blid is not a valid blid").code(803);
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const receiverUserDetailId = blApiRequest.user.details;
+    const receiverUserDetailId = blApiRequest.user!.details;
 
-    const receiverMatches = await getAllMatchesForUser(receiverUserDetailId);
+    const receiverMatches = await getAllMatchesForUser(
+      receiverUserDetailId,
+      this._matchStorage,
+    );
     const receiverUserMatches = receiverMatches.filter(
       (match) => match._variant === MatchVariant.UserMatch,
     ) as UserMatch[];
@@ -104,8 +115,23 @@ export class MatchTransferItemOperation implements Operation {
     if (receiverUserMatch.receivedBlIds.includes(customerItem.blid!)) {
       throw new BlError("Receiver has already received this item").code(806);
     }
+
+    const receivedItemIds = await Promise.all(
+      receiverUserMatch.receivedBlIds.map(async (blId) => {
+        const uniqueItemQuery = new SEDbQuery();
+        uniqueItemQuery.stringFilters = [{ fieldName: "blid", value: blId }];
+        return (await this._uniqueItemStorage.getByQuery(uniqueItemQuery))[0]!
+          .item;
+      }),
+    );
+
+    if (receivedItemIds.includes(customerItem.item as string)) {
+      throw new BlError("Receiver has already received this item").code(806);
+    }
+
     const senderMatches = await getAllMatchesForUser(
       customerItem.customer as string,
+      this._matchStorage,
     );
     const senderUserMatches = senderMatches.filter(
       (match) => match._variant === MatchVariant.UserMatch,
@@ -120,27 +146,12 @@ export class MatchTransferItemOperation implements Operation {
       senderUserMatch === undefined ||
       receiverUserMatch.id !== senderUserMatch.id
     ) {
-      userFeedback = `Boken du har mottatt tilhørte opprinnelig noen andre enn den som ga deg boka. Den har nå blitt registrert på deg, men den som ga deg boka må fortsatt levere sin opprinnelige bok. Ta kontakt med stand for spørsmål.`;
+      userFeedback = `Boken du skannet tilhørte en annen elev enn den som ga deg den. Du skal beholde den, men eleven som ga deg boken er fortsatt ansvarlig for at den opprinnelige boken blir levert.`;
     }
-
-    const matchStorage = new BlDocumentStorage<Match>(
-      BlCollectionName.Matches,
-      matchSchema,
-    );
-
-    const orderStorage = new BlDocumentStorage<Order>(
-      BlCollectionName.Orders,
-      orderSchema,
-    );
-
-    const customerItemStorage = new BlDocumentStorage<CustomerItem>(
-      BlCollectionName.CustomerItems,
-      customerItemSchema,
-    );
 
     const orderValidator = new OrderValidator();
 
-    await matchStorage.update(
+    await this._matchStorage.update(
       receiverUserMatch.id,
       {
         receivedBlIds: [...receiverUserMatch.receivedBlIds, customerItem.blid!],
@@ -155,7 +166,7 @@ export class MatchTransferItemOperation implements Operation {
       receiverUserMatch.deadlineOverrides,
     );
 
-    const placedReceiverOrder = await orderStorage.add(
+    const placedReceiverOrder = await this._orderStorage.add(
       receiverOrder,
       new SystemUser(),
     );
@@ -165,7 +176,7 @@ export class MatchTransferItemOperation implements Operation {
     await orderMovedToHandler.updateOrderItems(placedReceiverOrder);
 
     if (senderUserMatch !== undefined) {
-      await matchStorage.update(
+      await this._matchStorage.update(
         senderUserMatch.id,
         {
           deliveredBlIds: [
@@ -182,14 +193,14 @@ export class MatchTransferItemOperation implements Operation {
         true,
       );
 
-      const placedSenderOrder = await orderStorage.add(
+      const placedSenderOrder = await this._orderStorage.add(
         senderOrder,
         new SystemUser(),
       );
       await orderValidator.validate(placedSenderOrder, false);
     }
 
-    await customerItemStorage.update(
+    await this._customerItemStorage.update(
       customerItem.id,
       {
         returned: true,
@@ -206,9 +217,10 @@ export class MatchTransferItemOperation implements Operation {
       throw new BlError("Failed to create new customer item");
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    await customerItemStorage.add(generatedCustomerItems[0], new SystemUser());
+    await this._customerItemStorage.add(
+      generatedCustomerItems[0]!,
+      new SystemUser(),
+    );
 
     return new BlapiResponse([{ feedback: userFeedback }]);
   }

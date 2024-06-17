@@ -13,7 +13,6 @@ import { BlCollectionName } from "../../bl-collection";
 import { branchSchema } from "../../branch/branch.schema";
 import { itemSchema } from "../../item/item.schema";
 import { OrderActive } from "../../order/helpers/order-active/order-active";
-import { matchSchema } from "../match.schema";
 
 export async function createMatchOrder(
   customerItem: CustomerItem,
@@ -57,13 +56,6 @@ export async function createMatchOrder(
     const orderActive = new OrderActive();
     const activeReceiverOrders =
       await orderActive.getActiveOrders(userDetailId);
-    console.log(
-      activeReceiverOrders.map((order) =>
-        order.orderItems.filter((orderItem) =>
-          orderActive.isOrderItemActive(orderItem),
-        ),
-      ),
-    );
     const originalReceiverOrder = activeReceiverOrders.find((order) =>
       order.orderItems
         .filter((orderItem) => orderActive.isOrderItemActive(orderItem))
@@ -118,6 +110,7 @@ export async function createMatchOrder(
 
 export async function getAllMatchesForUser(
   userDetailId: string,
+  matchStorage: BlDocumentStorage<Match>,
 ): Promise<Match[]> {
   const query = new SEDbQuery();
   query.objectIdFilters = [
@@ -127,10 +120,6 @@ export async function getAllMatchesForUser(
     { fieldName: "receiver", value: [userDetailId] },
   ];
 
-  const matchStorage = new BlDocumentStorage(
-    BlCollectionName.Matches,
-    matchSchema,
-  );
   try {
     return (await matchStorage.getByQuery(query)) as Match[];
   } catch (e) {

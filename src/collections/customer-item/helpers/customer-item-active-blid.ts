@@ -7,16 +7,17 @@ import { BlCollectionName } from "../../bl-collection";
 import { customerItemSchema } from "../customer-item.schema";
 
 export class CustomerItemActiveBlid {
+  private readonly _customerItemStorage: BlDocumentStorage<CustomerItem>;
   private customerItemActive: CustomerItemActive;
   private dbQueryBuilder: SEDbQueryBuilder;
 
-  constructor(private customerItemStorage?: BlDocumentStorage<CustomerItem>) {
-    this.customerItemStorage = customerItemStorage
-      ? customerItemStorage
-      : new BlDocumentStorage<CustomerItem>(
-          BlCollectionName.CustomerItems,
-          customerItemSchema,
-        );
+  constructor(customerItemStorage?: BlDocumentStorage<CustomerItem>) {
+    this._customerItemStorage =
+      customerItemStorage ??
+      new BlDocumentStorage<CustomerItem>(
+        BlCollectionName.CustomerItems,
+        customerItemSchema,
+      );
     this.customerItemActive = new CustomerItemActive();
     this.dbQueryBuilder = new SEDbQueryBuilder();
   }
@@ -34,9 +35,7 @@ export class CustomerItemActiveBlid {
       { fieldName: "blid", type: "string" },
     ]);
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const customerItems = await this.customerItemStorage.getByQuery(dbQuery);
+    const customerItems = await this._customerItemStorage.getByQuery(dbQuery);
 
     const activeCustomerItems = customerItems.filter((customerItem) =>
       this.customerItemActive.isActive(customerItem),
