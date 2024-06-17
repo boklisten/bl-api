@@ -291,32 +291,42 @@ export class OrderPlaceOperation implements Operation {
         .filter(isNotNullish),
     );
 
-    const standMatches: StandMatch[] = allMatches.filter(
+    const standMatches = allMatches.filter(
       (match) => match._variant === MatchVariant.StandMatch,
-    ) as StandMatch[];
+    );
 
-    // Discover items to register delivery of
-    const matchToDeliveredItemsMap = new Map<string, Set<string>>();
-    for (const customerItem of returnCustomerItems) {
-      const foundStandMatch = standMatches.find(
-        (standMatch) =>
-          standMatch.customer === customerItem.customer &&
-          standMatch.expectedHandoffItems.includes(String(customerItem.item)) &&
-          !standMatch.deliveredItems.includes(String(customerItem.item)),
-      );
-      if (foundStandMatch) {
-        matchToDeliveredItemsMap.set(
-          foundStandMatch.id,
-          new Set([
-            ...(matchToDeliveredItemsMap.get(foundStandMatch.id) ?? []),
-            ...foundStandMatch.deliveredItems,
-            customerItem.item as string,
-          ]),
-        );
-      }
-    }
+    const userMatches = allMatches.filter(
+      (match) => match._variant === MatchVariant.UserMatch,
+    );
 
-    // Register delivery
+    await this.updateStandMatchHandoffs(returnCustomerItems, standMatches);
+    await this.updateStandMatchPickups(handoutCustomerItems, standMatches);
+    await this.updateSenderUserMatches(returnCustomerItems, userMatches);
+    await this.updateReceiverUserMatches(handoutCustomerItems, userMatches);
+  }
+
+  // Update the deliveredItems of the customer's StandMatches to show those newly handed in
+  private async updateStandMatchHandoffs(
+    returnCustomerItems: CustomerItem[],
+    standMatches: StandMatch[],
+  ) {
+    const matchToDeliveredItemsMap = this.groupValuesByMatch(
+      returnCustomerItems,
+      (customerItem) =>
+        standMatches.find(
+          (standMatch) =>
+            standMatch.customer === customerItem.customer &&
+            standMatch.expectedHandoffItems.includes(
+              String(customerItem.item),
+            ) &&
+            !standMatch.deliveredItems.includes(String(customerItem.item)),
+        ),
+      (customerItem, match) => [
+        ...match.deliveredItems,
+        customerItem.item as string,
+      ],
+    );
+
     for (const [
       standMatchId,
       deliveredItems,
@@ -329,29 +339,30 @@ export class OrderPlaceOperation implements Operation {
         new SystemUser(),
       );
     }
+  }
 
-    // Discover items to register receiving of
-    const matchToReceivedItemsMap = new Map<string, Set<string>>();
-    for (const customerItem of handoutCustomerItems) {
-      const foundStandMatch = standMatches.find(
-        (standMatch) =>
-          standMatch.customer === customerItem.customer &&
-          standMatch.expectedPickupItems.includes(String(customerItem.item)) &&
-          !standMatch.receivedItems.includes(String(customerItem.item)),
-      );
-      if (foundStandMatch) {
-        matchToReceivedItemsMap.set(
-          foundStandMatch.id,
-          new Set([
-            ...(matchToReceivedItemsMap.get(foundStandMatch.id) ?? []),
-            ...foundStandMatch.receivedItems,
-            customerItem.item as string,
-          ]),
-        );
-      }
-    }
+  // Update the receivedItems of the customer's StandMatches to show those newly picked up
+  private async updateStandMatchPickups(
+    handoutCustomerItems: CustomerItem[],
+    standMatches: StandMatch[],
+  ) {
+    const matchToReceivedItemsMap = this.groupValuesByMatch(
+      handoutCustomerItems,
+      (customerItem) =>
+        standMatches.find(
+          (standMatch) =>
+            standMatch.customer === customerItem.customer &&
+            standMatch.expectedPickupItems.includes(
+              String(customerItem.item),
+            ) &&
+            !standMatch.receivedItems.includes(String(customerItem.item)),
+        ),
+      (customerItem, match) => [
+        ...match.receivedItems,
+        customerItem.item as string,
+      ],
+    );
 
-    // Register receiving
     for (const [
       standMatchId,
       receivedItems,
@@ -364,6 +375,94 @@ export class OrderPlaceOperation implements Operation {
         new SystemUser(),
       );
     }
+  }
+
+  // Update the receivedBlids of all UserMatches where the stand customer is receiver to show those newly picked up
+  private async updateReceiverUserMatches(
+    handoutCustomerItems: CustomerItem[],
+    userMatches: UserMatch[],
+  ) {
+    const matchToReceivedBlIdsMap = this.groupValuesByMatch(
+      handoutCustomerItems,
+      (handoutCustomerItem) =>
+        userMatches.find(
+          (match) =>
+            match.receiver === (handoutCustomerItem.customer as string) &&
+            match.expectedItems.includes(handoutCustomerItem.item as string) &&
+            handoutCustomerItem.blid &&
+            !match.receivedBlIds.includes(handoutCustomerItem.blid),
+        ),
+      (handoutCustomerItem, userMatch) => [
+        ...userMatch.receivedBlIds,
+        handoutCustomerItem.blid!,
+      ],
+    );
+
+    for (const [matchId, receivedBlIds] of matchToReceivedBlIdsMap.entries()) {
+      await this._matchStorage.update(
+        matchId,
+        { receivedBlIds: Array.from(receivedBlIds) },
+        new SystemUser(),
+      );
+    }
+  }
+
+  // Update the deliveredBlIds of all UserMatches where the book owner is sender to show those newly handed in
+  private async updateSenderUserMatches(
+    returnCustomerItems: CustomerItem[],
+    userMatches: UserMatch[],
+  ) {
+    const matchToDeliveredBlIdsMap = this.groupValuesByMatch(
+      returnCustomerItems,
+      (returnCustomerItem) =>
+        userMatches.find(
+          (match) =>
+            match.sender === (returnCustomerItem.customer as string) &&
+            match.expectedItems.includes(returnCustomerItem.item as string) &&
+            returnCustomerItem.blid &&
+            !match.deliveredBlIds.includes(returnCustomerItem.blid),
+        ),
+      (returnCustomerItem, userMatch) => [
+        ...userMatch.deliveredBlIds,
+        returnCustomerItem.blid!,
+      ],
+    );
+
+    for (const [
+      matchId,
+      deliveredBlIds,
+    ] of matchToDeliveredBlIdsMap.entries()) {
+      await this._matchStorage.update(
+        matchId,
+        { deliveredBlIds: Array.from(deliveredBlIds) },
+        new SystemUser(),
+      );
+    }
+  }
+
+  // Using some collection of values, group those values by match.
+  // Can be used to e.g. combine all required updates to a match.
+  private groupValuesByMatch<V, M extends Match>(
+    values: V[],
+    findMatch: (value: V) => M | undefined,
+    valuesExtractor: (value: V, match: M) => string[],
+  ): Map<string, Set<string>> {
+    const map = new Map<string, Set<string>>();
+
+    for (const value of values) {
+      const match = findMatch(value);
+      if (match) {
+        map.set(
+          match.id,
+          new Set([
+            ...(map.get(match.id) ?? []),
+            ...valuesExtractor(value, match),
+          ]),
+        );
+      }
+    }
+
+    return map;
   }
 
   public async run(
@@ -520,7 +619,7 @@ export class OrderPlaceOperation implements Operation {
   ) {
     const userMatches: UserMatch[] = allMatches.filter(
       (match) => match._variant === MatchVariant.UserMatch,
-    ) as UserMatch[];
+    );
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const returnCustomerItems = await this._customerItemStorage.getMany(
