@@ -51,9 +51,7 @@ export class MatchNotifyOperation implements Operation {
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
     const matchNotifySpec = blApiRequest.data;
     if (!verifyMatchNotifySpec(matchNotifySpec)) {
-      throw new BlError(`Malformed MatchNotifySpec ${matchNotifySpec}`).code(
-        701,
-      );
+      throw new BlError(`Malformed MatchNotifySpec`).code(701);
     }
 
     const matches = await this._matchStorage.getAll();

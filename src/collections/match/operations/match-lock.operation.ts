@@ -42,7 +42,7 @@ export class MatchLockOperation implements Operation {
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
     const matchLockSpec = blApiRequest.data;
     if (!verifyMatchLockSpec(matchLockSpec)) {
-      throw new BlError(`Malformed MatchLockSpec ${matchLockSpec}`).code(701);
+      throw new BlError(`Malformed MatchLockSpec`).code(701);
     }
     const userMatches = (
       await getAllMatchesForUser(matchLockSpec.customerId, this._matchStorage)

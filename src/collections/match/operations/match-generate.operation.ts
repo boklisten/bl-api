@@ -45,7 +45,7 @@ export class MatchGenerateOperation implements Operation {
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
     const matcherSpec = blApiRequest.data;
     if (!verifyMatcherSpec(matcherSpec)) {
-      throw new BlError(`Malformed MatcherSpec ${matcherSpec}`).code(701);
+      throw new BlError(`Malformed MatcherSpec`).code(701);
     }
     const [senders, receivers] = await Promise.all([
       getMatchableSenders(
