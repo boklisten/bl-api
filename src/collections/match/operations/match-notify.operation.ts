@@ -98,14 +98,14 @@ export class MatchNotifyOperation implements Operation {
 
     return new BlapiResponse(
       await Promise.allSettled(
-        (await this._userDetailStorage.getMany([...targetCustomerIds]))
-          .filter((customer) => customer.phone?.length > 0)
-          .map((customer) =>
-            sendSMS(
-              customer.phone,
-              `${matchNotifySpec.message} Logg inn med: ${customer.email} Mvh Boklisten.no`,
-            ),
+        (
+          await this._userDetailStorage.getMany(Array.from(targetCustomerIds))
+        ).map((customer) =>
+          sendSMS(
+            customer.phone,
+            `${matchNotifySpec.message} Logg inn med: ${customer.email} Mvh Boklisten.no`,
           ),
+        ),
       ),
     );
   }
