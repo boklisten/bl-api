@@ -6,63 +6,109 @@ import {
   UserDetail,
 } from "@boklisten/bl-model";
 
-import { massSendSMS } from "../../../messenger/sms/sms-service";
+import { sendSMS } from "../../../messenger/sms/sms-service";
 import { Operation } from "../../../operation/operation";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { difference } from "../helpers/set-methods";
 import { matchSchema } from "../match.schema";
 
+export interface MatchNotifySpec {
+  target: "senders" | "receivers" | "stand-only" | "all";
+  message: string;
+}
+
+export function verifyMatchNotifySpec(
+  matchLockSpec: unknown,
+): matchLockSpec is MatchNotifySpec {
+  const m = matchLockSpec as Record<string, unknown> | null | undefined;
+  return (
+    !!m &&
+    typeof m["target"] === "string" &&
+    typeof m["message"] === "string" &&
+    ["senders", "receivers", "stand-only", "all"].includes(m["target"])
+  );
+}
+
 export class MatchNotifyOperation implements Operation {
+  private readonly _matchStorage: BlDocumentStorage<Match>;
+  private readonly _userDetailStorage: BlDocumentStorage<UserDetail>;
+
   constructor(
-    private matchStorage?: BlDocumentStorage<Match>,
-    private userDetailStorage?: BlDocumentStorage<UserDetail>,
+    matchStorage?: BlDocumentStorage<Match>,
+    userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
-    this.matchStorage =
+    this._matchStorage =
       matchStorage ??
       new BlDocumentStorage(BlCollectionName.Matches, matchSchema);
-    this.userDetailStorage =
+    this._userDetailStorage =
       userDetailStorage ??
       new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
   }
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const message = blApiRequest.data?.["message"];
-    if (!message || typeof message !== "string") {
-      throw new BlError("Message must be set");
+    const matchNotifySpec = blApiRequest.data;
+    if (!verifyMatchNotifySpec(matchNotifySpec)) {
+      throw new BlError(`Malformed MatchNotifySpec ${matchNotifySpec}`).code(
+        701,
+      );
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const matches = await this.matchStorage.getAll();
+    const matches = await this._matchStorage.getAll();
     if (matches.length === 0) {
       throw new BlError("Could not find any matches!");
     }
-
-    const matchedCustomerIds = Array.from(
-      new Set(
-        matches.flatMap((match) =>
-          match._variant === MatchVariant.UserMatch
-            ? [match.sender, match.receiver]
-            : match.customer,
+    const userMatches = matches.filter(
+      (m) => m._variant === MatchVariant.UserMatch,
+    );
+    const senderCustomerIds = new Set(userMatches.map((m) => m.sender));
+    const receiverCustomerIds = new Set(userMatches.map((m) => m.receiver));
+    const standOnlyCustomerIds = difference(
+      difference(
+        new Set(
+          matches
+            .filter((m) => m._variant === MatchVariant.StandMatch)
+            .map((m) => m.customer),
         ),
+        senderCustomerIds,
       ),
+      receiverCustomerIds,
     );
 
-    const customerPhoneNumbers =
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      (await this.userDetailStorage.getMany(matchedCustomerIds))
-        .flatMap((customer) => [customer?.guardian?.phone, customer?.phone])
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        .filter((phoneNumber) => phoneNumber?.length > 0);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const status = await massSendSMS(customerPhoneNumbers, message);
-    return new BlapiResponse(status);
+    let targetCustomerIds: Set<string>;
+    switch (matchNotifySpec.target) {
+      case "senders":
+        targetCustomerIds = senderCustomerIds;
+        break;
+      case "receivers":
+        targetCustomerIds = receiverCustomerIds;
+        break;
+      case "stand-only":
+        targetCustomerIds = standOnlyCustomerIds;
+        break;
+      case "all":
+      default:
+        targetCustomerIds = new Set([
+          ...senderCustomerIds,
+          ...receiverCustomerIds,
+          ...standOnlyCustomerIds,
+        ]);
+        break;
+    }
+
+    return new BlapiResponse(
+      await Promise.allSettled(
+        (await this._userDetailStorage.getMany([...targetCustomerIds]))
+          .filter((customer) => customer.phone?.length > 0)
+          .map((customer) =>
+            sendSMS(
+              customer.phone,
+              `${matchNotifySpec.message} Logg inn med: ${customer.email} Mvh Boklisten.no`,
+            ),
+          ),
+      ),
+    );
   }
 }
