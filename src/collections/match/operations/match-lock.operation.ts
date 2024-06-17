@@ -45,7 +45,7 @@ export class MatchLockOperation implements Operation {
       throw new BlError(`Malformed MatchLockSpec ${matchLockSpec}`).code(701);
     }
     const userMatches = (
-      await getAllMatchesForUser(matchLockSpec.customerId)
+      await getAllMatchesForUser(matchLockSpec.customerId, this._matchStorage)
     ).filter((match) => match._variant === MatchVariant.UserMatch);
 
     const res = await this._matchStorage.updateMany(

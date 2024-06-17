@@ -14,45 +14,39 @@ import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
 import { itemSchema } from "../../item/item.schema";
 import { uniqueItemSchema } from "../../unique-item/unique-item.schema";
-import { User } from "../../user/user";
-import { UserSchema } from "../../user/user.schema";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import { matchSchema } from "../match.schema";
 
 export class GetMyMatchesOperation implements Operation {
+  private readonly _userDetailStorage: BlDocumentStorage<UserDetail>;
+  private readonly _matchStorage: BlDocumentStorage<Match>;
+  private readonly _uniqueItemStorage: BlDocumentStorage<UniqueItem>;
+  private readonly _itemStorage: BlDocumentStorage<Item>;
+
   constructor(
-    private userStorage?: BlDocumentStorage<User>,
-    private userDetailStorage?: BlDocumentStorage<UserDetail>,
-    private matchStorage?: BlDocumentStorage<Match>,
-    private uniqueItemStorage?: BlDocumentStorage<UniqueItem>,
-    private itemStorage?: BlDocumentStorage<Item>,
+    userDetailStorage?: BlDocumentStorage<UserDetail>,
+    matchStorage?: BlDocumentStorage<Match>,
+    uniqueItemStorage?: BlDocumentStorage<UniqueItem>,
+    itemStorage?: BlDocumentStorage<Item>,
   ) {
-    this.userStorage ??= new BlDocumentStorage(
-      BlCollectionName.Users,
-      UserSchema,
-    );
-    this.userDetailStorage ??= new BlDocumentStorage(
-      BlCollectionName.UserDetails,
-      userDetailSchema,
-    );
-    this.matchStorage ??= new BlDocumentStorage(
-      BlCollectionName.Matches,
-      matchSchema,
-    );
-    this.uniqueItemStorage ??= new BlDocumentStorage(
-      BlCollectionName.UniqueItems,
-      uniqueItemSchema,
-    );
-    this.itemStorage ??= new BlDocumentStorage(
-      BlCollectionName.Items,
-      itemSchema,
-    );
+    this._userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+    this._matchStorage =
+      matchStorage ??
+      new BlDocumentStorage(BlCollectionName.Matches, matchSchema);
+    this._uniqueItemStorage =
+      uniqueItemStorage ??
+      new BlDocumentStorage(BlCollectionName.UniqueItems, uniqueItemSchema);
+    this._itemStorage =
+      itemStorage ?? new BlDocumentStorage(BlCollectionName.Items, itemSchema);
   }
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const matches = await getAllMatchesForUser(blApiRequest.user.details);
+    const matches = await getAllMatchesForUser(
+      blApiRequest.user!.details,
+      this._matchStorage,
+    );
 
     if (matches.length === 0) {
       return new BlapiResponse(matches);
@@ -60,11 +54,9 @@ export class GetMyMatchesOperation implements Operation {
 
     const matchesWithDetails = await addDetailsToAllMatches(
       matches,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      this.userDetailStorage,
-      this.itemStorage,
-      this.uniqueItemStorage,
+      this._userDetailStorage,
+      this._itemStorage,
+      this._uniqueItemStorage,
     );
 
     return new BlapiResponse(matchesWithDetails);
