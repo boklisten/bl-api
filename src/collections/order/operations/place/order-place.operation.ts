@@ -7,17 +7,15 @@ import {
   Order,
   OrderItem,
   OrderItemType,
-  StandMatch,
   UserDetail,
   UserMatch,
   UserPermission,
 } from "@boklisten/bl-model";
 import { NextFunction, Request, Response } from "express";
+import { ObjectId } from "mongodb";
+import { PipelineStage } from "mongoose";
 
-import {
-  PermissionService,
-  SystemUser,
-} from "../../../../auth/permission/permission.service";
+import { PermissionService } from "../../../../auth/permission/permission.service";
 import { isNotNullish } from "../../../../helper/typescript-helpers";
 import { Operation } from "../../../../operation/operation";
 import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
@@ -125,8 +123,6 @@ export class OrderPlaceOperation implements Operation {
     );
 
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       const existingOrders = await this._orderStorage.getByQuery(dbQuery);
       const alreadyOrderedItems =
         this.filterOrdersByAlreadyOrdered(existingOrders);
@@ -265,13 +261,11 @@ export class OrderPlaceOperation implements Operation {
 
   /**
    * Go through the orderItems and update matches if any of the customerItems belong to a match
-   * @param allMatches all the matches
    * @param returnOrderItems the orderItems for items that are handed in
    * @param handoutOrderItems the orderItems for items that are handed out
    * @private
    */
   private async updateMatchesIfPresent(
-    allMatches: Match[],
     returnOrderItems: OrderItem[],
     handoutOrderItems: OrderItem[],
   ) {
@@ -291,178 +285,65 @@ export class OrderPlaceOperation implements Operation {
         .filter(isNotNullish),
     );
 
-    const standMatches = allMatches.filter(
-      (match) => match._variant === MatchVariant.StandMatch,
-    );
-
-    const userMatches = allMatches.filter(
-      (match) => match._variant === MatchVariant.UserMatch,
-    );
-
-    await this.updateStandMatchHandoffs(returnCustomerItems, standMatches);
-    await this.updateStandMatchPickups(handoutCustomerItems, standMatches);
-    await this.updateSenderUserMatches(returnCustomerItems, userMatches);
-    await this.updateReceiverUserMatches(handoutCustomerItems, userMatches);
+    await Promise.all([
+      this.updateStandMatchHandoffs(returnCustomerItems),
+      this.updateStandMatchPickups(handoutCustomerItems),
+      this.updateSenderUserMatches(returnCustomerItems),
+      this.updateReceiverUserMatches(handoutCustomerItems),
+    ]);
   }
 
   // Update the deliveredItems of the customer's StandMatches to show those newly handed in
-  private async updateStandMatchHandoffs(
-    returnCustomerItems: CustomerItem[],
-    standMatches: StandMatch[],
-  ) {
-    const matchToDeliveredItemsMap = this.groupValuesByMatch(
-      returnCustomerItems,
-      (customerItem) =>
-        standMatches.find(
-          (standMatch) =>
-            standMatch.customer === customerItem.customer &&
-            standMatch.expectedHandoffItems.includes(
-              String(customerItem.item),
-            ) &&
-            !standMatch.deliveredItems.includes(String(customerItem.item)),
-        ),
-      (customerItem, match) => [
-        ...match.deliveredItems,
-        customerItem.item as string,
-      ],
+  private async updateStandMatchHandoffs(returnCustomerItems: CustomerItem[]) {
+    return await Promise.all(
+      returnCustomerItems.map(async (returnCustomerItem) => {
+        await this._matchStorage.aggregate(
+          this.buildUpdateStandMatchAggregation("handoff", returnCustomerItem),
+        );
+      }),
     );
-
-    for (const [
-      standMatchId,
-      deliveredItems,
-    ] of matchToDeliveredItemsMap.entries()) {
-      await this._matchStorage.update(
-        standMatchId,
-        {
-          deliveredItems: Array.from(deliveredItems),
-        },
-        new SystemUser(),
-      );
-    }
   }
 
   // Update the receivedItems of the customer's StandMatches to show those newly picked up
-  private async updateStandMatchPickups(
-    handoutCustomerItems: CustomerItem[],
-    standMatches: StandMatch[],
-  ) {
-    const matchToReceivedItemsMap = this.groupValuesByMatch(
-      handoutCustomerItems,
-      (customerItem) =>
-        standMatches.find(
-          (standMatch) =>
-            standMatch.customer === customerItem.customer &&
-            standMatch.expectedPickupItems.includes(
-              String(customerItem.item),
-            ) &&
-            !standMatch.receivedItems.includes(String(customerItem.item)),
-        ),
-      (customerItem, match) => [
-        ...match.receivedItems,
-        customerItem.item as string,
-      ],
+  private async updateStandMatchPickups(handoutCustomerItems: CustomerItem[]) {
+    return await Promise.all(
+      handoutCustomerItems.map(async (handoutCustomerItem) => {
+        await this._matchStorage.aggregate(
+          this.buildUpdateStandMatchAggregation("pickup", handoutCustomerItem),
+        );
+      }),
     );
-
-    for (const [
-      standMatchId,
-      receivedItems,
-    ] of matchToReceivedItemsMap.entries()) {
-      await this._matchStorage.update(
-        standMatchId,
-        {
-          receivedItems: Array.from(receivedItems),
-        },
-        new SystemUser(),
-      );
-    }
   }
 
   // Update the receivedBlids of all UserMatches where the stand customer is receiver to show those newly picked up
   private async updateReceiverUserMatches(
     handoutCustomerItems: CustomerItem[],
-    userMatches: UserMatch[],
   ) {
-    const matchToReceivedBlIdsMap = this.groupValuesByMatch(
-      handoutCustomerItems,
-      (handoutCustomerItem) =>
-        userMatches.find(
-          (match) =>
-            match.receiver === (handoutCustomerItem.customer as string) &&
-            match.expectedItems.includes(handoutCustomerItem.item as string) &&
-            handoutCustomerItem.blid &&
-            !match.receivedBlIds.includes(handoutCustomerItem.blid),
-        ),
-      (handoutCustomerItem, userMatch) => [
-        ...userMatch.receivedBlIds,
-        handoutCustomerItem.blid!,
-      ],
+    return await Promise.all(
+      handoutCustomerItems
+        .filter((customerItem) => customerItem.blid)
+        .map(async (handoutCustomerItem) => {
+          await this._matchStorage.aggregate(
+            this.buildUpdateUserMatchAggregation(
+              "receive",
+              handoutCustomerItem,
+            ),
+          );
+        }),
     );
-
-    for (const [matchId, receivedBlIds] of matchToReceivedBlIdsMap.entries()) {
-      await this._matchStorage.update(
-        matchId,
-        { receivedBlIds: Array.from(receivedBlIds) },
-        new SystemUser(),
-      );
-    }
   }
 
   // Update the deliveredBlIds of all UserMatches where the book owner is sender to show those newly handed in
-  private async updateSenderUserMatches(
-    returnCustomerItems: CustomerItem[],
-    userMatches: UserMatch[],
-  ) {
-    const matchToDeliveredBlIdsMap = this.groupValuesByMatch(
-      returnCustomerItems,
-      (returnCustomerItem) =>
-        userMatches.find(
-          (match) =>
-            match.sender === (returnCustomerItem.customer as string) &&
-            match.expectedItems.includes(returnCustomerItem.item as string) &&
-            returnCustomerItem.blid &&
-            !match.deliveredBlIds.includes(returnCustomerItem.blid),
-        ),
-      (returnCustomerItem, userMatch) => [
-        ...userMatch.deliveredBlIds,
-        returnCustomerItem.blid!,
-      ],
+  private async updateSenderUserMatches(returnCustomerItems: CustomerItem[]) {
+    return await Promise.all(
+      returnCustomerItems
+        .filter((customerItem) => customerItem.blid)
+        .map(async (returnCustomerItem) => {
+          await this._matchStorage.aggregate(
+            this.buildUpdateUserMatchAggregation("deliver", returnCustomerItem),
+          );
+        }),
     );
-
-    for (const [
-      matchId,
-      deliveredBlIds,
-    ] of matchToDeliveredBlIdsMap.entries()) {
-      await this._matchStorage.update(
-        matchId,
-        { deliveredBlIds: Array.from(deliveredBlIds) },
-        new SystemUser(),
-      );
-    }
-  }
-
-  // Using some collection of values, group those values by match.
-  // Can be used to e.g. combine all required updates to a match.
-  private groupValuesByMatch<V, M extends Match>(
-    values: V[],
-    findMatch: (value: V) => M | undefined,
-    valuesExtractor: (value: V, match: M) => string[],
-  ): Map<string, Set<string>> {
-    const map = new Map<string, Set<string>>();
-
-    for (const value of values) {
-      const match = findMatch(value);
-      if (match) {
-        map.set(
-          match.id,
-          new Set([
-            ...(map.get(match.id) ?? []),
-            ...valuesExtractor(value, match),
-          ]),
-        );
-      }
-    }
-
-    return map;
   }
 
   public async run(
@@ -514,8 +395,6 @@ export class OrderPlaceOperation implements Operation {
       (orderItem) => orderItem.handout && orderItem.type === "rent",
     );
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const allMatches = await this._matchStorage.getAll();
 
     if (!order.byCustomer) {
@@ -528,8 +407,6 @@ export class OrderPlaceOperation implements Operation {
     }
 
     let customerItems =
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       await this._orderToCustomerItemGenerator.generate(order);
 
     if (customerItems && customerItems.length > 0) {
@@ -541,8 +418,6 @@ export class OrderPlaceOperation implements Operation {
       );
       order = this.addCustomerItemIdToOrderItems(order, customerItems);
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       await this._orderStorage.update(
         order.id,
         {
@@ -556,15 +431,9 @@ export class OrderPlaceOperation implements Operation {
     }
 
     if (!order.byCustomer) {
-      await this.updateMatchesIfPresent(
-        allMatches,
-        returnOrderItems,
-        handoutOrderItems,
-      );
+      await this.updateMatchesIfPresent(returnOrderItems, handoutOrderItems);
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     await this._orderPlacedHandler.placeOrder(order, {
       sub: blApiRequest.user,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -580,8 +449,6 @@ export class OrderPlaceOperation implements Operation {
         "admin",
       );
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     await this._orderValidator.validate(order, isAdmin);
 
     if (customerItems && customerItems.length > 0) {
@@ -620,8 +487,6 @@ export class OrderPlaceOperation implements Operation {
     const userMatches: UserMatch[] = allMatches.filter(
       (match) => match._variant === MatchVariant.UserMatch,
     );
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const returnCustomerItems = await this._customerItemStorage.getMany(
       returnOrderItems.map((orderItem) => String(orderItem.customerItem)),
     );
@@ -641,8 +506,6 @@ export class OrderPlaceOperation implements Operation {
   ): Promise<CustomerItem[]> {
     const addedCustomerItems = [];
     for (const customerItem of customerItems) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       const ci = await this._customerItemStorage.add(customerItem, user);
       addedCustomerItems.push(ci);
     }
@@ -659,8 +522,6 @@ export class OrderPlaceOperation implements Operation {
       return ci.id.toString();
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const userDetail = await this._userDetailStorage.get(customerId);
 
     let userDetailCustomerItemsIds = userDetail.customerItems
@@ -670,8 +531,6 @@ export class OrderPlaceOperation implements Operation {
     userDetailCustomerItemsIds =
       userDetailCustomerItemsIds.concat(customerItemIds);
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     await this._userDetailStorage.update(
       customerId,
       { customerItems: userDetailCustomerItemsIds },
@@ -693,5 +552,133 @@ export class OrderPlaceOperation implements Operation {
       }
     }
     return order;
+  }
+
+  private buildUpdateUserMatchAggregation(
+    action: "receive" | "deliver",
+    customerItem: CustomerItem,
+  ): PipelineStage[] {
+    const isReceive = action === "receive";
+    const blid = customerItem.blid;
+    const customerId = new ObjectId(customerItem.customer as string);
+    const itemId = new ObjectId(customerItem.item as string);
+
+    return [
+      // Find customer's user matches which receive/deliver the item
+      {
+        $match: {
+          _variant: MatchVariant.UserMatch,
+          ...(isReceive ? { receiver: customerId } : { sender: customerId }),
+          expectedItems: itemId,
+        },
+      },
+      // Look up the items of the already received/delivered blids
+      {
+        $lookup: {
+          from: BlCollectionName.UniqueItems,
+          localField: isReceive ? "receivedBlIds" : "deliveredBlIds",
+          foreignField: "blid",
+          as: "processedItems",
+        },
+      },
+      // Map the items to only their IDs
+      {
+        $addFields: {
+          processedItems: {
+            $map: {
+              input: "$processedItems",
+              in: "$$this._id",
+            },
+          },
+        },
+      },
+      // Filter on matches where the item is not already delivered/received
+      {
+        $match: {
+          $nor: [
+            {
+              processedItems: itemId,
+            },
+          ],
+        },
+      },
+      // Add the new blid
+      {
+        $project: {
+          ...(isReceive
+            ? {
+                receivedBlIds: {
+                  $concatArrays: ["$receivedBlIds", [blid]],
+                },
+              }
+            : {
+                deliveredBlIds: {
+                  $concatArrays: ["$deliveredBlIds", [blid]],
+                },
+              }),
+        },
+      },
+      // Save
+      {
+        $merge: {
+          into: BlCollectionName.Matches,
+          whenNotMatched: "discard",
+        },
+      },
+    ];
+  }
+
+  private buildUpdateStandMatchAggregation(
+    action: "pickup" | "handoff",
+    customerItem: CustomerItem,
+  ): PipelineStage[] {
+    const isPickup = action === "pickup";
+    const customerId = new ObjectId(customerItem.customer as string);
+    const itemId = new ObjectId(customerItem.item as string);
+
+    return [
+      // Find stand matches where the item would be picked up/handed off
+      {
+        $match: {
+          _variant: MatchVariant.StandMatch,
+          customer: customerId,
+          ...(isPickup
+            ? { expectedPickupItems: itemId }
+            : { expectedHandoffItems: itemId }),
+          $nor: [
+            isPickup
+              ? {
+                  receivedItems: itemId,
+                }
+              : {
+                  deliveredItems: itemId,
+                },
+          ],
+        },
+      },
+      // Add the item to the match as delivered/received
+      {
+        $project: {
+          ...(isPickup
+            ? {
+                deliveredItems: {
+                  $concatArrays: ["$deliveredItems", [itemId]],
+                },
+              }
+            : {
+                receivedItems: {
+                  $concatArrays: ["$receivedItems", [itemId]],
+                },
+              }),
+        },
+      },
+      // Save
+      {
+        $merge: {
+          into: BlCollectionName.Matches,
+          whenNotMatched: "discard",
+        },
+      },
+    ];
   }
 }
