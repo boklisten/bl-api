@@ -23,21 +23,25 @@ import assignMeetingInfoToMatches from "../helpers/match-finder-2/match-meeting-
 import { matchSchema } from "../match.schema";
 
 export class MatchGenerateOperation implements Operation {
+  private readonly _customerItemStorage: BlDocumentStorage<CustomerItem>;
+  private readonly _matchStorage: BlDocumentStorage<Match>;
+  private readonly _orderStorage: BlDocumentStorage<Order>;
+
   constructor(
-    private customerItemStorage?: BlDocumentStorage<CustomerItem>,
-    private matchStorage?: BlDocumentStorage<Match>,
-    private orderStorage?: BlDocumentStorage<Order>,
+    customerItemStorage?: BlDocumentStorage<CustomerItem>,
+    matchStorage?: BlDocumentStorage<Match>,
+    orderStorage?: BlDocumentStorage<Order>,
   ) {
-    this.customerItemStorage = customerItemStorage
+    this._customerItemStorage = customerItemStorage
       ? customerItemStorage
       : new BlDocumentStorage(
           BlCollectionName.CustomerItems,
           customerItemSchema,
         );
-    this.matchStorage = matchStorage
+    this._matchStorage = matchStorage
       ? matchStorage
       : new BlDocumentStorage(BlCollectionName.Matches, matchSchema);
-    this.orderStorage = orderStorage
+    this._orderStorage = orderStorage
       ? orderStorage
       : new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
   }
@@ -52,15 +56,11 @@ export class MatchGenerateOperation implements Operation {
         matcherSpec.senderBranches,
         matcherSpec.deadlineBefore,
         matcherSpec.includeSenderItemsFromOtherBranches,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.customerItemStorage,
+        this._customerItemStorage,
       ),
       getMatchableReceivers(
         matcherSpec.receiverBranches,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.orderStorage,
+        this._orderStorage,
         matcherSpec.additionalReceiverItems,
       ),
     ]);
@@ -80,9 +80,7 @@ export class MatchGenerateOperation implements Operation {
       throw new BlError("No matches generated");
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const res = await this.matchStorage.addMany(matches);
+    const res = await this._matchStorage.addMany(matches);
     return new BlapiResponse(res.map((r) => r.id));
   }
 }

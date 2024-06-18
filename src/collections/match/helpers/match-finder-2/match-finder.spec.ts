@@ -22,7 +22,7 @@ import {
   groupMatchesByUser,
   seededRandom,
   shuffler,
-  createMatchableUsersWithIdPrefix,
+  createMatchableUsersWithIdSuffix,
 } from "./match-testing-utils";
 
 chai.use(chaiAsPromised);
@@ -311,8 +311,8 @@ describe("Large User Groups", () => {
   it("can sufficiently match realistic user data with itself", () => {
     const shuffle = shuffler(seededRandom(12345));
     const rawData = ullern_test_users;
-    const test_senders = createMatchableUsersWithIdPrefix(rawData, "_sender");
-    const test_receivers = createMatchableUsersWithIdPrefix(
+    const test_senders = createMatchableUsersWithIdSuffix(rawData, "_sender");
+    const test_receivers = createMatchableUsersWithIdSuffix(
       rawData,
       "_receiver",
     );
@@ -337,8 +337,8 @@ describe("Large User Groups", () => {
   it("can sufficiently match realistic user data with a modified version of itself", () => {
     const shuffle = shuffler(seededRandom(123454332));
     const rawData = ullern_test_users;
-    const test_senders = createMatchableUsersWithIdPrefix(rawData, "_sender");
-    const test_receivers = createMatchableUsersWithIdPrefix(
+    const test_senders = createMatchableUsersWithIdSuffix(rawData, "_sender");
+    const test_receivers = createMatchableUsersWithIdSuffix(
       rawData,
       "_receiver",
     );

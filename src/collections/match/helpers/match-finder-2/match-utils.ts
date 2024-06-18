@@ -187,11 +187,9 @@ export function countItemOccurrences(users: MatchableUser[]): {
   return users
     .flatMap((user) => Array.from(user.items))
     .reduce(
-      (acc, next) => ({
+      (acc: { [item: string]: number }, next) => ({
         ...acc,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        [next]: next in acc ? acc[next] + 1 : 1,
+        [next]: acc[next] ? acc[next] + 1 : 1,
       }),
       {},
     );

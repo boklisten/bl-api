@@ -1,3 +1,5 @@
+import { BlError } from "@boklisten/bl-model";
+
 import {
   MatchableUser,
   CandidateMatch,
@@ -43,22 +45,16 @@ export class MatchFinder {
    */
   public generateMatches() {
     // First remove the perfect matches
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     this.createMatches(tryFindTwoWayMatch, this.senders);
 
     // Fulfill the largest possible senders with the best receivers
     sortUsersNumberOfItemsDescending(this.senders);
     sortUsersNumberOfItemsDescending(this.receivers);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     this.createMatches(tryFindOneWayMatch, this.senders);
 
     // Remove all unmatchable items
     this.standMatchUnmatchableItems();
     // We might have opened up for some TwoWay matches after purging the unmatchable items
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     this.createMatches(tryFindTwoWayMatch, this.senders);
     // Edge case, but removing TwoWay matches might make some more items unmatchable
     this.standMatchUnmatchableItems();
@@ -76,8 +72,6 @@ export class MatchFinder {
 
     for (const sortedSenderGroup of sortedSenderGroups) {
       this.createMatches(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         tryFindPartialMatch,
         sortedSenderGroup,
         sortedSenderGroups,
@@ -101,7 +95,7 @@ export class MatchFinder {
     this.receivers = removeFullyMatchedUsers(this.receivers);
 
     if (this.senders.length > 0 || this.receivers.length > 0) {
-      throw new Error("Some senders or receivers did not receive a match!");
+      throw new BlError("Some senders or receivers did not receive a match!");
     }
 
     let originalSenders = copyUsers(this._senders);
@@ -116,14 +110,12 @@ export class MatchFinder {
         match.variant === CandidateMatchVariant.StandMatch
           ? match.handoffItems
           : match.items;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const sender: MatchableUser = originalSenders.find(
-        (sender) => sender.id === senderId,
-      );
+      const sender = originalSenders.find((sender) => sender.id === senderId);
       if (sender) {
         if (hasDifference(intersect(sentItems, sender.items), sentItems)) {
-          throw new Error("Sender cannot give away more books than they have!");
+          throw new BlError(
+            "Sender cannot give away more books than they have!",
+          );
         }
         sender.items = difference(sender.items, sentItems);
         originalSenders = removeFullyMatchedUsers(originalSenders);
@@ -137,31 +129,31 @@ export class MatchFinder {
         match.variant === CandidateMatchVariant.StandMatch
           ? match.pickupItems
           : match.items;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const receiver: MatchableUser = originalReceivers.find(
+      const receiver = originalReceivers.find(
         (receiver) => receiver.id === receiverId,
       );
       if (receiver) {
         if (
           hasDifference(intersect(receivedItems, receiver.items), receivedItems)
         ) {
-          throw new Error("Receiver cannot receive more books than they want!");
+          throw new BlError(
+            "Receiver cannot receive more books than they want!",
+          );
         }
         receiver.items = difference(receiver.items, receivedItems);
         originalReceivers = removeFullyMatchedUsers(originalReceivers);
       }
 
       if (
-        senderId === receiverId &&
-        match.variant === CandidateMatchVariant.UserMatch
+        match.variant === CandidateMatchVariant.UserMatch &&
+        senderId === receiverId
       ) {
-        throw new Error("Receiver and sender cannot be the same person");
+        throw new BlError("Receiver and sender cannot be the same person");
       }
     }
 
     if (originalSenders.length > 0 || originalReceivers.length > 0) {
-      throw new Error("Some senders or receivers did not get fulfilled");
+      throw new BlError("Some senders or receivers did not get fulfilled");
     }
   }
 
@@ -274,7 +266,7 @@ export class MatchFinder {
     matchFinder: (
       sender: MatchableUser,
       receivers: MatchableUser[],
-    ) => MatchableUser,
+    ) => MatchableUser | null,
     senders: MatchableUser[],
     sortedSenderGroups?: MatchableUser[][],
   ) {
