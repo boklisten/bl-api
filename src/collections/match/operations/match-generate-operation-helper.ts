@@ -230,22 +230,22 @@ export function verifyMatcherSpec(
     typeof m["additionalReceiverItems"] === "object" &&
     isNotNullish(m["additionalReceiverItems"]) &&
     Object.entries(m["additionalReceiverItems"]).every(
-      (entry) =>
-        typeof entry[0] === "string" &&
-        ObjectId.isValid(entry[0]) &&
-        Array.isArray(entry[1]) &&
-        entry[1].every(
+      ([branchId, itemIds]) =>
+        typeof branchId === "string" &&
+        ObjectId.isValid(branchId) &&
+        Array.isArray(itemIds) &&
+        itemIds.every(
           (itemId) => typeof itemId === "string" && ObjectId.isValid(itemId),
         ),
     ) &&
     typeof m["deadlineOverrides"] === "object" &&
     isNotNullish(m["deadlineOverrides"]) &&
     Object.entries(m["deadlineOverrides"]).every(
-      (deadlineOverride) =>
-        typeof deadlineOverride[0] === "string" &&
-        ObjectId.isValid(deadlineOverride[0]) &&
-        typeof deadlineOverride[1] === "string" &&
-        !isNaN(new Date(deadlineOverride[1]).getTime()),
+      ([itemId, newDeadline]) =>
+        typeof itemId === "string" &&
+        ObjectId.isValid(itemId) &&
+        typeof newDeadline === "string" &&
+        !isNaN(new Date(newDeadline).getTime()),
     )
   );
 }

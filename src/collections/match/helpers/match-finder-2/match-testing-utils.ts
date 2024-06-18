@@ -72,7 +72,7 @@ export function createUserGroup(
   ...items: string[]
 ): MatchableUser[] {
   return [...Array(size)].map((_, id) =>
-    createFakeMatchableUser(idSuffix + id, ...items),
+    createFakeMatchableUser(id + idSuffix, ...items),
   );
 }
 

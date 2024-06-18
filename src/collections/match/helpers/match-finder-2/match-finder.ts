@@ -45,22 +45,16 @@ export class MatchFinder {
    */
   public generateMatches() {
     // First remove the perfect matches
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     this.createMatches(tryFindTwoWayMatch, this.senders);
 
     // Fulfill the largest possible senders with the best receivers
     sortUsersNumberOfItemsDescending(this.senders);
     sortUsersNumberOfItemsDescending(this.receivers);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     this.createMatches(tryFindOneWayMatch, this.senders);
 
     // Remove all unmatchable items
     this.standMatchUnmatchableItems();
     // We might have opened up for some TwoWay matches after purging the unmatchable items
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     this.createMatches(tryFindTwoWayMatch, this.senders);
     // Edge case, but removing TwoWay matches might make some more items unmatchable
     this.standMatchUnmatchableItems();
@@ -78,8 +72,6 @@ export class MatchFinder {
 
     for (const sortedSenderGroup of sortedSenderGroups) {
       this.createMatches(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         tryFindPartialMatch,
         sortedSenderGroup,
         sortedSenderGroups,
@@ -118,11 +110,7 @@ export class MatchFinder {
         match.variant === CandidateMatchVariant.StandMatch
           ? match.handoffItems
           : match.items;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const sender: MatchableUser = originalSenders.find(
-        (sender) => sender.id === senderId,
-      );
+      const sender = originalSenders.find((sender) => sender.id === senderId);
       if (sender) {
         if (hasDifference(intersect(sentItems, sender.items), sentItems)) {
           throw new BlError(
@@ -141,9 +129,7 @@ export class MatchFinder {
         match.variant === CandidateMatchVariant.StandMatch
           ? match.pickupItems
           : match.items;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const receiver: MatchableUser = originalReceivers.find(
+      const receiver = originalReceivers.find(
         (receiver) => receiver.id === receiverId,
       );
       if (receiver) {
@@ -280,7 +266,7 @@ export class MatchFinder {
     matchFinder: (
       sender: MatchableUser,
       receivers: MatchableUser[],
-    ) => MatchableUser,
+    ) => MatchableUser | null,
     senders: MatchableUser[],
     sortedSenderGroups?: MatchableUser[][],
   ) {
