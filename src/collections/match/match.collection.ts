@@ -52,7 +52,7 @@ export class MatchCollection implements BlCollection {
         },
       ],
       restriction: {
-        permissions: ["employee", "admin", "super"],
+        permissions: ["employee", "manager", "admin", "super"],
       },
       validQueryParams: [
         { fieldName: "_variant", type: "string" },
