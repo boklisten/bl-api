@@ -7,6 +7,7 @@ import { RefreshTokenCreator } from "./refresh-token.creator";
 import { RefreshToken } from "./refresh-token";
 import { TokenConfig } from "../token.config";
 import { AccessToken } from "../access-token/access-token";
+import { sign } from "jsonwebtoken";
 
 chai.use(chaiAsPromised);
 
@@ -62,15 +63,10 @@ describe("RefreshTokenValidator", () => {
 
     context("when refreshToken is expired", () => {
       it("should reject with BlCode 909", (done) => {
-        const jwt = require("jsonwebtoken");
-
-        jwt.sign(
+        sign(
           { username: "test", iat: Math.floor(Date.now() / 1000) - 10000 },
           "test",
           { expiresIn: "1s" }, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           (error, refreshToken) => {
             refreshTokenValidator
               .validate(refreshToken)

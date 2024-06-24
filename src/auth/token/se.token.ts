@@ -1,4 +1,5 @@
 import { BlError, UserPermission } from "@boklisten/bl-model";
+import { sign, verify } from "jsonwebtoken";
 
 export type JwtPayload = {
   iss: string;
@@ -23,7 +24,6 @@ export type JwtOptions = {
 };
 
 export class SEToken {
-  private jwt = require("jsonwebtoken");
   private options: JwtOptions;
 
   constructor(options?: JwtPayload) {
@@ -56,11 +56,11 @@ export class SEToken {
       return Promise.reject(blError.msg('blid "' + blid + '" is to short'));
 
     return new Promise((resolve, reject) => {
-      this.jwt.sign(
+      sign(
         this.createJwtPayload(username, permission, blid),
         this.getSecret(),
-        (error: unknown, token: string) => {
-          if (error) {
+        (error, token) => {
+          if (error || token === undefined) {
             return reject(
               blError
                 .msg("error creating jw token")
@@ -84,35 +84,33 @@ export class SEToken {
     if (token.length <= 0) return Promise.reject(blError.msg("token is empty"));
 
     return new Promise((resolve, reject) => {
-      this.jwt.verify(
-        token,
-        this.getSecret(),
-        (error: unknown, decoded: JwtPayload) => {
-          if (error) {
-            return reject(
+      verify(token, this.getSecret(), (error, decoded) => {
+        if (error) {
+          return reject(
+            blError
+              .msg("error verifying token")
+              .store("jwtError", error)
+              .code(905),
+          );
+        }
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        this.validatePayload(decoded, validLoginOptions).then(
+          (jwtPayload: JwtPayload) => {
+            resolve(jwtPayload);
+          },
+          (validatePayloadError: BlError) => {
+            reject(
               blError
-                .msg("error verifying token")
-                .store("jwtError", error)
+                .msg("could not validate payload")
+                .store("decodedPayload", decoded)
+                .add(validatePayloadError)
                 .code(905),
             );
-          }
-
-          this.validatePayload(decoded, validLoginOptions).then(
-            (jwtPayload: JwtPayload) => {
-              resolve(jwtPayload);
-            },
-            (validatePayloadError: BlError) => {
-              reject(
-                blError
-                  .msg("could not validate payload")
-                  .store("decodedPayload", decoded)
-                  .add(validatePayloadError)
-                  .code(905),
-              );
-            },
-          );
-        },
-      );
+          },
+        );
+      });
     });
   }
 
@@ -165,8 +163,7 @@ export class SEToken {
     decodedPermission: UserPermission,
     validPermissions: string[],
   ): boolean {
-    if (validPermissions.indexOf(decodedPermission) <= -1) return false;
-    return true;
+    return validPermissions.includes(decodedPermission);
   }
 
   private createJwtPayload(
