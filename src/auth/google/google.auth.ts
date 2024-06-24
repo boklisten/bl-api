@@ -1,11 +1,10 @@
 import { BlError } from "@boklisten/bl-model";
 import { Router } from "express";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import passport from "passport";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { OAuth2Strategy } from "passport-google-oauth";
+import {
+  IOAuth2StrategyOptionWithRequest,
+  OAuth2Strategy,
+} from "passport-google-oauth";
 
 import { APP_CONFIG } from "../../application-config";
 import { ApiPath } from "../../config/api-path";
@@ -15,14 +14,10 @@ import { UserProvider } from "../user/user-provider/user-provider";
 export class GoogleAuth {
   private apiPath: ApiPath;
   private _userProvider: UserProvider;
-  private _googlePassportStrategySettings;
+  private readonly _googlePassportStrategySettings: IOAuth2StrategyOptionWithRequest;
 
   constructor(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     private router: Router,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     private resHandler: SEResponseHandler,
   ) {
     this.apiPath = new ApiPath();
@@ -31,8 +26,8 @@ export class GoogleAuth {
     this._userProvider = new UserProvider();
 
     this._googlePassportStrategySettings = {
-      clientID: process.env["GOOGLE_CLIENT_ID"],
-      clientSecret: process.env["GOOGLE_SECRET"],
+      clientID: process.env["GOOGLE_CLIENT_ID"] ?? "",
+      clientSecret: process.env["GOOGLE_SECRET"] ?? "",
       passReqToCallback: true,
       callbackURL:
         process.env["BL_API_URI"] +
@@ -46,21 +41,7 @@ export class GoogleAuth {
     passport.use(
       new OAuth2Strategy(
         this._googlePassportStrategySettings,
-        async (
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          req: unknown,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          accessToken: unknown,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          refreshToken: unknown,
-          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-          profile: any,
-          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-          done: any,
-        ) => {
+        async (accessToken, refreshToken, profile, done) => {
           const provider = APP_CONFIG.login.google.name;
           const providerId = profile.id;
           const username = this.retrieveUsername(profile);

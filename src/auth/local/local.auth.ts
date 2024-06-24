@@ -1,10 +1,6 @@
 import { BlapiResponse, BlError } from "@boklisten/bl-model";
 import { Router } from "express";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import passport from "passport";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { Strategy } from "passport-local";
 
 import { LocalLoginValidator } from "./local-login.validator";
@@ -31,8 +27,7 @@ export class LocalAuth {
 
   private createPassportStrategy(localLoginValidator: LocalLoginValidator) {
     passport.use(
-      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-      new Strategy((username: string, password: string, done: any) => {
+      new Strategy((username, password, done) => {
         localLoginValidator.validate(username, password).then(
           () => {
             this.tokenHandler.createTokens(username).then(

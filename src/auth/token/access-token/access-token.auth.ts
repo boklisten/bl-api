@@ -1,11 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import passport from "passport";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { ExtractJwt, Strategy } from "passport-jwt";
 
-import { AccessToken } from "./access-token";
 import { AccessTokenSecret } from "./access-token.secret";
 import { SEToken } from "../se.token";
 import { TokenConfig } from "../token.config";
@@ -26,10 +21,8 @@ export class AccessTokenAuth {
     );
 
     passport.use(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      new Strategy(this.getOptions(), (accessToken: AccessToken, done) => {
-        done(null, { accessToken: accessToken });
+      new Strategy(this.getOptions(), (accessToken, done) => {
+        done(null, { accessToken });
       }),
     );
   }

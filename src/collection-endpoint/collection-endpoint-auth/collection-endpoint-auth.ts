@@ -1,7 +1,5 @@
 import { AccessToken, BlError } from "@boklisten/bl-model";
 import { NextFunction, Request, Response } from "express";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import passport from "passport";
 
 import { BlEndpointRestriction } from "../../collections/bl-collection";
