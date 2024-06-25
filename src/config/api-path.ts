@@ -1,10 +1,7 @@
 import { APP_CONFIG } from "../application-config";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const URL = require("url");
-
 export class ApiPath {
-  private baseHost: string;
+  private readonly baseHost: string;
 
   constructor() {
     if (process.env["NODE_ENV"] == "production") {
@@ -44,7 +41,7 @@ export class ApiPath {
   }
 
   private retrieveBasePath(href: string) {
-    const url = URL.parse(href);
+    const url = new URL(href);
     const host = url.host;
     const protocol = url.protocol;
 
