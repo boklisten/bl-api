@@ -1,25 +1,25 @@
 import { BlError } from "@boklisten/bl-model";
+import { verify } from "jsonwebtoken";
 
 import { RefreshTokenSecret } from "./refresh-token.secret";
 
 export class RefreshTokenValidator {
-  private jwt = require("jsonwebtoken");
   private refreshTokenSecret: RefreshTokenSecret;
 
   constructor() {
     this.refreshTokenSecret = new RefreshTokenSecret();
   }
 
-  public validate(refreshToken: string): Promise<unknown> {
+  public validate(refreshToken: string | undefined): Promise<unknown> {
     return new Promise((resolve, reject) => {
       if (!refreshToken || refreshToken.length <= 0)
-        reject(new BlError("refreshToken is empty or undefined"));
+        return reject(new BlError("refreshToken is empty or undefined"));
 
       try {
-        this.jwt.verify(
+        verify(
           refreshToken,
           this.refreshTokenSecret.get(),
-          (error: unknown, payload: unknown) => {
+          (error, payload) => {
             if (error)
               return reject(new BlError("could not validate token").code(909));
             resolve(payload);

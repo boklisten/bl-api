@@ -1,12 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import passport from "passport";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { ExtractJwt, Strategy } from "passport-jwt";
 
 import { AccessToken } from "./access-token";
 import { AccessTokenSecret } from "./access-token.secret";
+import { APP_CONFIG } from "../../../application-config";
+import { RefreshToken } from "../refresh/refresh-token";
 import { SEToken } from "../se.token";
 import { TokenConfig } from "../token.config";
 
@@ -17,19 +15,14 @@ export class AccessTokenAuth {
   constructor() {
     new SEToken();
     this.accessTokenSecret = new AccessTokenSecret();
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const appTokenConfig = require("../../../application-config").APP_CONFIG
-      .token;
     this.tokenConfig = new TokenConfig(
-      appTokenConfig.access,
-      appTokenConfig.refresh,
+      APP_CONFIG.token.access as AccessToken,
+      APP_CONFIG.token.refresh as RefreshToken,
     );
 
     passport.use(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      new Strategy(this.getOptions(), (accessToken: AccessToken, done) => {
-        done(null, { accessToken: accessToken });
+      new Strategy(this.getOptions(), (accessToken, done) => {
+        done(null, { accessToken });
       }),
     );
   }

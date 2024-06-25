@@ -33,7 +33,9 @@ export class MatchCollection implements BlCollection {
         {
           name: "lock",
           operation: new MatchLockOperation(),
-          restriction: { permissions: ["employee", "manager", "admin", "super"] },
+          restriction: {
+            permissions: ["employee", "manager", "admin", "super"],
+          },
         },
       ],
       restriction: {

@@ -5,14 +5,16 @@ dotenv.config(); //adds the .env file to environment variables
 
 import path from "path";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, { Application, json, Request, Response, Router } from "express";
+import express, {
+  json,
+  Request,
+  RequestHandler,
+  Response,
+  Router,
+} from "express";
 import mongoose from "mongoose";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import passport from "passport";
 
 import { BlAuth } from "../auth/bl.auth";
@@ -20,19 +22,13 @@ import { CollectionEndpointCreator } from "../collection-endpoint/collection-end
 import { logger } from "../logger/logger";
 
 export class Server {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  public app: Application;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  private router: Router;
+  public readonly app = express();
+  private readonly router = Router();
 
   constructor() {
     this.printServerStartMessage();
     this.initialServerConfig();
     this.initialPassportConfig();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     new BlAuth(this.router);
     this.generateEndpoints();
     this.connectToDbAndStartServer();
@@ -98,7 +94,6 @@ export class Server {
   }
 
   private initialServerConfig() {
-    this.app = express();
     this.app.use(json({ limit: "1mb" }));
 
     process.on("unhandledRejection", (reason, p) => {
@@ -126,10 +121,9 @@ export class Server {
     this.app.use(
       process.env["API_ENV"] === "staging" ? cors() : cors(corsConfig),
     );
-    this.app.use(cookieParser());
-    this.app.use(passport.initialize());
+    this.app.use(cookieParser() as RequestHandler);
+    this.app.use(passport.initialize() as RequestHandler);
     this.app.use(passport.session());
-    this.router = Router();
 
     const debugLogPath = (req: Request, _res: Response, next: () => void) => {
       if (req.method !== "OPTIONS") {
@@ -176,13 +170,13 @@ export class Server {
   }
 
   private initialPassportConfig() {
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    passport.serializeUser((user: any, done: any) => {
+    passport.serializeUser((user, done) => {
       done(null, user);
     });
 
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    passport.deserializeUser((user: any, done: any) => {
+    passport.deserializeUser((user, done) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       done(null, user);
     });
   }

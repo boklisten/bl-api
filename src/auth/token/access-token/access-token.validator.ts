@@ -1,38 +1,34 @@
 import { BlError } from "@boklisten/bl-model";
+import { verify } from "jsonwebtoken";
 
 import { AccessToken } from "./access-token";
 import { AccessTokenSecret } from "./access-token.secret";
 
 export class AccessTokenValidator {
   private accessTokenSecret: AccessTokenSecret;
-  private jwt = require("jsonwebtoken");
 
   constructor() {
     this.accessTokenSecret = new AccessTokenSecret();
   }
 
-  public validate(accessToken: string): Promise<AccessToken> {
+  public validate(accessToken: string | undefined): Promise<AccessToken> {
     return new Promise((resolve, reject) => {
       if (!accessToken)
         return reject(new BlError("accessToken is empty or undefined"));
 
       try {
-        this.jwt.verify(
-          accessToken,
-          this.accessTokenSecret.get(),
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          (error, payload: AccessToken) => {
-            if (error)
-              return reject(
-                new BlError("could not verify jwt")
-                  .store("accessToken", accessToken)
-                  .code(910),
-              );
+        verify(accessToken, this.accessTokenSecret.get(), (error, payload) => {
+          if (error || payload === undefined)
+            return reject(
+              new BlError("could not verify jwt")
+                .store("accessToken", accessToken)
+                .code(910),
+            );
 
-            resolve(payload);
-          },
-        );
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          resolve(payload);
+        });
       } catch (error) {
         return reject(new BlError("could not verify accessToken").code(910));
       }

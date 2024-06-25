@@ -4,9 +4,7 @@ import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import sinon from "sinon";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { Payment, Order, BlError, AccessToken } from "@boklisten/bl-model";
+import { Payment, Order, BlError } from "@boklisten/bl-model";
 import { PaymentPostHook } from "./payment.post.hook";
 import { PaymentValidator } from "../helpers/payment.validator";
 import { PaymentDibsHandler } from "../helpers/dibs/payment-dibs-handler";

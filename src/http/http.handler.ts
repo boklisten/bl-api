@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import { BlError } from "@boklisten/bl-model";
-import { Response } from "express";
 import { stringify } from "qs";
+import request from "request";
+import rp from "request-promise";
 
 import { logger } from "../logger/logger";
 
-const request = require("request");
-const rp = require("request-promise");
-
+// TODO: request and request-promise is deprecated, rewrite to use fetch
 export class HttpHandler {
   post(url: string, data: unknown, authorization?: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
@@ -24,7 +22,7 @@ export class HttpHandler {
       }
 
       logger.debug(`R-> POST ${url}`);
-      request.post(options, (err: unknown, res: Response, body: unknown) => {
+      request.post(options, (err, res, body) => {
         if (err) {
           logger.verbose(`<-R ERROR ${err}`);
           return reject(new BlError(`error on request to "${url}"`));

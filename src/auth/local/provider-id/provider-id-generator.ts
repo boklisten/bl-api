@@ -1,9 +1,8 @@
+import crypto from "crypto";
+
 import { BlError } from "@boklisten/bl-model";
 
 import { SeCrypto } from "../../../crypto/se.crypto";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const crypto = require("crypto");
 
 export class ProviderIdGenerator {
   constructor(private seCrypto: SeCrypto) {}

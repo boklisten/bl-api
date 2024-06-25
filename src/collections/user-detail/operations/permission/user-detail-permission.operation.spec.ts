@@ -3,17 +3,9 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { expect } from "chai";
 import sinon from "sinon";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
+import { BlError, UserDetail } from "@boklisten/bl-model";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { SEResponseHandler } from "../../../../response/se.response.handler";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { Response } from "express";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { BlApiRequest } from "../../../../request/bl-api-request";
 chai.use(chaiAsPromised);
 import { UserDetailPermissionOperation } from "./user-detail-permission.operation";
 import { User } from "../../../user/user";

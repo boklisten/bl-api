@@ -1,4 +1,5 @@
 import { BlError, UserPermission } from "@boklisten/bl-model";
+import { sign } from "jsonwebtoken";
 
 import { AccessTokenSecret } from "./access-token.secret";
 import { RefreshTokenValidator } from "../refresh/refresh-token.validator";
@@ -7,7 +8,6 @@ import { TokenConfig } from "../token.config";
 export class AccessTokenCreator {
   private refreshTokenValidator: RefreshTokenValidator;
   private accessTokenSecret: AccessTokenSecret;
-  private jwt = require("jsonwebtoken");
 
   constructor(private tokenConfig: TokenConfig) {
     this.refreshTokenValidator = new RefreshTokenValidator();
@@ -30,17 +30,13 @@ export class AccessTokenCreator {
         );
 
       this.refreshTokenValidator.validate(refreshToken).then(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (valid: boolean) => {
-          this.jwt.sign(
+        () => {
+          sign(
             this.createPayload(username, userid, permission, userDetailId),
             this.accessTokenSecret.get(),
             { expiresIn: this.tokenConfig.accessToken.expiresIn },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (error: any, accessToken: any) => {
-              if (error)
+            (error, accessToken) => {
+              if (error || accessToken === undefined)
                 return reject(
                   new BlError("could not sign jwt")
                     .store("usename", username)

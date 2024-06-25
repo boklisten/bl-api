@@ -1,9 +1,6 @@
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { expect } from "chai";
 import { JwtPayload, SEToken } from "./se.token";
 import { BlError } from "@boklisten/bl-model";
 

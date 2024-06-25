@@ -21,6 +21,7 @@ module.exports = {
   ],
   plugins: ["@typescript-eslint"],
   rules: {
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
     /** @see https://medium.com/weekly-webtips/how-to-sort-imports-like-a-pro-in-typescript-4ee8afd7258a */
     "import/order": [
       "error",

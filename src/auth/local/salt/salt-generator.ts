@@ -1,7 +1,6 @@
-import { BlError } from "@boklisten/bl-model";
+import crypto from "crypto";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const crypto = require("crypto");
+import { BlError } from "@boklisten/bl-model";
 
 export class SaltGenerator {
   public generate(): Promise<string> {

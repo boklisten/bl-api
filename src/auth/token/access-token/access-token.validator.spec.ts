@@ -9,6 +9,7 @@ import { AccessTokenCreator } from "./access-token.creator";
 import { AccessToken } from "./access-token";
 import { RefreshToken } from "../refresh/refresh-token";
 import { TokenConfig } from "../token.config";
+import { sign } from "jsonwebtoken";
 
 chai.use(chaiAsPromised);
 
@@ -61,18 +62,14 @@ describe("", () => {
     context("when accessToken is expired", () => {
       it("should reject with BlError code 910", (done) => {
         const username = "bill@butt.com";
-        const jwt = require("jsonwebtoken");
 
-        jwt.sign(
+        sign(
           {
             username: username,
             iat: Math.floor(Date.now() / 1000) - 10000,
           },
           "test",
-          { expiresIn: "1s" }, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
+          { expiresIn: "1s" },
           (error, accessToken) => {
             accessTokenValidator
               .validate(accessToken)
