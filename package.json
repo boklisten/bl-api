@@ -67,6 +67,7 @@
     "@types/passport-local": "^1.0.38",
     "@types/pdfkit": "^0.13.4",
     "@types/qrcode": "^1.5.5",
+    "@types/request-promise": "^4.1.51",
     "@types/sinon": "^17.0.3",
     "@types/sinon-chai": "^3.2.12",
     "@types/validator": "^13.12.0",

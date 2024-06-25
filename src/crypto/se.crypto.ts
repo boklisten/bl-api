@@ -62,8 +62,6 @@ export class SeCrypto {
   }
 
   public random(): string {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     return crypto.randomBytes(20).toLocaleString("hex");
   }
 }
