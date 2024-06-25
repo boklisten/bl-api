@@ -1,10 +1,7 @@
 import { BlError } from "@boklisten/bl-model";
 import { Router } from "express";
 import passport from "passport";
-import {
-  IOAuth2StrategyOptionWithRequest,
-  OAuth2Strategy,
-} from "passport-google-oauth";
+import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 
 import { APP_CONFIG } from "../../application-config";
 import { ApiPath } from "../../config/api-path";
@@ -14,7 +11,6 @@ import { UserProvider } from "../user/user-provider/user-provider";
 export class GoogleAuth {
   private apiPath: ApiPath;
   private _userProvider: UserProvider;
-  private readonly _googlePassportStrategySettings: IOAuth2StrategyOptionWithRequest;
 
   constructor(
     private router: Router,
@@ -25,23 +21,21 @@ export class GoogleAuth {
     this.createCallbackGet(router);
     this._userProvider = new UserProvider();
 
-    this._googlePassportStrategySettings = {
-      clientID: process.env["GOOGLE_CLIENT_ID"] ?? "",
-      clientSecret: process.env["GOOGLE_SECRET"] ?? "",
-      passReqToCallback: true,
-      callbackURL:
-        process.env["BL_API_URI"] +
-        this.apiPath.createPath("auth/google/callback"),
-    };
-
     this.createPassportStrategy();
   }
 
   private createPassportStrategy() {
     passport.use(
-      new OAuth2Strategy(
-        this._googlePassportStrategySettings,
-        async (accessToken, refreshToken, profile, done) => {
+      new GoogleStrategy(
+        {
+          clientID: process.env["GOOGLE_CLIENT_ID"] ?? "",
+          clientSecret: process.env["GOOGLE_SECRET"] ?? "",
+          passReqToCallback: true,
+          callbackURL:
+            process.env["BL_API_URI"] +
+            this.apiPath.createPath("auth/google/callback"),
+        },
+        async (req, accessToken, refreshToken, profile, done) => {
           const provider = APP_CONFIG.login.google.name;
           const providerId = profile.id;
           const username = this.retrieveUsername(profile);
@@ -61,7 +55,7 @@ export class GoogleAuth {
           } catch (e) {
             return done(
               null,
-              null,
+              undefined,
               new BlError("could not create user").code(902),
             );
           }
@@ -72,12 +66,8 @@ export class GoogleAuth {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  private retrieveUsername(profile): string {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const username = profile.emails.find((email) => email.verified)?.value;
+  private retrieveUsername(profile: Profile): string {
+    const username = profile.emails?.find((email) => email.verified)?.value;
 
     if (!username || username.length <= 0) {
       throw new BlError("username not found by google").code(902);

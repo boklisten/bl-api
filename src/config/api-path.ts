@@ -1,3 +1,5 @@
+import { IncomingHttpHeaders } from "http";
+
 import { APP_CONFIG } from "../application-config";
 
 export class ApiPath {
@@ -19,9 +21,7 @@ export class ApiPath {
     return this.getBasePath() + customPath;
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  public retrieveRefererPath(reqHeaders) {
+  public retrieveRefererPath(reqHeaders: IncomingHttpHeaders) {
     let refererUrl = null;
 
     const refererPath = reqHeaders["referer"];
@@ -30,7 +30,7 @@ export class ApiPath {
     if (refererPath) {
       refererUrl = this.retrieveBasePath(refererPath);
     } else if (reffererPath) {
-      refererUrl = this.retrieveBasePath(reffererPath);
+      refererUrl = this.retrieveBasePath(reffererPath as string);
     }
 
     if (refererUrl && !refererUrl.includes(this.baseHost)) {

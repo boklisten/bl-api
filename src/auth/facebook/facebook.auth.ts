@@ -14,8 +14,6 @@ export class FacebookAuth {
   private readonly facebookPassportStrategySettings: StrategyOptions;
 
   constructor(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     private router: Router,
     private resHandler: SEResponseHandler,
   ) {
@@ -110,9 +108,7 @@ export class FacebookAuth {
                 res,
                 tokens.accessToken,
                 tokens.refreshToken,
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                this.apiPath.retrieveRefererPath(req.headers),
+                this.apiPath.retrieveRefererPath(req.headers) ?? undefined,
               );
             }
           },
