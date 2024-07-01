@@ -109,11 +109,9 @@ export class PaymentPostHook extends Hook {
   ): Promise<Payment> {
     return new Promise((resolve, reject) => {
       this.orderStorage
-        .get(payment.order as string)
+        .get(payment.order)
         .then((order: Order) => {
-          const paymentIds: string[] = order.payments
-            ? (order.payments as string[])
-            : [];
+          const paymentIds = order.payments ?? [];
 
           if (paymentIds.indexOf(payment.id) > -1) {
             reject(

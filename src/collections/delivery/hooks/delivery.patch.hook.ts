@@ -71,7 +71,7 @@ export class DeliveryPatchHook extends Hook {
       this.orderStorage
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        .get(delivery.order as string)
+        .get(delivery.order)
         .then((order: Order) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -129,7 +129,7 @@ export class DeliveryPatchHook extends Hook {
           }
 
           this.orderStorage
-            .get(delivery.order as string)
+            .get(delivery.order)
             .then((order: Order) => {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore

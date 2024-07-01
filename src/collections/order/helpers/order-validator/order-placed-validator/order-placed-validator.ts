@@ -46,7 +46,7 @@ export class OrderPlacedValidator {
       } else {
         // when delivery is attached
         this.deliveryStorage
-          .get(order.delivery as string)
+          .get(order.delivery)
           .then((delivery: Delivery) => {
             this.validatePayments(order, delivery)
               .then(() => {

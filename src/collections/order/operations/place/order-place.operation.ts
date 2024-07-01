@@ -281,13 +281,13 @@ export class OrderPlaceOperation implements Operation {
 
     const returnCustomerItems = await this._customerItemStorage.getMany(
       returnOrderItems
-        .map((orderItem) => orderItem.customerItem as string | undefined)
+        .map((orderItem) => orderItem.customerItem)
         .filter(isNotNullish),
     );
 
     const handoutCustomerItems = await this._customerItemStorage.getMany(
       handoutOrderItems
-        .map((orderItem) => orderItem.customerItem as string | undefined)
+        .map((orderItem) => orderItem.customerItem)
         .filter(isNotNullish),
     );
 
@@ -321,10 +321,7 @@ export class OrderPlaceOperation implements Operation {
             ) &&
             !standMatch.deliveredItems.includes(String(customerItem.item)),
         ),
-      (customerItem, match) => [
-        ...match.deliveredItems,
-        customerItem.item as string,
-      ],
+      (customerItem, match) => [...match.deliveredItems, customerItem.item],
     );
 
     for (const [
@@ -357,10 +354,7 @@ export class OrderPlaceOperation implements Operation {
             ) &&
             !standMatch.receivedItems.includes(String(customerItem.item)),
         ),
-      (customerItem, match) => [
-        ...match.receivedItems,
-        customerItem.item as string,
-      ],
+      (customerItem, match) => [...match.receivedItems, customerItem.item],
     );
 
     for (const [
@@ -387,8 +381,8 @@ export class OrderPlaceOperation implements Operation {
       (handoutCustomerItem) =>
         userMatches.find(
           (match) =>
-            match.receiver === (handoutCustomerItem.customer as string) &&
-            match.expectedItems.includes(handoutCustomerItem.item as string) &&
+            match.receiver === handoutCustomerItem.customer &&
+            match.expectedItems.includes(handoutCustomerItem.item) &&
             handoutCustomerItem.blid &&
             !match.receivedBlIds.includes(handoutCustomerItem.blid),
         ),
@@ -417,8 +411,8 @@ export class OrderPlaceOperation implements Operation {
       (returnCustomerItem) =>
         userMatches.find(
           (match) =>
-            match.sender === (returnCustomerItem.customer as string) &&
-            match.expectedItems.includes(returnCustomerItem.item as string) &&
+            match.sender === returnCustomerItem.customer &&
+            match.expectedItems.includes(returnCustomerItem.item) &&
             returnCustomerItem.blid &&
             !match.deliveredBlIds.includes(returnCustomerItem.blid),
         ),
@@ -589,7 +583,7 @@ export class OrderPlaceOperation implements Operation {
         // should add customerItems to customer if present
         await this.addCustomerItemsToCustomer(
           customerItems,
-          order.customer as string,
+          order.customer,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           blApiRequest.user,
@@ -663,9 +657,7 @@ export class OrderPlaceOperation implements Operation {
     // @ts-ignore
     const userDetail = await this._userDetailStorage.get(customerId);
 
-    let userDetailCustomerItemsIds = userDetail.customerItems
-      ? (userDetail.customerItems as string[])
-      : [];
+    let userDetailCustomerItemsIds = userDetail.customerItems ?? [];
 
     userDetailCustomerItemsIds =
       userDetailCustomerItemsIds.concat(customerItemIds);

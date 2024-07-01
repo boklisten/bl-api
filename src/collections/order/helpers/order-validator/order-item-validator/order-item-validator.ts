@@ -59,7 +59,7 @@ export class OrderItemValidator {
       this.validateAmount(order);
 
       for (const orderItem of order.orderItems) {
-        const item = await this.itemStorage.get(orderItem.item as string);
+        const item = await this.itemStorage.get(orderItem.item);
         await this.validateOrderItemBasedOnType(branch, item, orderItem);
         this.validateOrderItemAmounts(orderItem);
       }

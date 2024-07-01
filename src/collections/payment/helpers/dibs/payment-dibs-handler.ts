@@ -50,10 +50,8 @@ export class PaymentDibsHandler {
     payment: Payment,
     accessToken: AccessToken,
   ): Promise<Payment> {
-    const order = await this.orderStorage.get(payment.order as string);
-    const userDetail = await this.userDetailStorage.get(
-      payment.customer as string,
-    );
+    const order = await this.orderStorage.get(payment.order);
+    const userDetail = await this.userDetailStorage.get(payment.customer);
     const dibsEasyOrder: DibsEasyOrder = await this.getDibsEasyOrder(
       userDetail,
       order,
@@ -72,7 +70,7 @@ export class PaymentDibsHandler {
   ): Promise<DibsEasyOrder> {
     if (order.delivery) {
       return this.deliveryStorage
-        .get(order.delivery as string)
+        .get(order.delivery)
         .then((delivery: Delivery) => {
           return this.dibsPaymentService.orderToDibsEasyOrder(
             userDetail,

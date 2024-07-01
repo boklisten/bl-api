@@ -74,7 +74,7 @@ export class OrderItemBuyValidator {
     }
 
     await this.orderStorage
-      .get(orderItem.movedFromOrder as string)
+      .get(orderItem.movedFromOrder)
       .then((order: Order) => {
         if (
           (!order.payments || order.payments.length <= 0) &&
@@ -86,7 +86,7 @@ export class OrderItemBuyValidator {
         }
 
         const movedFromOrderItem = this.getOrderItemFromOrder(
-          orderItem.item as string,
+          orderItem.item,
           order,
         );
 

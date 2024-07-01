@@ -45,9 +45,7 @@ export class OrderReceiptPdfOperation implements Operation {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const order = await this._orderStorage.get(blApiRequest.documentId);
-    const customerDetail = await this._userDetailStorage.get(
-      order.customer as string,
-    );
+    const customerDetail = await this._userDetailStorage.get(order.customer);
 
     const orderReceiptPdf = await this._messenger.getOrderReceiptPdf(
       customerDetail,

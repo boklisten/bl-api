@@ -64,7 +64,7 @@ export class OrderItemExtendValidator {
       this.customerItemStorage
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        .get(orderItem.info.customerItem as string)
+        .get(orderItem.info.customerItem)
         .then((customerItem: CustomerItem) => {
           let totalOfSelectedPeriod = 0;
           if (customerItem.periodExtends) {

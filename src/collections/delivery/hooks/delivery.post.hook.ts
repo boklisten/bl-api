@@ -60,7 +60,7 @@ export class DeliveryPostHook extends Hook {
       this.orderStorage
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        .get(delivery.order as string)
+        .get(delivery.order)
         .then((order: Order) => {
           this.deliveryValidator
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -50,7 +50,7 @@ export class PaymentHandler {
     let payments: Payment[];
 
     try {
-      payments = await this.paymentStorage.getMany(order.payments as string[]);
+      payments = await this.paymentStorage.getMany(order.payments);
     } catch (e) {
       throw new BlError("one or more payments was not found");
     }

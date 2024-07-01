@@ -52,7 +52,7 @@ export class OrderValidator {
       }
 
       await this.orderFieldValidator.validate(order);
-      const branch = await this.branchStorage.get(order.branch as string);
+      const branch = await this.branchStorage.get(order.branch);
 
       await this.orderItemValidator.validate(branch, order, isAdmin);
       await this.branchValidator.validate(order);

@@ -26,7 +26,7 @@ export class OpeningHourHelper {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const openingHours = await this.openingHourStorage.getMany(
-      branch.openingHours as string[],
+      branch.openingHours,
     );
 
     return this.getFirstAvailableOpeningHour(openingHours, after);

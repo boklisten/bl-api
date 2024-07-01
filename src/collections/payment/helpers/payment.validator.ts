@@ -38,7 +38,7 @@ export class PaymentValidator {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return this.orderStorage
-      .get(payment.order as string)
+      .get(payment.order)
       .then((orderInStorage: Order) => {
         order = orderInStorage;
         return this.validateIfOrderHasDelivery(payment, order);
@@ -68,7 +68,7 @@ export class PaymentValidator {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return this.deliveryStorage
-      .get(order.delivery as string)
+      .get(order.delivery)
       .then((delivery: Delivery) => {
         const expectedAmount = order.amount + delivery.amount;
 

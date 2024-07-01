@@ -25,9 +25,7 @@ export class OrderToCustomerItemGenerator {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const customerDetail = await this._userDetailStorage.get(
-      order.customer as string,
-    );
+    const customerDetail = await this._userDetailStorage.get(order.customer);
 
     for (const orderItem of order.orderItems) {
       if (this.shouldCreateCustomerItem(orderItem)) {
@@ -169,10 +167,9 @@ export class OrderToCustomerItemGenerator {
 
   private createHandoutInfo(order: Order) {
     return {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      handoutBy: "branch" as any,
-      handoutById: order.branch as string,
-      handoutEmployee: order.employee as string,
+      handoutBy: "branch",
+      handoutById: order.branch,
+      handoutEmployee: order.employee,
       time: order.creationTime,
     };
   }

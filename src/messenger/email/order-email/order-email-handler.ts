@@ -66,7 +66,7 @@ export class OrderEmailHandler {
       userId: customerDetail.id,
     };
 
-    const branchId = order.branch as string;
+    const branchId = order.branch;
 
     const withAgreement: boolean = await this.shouldSendAgreement(
       order,
@@ -261,8 +261,8 @@ export class OrderEmailHandler {
   private extractEmailOrderDeliveryFromOrder(
     order: Order,
   ): Promise<{ delivery: unknown; showDelivery: boolean }> {
-    const deliveryId = order.delivery as string;
-    if (!order.delivery || !deliveryId.length) {
+    const deliveryId = order.delivery;
+    if (!deliveryId?.length) {
       return Promise.resolve({ delivery: null, showDelivery: false });
     }
 
