@@ -219,9 +219,7 @@ export class OrderEmailHandler {
     const paymentPromises: Promise<Payment>[] = order.payments.map((payment) =>
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      this._paymentStorage.get(
-        typeof payment === "string" ? payment : payment.id,
-      ),
+      this._paymentStorage.get(payment),
     );
 
     return Promise.all(paymentPromises)
