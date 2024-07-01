@@ -6,13 +6,14 @@ export const uniqueItemSchema = new Schema<UniqueItem>({
     type: String,
     required: true,
   },
-  item: Schema.Types.ObjectId,
+  item: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
   title: {
     type: String,
     required: true,
   },
-  location: {
-    type: Schema.Types.Mixed,
-  },
+  location: String,
   actions: [Schema.Types.Mixed],
 });

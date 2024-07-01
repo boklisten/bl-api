@@ -92,7 +92,8 @@ export const orderSchema = new Schema<Order>({
     required: true,
   },
   customer: {
-    type: Schema.Types.Mixed,
+    type: Schema.Types.ObjectId,
+    required: true,
   },
   byCustomer: {
     type: Boolean,
