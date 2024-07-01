@@ -7,6 +7,7 @@ import {
   Order,
 } from "@boklisten/bl-model";
 
+import { isNullish } from "../../../helper/typescript-helpers";
 import { SEDbQuery } from "../../../query/se.db-query";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
@@ -24,7 +25,7 @@ export async function createMatchOrder(
     BlCollectionName.Items,
     itemSchema,
   );
-  const item = await itemStorage.get(String(customerItem.item));
+  const item = await itemStorage.get(customerItem.item);
 
   if (!item) {
     throw new BlError("Failed to get item");
@@ -34,11 +35,10 @@ export async function createMatchOrder(
     BlCollectionName.Branches,
     branchSchema,
   );
-  const branch = await branchStorage.get(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    String(customerItem.handoutInfo.handoutById),
-  );
+  if (isNullish(customerItem.handoutInfo)) {
+    throw new BlError("No handoutInfo for customerItem").code(200);
+  }
+  const branch = await branchStorage.get(customerItem.handoutInfo.handoutById);
 
   const newRentPeriod = branch?.paymentInfo?.rentPeriods?.[0];
 
@@ -59,9 +59,7 @@ export async function createMatchOrder(
     const originalReceiverOrder = activeReceiverOrders.find((order) =>
       order.orderItems
         .filter((orderItem) => orderActive.isOrderItemActive(orderItem))
-        .some(
-          (orderItem) => String(orderItem.item) === String(customerItem.item),
-        ),
+        .some((orderItem) => orderItem.item === customerItem.item),
     );
     if (originalReceiverOrder) {
       movedFromOrder = originalReceiverOrder.id;

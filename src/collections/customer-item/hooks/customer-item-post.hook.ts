@@ -57,7 +57,7 @@ export class CustomerItemPostHook extends Hook {
     }
 
     return this._userDetailStorage
-      .get(String(customerItem.customer))
+      .get(customerItem.customer)
       .then((userDetail: UserDetail) => {
         if (!this._userDetailHelper.isValid(userDetail)) {
           throw new BlError(`userDetail "${customerItem.customer}" not valid`);
@@ -112,7 +112,7 @@ export class CustomerItemPostHook extends Hook {
     }
 
     return this._orderStorage
-      .get(String(customerItem.orders[0]))
+      .get(customerItem.orders[0]!)
       .then((order: Order) => {
         //update the corresponding orderItem with customerItem
         for (const orderItem of order.orderItems) {
@@ -131,7 +131,7 @@ export class CustomerItemPostHook extends Hook {
         );
       })
       .then(() => {
-        return this._userDetailStorage.get(String(customerItem.customer));
+        return this._userDetailStorage.get(customerItem.customer);
       })
       .then((userDetail: UserDetail) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

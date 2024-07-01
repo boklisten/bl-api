@@ -210,9 +210,7 @@ export class OrderPlacedHandler {
     if (order.notification && !order.notification.email) {
       return;
     }
-    const customerDetail = await this.userDetailStorage.get(
-      String(order.customer),
-    );
+    const customerDetail = await this.userDetailStorage.get(order.customer);
     if (order.handoutByDelivery) {
       await this._messenger.sendDeliveryInformation(customerDetail, order);
     } else {
