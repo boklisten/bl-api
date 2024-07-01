@@ -1,7 +1,9 @@
 import { UniqueItem } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const uniqueItemSchema = new Schema<UniqueItem>({
+import { ToSchema } from "../../helper/typescript-helpers";
+
+export const uniqueItemSchema = new Schema<ToSchema<UniqueItem>>({
   blid: {
     type: String,
     required: true,

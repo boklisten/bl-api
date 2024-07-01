@@ -1,7 +1,9 @@
 import { Booking } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const bookingSchema = new Schema<Booking>({
+import { ToSchema } from "../../helper/typescript-helpers";
+
+export const bookingSchema = new Schema<ToSchema<Booking>>({
   from: {
     type: Date,
     required: true,

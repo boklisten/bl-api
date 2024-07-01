@@ -1,7 +1,11 @@
 import { PendingPasswordReset } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const pendingPasswordResetSchema = new Schema<PendingPasswordReset>({
+import { ToSchema } from "../../helper/typescript-helpers";
+
+export const pendingPasswordResetSchema = new Schema<
+  ToSchema<PendingPasswordReset>
+>({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   _id: {

@@ -1,7 +1,9 @@
 import { OpeningHour } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const openingHourSchema = new Schema<OpeningHour>({
+import { ToSchema } from "../../helper/typescript-helpers";
+
+export const openingHourSchema = new Schema<ToSchema<OpeningHour>>({
   from: {
     type: Date,
     required: true,

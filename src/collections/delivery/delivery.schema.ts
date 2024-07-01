@@ -1,7 +1,9 @@
 import { Delivery } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const deliverySchema = new Schema<Delivery>({
+import { ToSchema } from "../../helper/typescript-helpers";
+
+export const deliverySchema = new Schema<ToSchema<Delivery>>({
   method: {
     type: String,
     required: true,
