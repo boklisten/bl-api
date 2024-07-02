@@ -343,7 +343,7 @@ export class EmailService implements MessengerService {
     const items = [];
 
     for (const customerItem of customerItems) {
-      const item = await this._itemStorage.get(customerItem.item as string);
+      const item = await this._itemStorage.get(customerItem.item);
       items.push(this.customerItemToEmailItem(message, customerItem, item));
     }
 

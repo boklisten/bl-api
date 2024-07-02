@@ -134,7 +134,7 @@ export class OrderPlaceOperation implements Operation {
       for (const orderItem of order.orderItems) {
         for (const alreadyOrderedItem of alreadyOrderedItems) {
           if (
-            String(orderItem.item) === String(alreadyOrderedItem.item) && // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            orderItem.item === alreadyOrderedItem.item && // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             orderItem.info.to === alreadyOrderedItem.info.to
           ) {
@@ -214,15 +214,14 @@ export class OrderPlaceOperation implements Operation {
     userMatches: UserMatch[],
   ) {
     for (const customerItem of customerItems) {
-      const customerId = String(customerItem.customer);
+      const customerId = customerItem.customer;
       if (
         userMatches.some(
           (userMatch) =>
             userMatch.itemsLockedToMatch &&
-            // We need String(obj) because typeof sender/receiver === object
-            (String(userMatch.sender) === customerId ||
-              String(userMatch.receiver) === customerId) &&
-            userMatch.expectedItems.includes(String(customerItem.item)),
+            (userMatch.sender === customerId ||
+              userMatch.receiver === customerId) &&
+            userMatch.expectedItems.includes(customerItem.item),
         )
       ) {
         throw new BlError(
@@ -250,9 +249,8 @@ export class OrderPlaceOperation implements Operation {
         userMatches.some(
           (userMatch) =>
             userMatch.itemsLockedToMatch &&
-            // We need String(obj) because typeof sender/receiver === object
-            (String(userMatch.sender) === customerId ||
-              String(userMatch.receiver) === customerId) &&
+            (userMatch.sender === customerId ||
+              userMatch.receiver === customerId) &&
             userMatch.expectedItems.includes(itemId),
         )
       ) {
@@ -281,13 +279,13 @@ export class OrderPlaceOperation implements Operation {
 
     const returnCustomerItems = await this._customerItemStorage.getMany(
       returnOrderItems
-        .map((orderItem) => orderItem.customerItem as string | undefined)
+        .map((orderItem) => orderItem.customerItem)
         .filter(isNotNullish),
     );
 
     const handoutCustomerItems = await this._customerItemStorage.getMany(
       handoutOrderItems
-        .map((orderItem) => orderItem.customerItem as string | undefined)
+        .map((orderItem) => orderItem.customerItem)
         .filter(isNotNullish),
     );
 
@@ -316,15 +314,10 @@ export class OrderPlaceOperation implements Operation {
         standMatches.find(
           (standMatch) =>
             standMatch.customer === customerItem.customer &&
-            standMatch.expectedHandoffItems.includes(
-              String(customerItem.item),
-            ) &&
-            !standMatch.deliveredItems.includes(String(customerItem.item)),
+            standMatch.expectedHandoffItems.includes(customerItem.item) &&
+            !standMatch.deliveredItems.includes(customerItem.item),
         ),
-      (customerItem, match) => [
-        ...match.deliveredItems,
-        customerItem.item as string,
-      ],
+      (customerItem, match) => [...match.deliveredItems, customerItem.item],
     );
 
     for (const [
@@ -352,15 +345,10 @@ export class OrderPlaceOperation implements Operation {
         standMatches.find(
           (standMatch) =>
             standMatch.customer === customerItem.customer &&
-            standMatch.expectedPickupItems.includes(
-              String(customerItem.item),
-            ) &&
-            !standMatch.receivedItems.includes(String(customerItem.item)),
+            standMatch.expectedPickupItems.includes(customerItem.item) &&
+            !standMatch.receivedItems.includes(customerItem.item),
         ),
-      (customerItem, match) => [
-        ...match.receivedItems,
-        customerItem.item as string,
-      ],
+      (customerItem, match) => [...match.receivedItems, customerItem.item],
     );
 
     for (const [
@@ -387,8 +375,8 @@ export class OrderPlaceOperation implements Operation {
       (handoutCustomerItem) =>
         userMatches.find(
           (match) =>
-            match.receiver === (handoutCustomerItem.customer as string) &&
-            match.expectedItems.includes(handoutCustomerItem.item as string) &&
+            match.receiver === handoutCustomerItem.customer &&
+            match.expectedItems.includes(handoutCustomerItem.item) &&
             handoutCustomerItem.blid &&
             !match.receivedBlIds.includes(handoutCustomerItem.blid),
         ),
@@ -417,8 +405,8 @@ export class OrderPlaceOperation implements Operation {
       (returnCustomerItem) =>
         userMatches.find(
           (match) =>
-            match.sender === (returnCustomerItem.customer as string) &&
-            match.expectedItems.includes(returnCustomerItem.item as string) &&
+            match.sender === returnCustomerItem.customer &&
+            match.expectedItems.includes(returnCustomerItem.item) &&
             returnCustomerItem.blid &&
             !match.deliveredBlIds.includes(returnCustomerItem.blid),
         ),
@@ -523,7 +511,7 @@ export class OrderPlaceOperation implements Operation {
         returnOrderItems,
         handoutOrderItems,
         allMatches,
-        String(order.customer),
+        order.customer,
       );
     }
 
@@ -589,7 +577,7 @@ export class OrderPlaceOperation implements Operation {
         // should add customerItems to customer if present
         await this.addCustomerItemsToCustomer(
           customerItems,
-          order.customer as string,
+          order.customer,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           blApiRequest.user,
@@ -620,14 +608,12 @@ export class OrderPlaceOperation implements Operation {
     const userMatches: UserMatch[] = allMatches.filter(
       (match) => match._variant === MatchVariant.UserMatch,
     );
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const returnCustomerItems = await this._customerItemStorage.getMany(
-      returnOrderItems.map((orderItem) => String(orderItem.customerItem)),
+      returnOrderItems
+        .map((orderItem) => orderItem.customerItem)
+        .filter(isNotNullish),
     );
-    const handoutItems = handoutOrderItems.map((orderItem) =>
-      String(orderItem.item),
-    );
+    const handoutItems = handoutOrderItems.map((orderItem) => orderItem.item);
     this.verifyCustomerItemsNotInLockedUserMatch(
       returnCustomerItems,
       userMatches,
@@ -663,9 +649,7 @@ export class OrderPlaceOperation implements Operation {
     // @ts-ignore
     const userDetail = await this._userDetailStorage.get(customerId);
 
-    let userDetailCustomerItemsIds = userDetail.customerItems
-      ? (userDetail.customerItems as string[])
-      : [];
+    let userDetailCustomerItemsIds = userDetail.customerItems ?? [];
 
     userDetailCustomerItemsIds =
       userDetailCustomerItemsIds.concat(customerItemIds);

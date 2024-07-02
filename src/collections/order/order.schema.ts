@@ -1,7 +1,9 @@
 import { Order } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const orderSchema = new Schema<Order>({
+import { ToSchema } from "../../helper/typescript-helpers";
+
+export const orderSchema = new Schema<ToSchema<Order>>({
   amount: {
     type: Number,
     required: true,
@@ -92,7 +94,8 @@ export const orderSchema = new Schema<Order>({
     required: true,
   },
   customer: {
-    type: Schema.Types.Mixed,
+    type: Schema.Types.ObjectId,
+    required: true,
   },
   byCustomer: {
     type: Boolean,

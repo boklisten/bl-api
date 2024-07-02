@@ -1,7 +1,9 @@
 import { Message } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const messageSchema = new Schema<Message>({
+import { ToSchema } from "../../helper/typescript-helpers";
+
+export const messageSchema = new Schema<ToSchema<Message>>({
   messageType: {
     type: String,
     required: true,

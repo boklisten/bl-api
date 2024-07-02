@@ -1,9 +1,11 @@
 import { CustomerItem } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const customerItemSchema = new Schema<CustomerItem>({
+import { ToSchema } from "../../helper/typescript-helpers";
+
+export const customerItemSchema = new Schema<ToSchema<CustomerItem>>({
   item: {
-    type: Schema.Types.Mixed,
+    type: Schema.Types.ObjectId,
     required: true,
   },
   type: {
@@ -12,8 +14,8 @@ export const customerItemSchema = new Schema<CustomerItem>({
   age: String,
   blid: String,
   customer: {
-    type: Schema.Types.Mixed,
-    require: true,
+    type: Schema.Types.ObjectId,
+    required: true,
   },
   sharedItem: Schema.Types.ObjectId,
   deadline: {

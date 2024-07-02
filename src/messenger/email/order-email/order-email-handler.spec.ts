@@ -149,7 +149,7 @@ describe("OrderEmailHandler", () => {
 
         it("should set withAgreement to true when branch.responsible is set to true", (done) => {
           branchStorageGetStub
-            .withArgs(testOrder.branch as string)
+            .withArgs(testOrder.branch)
             .resolves({ paymentInfo: { responsible: true } } as Branch);
 
           orderEmailHandler
@@ -171,7 +171,7 @@ describe("OrderEmailHandler", () => {
         it("should send email to guardian if withAgreement is set and user is under 18", (done) => {
           //this ensures that with agreement is set to true
           branchStorageGetStub
-            .withArgs(testOrder.branch as string)
+            .withArgs(testOrder.branch)
             .resolves({ paymentInfo: { responsible: true } } as Branch);
           testCustomerDetail.dob = moment(new Date())
             .subtract(16, "year")

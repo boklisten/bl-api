@@ -120,12 +120,8 @@ describe("DeliveryPostHook", () => {
 
   sinon
     .stub(deliveryHandler, "updateOrderBasedOnMethod") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     .callsFake((delivery, order, accessToken) => {
-      if (!orderUpdated) {
-        return Promise.reject(new BlError("order could not be updated"));
-      }
-      return Promise.resolve(order.delivery as Delivery);
+      return Promise.reject(new BlError("order could not be updated"));
     });
 
   sinon.stub(deliveryStorage, "get").callsFake((id: string) => {

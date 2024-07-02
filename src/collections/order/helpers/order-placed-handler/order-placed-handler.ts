@@ -123,45 +123,35 @@ export class OrderPlacedHandler {
         if (customerItemId !== null) {
           if (orderItem.type === "extend") {
             await this._customerItemHandler.extend(
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
               customerItemId,
               orderItem,
-              order.branch as string,
+              order.branch,
               order.id,
             );
           } else if (orderItem.type === "buyout") {
             await this._customerItemHandler.buyout(
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
               customerItemId,
               order.id,
               orderItem,
             );
           } else if (orderItem.type === "buyback") {
             await this._customerItemHandler.buyback(
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
               customerItemId,
               order.id,
               orderItem,
             );
           } else if (orderItem.type === "cancel") {
             await this._customerItemHandler.cancel(
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
               customerItemId,
               order.id,
               orderItem,
             );
           } else if (orderItem.type === "return") {
             await this._customerItemHandler.return(
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
               customerItemId,
               order.id,
               orderItem,
-              order.branch as string,
+              order.branch,
               accessToken.details,
             );
           }
@@ -181,19 +171,17 @@ export class OrderPlacedHandler {
     }
     return new Promise((resolve, reject) => {
       this.userDetailStorage
-        .get(order.customer as string)
+        .get(order.customer)
         .then((userDetail: UserDetail) => {
-          const orders: string[] = userDetail.orders
-            ? (userDetail.orders as string[])
-            : [];
+          const orders = userDetail.orders ?? [];
 
           if (!orders.includes(order.id)) {
             orders.push(order.id);
 
             this.userDetailStorage
               .update(
-                order.customer as string,
-                { orders: orders },
+                order.customer,
+                { orders },
                 { id: accessToken.sub, permission: accessToken.permission },
               )
               .then(() => {
@@ -222,9 +210,7 @@ export class OrderPlacedHandler {
     if (order.notification && !order.notification.email) {
       return;
     }
-    const customerDetail = await this.userDetailStorage.get(
-      String(order.customer),
-    );
+    const customerDetail = await this.userDetailStorage.get(order.customer);
     if (order.handoutByDelivery) {
       await this._messenger.sendDeliveryInformation(customerDetail, order);
     } else {
@@ -239,9 +225,7 @@ export class OrderPlacedHandler {
    * have a signature currently and the original order for the item is pending signature.
    */
   public async isSignaturePending(order: Order): Promise<boolean> {
-    const userDetail = await this.userDetailStorage.get(
-      order.customer as string,
-    );
+    const userDetail = await this.userDetailStorage.get(order.customer);
 
     const hasValidSignature = await userHasValidSignature(
       userDetail,
@@ -255,7 +239,7 @@ export class OrderPlacedHandler {
       if (orderItem.handout) {
         if (orderItem.movedFromOrder) {
           const originalOrder = await this.orderStorage.get(
-            orderItem.movedFromOrder as string,
+            orderItem.movedFromOrder,
           );
           if (!originalOrder.pendingSignature) continue;
         }

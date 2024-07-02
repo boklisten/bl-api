@@ -68,7 +68,7 @@ export class CustomerItemHandler {
 
     const periodExtends = customerItem.periodExtends ?? [];
 
-    const customerItemOrders = (customerItem.orders ?? []) as string[];
+    const customerItemOrders = customerItem.orders ?? [];
 
     periodExtends.push({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -112,7 +112,7 @@ export class CustomerItemHandler {
     }
 
     const customerItem = await this._customerItemStorage.get(customerItemId);
-    const customerItemOrders = (customerItem.orders ?? []) as string[];
+    const customerItemOrders = customerItem.orders ?? [];
 
     customerItemOrders.push(orderId);
 
@@ -149,7 +149,7 @@ export class CustomerItemHandler {
 
     const customerItem = await this._customerItemStorage.get(customerItemId);
 
-    const customerItemOrders = (customerItem.orders ?? []) as string[];
+    const customerItemOrders = customerItem.orders ?? [];
 
     customerItemOrders.push(orderId);
 
@@ -186,7 +186,7 @@ export class CustomerItemHandler {
 
     const customerItem = await this._customerItemStorage.get(customerItemId);
 
-    const customerItemOrders = (customerItem.orders ?? []) as string[];
+    const customerItemOrders = customerItem.orders ?? [];
 
     customerItemOrders.push(orderId);
 
@@ -221,7 +221,7 @@ export class CustomerItemHandler {
     }
 
     const customerItem = await this._customerItemStorage.get(customerItemId);
-    const customerItemOrders = (customerItem.orders ?? []) as string[];
+    const customerItemOrders = customerItem.orders ?? [];
 
     customerItemOrders.push(orderId);
 

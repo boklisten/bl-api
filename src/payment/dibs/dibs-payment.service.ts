@@ -179,7 +179,7 @@ export class DibsPaymentService {
   private orderItemToEasyItem(orderItem: OrderItem): DibsEasyItem {
     const dibsEasyItem = new DibsEasyItem();
 
-    dibsEasyItem.reference = orderItem.item as string;
+    dibsEasyItem.reference = orderItem.item;
     dibsEasyItem.name = orderItem.title;
     dibsEasyItem.quantity = 1;
     dibsEasyItem.unit = "book";

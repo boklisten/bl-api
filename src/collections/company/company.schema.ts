@@ -1,7 +1,9 @@
 import { Company } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-export const companySchema = new Schema<Company>({
+import { ToSchema } from "../../helper/typescript-helpers";
+
+export const companySchema = new Schema<ToSchema<Company>>({
   name: {
     type: String,
     required: true,

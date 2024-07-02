@@ -1,6 +1,7 @@
 import { BlError, Order } from "@boklisten/bl-model";
 
 import { SystemUser } from "../../../../auth/permission/permission.service";
+import { isNullish } from "../../../../helper/typescript-helpers";
 import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../../bl-collection";
 import { orderSchema } from "../../order.schema";
@@ -22,11 +23,16 @@ export class OrderItemMovedFromOrderHandler {
   public async updateOrderItems(order: Order): Promise<boolean> {
     const orderItemsToUpdate: OrderItemToUpdate[] = order.orderItems
       .filter((orderItem) => orderItem.movedFromOrder)
-      .map((orderItem) => ({
-        itemId: String(orderItem.item),
-        originalOrderId: String(orderItem.movedFromOrder),
-        newOrderId: order.id,
-      }));
+      .map((orderItem) => {
+        if (isNullish(orderItem.movedFromOrder)) {
+          throw new BlError("Not movedFromOrder").code(200);
+        }
+        return {
+          itemId: orderItem.item,
+          originalOrderId: orderItem.movedFromOrder,
+          newOrderId: order.id,
+        };
+      });
 
     return await this.addMovedToOrderOnOrderItems(orderItemsToUpdate);
   }
@@ -50,12 +56,10 @@ export class OrderItemMovedFromOrderHandler {
     );
 
     for (const orderItem of originalOrder.orderItems) {
-      if (String(orderItem.item) === String(orderItemToUpdate.itemId)) {
+      if (orderItem.item === orderItemToUpdate.itemId) {
         if (!orderItem.movedToOrder) {
           orderItem.movedToOrder = orderItemToUpdate.newOrderId;
-        } else if (
-          String(orderItem.movedToOrder) !== orderItemToUpdate.newOrderId
-        ) {
+        } else if (orderItem.movedToOrder !== orderItemToUpdate.newOrderId) {
           throw new BlError(`orderItem has "movedToOrder" already set`);
         }
       }

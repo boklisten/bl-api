@@ -16,7 +16,7 @@ export class OrderUserDetailValidator {
   public validate(order: Order): Promise<boolean> {
     return (
       this._userDetailStorage
-        .get(order.customer as string)
+        .get(order.customer)
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

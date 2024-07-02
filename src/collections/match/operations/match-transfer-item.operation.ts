@@ -88,9 +88,8 @@ export class MatchTransferItemOperation implements Operation {
       .filter((match) => match._variant === MatchVariant.StandMatch)
       .find(
         (standMatch) =>
-          standMatch.expectedHandoffItems.includes(
-            customerItem.item as string,
-          ) && !standMatch.deliveredItems.includes(customerItem.blid!),
+          standMatch.expectedHandoffItems.includes(customerItem.item) &&
+          !standMatch.deliveredItems.includes(customerItem.blid!),
       );
 
     if (senderStandMatch === undefined) {
@@ -100,10 +99,7 @@ export class MatchTransferItemOperation implements Operation {
     await this._matchStorage.update(
       senderStandMatch.id,
       {
-        deliveredItems: [
-          ...senderStandMatch.deliveredItems,
-          customerItem.item as string,
-        ],
+        deliveredItems: [...senderStandMatch.deliveredItems, customerItem.item],
       },
       new SystemUser(),
     );
@@ -149,7 +145,7 @@ export class MatchTransferItemOperation implements Operation {
     const customerItem = activeCustomerItems[0]!;
 
     const receiverUserMatch = receiverUserMatches.find((userMatch) =>
-      userMatch.expectedItems.includes(customerItem?.item as string),
+      userMatch.expectedItems.includes(customerItem.item),
     );
 
     if (!receiverUserMatch) {
@@ -169,12 +165,12 @@ export class MatchTransferItemOperation implements Operation {
       }),
     );
 
-    if (receivedItemIds.includes(customerItem.item as string)) {
+    if (receivedItemIds.includes(customerItem.item)) {
       throw new BlError("Receiver has already received this item").code(806);
     }
 
     const senderMatches = await getAllMatchesForUser(
-      customerItem.customer as string,
+      customerItem.customer,
       this._matchStorage,
     );
     const senderUserMatches = senderMatches.filter(
@@ -182,7 +178,7 @@ export class MatchTransferItemOperation implements Operation {
     );
     const senderUserMatch = senderUserMatches.find(
       (userMatch) =>
-        userMatch.expectedItems.includes(customerItem.item as string) &&
+        userMatch.expectedItems.includes(customerItem.item) &&
         !userMatch.deliveredBlIds.includes(customerItem.blid!),
     );
 
@@ -223,7 +219,7 @@ export class MatchTransferItemOperation implements Operation {
 
     const senderOrder = await createMatchOrder(
       customerItem,
-      customerItem.customer as string,
+      customerItem.customer,
       true,
     );
 

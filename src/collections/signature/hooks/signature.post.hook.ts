@@ -84,9 +84,7 @@ export class SignaturePostHook extends Hook {
     if (!(userDetail.orders && userDetail.orders.length > 0)) {
       return;
     }
-    const orders = await this.orderStorage.getMany(
-      userDetail.orders as string[],
-    );
+    const orders = await this.orderStorage.getMany(userDetail.orders);
     await Promise.all(
       orders
         .filter((order) => order.pendingSignature)

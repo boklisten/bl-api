@@ -122,7 +122,7 @@ export class OrderItemRentPeriodValidator {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return this._orderStorage
-      .get(orderItem.movedFromOrder as string)
+      .get(orderItem.movedFromOrder)
       .then((order: Order) => {
         if (
           (!order.payments || order.payments.length <= 0) &&
@@ -136,7 +136,7 @@ export class OrderItemRentPeriodValidator {
         if (order.payments && order.payments.length > 0) {
           // the order is payed
           const movedFromOrderItem = this.getOrderItemFromOrder(
-            orderItem.item as string,
+            orderItem.item,
             order,
           );
 

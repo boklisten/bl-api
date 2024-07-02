@@ -25,6 +25,7 @@ import {
 } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
+import { ToSchema } from "../../helper/typescript-helpers";
 import { BlCollectionName } from "../bl-collection";
 
 const { ObjectId } = Schema.Types;
@@ -125,7 +126,7 @@ const standMatchSchema = {
  */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export const matchSchema = new Schema<Match>({
+export const matchSchema = new Schema<ToSchema<Match>>({
   ...matchBaseSchema,
   ...standMatchSchema,
   ...userMatchSchema,

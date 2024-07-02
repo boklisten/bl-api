@@ -142,7 +142,7 @@ export class DeliveryHandler {
   private fetchItems(order: Order): Promise<Item[]> {
     return new Promise((resolve, reject) => {
       const itemIds: string[] = order.orderItems.map(
-        (orderItem) => orderItem.item as string,
+        (orderItem) => orderItem.item,
       );
 
       this.itemStorage
@@ -166,7 +166,7 @@ export class DeliveryHandler {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.branchStorage
-        .get(order.branch as string)
+        .get(order.branch)
         .then((branch: Branch) => {
           const freeDelivery =
             (branch.paymentInfo && branch.paymentInfo.responsibleForDelivery) ||

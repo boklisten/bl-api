@@ -171,10 +171,7 @@ export async function addDetailsToAllMatches(
     new Set([...itemsToMapFromExpectedItems, ...itemsToMapFromBlIds]),
   );
   const itemsMap = new Map(
-    (await itemStorage.getMany(itemsToMap)).map((item) => [
-      String(item.id),
-      item,
-    ]),
+    (await itemStorage.getMany(itemsToMap)).map((item) => [item.id, item]),
   );
 
   return matches.map((match) =>
