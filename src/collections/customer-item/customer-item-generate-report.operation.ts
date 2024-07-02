@@ -1,8 +1,5 @@
-import { BlError, CustomerItem } from "@boklisten/bl-model";
-import { Request, Response } from "express";
-import moment from "moment-timezone";
+import { BlapiResponse, BlError, CustomerItem } from "@boklisten/bl-model";
 import { ObjectId } from "mongodb";
-import { utils, write } from "xlsx";
 
 import { customerItemSchema } from "./customer-item.schema";
 import { isBoolean, isNullish } from "../../helper/typescript-helpers";
@@ -16,7 +13,6 @@ export interface CustomerItemGenerateReportSpec {
   createdAfter?: string;
   createdBefore?: string;
   returned: boolean;
-  handout: boolean;
   buyout: boolean;
 }
 
@@ -30,7 +26,6 @@ export function verifyCustomerItemGenerateReportSpec(
   return (
     !!m &&
     isBoolean(m["returned"]) &&
-    isBoolean(m["handout"]) &&
     isBoolean(m["buyout"]) &&
     (isNullish(m["branchFilter"]) ||
       (Array.isArray(m["branchFilter"]) &&
@@ -53,11 +48,7 @@ export class CustomerItemGenerateReportOperation implements Operation {
       new BlDocumentStorage(BlCollectionName.CustomerItems, customerItemSchema);
   }
 
-  async run(
-    blApiRequest: BlApiRequest,
-    _req: Request,
-    res: Response,
-  ): Promise<true> {
+  async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
     const customerItemGenerateReportSpec = blApiRequest.data;
     if (!verifyCustomerItemGenerateReportSpec(customerItemGenerateReportSpec)) {
       throw new BlError(`Malformed CustomerItemGenerateReportSpec`).code(701);
@@ -94,7 +85,6 @@ export class CustomerItemGenerateReportOperation implements Operation {
         $match: {
           returned: customerItemGenerateReportSpec.returned,
           buyout: customerItemGenerateReportSpec.buyout,
-          handout: customerItemGenerateReportSpec.handout,
           ...filterByHandoutBranchIfPresent,
           ...creationTimeFilter,
         },
@@ -157,24 +147,7 @@ export class CustomerItemGenerateReportOperation implements Operation {
         },
       },
     ]);
-    const workbook = utils.book_new();
-    const worksheet = utils.json_to_sheet(reportData);
 
-    utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-    const buffer = write(workbook, { bookType: "xlsx", type: "buffer" });
-
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="customer_item_report_${moment().format("YYYY-MM-DD_HH.mm")}.xlsx"`,
-    );
-    res.setHeader(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    );
-
-    res.send(buffer).end();
-
-    return true;
+    return new BlapiResponse(reportData);
   }
 }
