@@ -1,3 +1,4 @@
+import { CustomerItemGenerateReportOperation } from "./customer-item-generate-report.operation";
 import { customerItemSchema } from "./customer-item.schema";
 import { CustomerItemPostHook } from "./hooks/customer-item-post.hook";
 import { itemSchema } from "../../collections/item/item.schema";
@@ -33,6 +34,15 @@ export class CustomerItemCollection implements BlCollection {
     {
       method: "post",
       hook: new CustomerItemPostHook(),
+      operations: [
+        {
+          name: "generate-report",
+          operation: new CustomerItemGenerateReportOperation(),
+          restriction: {
+            permissions: ["admin", "super"],
+          },
+        },
+      ],
       restriction: {
         permissions: ["employee", "manager", "admin", "super"],
       },
