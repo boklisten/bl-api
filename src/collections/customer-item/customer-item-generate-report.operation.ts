@@ -1,4 +1,4 @@
-import { BlapiResponse, BlError, CustomerItem } from "@boklisten/bl-model";
+import { BlError, CustomerItem } from "@boklisten/bl-model";
 import { Request, Response } from "express";
 import moment from "moment-timezone";
 import { ObjectId } from "mongodb";
@@ -57,7 +57,7 @@ export class CustomerItemGenerateReportOperation implements Operation {
     blApiRequest: BlApiRequest,
     _req: Request,
     res: Response,
-  ): Promise<BlapiResponse> {
+  ): Promise<true> {
     const customerItemGenerateReportSpec = blApiRequest.data;
     if (!verifyCustomerItemGenerateReportSpec(customerItemGenerateReportSpec)) {
       throw new BlError(`Malformed CustomerItemGenerateReportSpec`).code(701);
@@ -131,18 +131,28 @@ export class CustomerItemGenerateReportOperation implements Operation {
         },
       },
       {
+        $lookup: {
+          from: "userdetails",
+          localField: "handoutInfo.handoutEmployee",
+          foreignField: "_id",
+          as: "employeeInfo",
+        },
+      },
+      {
         $project: {
           handoutBranch: { $first: "$branchInfo.name" },
           handoutTime: "$handoutInfo.time",
+          handoutEmployee: { $first: "$employeeInfo.name" },
           lastUpdated: 1,
           deadline: 1,
           blid: 1,
           title: { $first: "$itemInfo.title" },
-          isbn: { $first: "$itemInfo.info.isbn" },
+          isbn: { $toString: { $first: "$itemInfo.info.isbn" } },
           name: { $first: "$customerInfo.name" },
           email: { $first: "$customerInfo.email" },
           phone: { $first: "$customerInfo.phone" },
           dob: { $first: "$customerInfo.dob" },
+          comments: 1,
           pivot: "1",
         },
       },
@@ -165,6 +175,6 @@ export class CustomerItemGenerateReportOperation implements Operation {
 
     res.send(buffer).end();
 
-    return new BlapiResponse([]);
+    return true;
   }
 }
