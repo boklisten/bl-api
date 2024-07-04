@@ -1,7 +1,7 @@
 import { deliverySchema } from "./delivery.schema";
 import { DeliveryPatchHook } from "./hooks/delivery.patch.hook";
 import { DeliveryPostHook } from "./hooks/delivery.post.hook";
-import { PostalCodeOperation } from "./operations/postal-code.operation";
+import { PostalCodeLookupOperation } from "./operations/postal-code-lookup.operation";
 import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 
 export class DeliveryCollection implements BlCollection {
@@ -17,7 +17,7 @@ export class DeliveryCollection implements BlCollection {
       operations: [
         {
           name: "postal-code",
-          operation: new PostalCodeOperation(),
+          operation: new PostalCodeLookupOperation(),
         },
       ],
     },
