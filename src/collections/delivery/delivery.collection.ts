@@ -16,7 +16,7 @@ export class DeliveryCollection implements BlCollection {
       },
       operations: [
         {
-          name: "postal-code",
+          name: "postal-code-lookup",
           operation: new PostalCodeLookupOperation(),
         },
       ],

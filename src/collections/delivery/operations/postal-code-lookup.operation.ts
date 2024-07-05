@@ -60,7 +60,7 @@ export class PostalCodeLookupOperation implements Operation {
         isNullish(response.postal_codes) ||
         response.postal_codes.length === 0
       ) {
-        return new BlapiResponse([{ postalCity: "" }]);
+        return new BlapiResponse([{ postalCity: null }]);
       }
 
       return new BlapiResponse([{ postalCity: response.postal_codes[0].city }]);
