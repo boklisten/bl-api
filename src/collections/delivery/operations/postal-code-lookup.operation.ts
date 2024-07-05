@@ -44,6 +44,9 @@ export class PostalCodeLookupOperation implements Operation {
     if (!verifyPostalCodeLookupSpec(postalCodeLookupSpec)) {
       throw new BlError(`Malformed PostalCodeSpec`).code(701);
     }
+    if (postalCodeLookupSpec.postalCode.length !== 4) {
+      return new BlapiResponse([{ postalCity: null }]);
+    }
     const bringAuthHeaders = {
       "X-MyBring-API-Key": process.env["BRING_API_KEY"],
       "X-MyBring-API-Uid": process.env["BRING_API_ID"],
