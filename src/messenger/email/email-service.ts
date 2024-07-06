@@ -19,6 +19,7 @@ import {
   postOffice,
   ItemList,
 } from "@boklisten/bl-post-office";
+import sgMail from "@sendgrid/mail";
 
 import { EMAIL_SETTINGS } from "./email-settings";
 import { OrderEmailHandler } from "./order-email/order-email-handler";
@@ -43,6 +44,7 @@ export class EmailService implements MessengerService {
     itemStorage?: BlDocumentStorage<Item>,
     inputPostOffice?: PostOffice,
   ) {
+    sgMail.setApiKey(process.env["SENDGRID_API_KEY"] ?? "SG.");
     this._emailHandler = emailHandler
       ? emailHandler
       : new EmailHandler({
@@ -509,9 +511,12 @@ export class EmailService implements MessengerService {
     emailVerificationUri +=
       EMAIL_SETTINGS.types.emailConfirmation.path + confirmationCode;
 
-    await this._emailHandler.sendEmailVerification(
+    await this.sendMail(
       emailSetting,
-      emailVerificationUri,
+      EMAIL_SETTINGS.types.emailConfirmation.templateId,
+      {
+        emailVerificationUri,
+      },
     );
   }
 
@@ -558,5 +563,25 @@ export class EmailService implements MessengerService {
         customerDetail.id,
       branchName,
     );
+  }
+
+  private async sendMail(
+    emailSetting: EmailSetting,
+    templateId: string,
+    dynamicTemplateData: Record<string, string>,
+  ) {
+    try {
+      await sgMail.send({
+        from: emailSetting.fromEmail,
+        to: emailSetting.toEmail,
+        templateId,
+        dynamicTemplateData,
+      });
+      logger.info("Successfully sent email to " + emailSetting.toEmail);
+    } catch (error) {
+      logger.error(
+        `Failed to send email to ${emailSetting.toEmail}, error: ${error}`,
+      );
+    }
   }
 }
