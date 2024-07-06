@@ -1,7 +1,5 @@
 // IMPORTANT TO KEEP THIS ON TOP
-// eslint-disable-next-line import/order
-import dotenv from "dotenv";
-dotenv.config(); //adds the .env file to environment variables
+import "dotenv/config";
 
 import path from "path";
 
