@@ -26,16 +26,25 @@ export enum BlEnvironment {
   BRING_API_ID = "BRING_API_ID",
 }
 
+const testPlaceHolders: {
+  [key in BlEnvironment]?: string;
+} = {
+  [BlEnvironment.SENDGRID_API_KEY]: "SG.placeholder",
+  [BlEnvironment.TWILIO_SMS_SID]: "AC.placeholder",
+};
+
 /**
  *
  *
  * @param key the environment variable key
- * @returns the value of the environment variable if the environment variable is present
+ * @returns the value of the environment variable if the environment variable is present, and we are not in a test
  *
- * @throws BlError if the environment variable is not present
+ * @throws BlError if the environment variable is not present, and we are not in a test
  */
 export function assertEnv(key: BlEnvironment): string {
   const value = process.env[key];
+  if (process.env[BlEnvironment.NODE_ENV] === "test")
+    return testPlaceHolders[key] ?? "placeholder";
   if (isNullish(value)) {
     throw new BlError(`${key} is a required environment variable`).code(200);
   }
