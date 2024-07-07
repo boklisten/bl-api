@@ -1,17 +1,17 @@
-import twilio, { Twilio } from "twilio";
+import twilio from "twilio";
 
 import { assertEnv, BlEnvironment } from "../../config/environment";
 import { logger } from "../../logger/logger";
 
-let client: Twilio;
-assertEnv(BlEnvironment.TWILIO_SMS_SID, (accountSid) =>
-  assertEnv(BlEnvironment.TWILIO_SMS_AUTH_TOKEN, (authToken) => {
-    client = twilio(accountSid, authToken, {
-      autoRetry: true,
-      maxRetries: 5,
-    });
-  }),
+const client = twilio(
+  assertEnv(BlEnvironment.TWILIO_SMS_SID),
+  assertEnv(BlEnvironment.TWILIO_SMS_AUTH_TOKEN),
+  {
+    autoRetry: true,
+    maxRetries: 5,
+  },
 );
+
 /**
  * Send a single SMS to a single recipient
  * @param toNumber Norwegian phone number (without country code)

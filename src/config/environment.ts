@@ -30,20 +30,14 @@ export enum BlEnvironment {
  *
  *
  * @param key the environment variable key
- * @param callback optional callback that runs if the environment variable is present, and we are not in a test
- * @returns the value of the environment variable if the environment variable is present, and we are not in a test
+ * @returns the value of the environment variable if the environment variable is present
  *
- * @throws BlError if the environment variable is not present, and we are not in a test
+ * @throws BlError if the environment variable is not present
  */
-export function assertEnv(
-  key: BlEnvironment,
-  callback?: (value: string) => unknown,
-): string {
+export function assertEnv(key: BlEnvironment): string {
   const value = process.env[key];
-  if (process.env[BlEnvironment.NODE_ENV] === "test") return "placeholder";
   if (isNullish(value)) {
     throw new BlError(`${key} is a required environment variable`).code(200);
   }
-  callback?.(value);
   return value;
 }

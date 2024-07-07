@@ -45,7 +45,7 @@ export class EmailService implements MessengerService {
     itemStorage?: BlDocumentStorage<Item>,
     inputPostOffice?: PostOffice,
   ) {
-    assertEnv(BlEnvironment.SENDGRID_API_KEY, (v) => sgMail.setApiKey(v));
+    sgMail.setApiKey(assertEnv(BlEnvironment.SENDGRID_API_KEY));
     this._emailHandler = emailHandler
       ? emailHandler
       : new EmailHandler({
