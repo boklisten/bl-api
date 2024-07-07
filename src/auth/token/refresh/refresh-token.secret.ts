@@ -1,7 +1,7 @@
+import { assertEnv, BlEnvironment } from "../../../config/environment";
+
 export class RefreshTokenSecret {
   get(): string {
-    return (
-      process.env["REFRESH_TOKEN_SECRET"] ?? "secretly a string is just chars"
-    );
+    return assertEnv(BlEnvironment.REFRESH_TOKEN_SECRET);
   }
 }

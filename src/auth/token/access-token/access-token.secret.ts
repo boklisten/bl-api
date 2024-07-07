@@ -1,5 +1,7 @@
+import { assertEnv, BlEnvironment } from "../../../config/environment";
+
 export class AccessTokenSecret {
   public get(): string {
-    return process.env["ACCESS_TOKEN_SECRET"] ?? "hello this is dog";
+    return assertEnv(BlEnvironment.ACCESS_TOKEN_SECRET);
   }
 }

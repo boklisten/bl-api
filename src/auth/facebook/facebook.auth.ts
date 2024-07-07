@@ -5,6 +5,7 @@ import { Profile, Strategy, StrategyOptions } from "passport-facebook";
 
 import { APP_CONFIG } from "../../application-config";
 import { ApiPath } from "../../config/api-path";
+import { assertEnv, BlEnvironment } from "../../config/environment";
 import { SEResponseHandler } from "../../response/se.response.handler";
 import { UserProvider } from "../user/user-provider/user-provider";
 
@@ -20,10 +21,10 @@ export class FacebookAuth {
     this.apiPath = new ApiPath();
 
     this.facebookPassportStrategySettings = {
-      clientID: process.env["FACEBOOK_CLIENT_ID"] ?? "",
-      clientSecret: process.env["FACEBOOK_SECRET"] ?? "",
+      clientID: assertEnv(BlEnvironment.FACEBOOK_CLIENT_ID),
+      clientSecret: assertEnv(BlEnvironment.FACEBOOK_SECRET),
       callbackURL:
-        process.env["BL_API_URI"] +
+        assertEnv(BlEnvironment.BL_API_URI) +
         this.apiPath.createPath("auth/facebook/callback"),
       profileFields: ["id", "email", "name"],
       enableProof: true,
@@ -98,7 +99,7 @@ export class FacebookAuth {
           (err, tokens, blError: BlError) => {
             if (!tokens && (err || blError)) {
               return res.redirect(
-                process.env["CLIENT_URI"] +
+                assertEnv(BlEnvironment.CLIENT_URI) +
                   APP_CONFIG.path.client.auth.socialLoginFailure,
               );
             }

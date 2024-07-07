@@ -2,6 +2,7 @@ import { BlapiResponse, BlapiErrorResponse } from "@boklisten/bl-model";
 import { Response } from "express";
 
 import { BlErrorHandler } from "../bl-error/bl-error-handler";
+import { BlEnvironment, assertEnv } from "../config/environment";
 import { logger } from "../logger/logger";
 
 export class SEResponseHandler {
@@ -25,7 +26,7 @@ export class SEResponseHandler {
     referer?: string,
   ) {
     const redirectUrl = `${
-      referer ?? process.env["CLIENT_URI"]
+      referer ?? assertEnv(BlEnvironment.CLIENT_URI)
     }auth/token?access_token=${accessToken}&refresh_token=${refreshToken}`;
     res.redirect(redirectUrl);
   }

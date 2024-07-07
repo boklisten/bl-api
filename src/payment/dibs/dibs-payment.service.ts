@@ -12,6 +12,7 @@ import { DibsEasyOrder } from "./dibs-easy-order/dibs-easy-order";
 import { DibsEasyPayment } from "./dibs-easy-payment/dibs-easy-payment";
 import { APP_CONFIG } from "../../application-config";
 import { UserDetailHelper } from "../../collections/user-detail/helpers/user-detail.helper";
+import { assertEnv, BlEnvironment } from "../../config/environment";
 import { HttpHandler } from "../../http/http.handler";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 
@@ -33,9 +34,9 @@ export class DibsPaymentService {
     return new Promise((resolve, reject) => {
       this._httpHandler
         .post(
-          process.env["DIBS_URI"] + APP_CONFIG.path.dibs.payment,
+          assertEnv(BlEnvironment.DIBS_URI) + APP_CONFIG.path.dibs.payment,
           dibsEasyOrder,
-          process.env["DIBS_SECRET_KEY"],
+          assertEnv(BlEnvironment.DIBS_SECRET_KEY),
         )
         .then((responseData) => {
           if (responseData) {
@@ -60,11 +61,11 @@ export class DibsPaymentService {
   public fetchDibsPaymentData(paymentId: string): Promise<DibsEasyPayment> {
     return this._httpHandler
       .get(
-        process.env["DIBS_URI"] +
+        assertEnv(BlEnvironment.DIBS_URI) +
           APP_CONFIG.path.dibs.payment +
           "/" +
           paymentId,
-        process.env["DIBS_SECRET_KEY"],
+        assertEnv(BlEnvironment.DIBS_SECRET_KEY),
       )
       .then((response) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -109,10 +110,10 @@ export class DibsPaymentService {
 
     const userDetailValid = this._userDetailHelper.isValid(userDetail);
 
+    const clientUri = assertEnv(BlEnvironment.CLIENT_URI);
     dibsEasyOrder.checkout = {
-      url: process.env["CLIENT_URI"] + APP_CONFIG.path.client.checkout,
-      termsUrl:
-        process.env["CLIENT_URI"] + APP_CONFIG.path.client.agreement.rent,
+      url: clientUri + APP_CONFIG.path.client.checkout,
+      termsUrl: clientUri + APP_CONFIG.path.client.agreement.rent,
       ShippingCountries: [{ countryCode: "NOR" }],
       merchantHandlesConsumerData: userDetailValid, // if userDetail is not valid, the customer must reenter data
       consumer: userDetailValid

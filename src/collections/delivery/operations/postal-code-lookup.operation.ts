@@ -1,5 +1,6 @@
 import { BlapiResponse, BlError } from "@boklisten/bl-model";
 
+import { assertEnv, BlEnvironment } from "../../../config/environment";
 import { isNullish } from "../../../helper/typescript-helpers";
 import { HttpHandler } from "../../../http/http.handler";
 import { Operation } from "../../../operation/operation";
@@ -47,8 +48,8 @@ export class PostalCodeLookupOperation implements Operation {
       throw new BlError(`Malformed PostalCodeSpec`).code(701);
     }
     const bringAuthHeaders = {
-      "X-MyBring-API-Key": process.env["BRING_API_KEY"],
-      "X-MyBring-API-Uid": process.env["BRING_API_ID"],
+      "X-MyBring-API-Key": assertEnv(BlEnvironment.BRING_API_KEY),
+      "X-MyBring-API-Uid": assertEnv(BlEnvironment.BRING_API_ID),
     };
     try {
       const response = (await this.httpHandler.getWithQuery(

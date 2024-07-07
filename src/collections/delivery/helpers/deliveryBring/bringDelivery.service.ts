@@ -3,6 +3,7 @@ import moment from "moment";
 
 import { BringDelivery } from "./bringDelivery";
 import { APP_CONFIG } from "../../../../application-config";
+import { assertEnv, BlEnvironment } from "../../../../config/environment";
 import { isNullish } from "../../../../helper/typescript-helpers";
 import { HttpHandler } from "../../../../http/http.handler";
 
@@ -58,8 +59,8 @@ export class BringDeliveryService {
     }
 
     const bringAuthHeaders = {
-      "X-MyBring-API-Key": process.env["BRING_API_KEY"],
-      "X-MyBring-API-Uid": process.env["BRING_API_ID"],
+      "X-MyBring-API-Key": assertEnv(BlEnvironment.BRING_API_KEY),
+      "X-MyBring-API-Uid": assertEnv(BlEnvironment.BRING_API_ID),
     };
 
     const postalInfoUrl = `https://api.bring.com/pickuppoint/api/postalCode/NO/getCityAndType/${shipmentAddress.postalCode}.json`;
