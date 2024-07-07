@@ -29,7 +29,9 @@ export function verifyPostalCodeLookupSpec(
   postalCodeSpec: unknown,
 ): postalCodeSpec is PostalCodeLookupSpec {
   const m = postalCodeSpec as Record<string, unknown> | null | undefined;
-  return !!m && typeof m["postalCode"] === "string";
+  return (
+    !!m && typeof m["postalCode"] === "string" && m["postalCode"].length === 4
+  );
 }
 
 export class PostalCodeLookupOperation implements Operation {
@@ -43,9 +45,6 @@ export class PostalCodeLookupOperation implements Operation {
     const postalCodeLookupSpec = blApiRequest.data;
     if (!verifyPostalCodeLookupSpec(postalCodeLookupSpec)) {
       throw new BlError(`Malformed PostalCodeSpec`).code(701);
-    }
-    if (postalCodeLookupSpec.postalCode.length !== 4) {
-      return new BlapiResponse([{ postalCity: null }]);
     }
     const bringAuthHeaders = {
       "X-MyBring-API-Key": process.env["BRING_API_KEY"],
