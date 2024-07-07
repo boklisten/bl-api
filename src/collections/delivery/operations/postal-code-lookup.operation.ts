@@ -29,7 +29,9 @@ export function verifyPostalCodeLookupSpec(
   postalCodeSpec: unknown,
 ): postalCodeSpec is PostalCodeLookupSpec {
   const m = postalCodeSpec as Record<string, unknown> | null | undefined;
-  return !!m && typeof m["postalCode"] === "string";
+  return (
+    !!m && typeof m["postalCode"] === "string" && m["postalCode"].length === 4
+  );
 }
 
 export class PostalCodeLookupOperation implements Operation {
