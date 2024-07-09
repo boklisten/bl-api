@@ -1,10 +1,11 @@
 import { BlError } from "@boklisten/bl-model";
 import { Router } from "express";
 import passport from "passport";
-import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
+import { Profile, Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 import { APP_CONFIG } from "../../application-config";
 import { ApiPath } from "../../config/api-path";
+import { assertEnv, BlEnvironment } from "../../config/environment";
 import { SEResponseHandler } from "../../response/se.response.handler";
 import { UserProvider } from "../user/user-provider/user-provider";
 
@@ -28,11 +29,11 @@ export class GoogleAuth {
     passport.use(
       new GoogleStrategy(
         {
-          clientID: process.env["GOOGLE_CLIENT_ID"] ?? "",
-          clientSecret: process.env["GOOGLE_SECRET"] ?? "",
+          clientID: assertEnv(BlEnvironment.GOOGLE_CLIENT_ID),
+          clientSecret: assertEnv(BlEnvironment.GOOGLE_SECRET),
           passReqToCallback: true,
           callbackURL:
-            process.env["BL_API_URI"] +
+            assertEnv(BlEnvironment.BL_API_URI) +
             this.apiPath.createPath("auth/google/callback"),
         },
         async (req, accessToken, refreshToken, profile, done) => {
@@ -95,7 +96,7 @@ export class GoogleAuth {
 
           if (!tokens && (err || blError)) {
             return res.redirect(
-              process.env["CLIENT_URI"] +
+              assertEnv(BlEnvironment.CLIENT_URI) +
                 APP_CONFIG.path.client.auth.socialLoginFailure,
             );
           }

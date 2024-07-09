@@ -1,6 +1,8 @@
 import moment from "moment";
 import { createLogger, format, transports } from "winston";
 
+import { assertEnv, BlEnvironment } from "../config/environment";
+
 function formatTimestamp(timestamp: string) {
   return moment(timestamp).format("HH:mm:ss.SSS");
 }
@@ -19,10 +21,8 @@ export const logger = createLogger({
   format: format.combine(
     format.printf((info) => {
       const colorizer = format.colorize();
-      if (
-        process.env["NODE_ENV"] === "production" ||
-        process.env["NODE_ENV"] === "dev"
-      ) {
+      const nodeEnv = assertEnv(BlEnvironment.NODE_ENV);
+      if (nodeEnv === "production" || nodeEnv === "dev") {
         return `${info.level} ${info.message}`;
       }
       return colorizer.colorize(
@@ -31,12 +31,12 @@ export const logger = createLogger({
       );
     }),
     format.colorize({
-      all: process.env["NODE_ENV"] !== "production",
+      all: assertEnv(BlEnvironment.NODE_ENV) !== "production",
     }),
   ),
   transports: [
     new transports.Console({
-      level: process.env["LOG_LEVEL"] ?? "info",
+      level: assertEnv(BlEnvironment.LOG_LEVEL),
       handleExceptions: true,
     }),
   ],

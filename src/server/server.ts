@@ -1,7 +1,5 @@
 // IMPORTANT TO KEEP THIS ON TOP
-// eslint-disable-next-line import/order
-import dotenv from "dotenv";
-dotenv.config(); //adds the .env file to environment variables
+import "dotenv/config";
 
 import path from "path";
 
@@ -19,6 +17,7 @@ import passport from "passport";
 
 import { BlAuth } from "../auth/bl.auth";
 import { CollectionEndpointCreator } from "../collection-endpoint/collection-endpoint-creator";
+import { assertEnv, BlEnvironment } from "../config/environment";
 import { logger } from "../logger/logger";
 
 export class Server {
@@ -61,9 +60,8 @@ export class Server {
 
   private connectToMongoDb(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      logger.verbose(
-        `trying to connect to mongodb: ${process.env["MONGODB_URI"]}`,
-      );
+      const mongoUri = assertEnv(BlEnvironment.MONGODB_URI);
+      logger.verbose(`trying to connect to mongodb: ${mongoUri}`);
 
       mongoose.connection.on("disconnected", () => {
         logger.error("mongoose connection was disconnected");
@@ -78,13 +76,13 @@ export class Server {
       });
 
       mongoose
-        .connect(process.env["MONGODB_URI"] ?? "", {
+        .connect(mongoUri, {
           maxPoolSize: 10,
           connectTimeoutMS: 10000,
           socketTimeoutMS: 45000,
         })
         .then(() => {
-          logger.verbose(`connected to mongodb: ${process.env["MONGODB_URI"]}`);
+          logger.verbose(`connected to mongodb: ${mongoUri}`);
           resolve(true);
         })
         .catch((err) => {
@@ -102,7 +100,7 @@ export class Server {
           (reason instanceof Error ? `, stack: ${reason.stack}` : ""),
       );
     });
-    const whitelist = process.env["URI_WHITELIST"]?.split(" ");
+    const whitelist = assertEnv(BlEnvironment.URI_WHITELIST).split(" ");
     const allowedMethods = ["GET", "PUT", "PATCH", "POST", "DELETE"];
     const allowedHeaders = [
       "Content-Type",
@@ -119,7 +117,9 @@ export class Server {
     };
 
     this.app.use(
-      process.env["API_ENV"] === "staging" ? cors() : cors(corsConfig),
+      assertEnv(BlEnvironment.NODE_ENV) === "production"
+        ? cors(corsConfig)
+        : cors(),
     );
     this.app.use(cookieParser() as RequestHandler);
     this.app.use(passport.initialize() as RequestHandler);
@@ -131,7 +131,8 @@ export class Server {
         logger.debug(`-> ${req.method} ${req.url}`);
         if (
           !(
-            req.url.includes("auth") && process.env["NODE_ENV"] === "production"
+            req.url.includes("auth") &&
+            assertEnv(BlEnvironment.NODE_ENV) === "production"
           )
         ) {
           let body: string;
@@ -150,7 +151,7 @@ export class Server {
     this.app.get("*", (req, res, next) => {
       if (
         req.headers["x-forwarded-proto"] !== "https" &&
-        process.env["NODE_ENV"] === "production"
+        assertEnv(BlEnvironment.NODE_ENV) === "production"
       ) {
         res.redirect("https://" + req.hostname + req.url);
       } else {
@@ -182,7 +183,7 @@ export class Server {
   }
 
   private serverStart() {
-    this.app.set("port", process.env["PORT"] ?? 1337);
+    this.app.set("port", assertEnv(BlEnvironment.PORT));
 
     // eslint-disable-next-line import/no-named-as-default-member
     this.app.use(express.static(path.join(__dirname, "../public")));
@@ -216,7 +217,5 @@ export class Server {
     logger.silly(" | |_) | | (_| | |_) | |");
     logger.silly(" |_.__/|_|\\__,_| .__/|_|");
     logger.silly("               |_|");
-
-    logger.verbose("mongoDB path:\t" + process.env["MONGODB_URI"]);
   }
 }

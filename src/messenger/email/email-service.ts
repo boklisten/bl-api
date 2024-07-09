@@ -3,33 +3,35 @@ import { EmailOrder } from "@boklisten/bl-email/dist/ts/template/email-order";
 import { EmailSetting } from "@boklisten/bl-email/dist/ts/template/email-setting";
 import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
 import {
+  BlError,
+  CustomerItem,
   Delivery,
+  Item,
+  Message,
   Order,
   OrderItem,
   UserDetail,
-  CustomerItem,
-  Item,
-  Message,
-  BlError,
 } from "@boklisten/bl-model";
 import {
-  Recipient,
-  MessageOptions,
-  PostOffice,
-  postOffice,
   ItemList,
+  MessageOptions,
+  postOffice,
+  PostOffice,
+  Recipient,
 } from "@boklisten/bl-post-office";
+import sgMail from "@sendgrid/mail";
 
 import { EMAIL_SETTINGS } from "./email-settings";
 import { OrderEmailHandler } from "./order-email/order-email-handler";
 import { dateService } from "../../blc/date.service";
 import { BlCollectionName } from "../../collections/bl-collection";
 import { itemSchema } from "../../collections/item/item.schema";
+import { assertEnv, BlEnvironment } from "../../config/environment";
 import { logger } from "../../logger/logger";
 import { BlDocumentStorage } from "../../storage/blDocumentStorage";
 import {
-  MessengerService,
   CustomerDetailWithCustomerItem,
+  MessengerService,
 } from "../messenger-service";
 
 export class EmailService implements MessengerService {
@@ -43,11 +45,12 @@ export class EmailService implements MessengerService {
     itemStorage?: BlDocumentStorage<Item>,
     inputPostOffice?: PostOffice,
   ) {
+    sgMail.setApiKey(assertEnv(BlEnvironment.SENDGRID_API_KEY));
     this._emailHandler = emailHandler
       ? emailHandler
       : new EmailHandler({
           sendgrid: {
-            apiKey: process.env["SENDGRID_API_KEY"] ?? "",
+            apiKey: assertEnv(BlEnvironment.SENDGRID_API_KEY),
           },
           locale: "nb",
         });
@@ -505,13 +508,16 @@ export class EmailService implements MessengerService {
       userId: customerDetail.id,
     };
 
-    let emailVerificationUri = process.env["CLIENT_URI"] ?? "localhost:4200/";
+    let emailVerificationUri = assertEnv(BlEnvironment.CLIENT_URI);
     emailVerificationUri +=
       EMAIL_SETTINGS.types.emailConfirmation.path + confirmationCode;
 
-    await this._emailHandler.sendEmailVerification(
+    await this.sendMail(
       emailSetting,
-      emailVerificationUri,
+      EMAIL_SETTINGS.types.emailConfirmation.templateId,
+      {
+        emailVerificationUri,
+      },
     );
   }
 
@@ -528,7 +534,7 @@ export class EmailService implements MessengerService {
       userId: userId,
     };
 
-    let passwordResetUri = process.env["CLIENT_URI"] ?? "localhost:4200/";
+    let passwordResetUri = assertEnv(BlEnvironment.CLIENT_URI);
     passwordResetUri +=
       EMAIL_SETTINGS.types.passwordReset.path +
       pendingPasswordResetId +
@@ -553,10 +559,30 @@ export class EmailService implements MessengerService {
     };
     await this._emailHandler.sendGuardianSignatureRequest(
       emailSetting,
-      (process.env["CLIENT_URI"] ?? "localhost:4200/") +
+      assertEnv(BlEnvironment.CLIENT_URI) +
         EMAIL_SETTINGS.types.guardianSignature.path +
         customerDetail.id,
       branchName,
     );
+  }
+
+  private async sendMail(
+    emailSetting: EmailSetting,
+    templateId: string,
+    dynamicTemplateData: Record<string, string>,
+  ) {
+    try {
+      await sgMail.send({
+        from: emailSetting.fromEmail,
+        to: emailSetting.toEmail,
+        templateId,
+        dynamicTemplateData,
+      });
+      logger.info("Successfully sent email to " + emailSetting.toEmail);
+    } catch (error) {
+      logger.error(
+        `Failed to send email to ${emailSetting.toEmail}, error: ${error}`,
+      );
+    }
   }
 }

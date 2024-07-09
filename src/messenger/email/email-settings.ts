@@ -8,6 +8,7 @@ export const EMAIL_SETTINGS = {
       fromEmail: "ikkesvar@boklisten.no",
       subject: "Bekreft e-posten din hos Boklisten.no",
       path: "auth/email/confirm/",
+      templateId: "d-8734d0fdf5fc4d99bf22553c3a0c724a",
     },
     passwordReset: {
       fromEmail: "ikkesvar@boklisten.no",
