@@ -14,6 +14,7 @@ import {
   getAllMatchesForUser,
 } from "./match-operation-utils";
 import { SystemUser } from "../../../auth/permission/permission.service";
+import { isNullish } from "../../../helper/typescript-helpers";
 import { Operation } from "../../../operation/operation";
 import { SEDbQuery } from "../../../query/se.db-query";
 import { BlApiRequest } from "../../../request/bl-api-request";
@@ -29,6 +30,8 @@ import { uniqueItemSchema } from "../../unique-item/unique-item.schema";
 import { matchSchema } from "../match.schema";
 
 export class MatchTransferItemOperation implements Operation {
+  private readonly wrongSenderFeedback = `Boken du skannet tilhørte en annen elev enn den som ga deg den. Du skal beholde den, men eleven som ga deg boken er fortsatt ansvarlig for at den opprinnelige boken blir levert.`;
+
   private readonly _matchStorage: BlDocumentStorage<Match>;
   private readonly _orderStorage: BlDocumentStorage<Order>;
   private readonly _customerItemStorage: BlDocumentStorage<CustomerItem>;
@@ -54,6 +57,43 @@ export class MatchTransferItemOperation implements Operation {
       new BlDocumentStorage(BlCollectionName.UniqueItems, uniqueItemSchema);
   }
 
+  async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
+    let userFeedback;
+    const { blid, receiverUserDetailId } =
+      this.extractRequestData(blApiRequest);
+
+    const customerItem = await this.getActiveCustomerItem(blid);
+    const receiverUserMatch = await this.findReceiverUserMatch(
+      receiverUserDetailId,
+      customerItem,
+    );
+    const { allSenderMatches, senderUserMatch } =
+      await this.findSenderUserMatch(customerItem);
+
+    if (
+      isNullish(senderUserMatch) ||
+      receiverUserMatch.id !== senderUserMatch.id
+    ) {
+      userFeedback = this.wrongSenderFeedback;
+    }
+
+    await this.updateReceiverUserMatch(receiverUserMatch, customerItem);
+    const placedReceiverOrder = await this.placeReceiverOrder(
+      customerItem,
+      receiverUserDetailId,
+      receiverUserMatch,
+    );
+    await this.updateSenderMatches(
+      customerItem,
+      senderUserMatch,
+      allSenderMatches,
+    );
+    await this.returnSenderCustomerItem(customerItem);
+    await this.recordReceiverCustomerItem(placedReceiverOrder);
+
+    return new BlapiResponse([{ feedback: userFeedback }]);
+  }
+
   private isValidBlid(scannedText: string): boolean {
     if (Number.isNaN(Number(scannedText))) {
       if (scannedText.length === 12) {
@@ -65,10 +105,27 @@ export class MatchTransferItemOperation implements Operation {
     return false;
   }
 
-  private async updateMatches(
+  private extractRequestData(blApiRequest: BlApiRequest): {
+    blid: string;
+    receiverUserDetailId: string;
+  } {
+    const transferItemSpec = blApiRequest.data;
+    if (!verifyTransferItemSpec(transferItemSpec)) {
+      throw new BlError("Invalid TransferItemSpec").code(701);
+    }
+    const { blid } = transferItemSpec;
+    if (!this.isValidBlid(blid)) {
+      throw new BlError("blid is not a valid blid").code(803);
+    }
+
+    const receiverUserDetailId = blApiRequest.user!.details;
+    return { blid, receiverUserDetailId };
+  }
+
+  private async updateSenderMatches(
     customerItem: CustomerItem,
     senderUserMatch: UserMatch | undefined,
-    senderMatches: Match[],
+    allSenderMatches: Match[],
   ): Promise<void> {
     if (senderUserMatch !== undefined) {
       await this._matchStorage.update(
@@ -84,7 +141,7 @@ export class MatchTransferItemOperation implements Operation {
       return;
     }
 
-    const senderStandMatch = senderMatches
+    const senderStandMatch = allSenderMatches
       .filter((match) => match._variant === MatchVariant.StandMatch)
       .find(
         (standMatch) =>
@@ -105,48 +162,13 @@ export class MatchTransferItemOperation implements Operation {
     );
   }
 
-  async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
-    let userFeedback;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const blid = blApiRequest?.data?.["blid"];
-    if (!blid || typeof blid !== "string" || blid.length === 0) {
-      throw new BlError(
-        "blid must be a string with length greater than 0",
-      ).code(803);
-    } else if (!this.isValidBlid(blid)) {
-      throw new BlError("blid is not a valid blid").code(803);
-    }
-
-    const receiverUserDetailId = blApiRequest.user!.details;
-
-    const receiverMatches = await getAllMatchesForUser(
-      receiverUserDetailId,
-      this._matchStorage,
-    );
-    const receiverUserMatches = receiverMatches.filter(
-      (match) => match._variant === MatchVariant.UserMatch,
-    ) as UserMatch[];
-
-    if (receiverUserMatches.length === 0) {
-      throw new BlError("Receiver does not have any user matches");
-    }
-
-    let activeCustomerItems = [];
-    try {
-      activeCustomerItems =
-        await new CustomerItemActiveBlid().getActiveCustomerItems(blid);
-    } catch (e) {
-      throw new BlError("blid not active").code(804);
-    }
-    if (activeCustomerItems.length !== 1) {
-      throw new BlError("blid not active").code(804);
-    }
-    const customerItem = activeCustomerItems[0]!;
-
-    const receiverUserMatch = receiverUserMatches.find((userMatch) =>
-      userMatch.expectedItems.includes(customerItem.item),
-    );
+  private async findReceiverUserMatch(
+    receiverUserDetailId: string,
+    customerItem: CustomerItem,
+  ): Promise<UserMatch> {
+    const receiverUserMatch = (
+      await this.getReceiverUserMatches(receiverUserDetailId)
+    ).find((userMatch) => userMatch.expectedItems.includes(customerItem.item));
 
     if (!receiverUserMatch) {
       throw new BlError("Item not in receiver expectedItems").code(805);
@@ -168,12 +190,18 @@ export class MatchTransferItemOperation implements Operation {
     if (receivedItemIds.includes(customerItem.item)) {
       throw new BlError("Receiver has already received this item").code(806);
     }
+    return receiverUserMatch;
+  }
 
-    const senderMatches = await getAllMatchesForUser(
+  private async findSenderUserMatch(customerItem: CustomerItem): Promise<{
+    allSenderMatches: Match[];
+    senderUserMatch: UserMatch | undefined;
+  }> {
+    const allSenderMatches = await getAllMatchesForUser(
       customerItem.customer,
       this._matchStorage,
     );
-    const senderUserMatches = senderMatches.filter(
+    const senderUserMatches = allSenderMatches.filter(
       (match) => match._variant === MatchVariant.UserMatch,
     );
     const senderUserMatch = senderUserMatches.find(
@@ -181,24 +209,14 @@ export class MatchTransferItemOperation implements Operation {
         userMatch.expectedItems.includes(customerItem.item) &&
         !userMatch.deliveredBlIds.includes(customerItem.blid!),
     );
+    return { allSenderMatches: allSenderMatches, senderUserMatch };
+  }
 
-    if (
-      senderUserMatch === undefined ||
-      receiverUserMatch.id !== senderUserMatch.id
-    ) {
-      userFeedback = `Boken du skannet tilhørte en annen elev enn den som ga deg den. Du skal beholde den, men eleven som ga deg boken er fortsatt ansvarlig for at den opprinnelige boken blir levert.`;
-    }
-
-    const orderValidator = new OrderValidator();
-
-    await this._matchStorage.update(
-      receiverUserMatch.id,
-      {
-        receivedBlIds: [...receiverUserMatch.receivedBlIds, customerItem.blid!],
-      },
-      new SystemUser(),
-    );
-
+  private async placeReceiverOrder(
+    customerItem: CustomerItem,
+    receiverUserDetailId: string,
+    receiverUserMatch: UserMatch,
+  ): Promise<Order> {
     const receiverOrder = await createMatchOrder(
       customerItem,
       receiverUserDetailId,
@@ -210,13 +228,33 @@ export class MatchTransferItemOperation implements Operation {
       receiverOrder,
       new SystemUser(),
     );
-    await orderValidator.validate(placedReceiverOrder, false);
+
+    await new OrderValidator().validate(placedReceiverOrder, false);
 
     const orderMovedToHandler = new OrderItemMovedFromOrderHandler();
     await orderMovedToHandler.updateOrderItems(placedReceiverOrder);
+    return placedReceiverOrder;
+  }
 
-    await this.updateMatches(customerItem, senderUserMatch, senderMatches);
+  private async recordReceiverCustomerItem(
+    placedReceiverOrder: Order,
+  ): Promise<void> {
+    const [generatedReceiverCustomerItem] =
+      await new OrderToCustomerItemGenerator().generate(placedReceiverOrder);
 
+    if (generatedReceiverCustomerItem === undefined) {
+      throw new BlError("Failed to create new customer items");
+    }
+
+    await this._customerItemStorage.add(
+      generatedReceiverCustomerItem,
+      new SystemUser(),
+    );
+  }
+
+  private async returnSenderCustomerItem(
+    customerItem: CustomerItem,
+  ): Promise<void> {
     const senderOrder = await createMatchOrder(
       customerItem,
       customerItem.customer,
@@ -227,7 +265,7 @@ export class MatchTransferItemOperation implements Operation {
       senderOrder,
       new SystemUser(),
     );
-    await orderValidator.validate(placedSenderOrder, false);
+    await new OrderValidator().validate(placedSenderOrder, false);
 
     await this._customerItemStorage.update(
       customerItem.id,
@@ -236,21 +274,54 @@ export class MatchTransferItemOperation implements Operation {
       },
       new SystemUser(),
     );
+  }
 
-    const customerItemGenerator = new OrderToCustomerItemGenerator();
+  private async getReceiverUserMatches(
+    receiverUserDetailId: string,
+  ): Promise<UserMatch[]> {
+    const receiverUserMatches = (
+      await getAllMatchesForUser(receiverUserDetailId, this._matchStorage)
+    ).filter((match) => match._variant === MatchVariant.UserMatch);
 
-    const generatedCustomerItems =
-      await customerItemGenerator.generate(placedReceiverOrder);
-
-    if (!generatedCustomerItems || generatedCustomerItems.length === 0) {
-      throw new BlError("Failed to create new customer item");
+    if (receiverUserMatches.length === 0) {
+      throw new BlError("Receiver does not have any user matches");
     }
+    return receiverUserMatches;
+  }
 
-    await this._customerItemStorage.add(
-      generatedCustomerItems[0]!,
+  private async getActiveCustomerItem(blid: string) {
+    const [customerItem] = await new CustomerItemActiveBlid()
+      .getActiveCustomerItems(blid)
+      .catch(() => {
+        throw new BlError("blid not active").code(804);
+      });
+    if (!customerItem) {
+      throw new BlError("blid not active").code(804);
+    }
+    return customerItem;
+  }
+
+  private async updateReceiverUserMatch(
+    receiverUserMatch: UserMatch,
+    customerItem: CustomerItem,
+  ): Promise<void> {
+    await this._matchStorage.update(
+      receiverUserMatch.id,
+      {
+        // We know there's a blid because we found the CustomerItem by blid
+        receivedBlIds: [...receiverUserMatch.receivedBlIds, customerItem.blid!],
+      },
       new SystemUser(),
     );
-
-    return new BlapiResponse([{ feedback: userFeedback }]);
   }
+}
+
+function verifyTransferItemSpec(m: unknown): m is { blid: string } {
+  return (
+    !!m &&
+    typeof m === "object" &&
+    "blid" in m &&
+    typeof m["blid"] == "string" &&
+    m["blid"].length > 0
+  );
 }
