@@ -1,10 +1,11 @@
 import {
   BlError,
-  Match,
   Branch,
   CustomerItem,
   Item,
+  Match,
   Order,
+  OrderItem,
 } from "@boklisten/bl-model";
 
 import { isNullish } from "../../../helper/typescript-helpers";
@@ -39,37 +40,55 @@ export async function createMatchOrder(
     throw new BlError("No handoutInfo for customerItem").code(200);
   }
   const branch = await branchStorage.get(customerItem.handoutInfo.handoutById);
-
-  const newRentPeriod = branch?.paymentInfo?.rentPeriods?.[0];
-
-  if (!newRentPeriod?.date) {
-    throw new BlError("Rent period not set for branch");
+  interface OriginalOrderInfo {
+    order: Order;
+    relevantOrderItem: OrderItem;
   }
-
-  if (newRentPeriod.date === customerItem.deadline) {
-    throw new BlError("Branch rent period is same is customer item deadline");
-  }
-
-  let movedFromOrder = undefined;
+  let originalReceiverOrderInfo: OriginalOrderInfo | undefined = undefined;
 
   if (!isSender) {
     const orderActive = new OrderActive();
-    const activeReceiverOrders =
-      await orderActive.getActiveOrders(userDetailId);
-    const originalReceiverOrder = activeReceiverOrders.find((order) =>
-      order.orderItems
-        .filter((orderItem) => orderActive.isOrderItemActive(orderItem))
-        .some((orderItem) => orderItem.item === customerItem.item),
-    );
-    if (originalReceiverOrder) {
-      movedFromOrder = originalReceiverOrder.id;
-    }
+    originalReceiverOrderInfo = (
+      await orderActive.getActiveOrders(userDetailId)
+    )
+      .map((order) => ({
+        order,
+        relevantOrderItem: order.orderItems.find(
+          (orderItem) =>
+            orderActive.isOrderItemActive(orderItem) &&
+            orderItem.item === customerItem.item &&
+            orderItem.type === "rent",
+        ),
+      }))
+      .find(({ relevantOrderItem }) => relevantOrderItem !== undefined) as
+      | OriginalOrderInfo
+      | undefined;
   }
-  const deadlineOverride = deadlineOverrides?.[item.id];
+  const movedFromOrder = originalReceiverOrderInfo?.order.id;
+
+  const relevantDeadlineOverride = deadlineOverrides?.[item.id];
+  const deadlineOverride = relevantDeadlineOverride
+    ? new Date(relevantDeadlineOverride)
+    : undefined;
+  const originalOrderDeadline =
+    originalReceiverOrderInfo?.relevantOrderItem.info?.to;
+  const branchRentDeadline = branch?.paymentInfo?.rentPeriods?.[0]?.date;
+
+  const deadline =
+    deadlineOverride ?? originalOrderDeadline ?? branchRentDeadline;
+
+  if (!deadline) {
+    throw new BlError(
+      "Cannot set deadline: no rent period for branch, no original order deadline and no override",
+    );
+  }
+
+  if (deadline === customerItem.deadline) {
+    throw new BlError("Branch rent period is same is customer item deadline");
+  }
 
   return {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error id will be auto-generated
     id: undefined,
     placed: true,
     payments: [],
@@ -79,13 +98,11 @@ export async function createMatchOrder(
     byCustomer: true,
     pendingSignature: false,
     orderItems: [
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       {
-        movedFromOrder,
+        ...(movedFromOrder && { movedFromOrder }),
         item: item.id,
         title: item.title,
-        blid: customerItem.blid,
+        blid: customerItem.blid!,
         type: `match-${isSender ? "deliver" : "receive"}`,
         amount: 0,
         unitPrice: 0,
@@ -93,9 +110,7 @@ export async function createMatchOrder(
         taxAmount: 0,
         info: {
           from: new Date(),
-          to: deadlineOverride
-            ? new Date(deadlineOverride)
-            : newRentPeriod.date,
+          to: deadline,
           numberOfPeriods: 1,
           periodType: "semester",
         },
