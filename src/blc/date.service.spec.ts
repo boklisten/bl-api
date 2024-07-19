@@ -159,14 +159,24 @@ describe("DateService", () => {
 
   describe("betweenHours()", () => {
     it("should return true if date is between from hour and to hour", () => {
-      const date = moment().hour(12).minute(15).seconds(22).toDate();
+      const date = moment()
+        .tz("Europe/Oslo")
+        .hour(12)
+        .minute(15)
+        .seconds(22)
+        .toDate();
 
       return expect(dateService.betweenHours(date, 8, 18, "Europe/Oslo")).to.be
         .true;
     });
 
     it("should return false if date is not between from hour and to hour", () => {
-      const date = moment().hour(7).minute(15).seconds(22).toDate();
+      const date = moment()
+        .tz("Europe/Oslo")
+        .hour(7)
+        .minute(15)
+        .seconds(22)
+        .toDate();
 
       return expect(dateService.betweenHours(date, 8, 18, "Europe/Oslo")).to.be
         .false;
