@@ -1,7 +1,9 @@
 import {
   BlapiResponse,
   BlError,
+  Branch,
   CustomerItem,
+  Item,
   Match,
   MatchVariant,
   Order,
@@ -10,7 +12,8 @@ import {
 } from "@boklisten/bl-model";
 
 import {
-  createMatchOrder,
+  createMatchDeliverOrder,
+  createMatchReceiveOrder,
   getAllMatchesForUser,
 } from "./match-operation-utils";
 import { SystemUser } from "../../../auth/permission/permission.service";
@@ -20,9 +23,11 @@ import { SEDbQuery } from "../../../query/se.db-query";
 import { BlApiRequest } from "../../../request/bl-api-request";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { BlCollectionName } from "../../bl-collection";
+import { branchSchema } from "../../branch/branch.schema";
 import { customerItemSchema } from "../../customer-item/customer-item.schema";
 import { CustomerItemActiveBlid } from "../../customer-item/helpers/customer-item-active-blid";
 import { OrderToCustomerItemGenerator } from "../../customer-item/helpers/order-to-customer-item-generator";
+import { itemSchema } from "../../item/item.schema";
 import { OrderItemMovedFromOrderHandler } from "../../order/helpers/order-item-moved-from-order-handler/order-item-moved-from-order-handler";
 import { OrderValidator } from "../../order/helpers/order-validator/order-validator";
 import { orderSchema } from "../../order/order.schema";
@@ -36,12 +41,16 @@ export class MatchTransferItemOperation implements Operation {
   private readonly _orderStorage: BlDocumentStorage<Order>;
   private readonly _customerItemStorage: BlDocumentStorage<CustomerItem>;
   private readonly _uniqueItemStorage: BlDocumentStorage<UniqueItem>;
+  private readonly _branchStorage: BlDocumentStorage<Branch>;
+  private readonly _itemStorage: BlDocumentStorage<Item>;
 
   constructor(
     matchStorage?: BlDocumentStorage<Match>,
     orderStorage?: BlDocumentStorage<Order>,
     customerItemStorage?: BlDocumentStorage<CustomerItem>,
     uniqueItemStorage?: BlDocumentStorage<UniqueItem>,
+    branchStorage?: BlDocumentStorage<Branch>,
+    itemStorage?: BlDocumentStorage<Item>,
   ) {
     this._matchStorage =
       matchStorage ??
@@ -55,6 +64,11 @@ export class MatchTransferItemOperation implements Operation {
     this._uniqueItemStorage =
       uniqueItemStorage ??
       new BlDocumentStorage(BlCollectionName.UniqueItems, uniqueItemSchema);
+    this._branchStorage =
+      branchStorage ??
+      new BlDocumentStorage(BlCollectionName.Branches, branchSchema);
+    this._itemStorage =
+      itemStorage ?? new BlDocumentStorage(BlCollectionName.Items, itemSchema);
   }
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
@@ -77,19 +91,19 @@ export class MatchTransferItemOperation implements Operation {
       userFeedback = this.wrongSenderFeedback;
     }
 
-    await this.updateReceiverUserMatch(receiverUserMatch, customerItem);
+    await this.returnSenderCustomerItem(customerItem);
     const placedReceiverOrder = await this.placeReceiverOrder(
       customerItem,
       receiverUserDetailId,
       receiverUserMatch,
     );
+    await this.recordReceiverCustomerItem(placedReceiverOrder);
+    await this.updateReceiverUserMatch(receiverUserMatch, customerItem);
     await this.updateSenderMatches(
       customerItem,
       senderUserMatch,
       allSenderMatches,
     );
-    await this.returnSenderCustomerItem(customerItem);
-    await this.recordReceiverCustomerItem(placedReceiverOrder);
 
     return new BlapiResponse([{ feedback: userFeedback }]);
   }
@@ -217,10 +231,11 @@ export class MatchTransferItemOperation implements Operation {
     receiverUserDetailId: string,
     receiverUserMatch: UserMatch,
   ): Promise<Order> {
-    const receiverOrder = await createMatchOrder(
+    const receiverOrder = await createMatchReceiveOrder(
       customerItem,
       receiverUserDetailId,
-      false,
+      this._itemStorage,
+      this._branchStorage,
       receiverUserMatch.deadlineOverrides,
     );
 
@@ -231,7 +246,9 @@ export class MatchTransferItemOperation implements Operation {
 
     await new OrderValidator().validate(placedReceiverOrder, false);
 
-    const orderMovedToHandler = new OrderItemMovedFromOrderHandler();
+    const orderMovedToHandler = new OrderItemMovedFromOrderHandler(
+      this._orderStorage,
+    );
     await orderMovedToHandler.updateOrderItems(placedReceiverOrder);
     return placedReceiverOrder;
   }
@@ -255,10 +272,11 @@ export class MatchTransferItemOperation implements Operation {
   private async returnSenderCustomerItem(
     customerItem: CustomerItem,
   ): Promise<void> {
-    const senderOrder = await createMatchOrder(
+    const senderOrder = await createMatchDeliverOrder(
       customerItem,
       customerItem.customer,
-      true,
+      this._itemStorage,
+      this._branchStorage,
     );
 
     const placedSenderOrder = await this._orderStorage.add(

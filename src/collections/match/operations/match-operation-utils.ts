@@ -11,80 +11,74 @@ import {
 import { isNullish } from "../../../helper/typescript-helpers";
 import { SEDbQuery } from "../../../query/se.db-query";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { branchSchema } from "../../branch/branch.schema";
-import { itemSchema } from "../../item/item.schema";
 import { OrderActive } from "../../order/helpers/order-active/order-active";
 
-export async function createMatchOrder(
+export async function createMatchReceiveOrder(
   customerItem: CustomerItem,
   userDetailId: string,
-  isSender: boolean,
+  itemStorage: BlDocumentStorage<Item>,
+  branchStorage: BlDocumentStorage<Branch>,
   deadlineOverrides?: { [item: string]: string },
 ): Promise<Order> {
-  const itemStorage = new BlDocumentStorage<Item>(
-    BlCollectionName.Items,
-    itemSchema,
-  );
   const item = await itemStorage.get(customerItem.item);
 
   if (!item) {
     throw new BlError("Failed to get item");
   }
-
-  const branchStorage = new BlDocumentStorage<Branch>(
-    BlCollectionName.Branches,
-    branchSchema,
-  );
-  if (isNullish(customerItem.handoutInfo)) {
-    throw new BlError("No handoutInfo for customerItem").code(200);
-  }
-  const branch = await branchStorage.get(customerItem.handoutInfo.handoutById);
   interface OriginalOrderInfo {
     order: Order;
     relevantOrderItem: OrderItem;
   }
   let originalReceiverOrderInfo: OriginalOrderInfo | undefined = undefined;
 
-  if (!isSender) {
-    const orderActive = new OrderActive();
-    originalReceiverOrderInfo = (
-      await orderActive.getActiveOrders(userDetailId)
-    )
-      .map((order) => ({
-        order,
-        relevantOrderItem: order.orderItems.find(
-          (orderItem) =>
-            orderActive.isOrderItemActive(orderItem) &&
-            orderItem.item === customerItem.item &&
-            orderItem.type === "rent",
-        ),
-      }))
-      .find(({ relevantOrderItem }) => relevantOrderItem !== undefined) as
-      | OriginalOrderInfo
-      | undefined;
+  const orderActive = new OrderActive();
+  originalReceiverOrderInfo = (await orderActive.getActiveOrders(userDetailId))
+    .map((order) => ({
+      order,
+      relevantOrderItem: order.orderItems.find(
+        (orderItem) =>
+          orderActive.isOrderItemActive(orderItem) &&
+          orderItem.item === customerItem.item &&
+          orderItem.type === "rent",
+      ),
+    }))
+    .find(({ relevantOrderItem }) => relevantOrderItem !== undefined) as
+    | OriginalOrderInfo
+    | undefined;
+
+  if (!originalReceiverOrderInfo) {
+    throw new BlError("No receiver order for match transfer item").code(200);
   }
-  const movedFromOrder = originalReceiverOrderInfo?.order.id;
+  const branch = await branchStorage.get(
+    originalReceiverOrderInfo.order.branch,
+  );
+
+  const movedFromOrder = originalReceiverOrderInfo.order.id;
 
   const relevantDeadlineOverride = deadlineOverrides?.[item.id];
   const deadlineOverride = relevantDeadlineOverride
     ? new Date(relevantDeadlineOverride)
     : undefined;
   const originalOrderDeadline =
-    originalReceiverOrderInfo?.relevantOrderItem.info?.to;
-  const branchRentDeadline = branch?.paymentInfo?.rentPeriods?.[0]?.date;
+    originalReceiverOrderInfo.relevantOrderItem.info?.to;
+  const branchRentDeadline = branch.paymentInfo?.rentPeriods?.[0]?.date;
 
-  const deadline =
+  let deadline =
     deadlineOverride ?? originalOrderDeadline ?? branchRentDeadline;
 
   if (!deadline) {
     throw new BlError(
       "Cannot set deadline: no rent period for branch, no original order deadline and no override",
-    );
+    ).code(200);
   }
+  // This is necessary because it's not actually a date in the database, and thus the type is wrong.
+  // It might be solved in the future by Zod or some other strict parser/validation.
+  deadline = new Date(deadline);
 
   if (deadline === customerItem.deadline) {
-    throw new BlError("Branch rent period is same is customer item deadline");
+    throw new BlError(
+      "Branch rent period is same is customer item deadline",
+    ).code(200);
   }
 
   return {
@@ -99,11 +93,11 @@ export async function createMatchOrder(
     pendingSignature: false,
     orderItems: [
       {
-        ...(movedFromOrder && { movedFromOrder }),
+        movedFromOrder,
         item: item.id,
         title: item.title,
         blid: customerItem.blid!,
-        type: `match-${isSender ? "deliver" : "receive"}`,
+        type: "match-receive",
         amount: 0,
         unitPrice: 0,
         taxRate: 0,
@@ -114,6 +108,48 @@ export async function createMatchOrder(
           numberOfPeriods: 1,
           periodType: "semester",
         },
+      },
+    ],
+  };
+}
+
+export async function createMatchDeliverOrder(
+  customerItem: CustomerItem,
+  userDetailId: string,
+  itemStorage: BlDocumentStorage<Item>,
+  branchStorage: BlDocumentStorage<Branch>,
+): Promise<Order> {
+  const item = await itemStorage.get(customerItem.item);
+
+  if (!item) {
+    throw new BlError("Failed to get item");
+  }
+
+  if (isNullish(customerItem.handoutInfo)) {
+    throw new BlError("No handout-info for customerItem").code(200);
+  }
+  const branch = await branchStorage.get(customerItem.handoutInfo.handoutById);
+
+  return {
+    // @ts-expect-error id will be auto-generated
+    id: undefined,
+    placed: true,
+    payments: [],
+    amount: 0,
+    branch: branch.id,
+    customer: userDetailId,
+    byCustomer: true,
+    pendingSignature: false,
+    orderItems: [
+      {
+        item: item.id,
+        title: item.title,
+        blid: customerItem.blid!,
+        type: "match-deliver",
+        amount: 0,
+        unitPrice: 0,
+        taxRate: 0,
+        taxAmount: 0,
       },
     ],
   };

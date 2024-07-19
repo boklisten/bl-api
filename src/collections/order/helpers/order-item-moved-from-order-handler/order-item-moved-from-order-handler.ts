@@ -13,11 +13,12 @@ type OrderItemToUpdate = {
 };
 
 export class OrderItemMovedFromOrderHandler {
-  constructor(private _orderStorage?: BlDocumentStorage<Order>) {
-    this._orderStorage ??= new BlDocumentStorage(
-      BlCollectionName.Orders,
-      orderSchema,
-    );
+  private readonly _orderStorage: BlDocumentStorage<Order>;
+
+  constructor(orderStorage?: BlDocumentStorage<Order>) {
+    this._orderStorage =
+      orderStorage ??
+      new BlDocumentStorage(BlCollectionName.Orders, orderSchema);
   }
 
   public async updateOrderItems(order: Order): Promise<boolean> {
@@ -49,8 +50,6 @@ export class OrderItemMovedFromOrderHandler {
   private async updateOrderItem(
     orderItemToUpdate: OrderItemToUpdate,
   ): Promise<boolean> {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const originalOrder = await this._orderStorage.get(
       orderItemToUpdate.originalOrderId,
     );
@@ -65,8 +64,6 @@ export class OrderItemMovedFromOrderHandler {
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     await this._orderStorage.update(
       orderItemToUpdate.originalOrderId,
       { orderItems: originalOrder.orderItems },
