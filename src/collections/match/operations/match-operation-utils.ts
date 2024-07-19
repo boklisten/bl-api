@@ -145,6 +145,7 @@ export async function createMatchDeliverOrder(
         item: item.id,
         title: item.title,
         blid: customerItem.blid!,
+        customerItem: customerItem.id,
         type: "match-deliver",
         amount: 0,
         unitPrice: 0,

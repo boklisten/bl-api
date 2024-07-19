@@ -263,8 +263,19 @@ export class MatchTransferItemOperation implements Operation {
       throw new BlError("Failed to create new customer items");
     }
 
-    await this._customerItemStorage.add(
+    const addedCustomerItem = await this._customerItemStorage.add(
       generatedReceiverCustomerItem,
+      new SystemUser(),
+    );
+
+    await this._orderStorage.update(
+      placedReceiverOrder.id,
+      {
+        orderItems: placedReceiverOrder.orderItems.map((orderItem) => ({
+          ...orderItem,
+          customerItem: addedCustomerItem.id,
+        })),
+      },
       new SystemUser(),
     );
   }
