@@ -75,12 +75,6 @@ export async function createMatchReceiveOrder(
   // It might be solved in the future by Zod or some other strict parser/validation.
   deadline = new Date(deadline);
 
-  if (deadline === customerItem.deadline) {
-    throw new BlError(
-      "Branch rent period is same is customer item deadline",
-    ).code(200);
-  }
-
   return {
     // @ts-expect-error id will be auto-generated
     id: undefined,
