@@ -7,7 +7,7 @@ export class ApiPath {
   private readonly baseHost: string;
 
   constructor() {
-    if (assertEnv(BlEnvironment.NODE_ENV) === "production") {
+    if (assertEnv(BlEnvironment.API_ENV) === "production") {
       this.baseHost = APP_CONFIG.path.host;
     } else {
       this.baseHost = APP_CONFIG.path.local.host;

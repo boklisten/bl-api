@@ -21,7 +21,7 @@ export const logger = createLogger({
   format: format.combine(
     format.printf((info) => {
       const colorizer = format.colorize();
-      const nodeEnv = assertEnv(BlEnvironment.NODE_ENV);
+      const nodeEnv = assertEnv(BlEnvironment.API_ENV);
       if (nodeEnv === "production" || nodeEnv === "dev") {
         return `${info.level} ${info.message}`;
       }
@@ -31,7 +31,7 @@ export const logger = createLogger({
       );
     }),
     format.colorize({
-      all: assertEnv(BlEnvironment.NODE_ENV) !== "production",
+      all: assertEnv(BlEnvironment.API_ENV) !== "production",
     }),
   ),
   transports: [

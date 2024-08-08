@@ -117,7 +117,7 @@ export class Server {
     };
 
     this.app.use(
-      assertEnv(BlEnvironment.NODE_ENV) === "production"
+      assertEnv(BlEnvironment.API_ENV) === "production"
         ? cors(corsConfig)
         : cors(),
     );
@@ -132,7 +132,7 @@ export class Server {
         if (
           !(
             req.url.includes("auth") &&
-            assertEnv(BlEnvironment.NODE_ENV) === "production"
+            assertEnv(BlEnvironment.API_ENV) === "production"
           )
         ) {
           let body: string;
@@ -151,7 +151,7 @@ export class Server {
     this.app.get("*", (req, res, next) => {
       if (
         req.headers["x-forwarded-proto"] !== "https" &&
-        assertEnv(BlEnvironment.NODE_ENV) === "production"
+        assertEnv(BlEnvironment.API_ENV) === "production"
       ) {
         res.redirect("https://" + req.hostname + req.url);
       } else {

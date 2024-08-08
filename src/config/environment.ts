@@ -5,7 +5,7 @@ import { isNullish } from "../helper/typescript-helpers";
 export enum BlEnvironment {
   PORT = "PORT",
   SERVER_PATH = "SERVER_PATH",
-  NODE_ENV = "NODE_ENV",
+  API_ENV = "API_ENV",
   LOG_LEVEL = "LOG_LEVEL",
   URI_WHITELIST = "URI_WHITELIST",
   ACCESS_TOKEN_SECRET = "ACCESS_TOKEN_SECRET",
@@ -43,7 +43,7 @@ const testPlaceHolders: {
  */
 export function assertEnv(key: BlEnvironment): string {
   const value = process.env[key];
-  if (process.env[BlEnvironment.NODE_ENV] === "test")
+  if (process.env[BlEnvironment.API_ENV] === "test")
     return testPlaceHolders[key] ?? "placeholder";
   if (isNullish(value)) {
     throw new BlError(`${key} is a required environment variable`).code(200);
