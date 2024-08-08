@@ -87,16 +87,16 @@ export const branchSchema = new Schema<ToSchema<Branch>>({
       default: [],
     },
     buyout: {
-      type: {
-        percentage: Number,
+      percentage: {
+        type: Number,
+        default: 1,
       },
-      default: 1,
     },
     sell: {
-      type: {
-        percentage: Number,
+      percentage: {
+        type: Number,
+        default: 1,
       },
-      default: 1,
     },
     acceptedMethods: {
       type: [String],
