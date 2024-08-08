@@ -77,17 +77,8 @@ export class MongooseModelCreator<T> {
     // Mongoose isn't sure which parameter to use, so try both :/
     if (!ret && doc) ret = doc;
     if (!ret) return;
-    if (Array.isArray(ret)) {
-      ret.forEach((document) =>
-        MongooseModelCreator.transformObject({}, document),
-      );
-      for (let i = 0; i < ret.length; i++) {
-        const value = ret[i];
-        if (value instanceof mongoose.Types.ObjectId) {
-          ret[i] = value.toString();
-        }
-      }
-    } else if (typeof ret === "object") {
+    // Arrays are also "object" and can be handled the same way
+    if (typeof ret === "object") {
       const document = ret as Record<string, unknown>;
       // Translate _id to id only if id does not already exist
       // (embedded documents such as BlDocument.user may have an id field which is different from the _id field)
@@ -99,11 +90,8 @@ export class MongooseModelCreator<T> {
         const value = document[key];
         if (value instanceof mongoose.Types.ObjectId) {
           document[key] = value.toString();
-        }
-        if (Array.isArray(value)) {
-          document[key] = value.map((entry) =>
-            entry instanceof mongoose.Types.ObjectId ? entry.toString() : entry,
-          );
+        } else if (typeof value === "object") {
+          MongooseModelCreator.transformObject(value);
         }
       }
     }

@@ -30,5 +30,28 @@ describe("MongooseModelCreator", () => {
       MongooseModelCreator.transformObject(input, undefined);
       expect(input).to.deep.eq(expectedOutput);
     });
+
+    it("should convert objectIDs not named 'id' in nested objects to string", () => {
+      const input = { orderItems: [{ item: new ObjectId() }] };
+      const expectedOutput = {
+        orderItems: [{ item: input.orderItems[0]!.item.toString() }],
+      };
+      MongooseModelCreator.transformObject(input, undefined);
+      expect(input).to.deep.eq(expectedOutput);
+    });
+
+    it("should rename '_id'-keys to 'id'", () => {
+      const input = { orderItems: [{ _id: "hello" }] };
+      const expectedOutput = { orderItems: [{ id: "hello" }] };
+      MongooseModelCreator.transformObject(input, undefined);
+      expect(input).to.deep.eq(expectedOutput);
+    });
+
+    it("should not replace existing 'id'-values with '_id'-values", () => {
+      const input = { orderItems: [{ _id: "hello", id: "you" }] };
+      const expectedOutput = { orderItems: [{ id: "you" }] };
+      MongooseModelCreator.transformObject(input, undefined);
+      expect(input).to.deep.eq(expectedOutput);
+    });
   });
 });

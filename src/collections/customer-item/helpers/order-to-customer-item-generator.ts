@@ -10,10 +10,12 @@ import { BlCollectionName } from "../../bl-collection";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 
 export class OrderToCustomerItemGenerator {
-  constructor(private _userDetailStorage?: BlDocumentStorage<UserDetail>) {
-    this._userDetailStorage = this._userDetailStorage
-      ? this._userDetailStorage
-      : new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+  private _userDetailStorage: BlDocumentStorage<UserDetail>;
+
+  constructor(userDetailStorage?: BlDocumentStorage<UserDetail>) {
+    this._userDetailStorage =
+      userDetailStorage ??
+      new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
   }
 
   public async generate(order: Order): Promise<CustomerItem[]> {
@@ -23,8 +25,6 @@ export class OrderToCustomerItemGenerator {
       return [];
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const customerDetail = await this._userDetailStorage.get(order.customer);
 
     for (const orderItem of order.orderItems) {
@@ -34,9 +34,7 @@ export class OrderToCustomerItemGenerator {
           order,
           orderItem,
         );
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        customerItem.viewableFor = [customerDetail.blid];
+        customerItem.viewableFor = [customerDetail.blid!];
         customerItems.push(customerItem);
       }
     }
