@@ -98,7 +98,9 @@ export async function getMatchableSenders(
     aggregatedSenders = (await customerItemStorage.aggregate([
       {
         $match: {
-          customer: { $in: aggregatedSenders.map((sender) => sender.id) },
+          customer: {
+            $in: aggregatedSenders.map((sender) => new ObjectId(sender.id)),
+          },
           returned: false,
           buyout: false,
           cancel: false,
@@ -109,6 +111,7 @@ export async function getMatchableSenders(
       groupByCustomerStep,
     ])) as { id: string; items: string[] }[];
   }
+  console.log("aggSenders: ", aggregatedSenders);
 
   return aggregatedSenders.map((sender) => ({
     id: sender.id,
