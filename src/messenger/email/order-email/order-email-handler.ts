@@ -133,9 +133,6 @@ export class OrderEmailHandler {
       ) &&
       customerDetail?.guardian?.email
     ) {
-      if (!customerDetail.guardian?.email) {
-        throw new BlError("Guardian email is required").code(200);
-      }
       const emailSetting: EmailSetting = {
         toEmail: customerDetail.guardian.email,
         fromEmail: EMAIL_SETTINGS.types.guardianSignature.fromEmail,
@@ -150,7 +147,7 @@ export class OrderEmailHandler {
         {
           guardianSignatureUri: `${assertEnv(BlEnvironment.CLIENT_URI)}${EMAIL_SETTINGS.types.guardianSignature.path}${customerDetail.id}`,
           customerName: customerDetail.name,
-          guardianName: customerDetail?.guardian.name,
+          guardianName: customerDetail.guardian.name,
           branchName: branchName,
         },
       );
