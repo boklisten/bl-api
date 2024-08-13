@@ -137,7 +137,7 @@ export class OrderEmailHandler {
         throw new BlError("Guardian email is required").code(200);
       }
       const emailSetting: EmailSetting = {
-        toEmail: customerDetail.guardian?.email ?? "",
+        toEmail: customerDetail.guardian.email,
         fromEmail: EMAIL_SETTINGS.types.guardianSignature.fromEmail,
         subject: EMAIL_SETTINGS.types.guardianSignature.subject,
         userId: customerDetail.id,
