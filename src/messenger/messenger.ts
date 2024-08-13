@@ -6,7 +6,6 @@ import {
   CustomerItem,
   Message,
 } from "@boklisten/bl-model";
-import moment from "moment-timezone";
 
 import { EmailService } from "./email/email-service";
 import {
@@ -14,7 +13,6 @@ import {
   CustomerDetailWithCustomerItem,
 } from "./messenger-service";
 import { PdfService } from "./pdf/pdf-service";
-import { sendSMS } from "./sms/sms-service";
 import { BlCollectionName } from "../collections/bl-collection";
 import { deliverySchema } from "../collections/delivery/delivery.schema";
 import { BlDocumentStorage } from "../storage/blDocumentStorage";
@@ -164,36 +162,5 @@ export class Messenger implements MessengerService {
       pendingPasswordResetId,
       resetToken,
     );
-  }
-
-  /**
-   * sends out SMS and email to the guardian of a customer with a signature link if they are under 18
-   */
-  public async requestGuardianSignature(
-    customerDetail: UserDetail,
-    branchName: string,
-  ): Promise<void> {
-    const guardianPhone = customerDetail.guardian?.phone;
-    const guardianEmail = customerDetail.guardian?.email;
-
-    if (!guardianEmail || !guardianPhone) {
-      throw new Error("Guardian email and phone number is required");
-    }
-
-    if (
-      moment(customerDetail.dob).isValid() &&
-      moment(customerDetail.dob).isAfter(
-        moment(new Date()).subtract(18, "years"),
-      )
-    ) {
-      await this._emailService.requestGuardianSignature(
-        customerDetail,
-        branchName,
-      );
-      await sendSMS(
-        guardianPhone,
-        `Hei. ${customerDetail.name} har nylig bestilt bøker fra ${branchName} gjennom Boklisten.no. Siden ${customerDetail.name} er under 18 år, krever vi at du som foresatt signerer låneavtalen. Vi har derfor sendt en epost til ${guardianEmail} med lenke til signering. Ta kontakt på info@boklisten.no om du har spørsmål. Mvh. Boklisten`,
-      );
-    }
   }
 }

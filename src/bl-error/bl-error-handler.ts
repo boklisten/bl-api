@@ -202,6 +202,10 @@ export class BlErrorHandler {
           " selv";
         blapiErrorResponse.httpStatus = 409;
         break;
+      case 813:
+        blapiErrorResponse.msg = "Forsørger har allerede signert";
+        blapiErrorResponse.httpStatus = 409;
+        break;
     }
 
     return blapiErrorResponse;

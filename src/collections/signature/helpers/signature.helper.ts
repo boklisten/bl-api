@@ -1,11 +1,14 @@
 import {
   BlError,
+  Order,
   SerializedSignature,
   SignatureMetadata,
   UserDetail,
 } from "@boklisten/bl-model";
 import { Transformer } from "@napi-rs/image";
 
+import { SystemUser } from "../../../auth/permission/permission.service";
+import { logger } from "../../../logger/logger";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { Signature } from "../signature.schema";
 
@@ -18,20 +21,24 @@ export function serializeSignature(signature: Signature): SerializedSignature {
     ...rest,
   };
 }
+export async function deserializeBase64EncodedImage(
+  base64EncodedImage: string,
+) {
+  if (!isValidBase64(base64EncodedImage)) {
+    throw new BlError("Invalid base64").code(701);
+  }
+  return await new Transformer(Buffer.from(base64EncodedImage, "base64"))
+    .webp(qualityFactor)
+    .catch((e) => {
+      throw new BlError(`Unable to transform to WebP`).code(701).add(e);
+    });
+}
 
 export async function deserializeSignature(
   serializedSignature: SerializedSignature,
 ): Promise<Signature> {
   const { base64EncodedImage, ...rest } = serializedSignature;
-
-  if (!isValidBase64(base64EncodedImage)) {
-    throw new BlError("Invalid base64").code(701);
-  }
-  const image = await new Transformer(Buffer.from(base64EncodedImage, "base64"))
-    .webp(qualityFactor)
-    .catch((e) => {
-      throw new BlError(`Unable to transform to WebP`).code(701).add(e);
-    });
+  const image = await deserializeBase64EncodedImage(base64EncodedImage);
 
   return { image, ...rest };
 }
@@ -40,7 +47,8 @@ export async function getValidUserSignature(
   userDetail: UserDetail,
   signatureStorage: BlDocumentStorage<Signature>,
 ): Promise<Signature | null> {
-  const newestSignatureId = userDetail.signatures[0];
+  const newestSignatureId =
+    userDetail.signatures[userDetail.signatures.length - 1];
   if (newestSignatureId == undefined) return null;
 
   const signature = await signatureStorage.get(newestSignatureId);
@@ -93,4 +101,44 @@ export function isSignatureExpired(signature: SignatureMetadata): boolean {
 // NodeJS will by default ignore non-base64 characters, which can lead to issues
 function isValidBase64(input: string): boolean {
   return Buffer.from(input, "base64").toString("base64") === input;
+}
+
+export async function signOrders(
+  orderStorage: BlDocumentStorage<Order>,
+  userDetail: UserDetail,
+) {
+  if (!(userDetail.orders && userDetail.orders.length > 0)) {
+    return;
+  }
+  const orders = await orderStorage.getMany(userDetail.orders);
+  await Promise.all(
+    orders
+      .filter((order) => order.pendingSignature)
+      .map(async (order) => {
+        return await orderStorage
+          .update(order.id, { pendingSignature: false }, new SystemUser())
+          .catch((e) =>
+            logger.error(
+              `While processing new signature, unable to update order ${order.id}: ${e}`,
+            ),
+          );
+      }),
+  );
+}
+
+export async function isGuardianSignatureRequired(
+  userDetail: UserDetail,
+  signatureStorage: BlDocumentStorage<Signature>,
+) {
+  if (!isUnderage(userDetail)) {
+    return false;
+  }
+
+  const latestValidSignature = await getValidUserSignature(
+    userDetail,
+    signatureStorage,
+  );
+  return (
+    latestValidSignature === null || !latestValidSignature.signedByGuardian
+  );
 }

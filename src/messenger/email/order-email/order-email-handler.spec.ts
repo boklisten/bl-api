@@ -167,39 +167,6 @@ describe("OrderEmailHandler", () => {
               done(err);
             });
         });
-
-        it("should send email to guardian if withAgreement is set and user is under 18", (done) => {
-          //this ensures that with agreement is set to true
-          branchStorageGetStub
-            .withArgs(testOrder.branch)
-            .resolves({ paymentInfo: { responsible: true } } as Branch);
-          testCustomerDetail.dob = moment(new Date())
-            .subtract(16, "year")
-            .toDate();
-          orderEmailHandler
-            .sendOrderReceipt(testCustomerDetail, testOrder)
-            .then(() => {
-              const sendOrderReceiptArguments = sendOrderReceiptStub.getCalls();
-
-              const guardianEmailSetting =
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                sendOrderReceiptArguments[
-                  sendOrderReceiptStub.getCalls().length - 2
-                ].args[0]; // the next to last call should be to the guardian
-
-              expect(guardianEmailSetting.toEmail).to.be.eq(
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                testCustomerDetail.guardian.email,
-              );
-
-              done();
-            })
-            .catch((err) => {
-              done(err);
-            });
-        });
       });
 
       context("when none of the items have type rent", () => {

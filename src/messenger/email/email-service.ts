@@ -512,7 +512,7 @@ export class EmailService implements MessengerService {
     emailVerificationUri +=
       EMAIL_SETTINGS.types.emailConfirmation.path + confirmationCode;
 
-    await this.sendMail(
+    await sendMail(
       emailSetting,
       EMAIL_SETTINGS.types.emailConfirmation.templateId,
       {
@@ -542,47 +542,24 @@ export class EmailService implements MessengerService {
 
     await this._emailHandler.sendPasswordReset(emailSetting, passwordResetUri);
   }
+}
 
-  public async requestGuardianSignature(
-    customerDetail: UserDetail,
-    branchName: string,
-  ): Promise<void> {
-    if (!customerDetail.guardian?.email) {
-      throw new BlError("Guardian email is required").code(200);
-    }
-    const emailSetting: EmailSetting = {
-      toEmail: customerDetail.guardian?.email ?? "",
-      fromEmail: EMAIL_SETTINGS.types.guardianSignature.fromEmail,
-      subject: EMAIL_SETTINGS.types.guardianSignature.subject,
-      userId: customerDetail.id,
-      userFullName: customerDetail.name,
-    };
-    await this._emailHandler.sendGuardianSignatureRequest(
-      emailSetting,
-      assertEnv(BlEnvironment.CLIENT_URI) +
-        EMAIL_SETTINGS.types.guardianSignature.path +
-        customerDetail.id,
-      branchName,
+export async function sendMail(
+  emailSetting: EmailSetting,
+  templateId: string,
+  dynamicTemplateData: Record<string, string>,
+) {
+  try {
+    await sgMail.send({
+      from: emailSetting.fromEmail,
+      to: emailSetting.toEmail,
+      templateId,
+      dynamicTemplateData,
+    });
+    logger.info("Successfully sent email to " + emailSetting.toEmail);
+  } catch (error) {
+    logger.error(
+      `Failed to send email to ${emailSetting.toEmail}, error: ${error}`,
     );
-  }
-
-  private async sendMail(
-    emailSetting: EmailSetting,
-    templateId: string,
-    dynamicTemplateData: Record<string, string>,
-  ) {
-    try {
-      await sgMail.send({
-        from: emailSetting.fromEmail,
-        to: emailSetting.toEmail,
-        templateId,
-        dynamicTemplateData,
-      });
-      logger.info("Successfully sent email to " + emailSetting.toEmail);
-    } catch (error) {
-      logger.error(
-        `Failed to send email to ${emailSetting.toEmail}, error: ${error}`,
-      );
-    }
   }
 }

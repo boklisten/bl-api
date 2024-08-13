@@ -1,5 +1,7 @@
 import { SignatureGetIdHook } from "./hooks/signature.get-id.hook";
 import { SignaturePostHook } from "./hooks/signature.post.hook";
+import { CheckGuardianSignatureOperation } from "./operations/check-guardian-signature.operation";
+import { GuardianSignatureOperation } from "./operations/guardian-signature.operation";
 import { signatureSchema } from "./signature.schema";
 import {
   BlCollection,
@@ -23,6 +25,16 @@ export class SignatureCollection implements BlCollection {
         restricted: false,
       },
       hook: new SignaturePostHook(),
+      operations: [
+        {
+          name: "guardian",
+          operation: new GuardianSignatureOperation(),
+        },
+        {
+          name: "check-guardian-signature",
+          operation: new CheckGuardianSignatureOperation(),
+        },
+      ],
     },
     {
       method: "getId",
