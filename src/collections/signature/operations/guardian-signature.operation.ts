@@ -9,7 +9,7 @@ import { BlCollectionName } from "../../bl-collection";
 import { orderSchema } from "../../order/order.schema";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import {
-  deserializeB64,
+  deserializeBase64EncodedImage,
   guardianSignatureRequired,
   serializeSignature,
   signOrders,
@@ -60,7 +60,7 @@ export class GuardianSignatureOperation implements Operation {
       ).code(813);
     }
 
-    const signatureImage = await deserializeB64(
+    const signatureImage = await deserializeBase64EncodedImage(
       serializedGuardianSignature.base64EncodedImage,
     );
 

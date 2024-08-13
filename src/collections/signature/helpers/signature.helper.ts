@@ -21,7 +21,9 @@ export function serializeSignature(signature: Signature): SerializedSignature {
     ...rest,
   };
 }
-export async function deserializeB64(base64EncodedImage: string) {
+export async function deserializeBase64EncodedImage(
+  base64EncodedImage: string,
+) {
   if (!isValidBase64(base64EncodedImage)) {
     throw new BlError("Invalid base64").code(701);
   }
@@ -36,7 +38,7 @@ export async function deserializeSignature(
   serializedSignature: SerializedSignature,
 ): Promise<Signature> {
   const { base64EncodedImage, ...rest } = serializedSignature;
-  const image = await deserializeB64(base64EncodedImage);
+  const image = await deserializeBase64EncodedImage(base64EncodedImage);
 
   return { image, ...rest };
 }
