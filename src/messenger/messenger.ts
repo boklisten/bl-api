@@ -6,7 +6,6 @@ import {
   CustomerItem,
   Message,
 } from "@boklisten/bl-model";
-import moment from "moment-timezone";
 
 import { EmailService } from "./email/email-service";
 import {
@@ -14,7 +13,6 @@ import {
   CustomerDetailWithCustomerItem,
 } from "./messenger-service";
 import { PdfService } from "./pdf/pdf-service";
-import { sendSMS } from "./sms/sms-service";
 import { BlCollectionName } from "../collections/bl-collection";
 import { deliverySchema } from "../collections/delivery/delivery.schema";
 import { BlDocumentStorage } from "../storage/blDocumentStorage";
