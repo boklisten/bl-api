@@ -154,13 +154,6 @@ export class OrderEmailHandler {
           branchName: branchName,
         },
       );
-      this._emailHandler.sendGuardianSignatureRequest(
-        emailSetting,
-        assertEnv(BlEnvironment.CLIENT_URI) +
-          EMAIL_SETTINGS.types.guardianSignature.path +
-          customerDetail.id,
-        branchName,
-      );
       sendSMS(
         customerDetail.guardian.phone,
         `Hei. ${customerDetail.name} har nylig bestilt bøker fra ${branchName} gjennom Boklisten.no. Siden ${customerDetail.name} er under 18 år, krever vi at du som foresatt signerer låneavtalen. Vi har derfor sendt en epost til ${customerDetail.guardian.email} med lenke til signering. Ta kontakt på info@boklisten.no om du har spørsmål. Mvh. Boklisten`,
