@@ -18,7 +18,8 @@ export const EMAIL_SETTINGS = {
     guardianSignature: {
       fromEmail: "ikkesvar@boklisten.no",
       subject: "Signer låneavtale hos Boklisten.no",
-      path: "/signering/",
+      path: "signering/",
+      templateId: "d-e0eaab765bae483c95f76a178853de74",
     },
     deliveryInformation: {
       fromEmail: "ikkesvar@boklisten.no",

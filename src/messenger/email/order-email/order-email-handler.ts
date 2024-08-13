@@ -23,6 +23,7 @@ import { assertEnv, BlEnvironment } from "../../../config/environment";
 import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import { sendSMS } from "../../sms/sms-service";
+import { sendMail } from "../email-service";
 import { EMAIL_SETTINGS } from "../email-settings";
 
 export class OrderEmailHandler {
@@ -142,6 +143,17 @@ export class OrderEmailHandler {
         userId: customerDetail.id,
         userFullName: customerDetail.name,
       };
+
+      sendMail(
+        emailSetting,
+        EMAIL_SETTINGS.types.guardianSignature.templateId,
+        {
+          guardianSignatureUri: `${assertEnv(BlEnvironment.CLIENT_URI)}${EMAIL_SETTINGS.types.guardianSignature.path}${customerDetail.id}`,
+          customerName: customerDetail.name,
+          guardianName: customerDetail?.guardian.name,
+          branchName: branchName,
+        },
+      );
       this._emailHandler.sendGuardianSignatureRequest(
         emailSetting,
         assertEnv(BlEnvironment.CLIENT_URI) +

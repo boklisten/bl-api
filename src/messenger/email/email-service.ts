@@ -512,7 +512,7 @@ export class EmailService implements MessengerService {
     emailVerificationUri +=
       EMAIL_SETTINGS.types.emailConfirmation.path + confirmationCode;
 
-    await this.sendMail(
+    await sendMail(
       emailSetting,
       EMAIL_SETTINGS.types.emailConfirmation.templateId,
       {
@@ -542,24 +542,24 @@ export class EmailService implements MessengerService {
 
     await this._emailHandler.sendPasswordReset(emailSetting, passwordResetUri);
   }
+}
 
-  private async sendMail(
-    emailSetting: EmailSetting,
-    templateId: string,
-    dynamicTemplateData: Record<string, string>,
-  ) {
-    try {
-      await sgMail.send({
-        from: emailSetting.fromEmail,
-        to: emailSetting.toEmail,
-        templateId,
-        dynamicTemplateData,
-      });
-      logger.info("Successfully sent email to " + emailSetting.toEmail);
-    } catch (error) {
-      logger.error(
-        `Failed to send email to ${emailSetting.toEmail}, error: ${error}`,
-      );
-    }
+export async function sendMail(
+  emailSetting: EmailSetting,
+  templateId: string,
+  dynamicTemplateData: Record<string, string>,
+) {
+  try {
+    await sgMail.send({
+      from: emailSetting.fromEmail,
+      to: emailSetting.toEmail,
+      templateId,
+      dynamicTemplateData,
+    });
+    logger.info("Successfully sent email to " + emailSetting.toEmail);
+  } catch (error) {
+    logger.error(
+      `Failed to send email to ${emailSetting.toEmail}, error: ${error}`,
+    );
   }
 }
