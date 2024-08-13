@@ -19,8 +19,10 @@ import { BlCollectionName } from "../../../collections/bl-collection";
 import { branchSchema } from "../../../collections/branch/branch.schema";
 import { deliverySchema } from "../../../collections/delivery/delivery.schema";
 import { paymentSchema } from "../../../collections/payment/payment.schema";
+import { assertEnv, BlEnvironment } from "../../../config/environment";
 import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { sendSMS } from "../../sms/sms-service";
 import { EMAIL_SETTINGS } from "../email-settings";
 
 export class OrderEmailHandler {
@@ -83,7 +85,8 @@ export class OrderEmailHandler {
     };
 
     if (withAgreement) {
-      this.sendToGuardianIfUserIsUnder18(customerDetail, emailOrder, emailUser);
+      const branch = await this._branchStorage?.get(branchId);
+      this.requestGuardianSignature(customerDetail, branch!.name);
     }
 
     if (this.paymentNeeded(order)) {
@@ -115,10 +118,12 @@ export class OrderEmailHandler {
     });
   }
 
-  private sendToGuardianIfUserIsUnder18(
+  /**
+   * sends out SMS and email to the guardian of a customer with a signature link if they are under 18
+   */
+  private requestGuardianSignature(
     customerDetail: UserDetail,
-    emailOrder: EmailOrder,
-    emailUser: EmailUser,
+    branchName: string,
   ) {
     if (
       moment(customerDetail.dob).isValid() &&
@@ -127,25 +132,26 @@ export class OrderEmailHandler {
       ) &&
       customerDetail?.guardian?.email
     ) {
+      if (!customerDetail.guardian?.email) {
+        throw new BlError("Guardian email is required").code(200);
+      }
       const emailSetting: EmailSetting = {
-        toEmail: customerDetail.guardian.email,
-        fromEmail: EMAIL_SETTINGS.types.receipt.fromEmail,
-        subject: EMAIL_SETTINGS.types.receipt.subject + ` #${emailOrder.id}`,
+        toEmail: customerDetail.guardian?.email ?? "",
+        fromEmail: EMAIL_SETTINGS.types.guardianSignature.fromEmail,
+        subject: EMAIL_SETTINGS.types.guardianSignature.subject,
         userId: customerDetail.id,
-        userFullName: customerDetail.guardian.name,
+        userFullName: customerDetail.name,
       };
-
-      emailSetting.textBlocks = [
-        {
-          text: `Du får denne e-posten fordi du er oppgitt som foresatt til ${customerDetail.name}. Vær vennlig å skriv under på kontrakten som ligger vedlagt og la eleven levere denne når bøkene skal leveres ut. Eleven vil ikke kunne hente ut bøker uten underskrift fra foresatt.`,
-        },
-      ];
-
-      this._emailHandler.sendOrderReceipt(
+      this._emailHandler.sendGuardianSignatureRequest(
         emailSetting,
-        emailOrder,
-        emailUser,
-        true,
+        assertEnv(BlEnvironment.CLIENT_URI) +
+          EMAIL_SETTINGS.types.guardianSignature.path +
+          customerDetail.id,
+        branchName,
+      );
+      sendSMS(
+        customerDetail.guardian.phone,
+        `Hei. ${customerDetail.name} har nylig bestilt bøker fra ${branchName} gjennom Boklisten.no. Siden ${customerDetail.name} er under 18 år, krever vi at du som foresatt signerer låneavtalen. Vi har derfor sendt en epost til ${customerDetail.guardian.email} med lenke til signering. Ta kontakt på info@boklisten.no om du har spørsmål. Mvh. Boklisten`,
       );
     }
   }

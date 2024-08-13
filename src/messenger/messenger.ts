@@ -165,35 +165,4 @@ export class Messenger implements MessengerService {
       resetToken,
     );
   }
-
-  /**
-   * sends out SMS and email to the guardian of a customer with a signature link if they are under 18
-   */
-  public async requestGuardianSignature(
-    customerDetail: UserDetail,
-    branchName: string,
-  ): Promise<void> {
-    const guardianPhone = customerDetail.guardian?.phone;
-    const guardianEmail = customerDetail.guardian?.email;
-
-    if (!guardianEmail || !guardianPhone) {
-      throw new Error("Guardian email and phone number is required");
-    }
-
-    if (
-      moment(customerDetail.dob).isValid() &&
-      moment(customerDetail.dob).isAfter(
-        moment(new Date()).subtract(18, "years"),
-      )
-    ) {
-      await this._emailService.requestGuardianSignature(
-        customerDetail,
-        branchName,
-      );
-      await sendSMS(
-        guardianPhone,
-        `Hei. ${customerDetail.name} har nylig bestilt bøker fra ${branchName} gjennom Boklisten.no. Siden ${customerDetail.name} er under 18 år, krever vi at du som foresatt signerer låneavtalen. Vi har derfor sendt en epost til ${guardianEmail} med lenke til signering. Ta kontakt på info@boklisten.no om du har spørsmål. Mvh. Boklisten`,
-      );
-    }
-  }
 }

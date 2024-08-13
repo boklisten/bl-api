@@ -1,4 +1,5 @@
 import { BlapiResponse, BlError, Order, UserDetail } from "@boklisten/bl-model";
+import { SerializedGuardianSignature } from "@boklisten/bl-model/signature/serialized-signature";
 import { ObjectId } from "mongodb";
 
 import { SystemUser } from "../../../auth/permission/permission.service";
@@ -15,12 +16,6 @@ import {
   signOrders,
 } from "../helpers/signature.helper";
 import { Signature, signatureSchema } from "../signature.schema";
-
-export declare class SerializedGuardianSignature {
-  customerId: string;
-  base64EncodedImage: string;
-  signingName: string;
-}
 
 export class GuardianSignatureOperation implements Operation {
   private readonly _userDetailStorage: BlDocumentStorage<UserDetail>;

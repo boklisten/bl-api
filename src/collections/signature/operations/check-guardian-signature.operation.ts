@@ -1,4 +1,5 @@
-import { BlapiResponse, BlError, Order, UserDetail } from "@boklisten/bl-model";
+import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
+import { CheckGuardianSignatureSpec } from "@boklisten/bl-model/signature/serialized-signature";
 import { ObjectId } from "mongodb";
 
 import { Operation } from "../../../operation/operation";
@@ -13,17 +14,12 @@ import {
 } from "../helpers/signature.helper";
 import { Signature, signatureSchema } from "../signature.schema";
 
-export declare class CheckGuardianSignatureSpec {
-  customerId: string;
-}
-
 export class CheckGuardianSignatureOperation implements Operation {
   private readonly _userDetailStorage: BlDocumentStorage<UserDetail>;
   private readonly _signatureStorage: BlDocumentStorage<Signature>;
 
   constructor(
     signatureStorage?: BlDocumentStorage<Signature>,
-    orderStorage?: BlDocumentStorage<Order>,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
   ) {
     this._signatureStorage =
