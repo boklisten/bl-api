@@ -126,7 +126,7 @@ export async function signOrders(
   );
 }
 
-export async function guardianSignatureRequired(
+export async function isGuardianSignatureRequired(
   userDetail: UserDetail,
   signatureStorage: BlDocumentStorage<Signature>,
 ) {

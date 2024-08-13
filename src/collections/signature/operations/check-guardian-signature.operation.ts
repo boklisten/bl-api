@@ -9,7 +9,7 @@ import { BlCollectionName } from "../../bl-collection";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import {
   getValidUserSignature,
-  guardianSignatureRequired,
+  isGuardianSignatureRequired,
   isUnderage,
 } from "../helpers/signature.helper";
 import { Signature, signatureSchema } from "../signature.schema";
@@ -49,7 +49,7 @@ export class CheckGuardianSignatureOperation implements Operation {
     }
 
     if (
-      !(await guardianSignatureRequired(userDetail, this._signatureStorage))
+      !(await isGuardianSignatureRequired(userDetail, this._signatureStorage))
     ) {
       const signature = await getValidUserSignature(
         userDetail,

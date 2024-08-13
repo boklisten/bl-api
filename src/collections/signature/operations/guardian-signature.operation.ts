@@ -11,7 +11,7 @@ import { orderSchema } from "../../order/order.schema";
 import { userDetailSchema } from "../../user-detail/user-detail.schema";
 import {
   deserializeBase64EncodedImage,
-  guardianSignatureRequired,
+  isGuardianSignatureRequired,
   serializeSignature,
   signOrders,
 } from "../helpers/signature.helper";
@@ -48,7 +48,7 @@ export class GuardianSignatureOperation implements Operation {
     );
 
     if (
-      !(await guardianSignatureRequired(userDetail, this._signatureStorage))
+      !(await isGuardianSignatureRequired(userDetail, this._signatureStorage))
     ) {
       throw new BlError(
         "Valid guardian signature is already present or not needed.",
