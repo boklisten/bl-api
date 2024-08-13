@@ -32,11 +32,6 @@ export class OrderEmailHandler {
   private localeSetting = "nb";
   private noPaymentNoticeText =
     "Dette er kun en reservasjon, du har ikke betalt enda. Du betaler først når du kommer til oss på stand.";
-  private agreementTextBlock =
-    "Vedlagt i denne mailen ligger en kontrakt som du trenger å skrive under på for å få lånt bøkene. Kontrakten må du ha med deg når du kommer til oss på stand.";
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  private utcOffset = 120;
 
   constructor(
     private _emailHandler: EmailHandler,
@@ -89,8 +84,6 @@ export class OrderEmailHandler {
 
     if (withAgreement) {
       this.sendToGuardianIfUserIsUnder18(customerDetail, emailOrder, emailUser);
-
-      emailSetting.textBlocks = [{ text: this.agreementTextBlock }];
     }
 
     if (this.paymentNeeded(order)) {

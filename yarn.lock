@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@boklisten/bl-email@^1.8.1":
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@boklisten/bl-email/-/bl-email-1.8.1.tgz#62021a8e35a8c2c8165827a444885e345697e9e0"
-  integrity sha512-LB3tdxaaLLv8JkXuFKVXCje6LOcjuINfluqMnj9DtivoCChxp/VtiDmyaF6QtZR3j+7Q5x12CT5sVwq0qshYmA==
+"@boklisten/bl-email@^1.8.2":
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/@boklisten/bl-email/-/bl-email-1.8.2.tgz#2ed23469cd8885908e43a6a0e532bc4b74c5523b"
+  integrity sha512-WGGSVKq/BrVThsoDXR3+eVSVFTRtjCW4HbO+aXWrXsLjgbt7ET+KuXjb7psF3kUbvUFKDnjT8M4NT+UYZqHVwQ==
   dependencies:
     "@sendgrid/mail" "^6.1.4"
     bluebird "^3.7.2"
