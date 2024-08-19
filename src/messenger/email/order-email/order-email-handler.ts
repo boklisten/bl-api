@@ -87,7 +87,12 @@ export class OrderEmailHandler {
 
     if (withAgreement) {
       const branch = await this._branchStorage?.get(branchId);
-      this.requestGuardianSignature(customerDetail, branch!.name);
+      this.requestGuardianSignature(
+        customerDetail,
+        branch!.name,
+        emailOrder,
+        emailUser,
+      );
     }
 
     if (this.paymentNeeded(order)) {
@@ -125,6 +130,8 @@ export class OrderEmailHandler {
   private requestGuardianSignature(
     customerDetail: UserDetail,
     branchName: string,
+    emailOrder: EmailOrder,
+    emailUser: EmailUser,
   ) {
     if (
       moment(customerDetail.dob).isValid() &&
@@ -140,6 +147,22 @@ export class OrderEmailHandler {
         userId: customerDetail.id,
         userFullName: customerDetail.name,
       };
+
+      /** TODO: delete after 1. oktober 2024 */
+      const receiptEmailSetting: EmailSetting = {
+        toEmail: customerDetail.guardian.email,
+        fromEmail: EMAIL_SETTINGS.types.receipt.fromEmail,
+        subject: EMAIL_SETTINGS.types.receipt.subject + ` #${emailOrder.id}`,
+        userId: customerDetail.id,
+        userFullName: customerDetail.guardian.name,
+      };
+      this._emailHandler.sendOrderReceipt(
+        receiptEmailSetting,
+        emailOrder,
+        emailUser,
+        true,
+      );
+      /** --- */
 
       sendMail(
         emailSetting,
