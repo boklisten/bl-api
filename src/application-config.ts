@@ -98,14 +98,14 @@ export const APP_CONFIG = {
     // If in season, lower the delivery estimate
     deliveryDays:
       moment().isBetween(
-        moment().set({ month: 7, day: 9 }),
-        moment().set({ month: 8, day: 10 }),
+        moment().clone().set({ month: 7, date: 5 }),
+        moment().clone().set({ month: 8, date: 10 }),
       ) ||
       moment().isBetween(
-        moment().set({ month: 0, day: 7 }),
-        moment().set({ month: 1, day: 8 }),
+        moment().clone().set({ month: 0, date: 7 }),
+        moment().clone().set({ month: 1, date: 8 }),
       )
-        ? 4
+        ? 3
         : 7,
     maxWeightLetter: 4800,
   },

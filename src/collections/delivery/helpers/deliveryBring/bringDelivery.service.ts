@@ -82,7 +82,7 @@ export class BringDeliveryService {
         amount: 0,
         taxAmount: 0,
         estimatedDelivery: moment()
-          .add(3 + APP_CONFIG.delivery.deliveryDays, "days")
+          .add(APP_CONFIG.delivery.deliveryDays, "days")
           .toDate(),
         facilityAddress,
         shipmentAddress,
