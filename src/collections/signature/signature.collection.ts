@@ -40,7 +40,6 @@ export class SignatureCollection implements BlCollection {
       method: "getId",
       restriction: {
         permissions: ["customer", "employee", "manager", "admin", "super"],
-        restricted: true,
       },
       hook: new SignatureGetIdHook(),
     },

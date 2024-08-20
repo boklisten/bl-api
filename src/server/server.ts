@@ -1,8 +1,6 @@
 // IMPORTANT TO KEEP THIS ON TOP
 import "dotenv/config";
 
-import path from "path";
-
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, {
