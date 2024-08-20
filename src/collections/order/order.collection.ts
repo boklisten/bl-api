@@ -4,6 +4,7 @@ import { OrderConfirmOperation } from "./operations/confirm/order-confirm.operat
 import { OrderAgreementPdfOperation } from "./operations/order-agreement-pdf.operation";
 import { OrderReceiptPdfOperation } from "./operations/order-receipt-pdf.operation";
 import { OrderPlaceOperation } from "./operations/place/order-place.operation";
+import { RapidHandoutOperation } from "./operations/rapid-handout.operation";
 import { orderSchema } from "./order.schema";
 import {
   BlCollection,
@@ -27,6 +28,15 @@ export class OrderCollection implements BlCollection {
         permissions: ["customer", "employee", "manager", "admin", "super"],
         restricted: true,
       },
+      operations: [
+        {
+          name: "rapid-handout",
+          operation: new RapidHandoutOperation(),
+          restriction: {
+            permissions: ["employee", "manager", "admin", "super"],
+          },
+        },
+      ],
     },
     {
       method: "delete",
