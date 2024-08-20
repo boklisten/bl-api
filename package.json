@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "dev": "ts-node-dev ./src/index.ts",
+    "dev": "tsx watch ./src/index.ts",
     "build": "tsc -p tsconfig.build.json",
     "serve": "node ./dist/index.js",
     "prettier": "prettier --write . --ignore-path=.gitignore",
@@ -80,7 +80,7 @@
     "sinon-chai": "^3.6.0",
     "ts-mocha": "^10.0.0",
     "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.17.0",
     "typescript": "^5.5.4"
   },
   "repository": {
