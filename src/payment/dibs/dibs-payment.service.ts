@@ -5,7 +5,6 @@ import {
   OrderItem,
   UserDetail,
 } from "@boklisten/bl-model";
-import { TypedJSON } from "typedjson-npm";
 
 import { DibsEasyItem } from "./dibs-easy-item/dibs-easy-item";
 import { DibsEasyOrder } from "./dibs-easy-order/dibs-easy-order";
@@ -76,8 +75,8 @@ export class DibsPaymentService {
           ).store("paymentId", paymentId);
         }
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        return TypedJSON.parse(response["payment"], DibsEasyPayment);
+        // @ts-expect-error
+        return response["payment"];
       })
       .catch((getDibsPaymentDetailError: BlError) => {
         throw new BlError(

@@ -5732,11 +5732,6 @@ typed-array-length@^1.0.6:
     is-typed-array "^1.1.13"
     possible-typed-array-names "^1.0.0"
 
-typedjson-npm@^0.1.7:
-  version "0.1.7"
-  resolved "https://registry.npmjs.org/typedjson-npm/-/typedjson-npm-0.1.7.tgz"
-  integrity sha1-SsfV43F6LNVLxK20ceRmf/FpttM=
-
 typescript@^2.6.2:
   version "2.9.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
