@@ -12,22 +12,11 @@ export class SeCrypto {
             .methodName("cipher"),
         );
 
-      const msgCipher = crypto.createCipher("aes128", msg);
-
-      let encryptedMsg = "";
-
-      msgCipher.on("readable", () => {
-        const data = msgCipher.read();
-        if (data) {
-          encryptedMsg += data.toString("hex");
-        }
-      });
-
-      msgCipher.on("end", () => {
-        resolve(encryptedMsg);
-      });
-
-      msgCipher.end();
+      const key = crypto.randomBytes(32);
+      const iv = crypto.randomBytes(16);
+      const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(key), iv);
+      const encrypted = cipher.update(msg);
+      resolve(Buffer.concat([encrypted, cipher.final()]).toString("hex"));
     });
   }
 
