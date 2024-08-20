@@ -1,5 +1,5 @@
 import { BlapiResponse, BlError } from "@boklisten/bl-model";
-import { Router } from "express";
+import { Response, Router } from "express";
 import passport from "passport";
 import { Strategy } from "passport-local";
 
@@ -13,10 +13,8 @@ export class LocalAuth {
 
   constructor(
     router: Router,
+    localLoginValidator: LocalLoginValidator,
     private resHandler: SEResponseHandler,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    private localLoginValidator: LocalLoginValidator,
     private tokenHandler: TokenHandler,
   ) {
     this.apiPath = new ApiPath();
@@ -74,14 +72,11 @@ export class LocalAuth {
   private createAuthLogin(router: Router) {
     router.post(
       this.apiPath.createPath("auth/local/login"),
-      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-      (req: any, res: any, next: any) => {
+      (req, res, next) => {
         passport.authenticate(
           "local",
           (
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            error,
+            error: unknown,
             jwTokens: { accessToken: string; refreshToken: string },
             blError: BlError,
           ) => {
@@ -100,8 +95,6 @@ export class LocalAuth {
               return this.resHandler.sendErrorResponse(res, blError);
             }
 
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             req.login(jwTokens, (error) => {
               if (error) return next(error);
               this.respondWithTokens(res, {
@@ -116,9 +109,7 @@ export class LocalAuth {
   }
 
   private respondWithTokens(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    res,
+    res: Response,
     tokens: { accessToken: string; refreshToken: string },
   ) {
     return this.resHandler.sendResponse(
@@ -134,40 +125,36 @@ export class LocalAuth {
     router: Router,
     localLoginValidator: LocalLoginValidator,
   ) {
-    router.post(
-      this.apiPath.createPath("auth/local/register"),
-      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-      (req: any, res: any) => {
-        localLoginValidator.create(req.body.username, req.body.password).then(
-          () => {
-            this.tokenHandler.createTokens(req.body.username).then(
-              (tokens: { accessToken: string; refreshToken: string }) => {
-                this.respondWithTokens(res, tokens);
-              },
-              (createTokensError: BlError) => {
-                this.resHandler.sendErrorResponse(
-                  res,
-                  new BlError("could not create tokens")
-                    .add(createTokensError)
-                    .code(906),
-                );
-              },
-            );
-          },
-          (loginValidatorCreateError: BlError) => {
-            if (loginValidatorCreateError.getCode() === 903) {
-              this.resHandler.sendErrorResponse(res, loginValidatorCreateError);
-            } else {
+    router.post(this.apiPath.createPath("auth/local/register"), (req, res) => {
+      localLoginValidator.create(req.body.username, req.body.password).then(
+        () => {
+          this.tokenHandler.createTokens(req.body.username).then(
+            (tokens: { accessToken: string; refreshToken: string }) => {
+              this.respondWithTokens(res, tokens);
+            },
+            (createTokensError: BlError) => {
               this.resHandler.sendErrorResponse(
                 res,
-                new BlError("could not create user")
-                  .add(loginValidatorCreateError)
-                  .code(907),
+                new BlError("could not create tokens")
+                  .add(createTokensError)
+                  .code(906),
               );
-            }
-          },
-        );
-      },
-    );
+            },
+          );
+        },
+        (loginValidatorCreateError: BlError) => {
+          if (loginValidatorCreateError.getCode() === 903) {
+            this.resHandler.sendErrorResponse(res, loginValidatorCreateError);
+          } else {
+            this.resHandler.sendErrorResponse(
+              res,
+              new BlError("could not create user")
+                .add(loginValidatorCreateError)
+                .code(907),
+            );
+          }
+        },
+      );
+    });
   }
 }

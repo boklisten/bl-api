@@ -77,6 +77,7 @@ export class UserHandler {
   }
 
   private handleIfMultipleUsersWithSameEmail(users: User[]): Promise<User> {
+    // 2024 update: there are still occurrences of duplicated users, seems like a timing issue, where if you send simultaneous requests fast, it might create multiple.
     // this bit of code is for some of our very first customers that had more than one user
     // this issue came from multiple logins as it was created a new user for Facbook, Google and local
     // even with the same email

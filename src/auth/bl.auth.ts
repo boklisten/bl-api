@@ -51,7 +51,7 @@ export class BlAuth {
 
     new GoogleAuth(router, resHandler);
     new FacebookAuth(router, resHandler);
-    new LocalAuth(router, resHandler, localLoginValidator, tokenHandler);
+    new LocalAuth(router, localLoginValidator, resHandler, tokenHandler);
     new TokenEndpoint(router, resHandler, tokenHandler);
   }
 }

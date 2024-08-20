@@ -93,10 +93,7 @@ export class LocalLoginValidator {
       username = username.toString().toLocaleLowerCase();
 
       this.localLoginHandler.get(username).then(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (localLogin: LocalLogin) => {
+        () => {
           reject(
             blError
               .msg("username already exists")
@@ -104,10 +101,7 @@ export class LocalLoginValidator {
               .code(903),
           );
         },
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (error: BlError) => {
+        () => {
           this.localLoginCreator.create(username, password).then(
             (localLogin: LocalLogin) => {
               this.localLoginHandler.add(localLogin).then(

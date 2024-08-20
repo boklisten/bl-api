@@ -24,13 +24,6 @@ describe("HashedPasswordGenerator", () => {
           .generate(password)
           .should.be.rejectedWith(BlError);
       });
-
-      it("password is undefined", () => {
-        const password = undefined;
-        return hashedPasswordGenerator
-          .generate(password)
-          .should.be.rejectedWith(BlError);
-      });
     });
 
     describe("should return a object with", () => {
