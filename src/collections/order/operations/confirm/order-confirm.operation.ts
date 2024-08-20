@@ -128,7 +128,7 @@ export class OrderConfirmOperation implements Operation {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       order = await this._orderStorage.get(blApiRequest.documentId);
-    } catch (e) {
+    } catch {
       throw new BlError(`order "${blApiRequest.documentId}" not found`);
     }
 

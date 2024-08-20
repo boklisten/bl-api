@@ -282,7 +282,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
     try {
       await this.get(id);
       return true;
-    } catch (error) {
+    } catch {
       throw new BlError(`document with id ${id} does not exist`).code(702);
     }
   }
@@ -359,7 +359,7 @@ export class MongoDbBlStorageHandler<T extends BlDocument>
       }
 
       return doc;
-    } catch (nestedDocumentError) {
+    } catch {
       return doc;
     }
   }

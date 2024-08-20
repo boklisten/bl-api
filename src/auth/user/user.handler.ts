@@ -184,7 +184,7 @@ export class UserHandler {
     let userExists: User;
     try {
       userExists = await this.getByUsername(username);
-    } catch (e) {
+    } catch {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       userExists = null;
@@ -199,7 +199,7 @@ export class UserHandler {
         // if user already exists and the creation is with google or facebook
         try {
           await this._localLoginHandler.get(username);
-        } catch (e) {
+        } catch {
           // if localLogin is not found, should create a default one
           await this._localLoginHandler.createDefaultLocalLogin(username);
         }

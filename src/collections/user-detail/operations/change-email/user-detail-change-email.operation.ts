@@ -107,7 +107,7 @@ export class UserDetailChangeEmailOperation implements Operation {
       // @ts-ignore
       alreadyAddedUser = await this._userHandler.getByUsername(email);
       // eslint-disable-next-line no-empty
-    } catch (e) {}
+    } catch {}
 
     if (isNotNullish(alreadyAddedUser)) {
       throw new BlError("email is already present in database").code(701);

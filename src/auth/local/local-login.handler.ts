@@ -93,7 +93,7 @@ export class LocalLoginHandler {
 
     try {
       alreadyAddedLocalLogin = await this.get(username);
-    } catch (e) {
+    } catch {
       alreadyAddedLocalLogin = null;
     }
 

@@ -136,7 +136,7 @@ export class Server {
           let body: string;
           try {
             body = JSON.stringify(req.body);
-          } catch (e) {
+          } catch {
             body = req.body.toString("utf8");
           }
 

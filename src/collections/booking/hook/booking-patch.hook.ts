@@ -48,7 +48,7 @@ export class BookingPatchHook extends Hook {
 
     try {
       booking = await this.bookingStorage.get(id);
-    } catch (e) {
+    } catch {
       throw new BlError("not found").code(702);
     }
 
@@ -165,7 +165,7 @@ export class BookingPatchHook extends Hook {
               { id: accessToken.details, permission: accessToken.permission },
             );
             // eslint-disable-next-line no-empty
-          } catch (e) {}
+          } catch {}
         }
       }
     }

@@ -40,7 +40,7 @@ export class UniqueItemActiveOperation implements Operation {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       uniqueItem = await this.uniqueItemStorage.get(blApiRequest.documentId);
-    } catch (e) {
+    } catch {
       throw new BlError("not found").code(702);
     }
 
@@ -52,7 +52,7 @@ export class UniqueItemActiveOperation implements Operation {
         await this.customerItemActiveBlid.getActiveCustomerItemIds(
           uniqueItem.blid,
         );
-    } catch (e) {
+    } catch {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.sendResponse(res, []);

@@ -470,7 +470,7 @@ export class OrderPlaceOperation implements Operation {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       order = await this._orderStorage.get(blApiRequest.documentId);
-    } catch (e) {
+    } catch {
       throw new ReferenceError(`order "${blApiRequest.documentId}" not found`);
     }
 
@@ -583,7 +583,7 @@ export class OrderPlaceOperation implements Operation {
           blApiRequest.user,
         );
         // eslint-disable-next-line no-empty
-      } catch (e) {}
+      } catch {}
     } // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     this._resHandler.sendResponse(res, new BlapiResponse([order]));

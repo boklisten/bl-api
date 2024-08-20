@@ -77,7 +77,7 @@ export class DbQueryDateFilter {
 
     try {
       momentDate = moment(value, this.dateFormat, true);
-    } catch (e) {
+    } catch {
       throw new SyntaxError("generateDateFilter(): invalid date");
     }
 

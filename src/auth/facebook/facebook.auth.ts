@@ -53,7 +53,7 @@ export class FacebookAuth {
               provider,
               providerId,
             );
-          } catch (e) {
+          } catch {
             return done(
               null,
               null,

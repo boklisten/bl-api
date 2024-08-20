@@ -47,10 +47,7 @@ export class BookingEmailService {
       customerId: booking.customer,
     } as Message;
 
-    try {
-      message = await this.messageStorage.add(message, user);
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+    message = await this.messageStorage.add(message, user);
 
     const userDetail = await this.userDetailStorage.get(userId);
 

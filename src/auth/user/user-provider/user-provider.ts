@@ -54,7 +54,7 @@ export class UserProvider {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       user = await this._userHandler.get(provider, providerId);
-    } catch (e) {
+    } catch {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       user = await this._userHandler.create(username, provider, providerId);

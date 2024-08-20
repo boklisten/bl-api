@@ -29,7 +29,7 @@ export class AccessTokenValidator {
           // @ts-expect-error
           resolve(payload);
         });
-      } catch (error) {
+      } catch {
         return reject(new BlError("could not verify accessToken").code(910));
       }
     });

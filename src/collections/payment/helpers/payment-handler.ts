@@ -51,7 +51,7 @@ export class PaymentHandler {
 
     try {
       payments = await this.paymentStorage.getMany(order.payments);
-    } catch (e) {
+    } catch {
       throw new BlError("one or more payments was not found");
     }
 

@@ -53,7 +53,7 @@ export class GoogleAuth {
               provider,
               providerId,
             );
-          } catch (e) {
+          } catch {
             return done(
               null,
               undefined,

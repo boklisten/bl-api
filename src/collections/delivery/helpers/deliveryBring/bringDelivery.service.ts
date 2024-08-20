@@ -73,7 +73,7 @@ export class BringDeliveryService {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       shipmentAddress.postalCity = postalInfo["postalCode"]["city"];
-    } catch (e) {
+    } catch {
       return Promise.reject(new BlError("fromPostalCode is not valid"));
     }
     const product = this.decideProduct(items);

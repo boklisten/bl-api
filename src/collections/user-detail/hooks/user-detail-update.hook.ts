@@ -72,6 +72,7 @@ export type UserDetailPatch = Partial<
 const validateUserDetailUpdateType = (
   candidate: unknown,
 ): candidate is UserDetailPatch => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _typeofTypeHelper = typeof ("" as unknown);
   const isTypeOrUndefined = (
     key: keyof UserDetailPatch,
