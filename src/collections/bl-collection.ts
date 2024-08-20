@@ -7,7 +7,6 @@ import { ValidParam } from "../query/valid-param/db-query-valid-params";
 import { NestedDocument } from "../storage/nested-document";
 
 export enum BlCollectionName {
-  BlErrorLogs = "blerrorlogs",
   BranchItems = "branchitems",
   Branches = "branches",
   Companies = "companies",
