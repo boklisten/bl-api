@@ -23,7 +23,13 @@ export class Server {
   private readonly router = Router();
 
   constructor() {
-    this.printServerStartMessage();
+    logger.silly(" _     _             _");
+    logger.silly("| |__ | | __ _ _ __ (_)");
+    logger.silly("| '_ \\| |/ _` | '_ \\| |");
+    logger.silly("| |_) | | (_| | |_) | |");
+    logger.silly("|_.__/|_|\\__,_| .__/|_|");
+    logger.silly("               |_|");
+
     this.initialServerConfig();
     this.initialPassportConfig();
     new BlAuth(this.router);
@@ -31,62 +37,27 @@ export class Server {
     this.connectToDbAndStartServer();
   }
 
-  private connectToDbAndStartServer() {
-    this.connectToMongoDb()
-      .then(() => {
-        this.serverStart();
-      })
-      .catch((err) => {
-        logger.error(`could not connect to mongodb: ${err}`);
+  private async connectToDbAndStartServer() {
+    const mongoUri = assertEnv(BlEnvironment.MONGODB_URI);
 
-        if (
-          err
-            .toString()
-            .match(/failed to connect to server .* on first connect/g)
-        ) {
-          const interval = 5000;
-          logger.error(
-            `failed to connect to mongodb, will try again in ${interval} sec`,
-          );
-
-          setTimeout(() => {
-            this.connectToDbAndStartServer();
-          }, interval);
-        }
-      });
-  }
-
-  private connectToMongoDb(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      const mongoUri = assertEnv(BlEnvironment.MONGODB_URI);
-      logger.verbose(`trying to connect to mongodb: ${mongoUri}`);
-
-      mongoose.connection.on("disconnected", () => {
-        logger.error("mongoose connection was disconnected");
-      });
-
-      mongoose.connection.on("reconnected", () => {
-        logger.warn("mongoose connection was reconnected");
-      });
-
-      mongoose.connection.on("error", () => {
-        logger.error("mongoose connection has error");
-      });
-
-      mongoose
-        .connect(mongoUri, {
-          maxPoolSize: 10,
-          connectTimeoutMS: 10000,
-          socketTimeoutMS: 45000,
-        })
-        .then(() => {
-          logger.verbose(`connected to mongodb: ${mongoUri}`);
-          resolve(true);
-        })
-        .catch((err) => {
-          reject(err);
-        });
+    mongoose.connection.on("disconnected", () => {
+      logger.error("mongoose connection was disconnected");
     });
+
+    mongoose.connection.on("reconnected", () => {
+      logger.warn("mongoose connection was reconnected");
+    });
+
+    mongoose.connection.on("error", () => {
+      logger.error("mongoose connection has error");
+    });
+
+    await mongoose.connect(mongoUri, {
+      maxPoolSize: 10,
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+    });
+    this.serverStart();
   }
 
   private initialServerConfig() {
@@ -106,22 +77,22 @@ export class Server {
       "X-Requested-With",
     ];
 
-    const corsConfig = {
-      origin: whitelist,
-      methods: allowedMethods,
-      allowedHeaders: allowedHeaders,
-      preflightContinue: true,
-      optionsSuccessStatus: 204,
-    };
-
     this.app.use(
       assertEnv(BlEnvironment.API_ENV) === "production"
-        ? cors(corsConfig)
+        ? cors({
+            origin: whitelist,
+            methods: allowedMethods,
+            allowedHeaders: allowedHeaders,
+            preflightContinue: true,
+            optionsSuccessStatus: 204,
+          })
         : cors(),
     );
 
     this.app.use(
       session({
+        resave: false,
+        saveUninitialized: false,
         secret: assertEnv(BlEnvironment.SESSION_SECRET),
         cookie: { secure: assertEnv(BlEnvironment.API_ENV) === "production" },
       }) as RequestHandler,
@@ -190,33 +161,11 @@ export class Server {
     this.app.set("port", assertEnv(BlEnvironment.PORT));
 
     this.app.listen(this.app.get("port"), () => {
-      logger.info("blapi is ready to take requests!");
+      logger.info("ready to take requests!");
     });
 
     this.app.on("uncaughtException", (err) => {
       logger.warn("uncaught exception:" + err);
     });
-
-    this.app.on("SIGTERM", () => {
-      logger.warn("user quit the program");
-    });
-
-    this.app.on("SIGINT", function () {
-      mongoose.connection.close().then(() => {
-        logger.warn("mongoose connection disconnected through app termination");
-        process.exit(0);
-      });
-    });
-  }
-
-  private printServerStartMessage() {
-    logger.verbose("starting blapi");
-
-    logger.silly("  _     _             _");
-    logger.silly(" | |__ | | __ _ _ __ (_)");
-    logger.silly(" | '_ \\| |/ _` | '_ \\| |");
-    logger.silly(" | |_) | | (_| | |_) | |");
-    logger.silly(" |_.__/|_|\\__,_| .__/|_|");
-    logger.silly("               |_|");
   }
 }
