@@ -8,6 +8,10 @@ export class BranchCollection implements BlCollection {
   mongooseSchema = branchSchema;
   endpoints: BlEndpoint[] = [
     {
+      method: "getId",
+      hook: new BranchGetHook(),
+    },
+    {
       method: "getAll",
       hook: new BranchGetHook(),
       validQueryParams: [
