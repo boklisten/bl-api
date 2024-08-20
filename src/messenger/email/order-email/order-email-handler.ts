@@ -19,6 +19,11 @@ import { BlCollectionName } from "../../../collections/bl-collection";
 import { branchSchema } from "../../../collections/branch/branch.schema";
 import { deliverySchema } from "../../../collections/delivery/delivery.schema";
 import { paymentSchema } from "../../../collections/payment/payment.schema";
+import { userHasValidSignature } from "../../../collections/signature/helpers/signature.helper";
+import {
+  Signature,
+  signatureSchema,
+} from "../../../collections/signature/signature.schema";
 import { assertEnv, BlEnvironment } from "../../../config/environment";
 import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
 import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
@@ -35,12 +40,14 @@ export class OrderEmailHandler {
   private localeSetting = "nb";
   private noPaymentNoticeText =
     "Dette er kun en reservasjon, du har ikke betalt enda. Du betaler først når du kommer til oss på stand.";
+  private readonly _signatureStorage: BlDocumentStorage<Signature>;
 
   constructor(
     private _emailHandler: EmailHandler,
     private _deliveryStorage?: BlDocumentStorage<Delivery>,
     private _paymentStorage?: BlDocumentStorage<Payment>,
     private _branchStorage?: BlDocumentStorage<Branch>,
+    signatureStorage?: BlDocumentStorage<Signature>,
   ) {
     this._deliveryStorage = _deliveryStorage
       ? _deliveryStorage
@@ -51,6 +58,9 @@ export class OrderEmailHandler {
     this._branchStorage = _branchStorage
       ? _branchStorage
       : new BlDocumentStorage(BlCollectionName.Branches, branchSchema);
+    this._signatureStorage =
+      signatureStorage ??
+      new BlDocumentStorage(BlCollectionName.Signatures, signatureSchema);
   }
 
   public async sendOrderReceipt(
@@ -127,7 +137,7 @@ export class OrderEmailHandler {
   /**
    * sends out SMS and email to the guardian of a customer with a signature link if they are under 18
    */
-  private requestGuardianSignature(
+  private async requestGuardianSignature(
     customerDetail: UserDetail,
     branchName: string,
     emailOrder: EmailOrder,
@@ -164,6 +174,9 @@ export class OrderEmailHandler {
       );
       /** --- */
 
+      if (await userHasValidSignature(customerDetail, this._signatureStorage)) {
+        return;
+      }
       sendMail(
         emailSetting,
         EMAIL_SETTINGS.types.guardianSignature.templateId,
