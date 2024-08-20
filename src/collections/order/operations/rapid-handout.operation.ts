@@ -185,7 +185,7 @@ export class RapidHandoutOperation implements Operation {
           item: itemId,
           title: item.title,
           blid,
-          type: "rent",
+          type: customerOrder.relevantOrderItem!.type,
           amount: 0,
           unitPrice: 0,
           taxRate: 0,
