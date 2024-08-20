@@ -13,10 +13,10 @@ import session from "express-session";
 import mongoose from "mongoose";
 import passport from "passport";
 
-import { BlAuth } from "../auth/bl.auth";
-import { CollectionEndpointCreator } from "../collection-endpoint/collection-endpoint-creator";
-import { assertEnv, BlEnvironment } from "../config/environment";
-import { logger } from "../logger/logger";
+import { BlAuth } from "@/auth/bl.auth";
+import { CollectionEndpointCreator } from "@/collection-endpoint/collection-endpoint-creator";
+import { assertEnv, BlEnvironment } from "@/config/environment";
+import { logger } from "@/logger/logger";
 
 export class Server {
   public readonly app = express();

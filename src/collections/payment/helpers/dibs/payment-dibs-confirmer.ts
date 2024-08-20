@@ -1,11 +1,11 @@
 import { Order, Payment, AccessToken, BlError } from "@boklisten/bl-model";
 
-import { isNullish } from "../../../../helper/typescript-helpers";
-import { DibsEasyPayment } from "../../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
-import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.service";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../bl-collection";
-import { paymentSchema } from "../../payment.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { paymentSchema } from "@/collections/payment/payment.schema";
+import { isNullish } from "@/helper/typescript-helpers";
+import { DibsEasyPayment } from "@/payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import { DibsPaymentService } from "@/payment/dibs/dibs-payment.service";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class PaymentDibsConfirmer {
   constructor(

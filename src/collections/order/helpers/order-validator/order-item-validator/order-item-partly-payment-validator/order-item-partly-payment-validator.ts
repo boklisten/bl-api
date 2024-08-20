@@ -1,6 +1,6 @@
 import { OrderItem, Item, Branch, BlError } from "@boklisten/bl-model";
 
-import { isNullish } from "../../../../../../helper/typescript-helpers";
+import { isNullish } from "@/helper/typescript-helpers";
 
 export class OrderItemPartlyPaymentValidator {
   public validate(

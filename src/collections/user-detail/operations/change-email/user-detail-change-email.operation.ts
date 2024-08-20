@@ -2,19 +2,19 @@ import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { Request, Response } from "express";
 import isEmail from "validator/lib/isEmail";
 
-import { PermissionService } from "../../../../auth/permission/permission.service";
-import { UserHandler } from "../../../../auth/user/user.handler";
-import { isNotNullish, isNullish } from "../../../../helper/typescript-helpers";
-import { Operation } from "../../../../operation/operation";
-import { BlApiRequest } from "../../../../request/bl-api-request";
-import { SEResponseHandler } from "../../../../response/se.response.handler";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../bl-collection";
-import { LocalLogin } from "../../../local-login/local-login";
-import { localLoginSchema } from "../../../local-login/local-login.schema";
-import { User } from "../../../user/user";
-import { UserSchema } from "../../../user/user.schema";
-import { userDetailSchema } from "../../user-detail.schema";
+import { PermissionService } from "@/auth/permission/permission.service";
+import { UserHandler } from "@/auth/user/user.handler";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { LocalLogin } from "@/collections/local-login/local-login";
+import { localLoginSchema } from "@/collections/local-login/local-login.schema";
+import { User } from "@/collections/user/user";
+import { UserSchema } from "@/collections/user/user.schema";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
+import { isNotNullish, isNullish } from "@/helper/typescript-helpers";
+import { Operation } from "@/operation/operation";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { SEResponseHandler } from "@/response/se.response.handler";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class UserDetailChangeEmailOperation implements Operation {
   private _permissionService: PermissionService;

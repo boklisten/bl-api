@@ -25,8 +25,8 @@ import {
 } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-import { ToSchema } from "../../helper/typescript-helpers";
-import { BlCollectionName } from "../bl-collection";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { ToSchema } from "@/helper/typescript-helpers";
 
 const { ObjectId } = Schema.Types;
 

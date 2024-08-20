@@ -7,7 +7,7 @@ import {
   MatchWithMeetingInfo,
   StandMatchWithMeetingInfo,
   UserMatchWithMeetingInfo,
-} from "./match-types";
+} from "@/collections/match/helpers/match-finder-2/match-types";
 
 interface SenderWithMatches {
   senderId: string;

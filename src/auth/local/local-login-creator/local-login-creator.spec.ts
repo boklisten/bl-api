@@ -1,13 +1,14 @@
 import "mocha";
+import { BlError } from "@boklisten/bl-model";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { LocalLoginCreator } from "./local-login-creator";
-import { BlError } from "@boklisten/bl-model";
-import { HashedPasswordGenerator } from "../password/hashed-password-generator";
-import { SaltGenerator } from "../salt/salt-generator";
-import { SeCrypto } from "../../../crypto/se.crypto";
-import { ProviderIdGenerator } from "../provider-id/provider-id-generator";
-import { LocalLogin } from "../../../collections/local-login/local-login";
+
+import { LocalLoginCreator } from "@/auth/local/local-login-creator/local-login-creator";
+import { HashedPasswordGenerator } from "@/auth/local/password/hashed-password-generator";
+import { ProviderIdGenerator } from "@/auth/local/provider-id/provider-id-generator";
+import { SaltGenerator } from "@/auth/local/salt/salt-generator";
+import { LocalLogin } from "@/collections/local-login/local-login";
+import { SeCrypto } from "@/crypto/se.crypto";
 
 chai.use(chaiAsPromised);
 

@@ -1,10 +1,10 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { PermissionService } from "./permission.service";
 import { BlDocument, UserPermission } from "@boklisten/bl-model";
-import { BlEndpointRestriction } from "../../collections/bl-collection";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+
+import { PermissionService } from "@/auth/permission/permission.service";
+import { BlEndpointRestriction } from "@/collections/bl-collection";
 
 chai.use(chaiAsPromised);
 

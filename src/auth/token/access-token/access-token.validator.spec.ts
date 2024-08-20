@@ -1,15 +1,15 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { AccessTokenValidator } from "./access-token.validator";
 import { BlError, UserPermission } from "@boklisten/bl-model";
-import { RefreshTokenCreator } from "../refresh/refresh-token.creator";
-import { AccessTokenCreator } from "./access-token.creator";
-import { AccessToken } from "./access-token";
-import { RefreshToken } from "../refresh/refresh-token";
-import { TokenConfig } from "../token.config";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { sign } from "jsonwebtoken";
+
+import { AccessToken } from "@/auth/token/access-token/access-token";
+import { AccessTokenCreator } from "@/auth/token/access-token/access-token.creator";
+import { AccessTokenValidator } from "@/auth/token/access-token/access-token.validator";
+import { RefreshToken } from "@/auth/token/refresh/refresh-token";
+import { RefreshTokenCreator } from "@/auth/token/refresh/refresh-token.creator";
+import { TokenConfig } from "@/auth/token/token.config";
 
 chai.use(chaiAsPromised);
 

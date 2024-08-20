@@ -11,14 +11,15 @@ import chaiAsPromised from "chai-as-promised";
 import "mocha";
 import moment from "moment-timezone";
 import sinon from "sinon";
-import { SEResponseHandler } from "../../../../response/se.response.handler";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../bl-collection";
-import { OrderToCustomerItemGenerator } from "../../../customer-item/helpers/order-to-customer-item-generator";
-import { Signature } from "../../../signature/signature.schema";
-import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
-import { OrderValidator } from "../../helpers/order-validator/order-validator";
-import { OrderPlaceOperation } from "./order-place.operation";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { OrderToCustomerItemGenerator } from "@/collections/customer-item/helpers/order-to-customer-item-generator";
+import { OrderPlacedHandler } from "@/collections/order/helpers/order-placed-handler/order-placed-handler";
+import { OrderValidator } from "@/collections/order/helpers/order-validator/order-validator";
+import { OrderPlaceOperation } from "@/collections/order/operations/place/order-place.operation";
+import { Signature } from "@/collections/signature/signature.schema";
+import { SEResponseHandler } from "@/response/se.response.handler";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

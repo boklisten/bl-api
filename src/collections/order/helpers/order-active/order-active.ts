@@ -1,9 +1,9 @@
 import { Order, OrderItem, BlError } from "@boklisten/bl-model";
 
-import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../bl-collection";
-import { orderSchema } from "../../order.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { orderSchema } from "@/collections/order/order.schema";
+import { SEDbQueryBuilder } from "@/query/se.db-query-builder";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class OrderActive {
   private _queryBuilder: SEDbQueryBuilder;

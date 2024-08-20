@@ -1,5 +1,5 @@
-import { AccessToken } from "./access-token/access-token";
-import { RefreshToken } from "./refresh/refresh-token";
+import { AccessToken } from "@/auth/token/access-token/access-token";
+import { RefreshToken } from "@/auth/token/refresh/refresh-token";
 
 export class TokenConfig {
   constructor(

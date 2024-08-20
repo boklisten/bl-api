@@ -1,13 +1,13 @@
 import { BlError, Branch, Order } from "@boklisten/bl-model";
 
-import { BranchValidator } from "./branch-validator/branch-validator";
-import { OrderFieldValidator } from "./order-field-validator/order-field-validator";
-import { OrderItemValidator } from "./order-item-validator/order-item-validator";
-import { OrderPlacedValidator } from "./order-placed-validator/order-placed-validator";
-import { OrderUserDetailValidator } from "./order-user-detail-validator/order-user-detail-validator";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../bl-collection";
-import { branchSchema } from "../../../branch/branch.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { branchSchema } from "@/collections/branch/branch.schema";
+import { BranchValidator } from "@/collections/order/helpers/order-validator/branch-validator/branch-validator";
+import { OrderFieldValidator } from "@/collections/order/helpers/order-validator/order-field-validator/order-field-validator";
+import { OrderItemValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-validator";
+import { OrderPlacedValidator } from "@/collections/order/helpers/order-validator/order-placed-validator/order-placed-validator";
+import { OrderUserDetailValidator } from "@/collections/order/helpers/order-validator/order-user-detail-validator/order-user-detail-validator";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class OrderValidator {
   private orderPlacedValidator: OrderPlacedValidator;

@@ -10,14 +10,14 @@ import {
   UpdateWriteOpResult,
 } from "mongoose";
 
-import { MongooseModelCreator } from "./mongoose-schema-creator";
-import { PermissionService } from "../../auth/permission/permission.service";
-import { BlCollectionName } from "../../collections/bl-collection";
-import { logger } from "../../logger/logger";
-import { ExpandFilter } from "../../query/expand-filter/db-query-expand-filter";
-import { SEDbQuery } from "../../query/se.db-query";
-import { BlStorageHandler } from "../blStorageHandler";
-import { NestedDocument } from "../nested-document";
+import { PermissionService } from "@/auth/permission/permission.service";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { logger } from "@/logger/logger";
+import { ExpandFilter } from "@/query/expand-filter/db-query-expand-filter";
+import { SEDbQuery } from "@/query/se.db-query";
+import { BlStorageHandler } from "@/storage/blStorageHandler";
+import { MongooseModelCreator } from "@/storage/mongoDb/mongoose-schema-creator";
+import { NestedDocument } from "@/storage/nested-document";
 
 export class MongoDbBlStorageHandler<T extends BlDocument>
   implements BlStorageHandler<T>

@@ -1,9 +1,9 @@
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { MongooseModelCreator } from "./mongoose-schema-creator";
 import { ObjectId } from "mongodb";
+
+import { MongooseModelCreator } from "@/storage/mongoDb/mongoose-schema-creator";
 
 chai.use(chaiAsPromised);
 

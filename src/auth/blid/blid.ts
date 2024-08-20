@@ -1,6 +1,6 @@
 import { BlError } from "@boklisten/bl-model";
 
-import { SeCrypto } from "../../crypto/se.crypto";
+import { SeCrypto } from "@/crypto/se.crypto";
 
 export class Blid {
   private seCrypto: SeCrypto;

@@ -23,9 +23,16 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "prettier",
   ],
-  plugins: ["@typescript-eslint"],
+  plugins: ["@typescript-eslint", "eslint-plugin-no-relative-import-paths"],
   rules: {
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "no-relative-import-paths/no-relative-import-paths": [
+      "error",
+      {
+        rootDir: "src",
+        prefix: "@",
+      },
+    ],
     /** @see https://medium.com/weekly-webtips/how-to-sort-imports-like-a-pro-in-typescript-4ee8afd7258a */
     "import/order": [
       "error",

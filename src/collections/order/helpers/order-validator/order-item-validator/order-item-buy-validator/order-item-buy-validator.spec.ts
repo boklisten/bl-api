@@ -1,10 +1,10 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { OrderItemBuyValidator } from "./order-item-buy-validator";
 import { Order, BlError, Item, Branch } from "@boklisten/bl-model";
-import { PriceService } from "../../../../../../price/price.service";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+
+import { OrderItemBuyValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-buy-validator/order-item-buy-validator";
+import { PriceService } from "@/price/price.service";
 
 chai.use(chaiAsPromised);
 

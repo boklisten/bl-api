@@ -1,8 +1,8 @@
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { PriceService } from "./price.service";
+
+import { PriceService } from "@/price/price.service";
 
 chai.use(chaiAsPromised);
 

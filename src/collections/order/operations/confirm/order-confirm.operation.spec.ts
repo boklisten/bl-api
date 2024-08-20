@@ -1,14 +1,14 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import sinon from "sinon";
-import { SEResponseHandler } from "../../../../response/se.response.handler";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
 import { Order, BlError } from "@boklisten/bl-model";
-import { OrderConfirmOperation } from "./order-confirm.operation";
-import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
-import { BlCollectionName } from "../../../bl-collection";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { OrderPlacedHandler } from "@/collections/order/helpers/order-placed-handler/order-placed-handler";
+import { OrderConfirmOperation } from "@/collections/order/operations/confirm/order-confirm.operation";
+import { SEResponseHandler } from "@/response/se.response.handler";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 chai.use(chaiAsPromised);
 
 describe("OrderConfirmOperation", () => {

@@ -1,7 +1,7 @@
 import { SignatureMetadata } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-import { ToSchema } from "../../helper/typescript-helpers";
+import { ToSchema } from "@/helper/typescript-helpers";
 
 export class Signature extends SignatureMetadata {
   image!: Buffer;

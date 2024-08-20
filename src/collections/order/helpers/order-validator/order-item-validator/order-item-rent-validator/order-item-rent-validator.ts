@@ -1,10 +1,10 @@
 import { Branch, OrderItem, Item, BlError, Order } from "@boklisten/bl-model";
 
-import { OrderItemRentPeriodValidator } from "./order-item-rent-period-validator/order-item-rent-period-validator";
-import { isNullish } from "../../../../../../helper/typescript-helpers";
-import { BlDocumentStorage } from "../../../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../../../bl-collection";
-import { orderSchema } from "../../../../order.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { OrderItemRentPeriodValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-rent-validator/order-item-rent-period-validator/order-item-rent-period-validator";
+import { orderSchema } from "@/collections/order/order.schema";
+import { isNullish } from "@/helper/typescript-helpers";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class OrderItemRentValidator {
   private orderItemRentPeriodValidator: OrderItemRentPeriodValidator;

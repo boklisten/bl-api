@@ -7,11 +7,12 @@ import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import "mocha";
 import sinon from "sinon";
-import { UserHandler } from "../../../auth/user/user.handler";
-import { SeCrypto } from "../../../crypto/se.crypto";
-import { Messenger } from "../../../messenger/messenger";
-import { User } from "../../user/user";
-import { PendingPasswordResetPostHook } from "./pending-password-reset-post.hook";
+
+import { UserHandler } from "@/auth/user/user.handler";
+import { PendingPasswordResetPostHook } from "@/collections/pending-password-reset/hooks/pending-password-reset-post.hook";
+import { User } from "@/collections/user/user";
+import { SeCrypto } from "@/crypto/se.crypto";
+import { Messenger } from "@/messenger/messenger";
 
 chai.use(chaiAsPromised);
 
@@ -27,7 +28,9 @@ describe("PendingPasswordResetPostHook", () => {
 
   const testUsername = "albert@blapi.com";
   let testUser: User;
-  let testPasswordResetRequest: PasswordResetRequest = { email: testUsername };
+  const testPasswordResetRequest: PasswordResetRequest = {
+    email: testUsername,
+  };
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   let testPendingPasswordReset: PendingPasswordReset;
@@ -120,7 +123,7 @@ describe("PendingPasswordResetPostHook", () => {
     });
 
     describe("when everything is valid", () => {
-      let messengerPasswordResetStub = sinon
+      const messengerPasswordResetStub = sinon
         .stub(messenger, "passwordReset")
         .returns(new Promise((resolve) => resolve()));
 

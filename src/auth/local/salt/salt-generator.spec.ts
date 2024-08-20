@@ -1,7 +1,8 @@
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { SaltGenerator } from "./salt-generator";
+
+import { SaltGenerator } from "@/auth/local/salt/salt-generator";
 
 chai.use(chaiAsPromised);
 

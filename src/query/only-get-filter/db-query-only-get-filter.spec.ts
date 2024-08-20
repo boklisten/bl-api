@@ -1,8 +1,8 @@
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { DbQueryOnlyGetFilter } from "./db-query-only-get-filter";
+
+import { DbQueryOnlyGetFilter } from "@/query/only-get-filter/db-query-only-get-filter";
 
 chai.use(chaiAsPromised);
 

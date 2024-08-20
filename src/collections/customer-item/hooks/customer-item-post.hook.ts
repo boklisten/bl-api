@@ -6,13 +6,13 @@ import {
   UserDetail,
 } from "@boklisten/bl-model";
 
-import { Hook } from "../../../hook/hook";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { orderSchema } from "../../order/order.schema";
-import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { CustomerItemValidator } from "../validators/customer-item-validator";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { CustomerItemValidator } from "@/collections/customer-item/validators/customer-item-validator";
+import { orderSchema } from "@/collections/order/order.schema";
+import { UserDetailHelper } from "@/collections/user-detail/helpers/user-detail.helper";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
+import { Hook } from "@/hook/hook";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class CustomerItemPostHook extends Hook {
   private _customerItemValidator: CustomerItemValidator;

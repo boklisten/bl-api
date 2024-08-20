@@ -12,8 +12,8 @@ import {
   UserMatch,
 } from "@boklisten/bl-model";
 
-import { SEDbQuery } from "../../../query/se.db-query";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
+import { SEDbQuery } from "@/query/se.db-query";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 function selectMatchRelevantUserDetails({
   name,

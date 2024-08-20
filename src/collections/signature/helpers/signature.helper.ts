@@ -7,10 +7,10 @@ import {
 } from "@boklisten/bl-model";
 import { Transformer } from "@napi-rs/image";
 
-import { SystemUser } from "../../../auth/permission/permission.service";
-import { logger } from "../../../logger/logger";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { Signature } from "../signature.schema";
+import { SystemUser } from "@/auth/permission/permission.service";
+import { Signature } from "@/collections/signature/signature.schema";
+import { logger } from "@/logger/logger";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 const qualityFactor = 10;
 

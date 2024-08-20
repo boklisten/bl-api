@@ -6,18 +6,18 @@ import {
   UserDetail,
 } from "@boklisten/bl-model";
 
-import { Hook } from "../../../hook/hook";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { orderSchema } from "../../order/order.schema";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { orderSchema } from "@/collections/order/order.schema";
 import {
   deserializeSignature,
   isUnderage,
   serializeSignature,
   signOrders,
-} from "../helpers/signature.helper";
-import { Signature } from "../signature.schema";
+} from "@/collections/signature/helpers/signature.helper";
+import { Signature } from "@/collections/signature/signature.schema";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
+import { Hook } from "@/hook/hook";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class SignaturePostHook extends Hook {
   private userDetailStorage: BlDocumentStorage<UserDetail>;

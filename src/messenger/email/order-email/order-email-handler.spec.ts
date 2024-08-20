@@ -1,8 +1,5 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import sinon from "sinon";
+import { EmailHandler, EmailLog } from "@boklisten/bl-email";
 import {
   BlError,
   Branch,
@@ -12,12 +9,15 @@ import {
   Payment,
   UserDetail,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { OrderEmailHandler } from "./order-email-handler";
-import { dateService } from "../../../blc/date.service";
-import { EmailHandler, EmailLog } from "@boklisten/bl-email";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
 import moment from "moment-timezone";
-import { BlCollectionName } from "../../../collections/bl-collection";
+import sinon from "sinon";
+
+import { dateService } from "@/blc/date.service";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { OrderEmailHandler } from "@/messenger/email/order-email/order-email-handler";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

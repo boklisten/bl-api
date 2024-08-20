@@ -1,17 +1,17 @@
 import "mocha";
-import chai from "chai";
+import { BlError, Order, UserDetail, AccessToken } from "@boklisten/bl-model";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
-import { expect } from "chai";
-import { BlError, Order, UserDetail, AccessToken } from "@boklisten/bl-model";
-import { OrderValidator } from "../helpers/order-validator/order-validator";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { orderSchema } from "../order.schema";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { OrderHookBefore } from "./order-hook-before";
-import { OrderPostHook } from "./order.post.hook";
-import { BlCollectionName } from "../../bl-collection";
-import { UserDetailHelper } from "../../user-detail/helpers/user-detail.helper";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { OrderValidator } from "@/collections/order/helpers/order-validator/order-validator";
+import { OrderHookBefore } from "@/collections/order/hooks/order-hook-before";
+import { OrderPostHook } from "@/collections/order/hooks/order.post.hook";
+import { orderSchema } from "@/collections/order/order.schema";
+import { UserDetailHelper } from "@/collections/user-detail/helpers/user-detail.helper";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

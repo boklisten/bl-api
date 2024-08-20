@@ -1,6 +1,6 @@
 import { createLogger, format, transports } from "winston";
 
-import { assertEnv, BlEnvironment } from "../config/environment";
+import { assertEnv, BlEnvironment } from "@/config/environment";
 
 export const logger = createLogger({
   format: format.printf((info) =>

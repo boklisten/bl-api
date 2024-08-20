@@ -1,13 +1,14 @@
 import "mocha";
+import { BlError, UserDetail } from "@boklisten/bl-model";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
-import { BlError, UserDetail } from "@boklisten/bl-model";
-import { Messenger } from "../../../messenger/messenger";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { EmailValidationHelper } from "./email-validation.helper";
-import { EmailValidation } from "../email-validation";
-import { BlCollectionName } from "../../bl-collection";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { EmailValidation } from "@/collections/email-validation/email-validation";
+import { EmailValidationHelper } from "@/collections/email-validation/helpers/email-validation.helper";
+import { Messenger } from "@/messenger/messenger";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

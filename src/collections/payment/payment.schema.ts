@@ -1,7 +1,7 @@
 import { Payment } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-import { ToSchema } from "../../helper/typescript-helpers";
+import { ToSchema } from "@/helper/typescript-helpers";
 
 export const paymentSchema = new Schema<ToSchema<Payment>>({
   method: {

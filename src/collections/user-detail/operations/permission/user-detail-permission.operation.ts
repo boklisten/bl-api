@@ -1,15 +1,15 @@
 import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { Request, Response } from "express";
 
-import { PermissionService } from "../../../../auth/permission/permission.service";
-import { Operation } from "../../../../operation/operation";
-import { BlApiRequest } from "../../../../request/bl-api-request";
-import { SEResponseHandler } from "../../../../response/se.response.handler";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../bl-collection";
-import { User } from "../../../user/user";
-import { UserSchema } from "../../../user/user.schema";
-import { userDetailSchema } from "../../user-detail.schema";
+import { PermissionService } from "@/auth/permission/permission.service";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { User } from "@/collections/user/user";
+import { UserSchema } from "@/collections/user/user.schema";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
+import { Operation } from "@/operation/operation";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { SEResponseHandler } from "@/response/se.response.handler";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class UserDetailPermissionOperation implements Operation {
   private _permissionService: PermissionService;

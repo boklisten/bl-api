@@ -1,14 +1,14 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import sinon from "sinon";
 import { AccessToken, BlError, Order, Payment } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { PaymentDibsConfirmer } from "./payment-dibs-confirmer";
-import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.service";
-import { BlCollectionName } from "../../../bl-collection";
-import { DibsEasyPayment } from "../../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { PaymentDibsConfirmer } from "@/collections/payment/helpers/dibs/payment-dibs-confirmer";
+import { DibsEasyPayment } from "@/payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import { DibsPaymentService } from "@/payment/dibs/dibs-payment.service";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 chai.use(chaiAsPromised);
 
 describe("PaymentDibsConfirmer", () => {

@@ -1,10 +1,10 @@
 import { Order, Delivery, Payment, BlError } from "@boklisten/bl-model";
 
-import { isNullish } from "../../../../../helper/typescript-helpers";
-import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../../bl-collection";
-import { deliverySchema } from "../../../../delivery/delivery.schema";
-import { paymentSchema } from "../../../../payment/payment.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { deliverySchema } from "@/collections/delivery/delivery.schema";
+import { paymentSchema } from "@/collections/payment/payment.schema";
+import { isNullish } from "@/helper/typescript-helpers";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class OrderPlacedValidator {
   private deliveryStorage: BlDocumentStorage<Delivery>;

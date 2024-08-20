@@ -3,7 +3,7 @@ import { stringify } from "qs";
 import request from "request";
 import rp from "request-promise";
 
-import { logger } from "../logger/logger";
+import { logger } from "@/logger/logger";
 
 // TODO: request and request-promise is deprecated, rewrite to use fetch
 export class HttpHandler {

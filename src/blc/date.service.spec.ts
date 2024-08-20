@@ -1,8 +1,8 @@
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { dateService } from "./date.service";
 import moment from "moment-timezone";
+
+import { dateService } from "@/blc/date.service";
 
 chai.use(chaiAsPromised);
 

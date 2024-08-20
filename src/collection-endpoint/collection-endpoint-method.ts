@@ -6,16 +6,16 @@ import {
 } from "@boklisten/bl-model";
 import { NextFunction, Request, Response, Router } from "express";
 
-import { CollectionEndpointAuth } from "./collection-endpoint-auth/collection-endpoint-auth";
-import { CollectionEndpointDocumentAuth } from "./collection-endpoint-document/collection-endpoint-document-auth";
-import { CollectionEndpointOperation } from "./collection-endpoint-operation";
-import { BlDocumentPermission, BlEndpoint } from "../collections/bl-collection";
-import { ApiPath } from "../config/api-path";
-import { isBoolean, isNotNullish } from "../helper/typescript-helpers";
-import { Hook } from "../hook/hook";
-import { BlApiRequest } from "../request/bl-api-request";
-import { SEResponseHandler } from "../response/se.response.handler";
-import { BlDocumentStorage } from "../storage/blDocumentStorage";
+import { CollectionEndpointAuth } from "@/collection-endpoint/collection-endpoint-auth/collection-endpoint-auth";
+import { CollectionEndpointDocumentAuth } from "@/collection-endpoint/collection-endpoint-document/collection-endpoint-document-auth";
+import { CollectionEndpointOperation } from "@/collection-endpoint/collection-endpoint-operation";
+import { BlDocumentPermission, BlEndpoint } from "@/collections/bl-collection";
+import { ApiPath } from "@/config/api-path";
+import { isBoolean, isNotNullish } from "@/helper/typescript-helpers";
+import { Hook } from "@/hook/hook";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { SEResponseHandler } from "@/response/se.response.handler";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export abstract class CollectionEndpointMethod<T extends BlDocument> {
   protected _collectionUri: string;

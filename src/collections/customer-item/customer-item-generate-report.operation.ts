@@ -1,12 +1,12 @@
 import { BlapiResponse, BlError, CustomerItem } from "@boklisten/bl-model";
 import { ObjectId } from "mongodb";
 
-import { customerItemSchema } from "./customer-item.schema";
-import { isBoolean, isNullish } from "../../helper/typescript-helpers";
-import { Operation } from "../../operation/operation";
-import { BlApiRequest } from "../../request/bl-api-request";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { BlCollectionName } from "../bl-collection";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { customerItemSchema } from "@/collections/customer-item/customer-item.schema";
+import { isBoolean, isNullish } from "@/helper/typescript-helpers";
+import { Operation } from "@/operation/operation";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export interface CustomerItemGenerateReportSpec {
   branchFilter?: string[];

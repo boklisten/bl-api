@@ -1,8 +1,12 @@
-import { deliverySchema } from "./delivery.schema";
-import { DeliveryPatchHook } from "./hooks/delivery.patch.hook";
-import { DeliveryPostHook } from "./hooks/delivery.post.hook";
-import { PostalCodeLookupOperation } from "./operations/postal-code-lookup.operation";
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
+import {
+  BlCollection,
+  BlCollectionName,
+  BlEndpoint,
+} from "@/collections/bl-collection";
+import { deliverySchema } from "@/collections/delivery/delivery.schema";
+import { DeliveryPatchHook } from "@/collections/delivery/hooks/delivery.patch.hook";
+import { DeliveryPostHook } from "@/collections/delivery/hooks/delivery.post.hook";
+import { PostalCodeLookupOperation } from "@/collections/delivery/operations/postal-code-lookup.operation";
 
 export class DeliveryCollection implements BlCollection {
   public collectionName = BlCollectionName.Deliveries;

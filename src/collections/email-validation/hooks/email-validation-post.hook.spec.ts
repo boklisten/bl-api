@@ -1,12 +1,12 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import sinon from "sinon";
 import { BlError } from "@boklisten/bl-model";
-import { EmailValidationHelper } from "../helpers/email-validation.helper";
-import { EmailValidationPostHook } from "./email-validation-post.hook";
-import { EmailValidation } from "../email-validation";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
+
+import { EmailValidation } from "@/collections/email-validation/email-validation";
+import { EmailValidationHelper } from "@/collections/email-validation/helpers/email-validation.helper";
+import { EmailValidationPostHook } from "@/collections/email-validation/hooks/email-validation-post.hook";
 
 chai.use(chaiAsPromised);
 

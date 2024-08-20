@@ -1,9 +1,10 @@
 import "mocha";
+import { BlError } from "@boklisten/bl-model";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { ProviderIdGenerator } from "./provider-id-generator";
-import { BlError } from "@boklisten/bl-model";
-import { SeCrypto } from "../../../crypto/se.crypto";
+
+import { ProviderIdGenerator } from "@/auth/local/provider-id/provider-id-generator";
+import { SeCrypto } from "@/crypto/se.crypto";
 
 chai.use(chaiAsPromised);
 

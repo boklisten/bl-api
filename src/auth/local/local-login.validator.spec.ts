@@ -1,19 +1,20 @@
 import "mocha";
+import { BlError } from "@boklisten/bl-model";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { LocalLoginHandler } from "./local-login.handler";
-import { LocalLogin } from "../../collections/local-login/local-login";
-import { LocalLoginValidator } from "./local-login.validator";
-import { LocalLoginPasswordValidator } from "./password/local-login-password.validator";
-import { SeCrypto } from "../../crypto/se.crypto";
-import { HashedPasswordGenerator } from "./password/hashed-password-generator";
-import { SaltGenerator } from "./salt/salt-generator";
-import { LocalLoginCreator } from "./local-login-creator/local-login-creator";
-import { ProviderIdGenerator } from "./provider-id/provider-id-generator";
-import { BlError } from "@boklisten/bl-model";
-import { UserHandler } from "../user/user.handler";
-import { User } from "../../collections/user/user";
 import sinon from "sinon";
+
+import { LocalLoginCreator } from "@/auth/local/local-login-creator/local-login-creator";
+import { LocalLoginHandler } from "@/auth/local/local-login.handler";
+import { LocalLoginValidator } from "@/auth/local/local-login.validator";
+import { HashedPasswordGenerator } from "@/auth/local/password/hashed-password-generator";
+import { LocalLoginPasswordValidator } from "@/auth/local/password/local-login-password.validator";
+import { ProviderIdGenerator } from "@/auth/local/provider-id/provider-id-generator";
+import { SaltGenerator } from "@/auth/local/salt/salt-generator";
+import { UserHandler } from "@/auth/user/user.handler";
+import { LocalLogin } from "@/collections/local-login/local-login";
+import { User } from "@/collections/user/user";
+import { SeCrypto } from "@/crypto/se.crypto";
 
 chai.use(chaiAsPromised);
 

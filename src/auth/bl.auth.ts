@@ -1,21 +1,21 @@
 import { Router } from "express";
 
-import { FacebookAuth } from "./facebook/facebook.auth";
-import { GoogleAuth } from "./google/google.auth";
-import { LocalLoginCreator } from "./local/local-login-creator/local-login-creator";
-import { LocalLoginHandler } from "./local/local-login.handler";
-import { LocalLoginValidator } from "./local/local-login.validator";
-import { LocalAuth } from "./local/local.auth";
-import { HashedPasswordGenerator } from "./local/password/hashed-password-generator";
-import { LocalLoginPasswordValidator } from "./local/password/local-login-password.validator";
-import { ProviderIdGenerator } from "./local/provider-id/provider-id-generator";
-import { SaltGenerator } from "./local/salt/salt-generator";
-import { AccessTokenAuth } from "./token/access-token/access-token.auth";
-import { TokenEndpoint } from "./token/token.endpoint";
-import { TokenHandler } from "./token/token.handler";
-import { UserHandler } from "./user/user.handler";
-import { SeCrypto } from "../crypto/se.crypto";
-import { SEResponseHandler } from "../response/se.response.handler";
+import { FacebookAuth } from "@/auth/facebook/facebook.auth";
+import { GoogleAuth } from "@/auth/google/google.auth";
+import { LocalLoginCreator } from "@/auth/local/local-login-creator/local-login-creator";
+import { LocalLoginHandler } from "@/auth/local/local-login.handler";
+import { LocalLoginValidator } from "@/auth/local/local-login.validator";
+import { LocalAuth } from "@/auth/local/local.auth";
+import { HashedPasswordGenerator } from "@/auth/local/password/hashed-password-generator";
+import { LocalLoginPasswordValidator } from "@/auth/local/password/local-login-password.validator";
+import { ProviderIdGenerator } from "@/auth/local/provider-id/provider-id-generator";
+import { SaltGenerator } from "@/auth/local/salt/salt-generator";
+import { AccessTokenAuth } from "@/auth/token/access-token/access-token.auth";
+import { TokenEndpoint } from "@/auth/token/token.endpoint";
+import { TokenHandler } from "@/auth/token/token.handler";
+import { UserHandler } from "@/auth/user/user.handler";
+import { SeCrypto } from "@/crypto/se.crypto";
+import { SEResponseHandler } from "@/response/se.response.handler";
 
 export class BlAuth {
   constructor(router: Router) {

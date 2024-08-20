@@ -1,8 +1,4 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import sinon from "sinon";
 import {
   AccessToken,
   BlError,
@@ -11,11 +7,15 @@ import {
   Payment,
   UserDetail,
 } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { DibsPaymentService } from "../../../../payment/dibs/dibs-payment.service";
-import { DibsEasyOrder } from "../../../../payment/dibs/dibs-easy-order/dibs-easy-order";
-import { PaymentDibsHandler } from "./payment-dibs-handler";
-import { BlCollectionName } from "../../../bl-collection";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { PaymentDibsHandler } from "@/collections/payment/helpers/dibs/payment-dibs-handler";
+import { DibsEasyOrder } from "@/payment/dibs/dibs-easy-order/dibs-easy-order";
+import { DibsPaymentService } from "@/payment/dibs/dibs-payment.service";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

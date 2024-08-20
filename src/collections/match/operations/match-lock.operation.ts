@@ -6,13 +6,13 @@ import {
 } from "@boklisten/bl-model";
 import { ObjectId } from "mongodb";
 
-import { getAllMatchesForUser } from "./match-operation-utils";
-import { isBoolean } from "../../../helper/typescript-helpers";
-import { Operation } from "../../../operation/operation";
-import { BlApiRequest } from "../../../request/bl-api-request";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { matchSchema } from "../match.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { matchSchema } from "@/collections/match/match.schema";
+import { getAllMatchesForUser } from "@/collections/match/operations/match-operation-utils";
+import { isBoolean } from "@/helper/typescript-helpers";
+import { Operation } from "@/operation/operation";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export interface MatchLockSpec {
   customerId: string;

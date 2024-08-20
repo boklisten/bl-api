@@ -1,13 +1,13 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import sinon from "sinon";
 import { AccessToken, UserDetail } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { UserCanDeleteUserDetail } from "./user-can-delete-user-detail";
-import { User } from "../../user/user";
-import { BlCollectionName } from "../../bl-collection";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { User } from "@/collections/user/user";
+import { UserCanDeleteUserDetail } from "@/collections/user-detail/helpers/user-can-delete-user-detail";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

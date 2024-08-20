@@ -14,22 +14,22 @@ import {
 } from "@boklisten/bl-model";
 import moment from "moment-timezone";
 
-import { dateService } from "../../../blc/date.service";
-import { BlCollectionName } from "../../../collections/bl-collection";
-import { branchSchema } from "../../../collections/branch/branch.schema";
-import { deliverySchema } from "../../../collections/delivery/delivery.schema";
-import { paymentSchema } from "../../../collections/payment/payment.schema";
-import { userHasValidSignature } from "../../../collections/signature/helpers/signature.helper";
+import { dateService } from "@/blc/date.service";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { branchSchema } from "@/collections/branch/branch.schema";
+import { deliverySchema } from "@/collections/delivery/delivery.schema";
+import { paymentSchema } from "@/collections/payment/payment.schema";
+import { userHasValidSignature } from "@/collections/signature/helpers/signature.helper";
 import {
   Signature,
   signatureSchema,
-} from "../../../collections/signature/signature.schema";
-import { assertEnv, BlEnvironment } from "../../../config/environment";
-import { DibsEasyPayment } from "../../../payment/dibs/dibs-easy-payment/dibs-easy-payment";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { sendSMS } from "../../sms/sms-service";
-import { sendMail } from "../email-service";
-import { EMAIL_SETTINGS } from "../email-settings";
+} from "@/collections/signature/signature.schema";
+import { assertEnv, BlEnvironment } from "@/config/environment";
+import { sendMail } from "@/messenger/email/email-service";
+import { EMAIL_SETTINGS } from "@/messenger/email/email-settings";
+import { sendSMS } from "@/messenger/sms/sms-service";
+import { DibsEasyPayment } from "@/payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class OrderEmailHandler {
   private defaultCurrency = "NOK";

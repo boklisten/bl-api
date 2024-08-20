@@ -1,9 +1,9 @@
 import { BlError, Branch, OpeningHour } from "@boklisten/bl-model";
 import moment from "moment-timezone";
 
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { openingHourSchema } from "../opening-hour.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { openingHourSchema } from "@/collections/opening-hour/opening-hour.schema";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class OpeningHourHelper {
   constructor(private openingHourStorage?: BlDocumentStorage<OpeningHour>) {

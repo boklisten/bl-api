@@ -1,9 +1,9 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import { BlError, Order } from "@boklisten/bl-model";
-import { OrderFieldValidator } from "./order-field-validator";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+
+import { OrderFieldValidator } from "@/collections/order/helpers/order-validator/order-field-validator/order-field-validator";
 
 chai.use(chaiAsPromised);
 

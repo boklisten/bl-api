@@ -1,7 +1,11 @@
-import { PendingPasswordResetPostHook } from "./hooks/pending-password-reset-post.hook";
-import { ConfirmPendingPasswordResetOperation } from "./operations/confirm-pending-password-reset.operation";
-import { pendingPasswordResetSchema } from "./pending-password-reset.schema";
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
+import {
+  BlCollection,
+  BlCollectionName,
+  BlEndpoint,
+} from "@/collections/bl-collection";
+import { PendingPasswordResetPostHook } from "@/collections/pending-password-reset/hooks/pending-password-reset-post.hook";
+import { ConfirmPendingPasswordResetOperation } from "@/collections/pending-password-reset/operations/confirm-pending-password-reset.operation";
+import { pendingPasswordResetSchema } from "@/collections/pending-password-reset/pending-password-reset.schema";
 
 export class PendingPasswordResetCollection implements BlCollection {
   public collectionName = BlCollectionName.PendingPasswordResets;

@@ -1,10 +1,10 @@
 import { BlError, CustomerItem } from "@boklisten/bl-model";
 
-import { CustomerItemActive } from "./customer-item-active";
-import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { customerItemSchema } from "../customer-item.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { customerItemSchema } from "@/collections/customer-item/customer-item.schema";
+import { CustomerItemActive } from "@/collections/customer-item/helpers/customer-item-active";
+import { SEDbQueryBuilder } from "@/query/se.db-query-builder";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class CustomerHaveActiveCustomerItems {
   private queryBuilder: SEDbQueryBuilder;

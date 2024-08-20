@@ -1,8 +1,8 @@
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { DbQuerySortFilter } from "./db-query-sort-filter";
+
+import { DbQuerySortFilter } from "@/query/sort-filter/db-query-sort-filter";
 
 chai.use(chaiAsPromised);
 

@@ -2,8 +2,8 @@ import { AccessToken, BlError } from "@boklisten/bl-model";
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
 
-import { BlEndpointRestriction } from "../../collections/bl-collection";
-import { isNotNullish } from "../../helper/typescript-helpers";
+import { BlEndpointRestriction } from "@/collections/bl-collection";
+import { isNotNullish } from "@/helper/typescript-helpers";
 
 export class CollectionEndpointAuth {
   private _authStrategy = "jwt";

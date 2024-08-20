@@ -5,7 +5,7 @@ import {
   CandidateMatch,
   CandidateStandMatch,
   CandidateMatchVariant,
-} from "./match-types";
+} from "@/collections/match/helpers/match-finder-2/match-types";
 import {
   calculateItemImbalances,
   calculateUnmatchableItems,
@@ -20,8 +20,13 @@ import {
   tryFindPartialMatch,
   tryFindTwoWayMatch,
   updateItemImbalances,
-} from "./match-utils";
-import { difference, hasDifference, intersect, union } from "../set-methods";
+} from "@/collections/match/helpers/match-finder-2/match-utils";
+import {
+  difference,
+  hasDifference,
+  intersect,
+  union,
+} from "@/collections/match/helpers/set-methods";
 
 export class MatchFinder {
   public senders: MatchableUser[];

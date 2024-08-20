@@ -1,17 +1,17 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import { Order, BlError, Branch } from "@boklisten/bl-model";
-import { OrderValidator } from "./order-validator";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { OrderItemValidator } from "./order-item-validator/order-item-validator";
-import { OrderPlacedValidator } from "./order-placed-validator/order-placed-validator";
-import { BranchValidator } from "./branch-validator/branch-validator";
-import { OrderUserDetailValidator } from "./order-user-detail-validator/order-user-detail-validator";
-import { OrderFieldValidator } from "./order-field-validator/order-field-validator";
-import { BlCollectionName } from "../../../bl-collection";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { BranchValidator } from "@/collections/order/helpers/order-validator/branch-validator/branch-validator";
+import { OrderFieldValidator } from "@/collections/order/helpers/order-validator/order-field-validator/order-field-validator";
+import { OrderItemValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-validator";
+import { OrderPlacedValidator } from "@/collections/order/helpers/order-validator/order-placed-validator/order-placed-validator";
+import { OrderUserDetailValidator } from "@/collections/order/helpers/order-validator/order-user-detail-validator/order-user-detail-validator";
+import { OrderValidator } from "@/collections/order/helpers/order-validator/order-validator";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

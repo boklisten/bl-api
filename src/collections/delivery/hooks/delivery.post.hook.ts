@@ -6,13 +6,13 @@ import {
   AccessToken,
 } from "@boklisten/bl-model";
 
-import { Hook } from "../../../hook/hook";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { orderSchema } from "../../order/order.schema";
-import { BringDeliveryService } from "../helpers/deliveryBring/bringDelivery.service";
-import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
-import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { BringDeliveryService } from "@/collections/delivery/helpers/deliveryBring/bringDelivery.service";
+import { DeliveryHandler } from "@/collections/delivery/helpers/deliveryHandler/delivery-handler";
+import { DeliveryValidator } from "@/collections/delivery/helpers/deliveryValidator/delivery-validator";
+import { orderSchema } from "@/collections/order/order.schema";
+import { Hook } from "@/hook/hook";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class DeliveryPostHook extends Hook {
   private orderStorage: BlDocumentStorage<Order>;

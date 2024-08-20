@@ -2,17 +2,20 @@ import { BlapiResponse, BlError, UserDetail } from "@boklisten/bl-model";
 import { CheckGuardianSignatureSpec } from "@boklisten/bl-model/signature/serialized-signature";
 import { ObjectId } from "mongodb";
 
-import { Operation } from "../../../operation/operation";
-import { BlApiRequest } from "../../../request/bl-api-request";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
 import {
   getValidUserSignature,
   isGuardianSignatureRequired,
   isUnderage,
-} from "../helpers/signature.helper";
-import { Signature, signatureSchema } from "../signature.schema";
+} from "@/collections/signature/helpers/signature.helper";
+import {
+  Signature,
+  signatureSchema,
+} from "@/collections/signature/signature.schema";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
+import { Operation } from "@/operation/operation";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class CheckGuardianSignatureOperation implements Operation {
   private readonly _userDetailStorage: BlDocumentStorage<UserDetail>;

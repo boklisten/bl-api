@@ -1,9 +1,9 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import { BlError, Delivery } from "@boklisten/bl-model";
-import { DeliveryBranchHandler } from "./delivery-branch-handler";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+
+import { DeliveryBranchHandler } from "@/collections/delivery/helpers/deliveryBranch/delivery-branch-handler";
 
 chai.use(chaiAsPromised);
 

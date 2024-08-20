@@ -1,14 +1,14 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import sinon from "sinon";
 import { BlError, Branch, CustomerItem, OrderItem } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { CustomerItemHandler } from "./customer-item-handler";
-import { SEDbQuery } from "../../../query/se.db-query";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
 import mongoose from "mongoose";
-import { BlCollectionName } from "../../bl-collection";
+import sinon from "sinon";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { CustomerItemHandler } from "@/collections/customer-item/helpers/customer-item-handler";
+import { SEDbQuery } from "@/query/se.db-query";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

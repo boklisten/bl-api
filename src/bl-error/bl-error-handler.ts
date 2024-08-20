@@ -1,6 +1,6 @@
 import { BlError, BlapiErrorResponse } from "@boklisten/bl-model";
 
-import { logger } from "../logger/logger";
+import { logger } from "@/logger/logger";
 
 export class BlErrorHandler {
   constructor() {}

@@ -8,20 +8,20 @@ import {
   UserDetail,
 } from "@boklisten/bl-model";
 
-import { logger } from "../../../../logger/logger";
-import { Messenger } from "../../../../messenger/messenger";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../bl-collection";
-import { CustomerItemHandler } from "../../../customer-item/helpers/customer-item-handler";
-import { PaymentHandler } from "../../../payment/helpers/payment-handler";
-import { userHasValidSignature } from "../../../signature/helpers/signature.helper";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { CustomerItemHandler } from "@/collections/customer-item/helpers/customer-item-handler";
+import { OrderItemMovedFromOrderHandler } from "@/collections/order/helpers/order-item-moved-from-order-handler/order-item-moved-from-order-handler";
+import { orderSchema } from "@/collections/order/order.schema";
+import { PaymentHandler } from "@/collections/payment/helpers/payment-handler";
+import { userHasValidSignature } from "@/collections/signature/helpers/signature.helper";
 import {
   Signature,
   signatureSchema,
-} from "../../../signature/signature.schema";
-import { userDetailSchema } from "../../../user-detail/user-detail.schema";
-import { orderSchema } from "../../order.schema";
-import { OrderItemMovedFromOrderHandler } from "../order-item-moved-from-order-handler/order-item-moved-from-order-handler";
+} from "@/collections/signature/signature.schema";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
+import { logger } from "@/logger/logger";
+import { Messenger } from "@/messenger/messenger";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class OrderPlacedHandler {
   private readonly orderStorage: BlDocumentStorage<Order>;

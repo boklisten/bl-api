@@ -1,17 +1,17 @@
 import { BlError } from "@boklisten/bl-model";
 import { ObjectId } from "mongodb";
 
-import { BooleanFilter } from "./boolean-filter/db-query-boolean-filter";
-import { DateFilter } from "./date-filter/db-query-date-filter";
-import { ExpandFilter } from "./expand-filter/db-query-expand-filter";
-import { LimitFilter } from "./limit-filter/db-query-limit-filter";
-import { NumberFilter } from "./number-filter/db-query-number-filter";
-import { ObjectIdFilter } from "./object-id-filter/db-query-object-id-filter";
-import { OnlyGetFilter } from "./only-get-filter/db-query-only-get-filter";
-import { RegexFilter } from "./regex-filter/db-query-regex-filter";
-import { SkipFilter } from "./skip-filter/db-query-skip-filter";
-import { SortFilter } from "./sort-filter/db-query-sort-filter";
-import { StringFilter } from "./string-filter/db-query-string-filter";
+import { BooleanFilter } from "@/query/boolean-filter/db-query-boolean-filter";
+import { DateFilter } from "@/query/date-filter/db-query-date-filter";
+import { ExpandFilter } from "@/query/expand-filter/db-query-expand-filter";
+import { LimitFilter } from "@/query/limit-filter/db-query-limit-filter";
+import { NumberFilter } from "@/query/number-filter/db-query-number-filter";
+import { ObjectIdFilter } from "@/query/object-id-filter/db-query-object-id-filter";
+import { OnlyGetFilter } from "@/query/only-get-filter/db-query-only-get-filter";
+import { RegexFilter } from "@/query/regex-filter/db-query-regex-filter";
+import { SkipFilter } from "@/query/skip-filter/db-query-skip-filter";
+import { SortFilter } from "@/query/sort-filter/db-query-sort-filter";
+import { StringFilter } from "@/query/string-filter/db-query-string-filter";
 
 export class SEDbQuery {
   booleanFilters: BooleanFilter[];

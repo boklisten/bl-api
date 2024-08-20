@@ -1,15 +1,14 @@
 import "mocha";
-import chai from "chai";
+import { UserDetail, Message, CustomerItem } from "@boklisten/bl-model";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import sinon from "sinon";
-import { UserDetail, Message } from "@boklisten/bl-model";
-import { MessengerReminder } from "./messenger-reminder";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { CustomerItem } from "@boklisten/bl-model";
-import { CustomerItemHandler } from "../../collections/customer-item/helpers/customer-item-handler";
-import { EmailService } from "../email/email-service";
-import { BlCollectionName } from "../../collections/bl-collection";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { CustomerItemHandler } from "@/collections/customer-item/helpers/customer-item-handler";
+import { EmailService } from "@/messenger/email/email-service";
+import { MessengerReminder } from "@/messenger/reminder/messenger-reminder";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

@@ -3,13 +3,14 @@ import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import "mocha";
 import sinon from "sinon";
-import { LocalLoginHandler } from "../../../auth/local/local-login.handler";
-import { SeCrypto } from "../../../crypto/se.crypto";
-import { BlApiRequest } from "../../../request/bl-api-request";
-import { SEResponseHandler } from "../../../response/se.response.handler";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { ConfirmPendingPasswordResetOperation } from "./confirm-pending-password-reset.operation";
+
+import { LocalLoginHandler } from "@/auth/local/local-login.handler";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { ConfirmPendingPasswordResetOperation } from "@/collections/pending-password-reset/operations/confirm-pending-password-reset.operation";
+import { SeCrypto } from "@/crypto/se.crypto";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { SEResponseHandler } from "@/response/se.response.handler";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 
@@ -29,8 +30,8 @@ describe("ConfirmPendingPasswordResetOperation", () => {
   let testBlApiRequest: BlApiRequest;
   let testPendingPasswordReset: PendingPasswordReset;
   let localLoginUpdateSuccess: boolean;
-  let testToken = "hablebable";
-  let testSalt = "salt";
+  const testToken = "hablebable";
+  const testSalt = "salt";
   let tokenHash: string;
 
   beforeEach(async () => {

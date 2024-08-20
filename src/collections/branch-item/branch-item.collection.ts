@@ -1,5 +1,9 @@
-import { branchItemSchema } from "./branch-item.schema";
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
+import {
+  BlCollection,
+  BlCollectionName,
+  BlEndpoint,
+} from "@/collections/bl-collection";
+import { branchItemSchema } from "@/collections/branch-item/branch-item.schema";
 
 export class BranchItemCollection implements BlCollection {
   collectionName = BlCollectionName.BranchItems;

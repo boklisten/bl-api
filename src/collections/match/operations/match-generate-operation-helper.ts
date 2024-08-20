@@ -7,14 +7,14 @@ import {
 } from "@boklisten/bl-model";
 import { ObjectId } from "mongodb";
 
-import { isBoolean, isNotNullish } from "../../../helper/typescript-helpers";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import {
   CandidateMatchVariant,
   MatchableUser,
   MatchLocation,
   MatchWithMeetingInfo,
-} from "../helpers/match-finder-2/match-types";
+} from "@/collections/match/helpers/match-finder-2/match-types";
+import { isBoolean, isNotNullish } from "@/helper/typescript-helpers";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 /**
  * The information required to generate matches.

@@ -4,10 +4,10 @@ import {
   PendingPasswordReset,
 } from "@boklisten/bl-model";
 
-import { UserHandler } from "../../../auth/user/user.handler";
-import { SeCrypto } from "../../../crypto/se.crypto";
-import { Hook } from "../../../hook/hook";
-import { Messenger } from "../../../messenger/messenger";
+import { UserHandler } from "@/auth/user/user.handler";
+import { SeCrypto } from "@/crypto/se.crypto";
+import { Hook } from "@/hook/hook";
+import { Messenger } from "@/messenger/messenger";
 
 export class PendingPasswordResetPostHook extends Hook {
   constructor(

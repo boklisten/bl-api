@@ -9,11 +9,11 @@ import {
   UpdateWriteOpResult,
 } from "mongoose";
 
-import { BlStorageHandler } from "./blStorageHandler";
-import { MongoDbBlStorageHandler } from "./mongoDb/mongoDb.blStorageHandler";
-import { NestedDocument } from "./nested-document";
-import { BlCollectionName } from "../collections/bl-collection";
-import { SEDbQuery } from "../query/se.db-query";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { SEDbQuery } from "@/query/se.db-query";
+import { BlStorageHandler } from "@/storage/blStorageHandler";
+import { MongoDbBlStorageHandler } from "@/storage/mongoDb/mongoDb.blStorageHandler";
+import { NestedDocument } from "@/storage/nested-document";
 
 export class BlDocumentStorage<T extends BlDocument>
   implements BlStorageHandler<T>

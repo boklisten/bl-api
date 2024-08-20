@@ -1,11 +1,10 @@
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 
 chai.use(chaiAsPromised);
 
-import { DbQueryNumberFilter } from "./db-query-number-filter";
+import { DbQueryNumberFilter } from "@/query/number-filter/db-query-number-filter";
 
 describe("DbQueryNumberFilter", () => {
   const dbQueryNumberFilter: DbQueryNumberFilter = new DbQueryNumberFilter();

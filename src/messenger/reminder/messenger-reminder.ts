@@ -1,10 +1,10 @@
 import { BlError, Message, UserDetail } from "@boklisten/bl-model";
 
-import { BlCollectionName } from "../../collections/bl-collection";
-import { CustomerItemHandler } from "../../collections/customer-item/helpers/customer-item-handler";
-import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { EmailService } from "../email/email-service";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { CustomerItemHandler } from "@/collections/customer-item/helpers/customer-item-handler";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
+import { EmailService } from "@/messenger/email/email-service";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class MessengerReminder {
   private readonly customerItemHandler: CustomerItemHandler;

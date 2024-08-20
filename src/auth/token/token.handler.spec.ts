@@ -1,10 +1,11 @@
 import "mocha";
+import { BlError } from "@boklisten/bl-model";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
-import { TokenHandler } from "./token.handler";
-import { BlError } from "@boklisten/bl-model";
-import { UserHandler } from "../user/user.handler";
+
+import { TokenHandler } from "@/auth/token/token.handler";
+import { UserHandler } from "@/auth/user/user.handler";
 
 chai.use(chaiAsPromised);
 

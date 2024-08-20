@@ -1,19 +1,19 @@
 import "mocha";
-import chai from "chai";
+import { BlError, UserDetail } from "@boklisten/bl-model";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
-import { expect } from "chai";
-import { UserSchema } from "../../collections/user/user.schema";
-import { UserHandler } from "./user.handler";
-import { BlError, UserDetail } from "@boklisten/bl-model";
-import { User } from "../../collections/user/user";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { SEDbQuery } from "../../query/se.db-query";
-import { EmailValidationHelper } from "../../collections/email-validation/helpers/email-validation.helper";
-import { LocalLoginHandler } from "../local/local-login.handler";
-import { BlCollectionName } from "../../collections/bl-collection";
-import { LocalLogin } from "../../collections/local-login/local-login";
-import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
+
+import { LocalLoginHandler } from "@/auth/local/local-login.handler";
+import { UserHandler } from "@/auth/user/user.handler";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { EmailValidationHelper } from "@/collections/email-validation/helpers/email-validation.helper";
+import { LocalLogin } from "@/collections/local-login/local-login";
+import { User } from "@/collections/user/user";
+import { UserSchema } from "@/collections/user/user.schema";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
+import { SEDbQuery } from "@/query/se.db-query";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 
-import { LocalLogin } from "./local-login";
-import { ToSchema } from "../../helper/typescript-helpers";
+import { LocalLogin } from "@/collections/local-login/local-login";
+import { ToSchema } from "@/helper/typescript-helpers";
 
 export const localLoginSchema = new Schema<ToSchema<LocalLogin>>({
   username: {

@@ -1,10 +1,14 @@
-import { matchSchema } from "./match.schema";
-import { MatchGenerateOperation } from "./operations/match-generate.operation";
-import { GetMyMatchesOperation } from "./operations/match-getall-me.operation";
-import { MatchLockOperation } from "./operations/match-lock.operation";
-import { MatchNotifyOperation } from "./operations/match-notify.operation";
-import { MatchTransferItemOperation } from "./operations/match-transfer-item.operation";
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
+import {
+  BlCollection,
+  BlCollectionName,
+  BlEndpoint,
+} from "@/collections/bl-collection";
+import { matchSchema } from "@/collections/match/match.schema";
+import { MatchGenerateOperation } from "@/collections/match/operations/match-generate.operation";
+import { GetMyMatchesOperation } from "@/collections/match/operations/match-getall-me.operation";
+import { MatchLockOperation } from "@/collections/match/operations/match-lock.operation";
+import { MatchNotifyOperation } from "@/collections/match/operations/match-notify.operation";
+import { MatchTransferItemOperation } from "@/collections/match/operations/match-transfer-item.operation";
 
 export class MatchCollection implements BlCollection {
   public collectionName = BlCollectionName.Matches;

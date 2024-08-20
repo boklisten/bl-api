@@ -6,16 +6,16 @@ import {
   UserDetail,
 } from "@boklisten/bl-model";
 
-import { addDetailsToAllMatches } from "./match-getall-me-operation-helper";
-import { getAllMatchesForUser } from "./match-operation-utils";
-import { Operation } from "../../../operation/operation";
-import { BlApiRequest } from "../../../request/bl-api-request";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { itemSchema } from "../../item/item.schema";
-import { uniqueItemSchema } from "../../unique-item/unique-item.schema";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { matchSchema } from "../match.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { itemSchema } from "@/collections/item/item.schema";
+import { matchSchema } from "@/collections/match/match.schema";
+import { addDetailsToAllMatches } from "@/collections/match/operations/match-getall-me-operation-helper";
+import { getAllMatchesForUser } from "@/collections/match/operations/match-operation-utils";
+import { uniqueItemSchema } from "@/collections/unique-item/unique-item.schema";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
+import { Operation } from "@/operation/operation";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class GetMyMatchesOperation implements Operation {
   private readonly _userDetailStorage: BlDocumentStorage<UserDetail>;

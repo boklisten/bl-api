@@ -1,16 +1,16 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import sinon from "sinon";
 import { BlError, UserDetail } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { SEResponseHandler } from "../../../../response/se.response.handler";
-import { User } from "../../../user/user";
-import { UserDetailChangeEmailOperation } from "./user-detail-change-email.operation";
-import { LocalLogin } from "../../../local-login/local-login";
-import { UserHandler } from "../../../../auth/user/user.handler";
-import { BlCollectionName } from "../../../bl-collection";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
+
+import { UserHandler } from "@/auth/user/user.handler";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { LocalLogin } from "@/collections/local-login/local-login";
+import { User } from "@/collections/user/user";
+import { UserDetailChangeEmailOperation } from "@/collections/user-detail/operations/change-email/user-detail-change-email.operation";
+import { SEResponseHandler } from "@/response/se.response.handler";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 chai.use(chaiAsPromised);
 
 describe("UserDetailChangeEmailOperation", () => {

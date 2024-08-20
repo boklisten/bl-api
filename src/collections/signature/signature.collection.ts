@@ -1,14 +1,14 @@
-import { SignatureGetIdHook } from "./hooks/signature.get-id.hook";
-import { SignaturePostHook } from "./hooks/signature.post.hook";
-import { CheckGuardianSignatureOperation } from "./operations/check-guardian-signature.operation";
-import { GuardianSignatureOperation } from "./operations/guardian-signature.operation";
-import { signatureSchema } from "./signature.schema";
 import {
   BlCollection,
   BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
-} from "../bl-collection";
+} from "@/collections/bl-collection";
+import { SignatureGetIdHook } from "@/collections/signature/hooks/signature.get-id.hook";
+import { SignaturePostHook } from "@/collections/signature/hooks/signature.post.hook";
+import { CheckGuardianSignatureOperation } from "@/collections/signature/operations/check-guardian-signature.operation";
+import { GuardianSignatureOperation } from "@/collections/signature/operations/guardian-signature.operation";
+import { signatureSchema } from "@/collections/signature/signature.schema";
 
 export class SignatureCollection implements BlCollection {
   public collectionName = BlCollectionName.Signatures;

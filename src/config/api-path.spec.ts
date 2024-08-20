@@ -1,9 +1,9 @@
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { ApiPath } from "./api-path";
-import { APP_CONFIG } from "../application-config";
+
+import { APP_CONFIG } from "@/application-config";
+import { ApiPath } from "@/config/api-path";
 
 chai.use(chaiAsPromised);
 

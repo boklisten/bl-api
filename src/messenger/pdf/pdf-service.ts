@@ -5,8 +5,8 @@ import { EmailUser } from "@boklisten/bl-email/dist/ts/template/email-user";
 import { Order, UserDetail } from "@boklisten/bl-model";
 import moment from "moment";
 
-import { isNotNullish } from "../../helper/typescript-helpers";
-import { OrderEmailHandler } from "../email/order-email/order-email-handler";
+import { isNotNullish } from "@/helper/typescript-helpers";
+import { OrderEmailHandler } from "@/messenger/email/order-email/order-email-handler";
 
 export class PdfService {
   private _pdfHandler: PdfHandler;

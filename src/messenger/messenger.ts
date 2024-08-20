@@ -7,15 +7,15 @@ import {
   Message,
 } from "@boklisten/bl-model";
 
-import { EmailService } from "./email/email-service";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { deliverySchema } from "@/collections/delivery/delivery.schema";
+import { EmailService } from "@/messenger/email/email-service";
 import {
   MessengerService,
   CustomerDetailWithCustomerItem,
-} from "./messenger-service";
-import { PdfService } from "./pdf/pdf-service";
-import { BlCollectionName } from "../collections/bl-collection";
-import { deliverySchema } from "../collections/delivery/delivery.schema";
-import { BlDocumentStorage } from "../storage/blDocumentStorage";
+} from "@/messenger/messenger-service";
+import { PdfService } from "@/messenger/pdf/pdf-service";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class Messenger implements MessengerService {
   private readonly _emailService: EmailService;

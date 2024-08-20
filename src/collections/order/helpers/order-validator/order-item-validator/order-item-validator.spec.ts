@@ -1,16 +1,16 @@
 import "mocha";
-import chai from "chai";
+import { Order, BlError, Branch, Item } from "@boklisten/bl-model";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
-import { expect } from "chai";
-import { OrderItemValidator } from "./order-item-validator";
-import { Order, BlError, Branch, Item } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../../../../storage/blDocumentStorage";
-import { OrderItemRentValidator } from "./order-item-rent-validator/order-item-rent-validator";
-import { OrderItemBuyValidator } from "./order-item-buy-validator/order-item-buy-validator";
-import { OrderItemExtendValidator } from "./order-item-extend-validator/order-item-extend-validator";
-import { OrderFieldValidator } from "../order-field-validator/order-field-validator";
-import { BlCollectionName } from "../../../../bl-collection";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { OrderFieldValidator } from "@/collections/order/helpers/order-validator/order-field-validator/order-field-validator";
+import { OrderItemBuyValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-buy-validator/order-item-buy-validator";
+import { OrderItemExtendValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-extend-validator/order-item-extend-validator";
+import { OrderItemRentValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-rent-validator/order-item-rent-validator";
+import { OrderItemValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-validator";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 chai.use(chaiAsPromised);
 
 describe("OrderItemValidator", () => {

@@ -2,17 +2,8 @@ import "mocha";
 import chai, { assert, expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinonChai from "sinon-chai";
-import { MatchFinder } from "./match-finder";
-import {
-  CandidateMatchVariant,
-  CandidateStandMatch,
-  MatchableUser,
-} from "./match-types";
-import { difference, intersect } from "../set-methods";
-import ullern_test_users from "./test-data/ullern_test_users.json";
-import otto_treider_test_users_year_0 from "./test-data/test_users_year_0.json";
-import otto_treider_test_users_year_1 from "./test-data/test_users_year_1.json";
-import otto_treider_test_users_year_2 from "./test-data/test_users_year_2.json";
+
+import { MatchFinder } from "@/collections/match/helpers/match-finder-2/match-finder";
 import {
   calculateNumberOfMatchesPerType,
   createFakeMatchableUser,
@@ -23,7 +14,17 @@ import {
   seededRandom,
   shuffler,
   createMatchableUsersWithIdSuffix,
-} from "./match-testing-utils";
+} from "@/collections/match/helpers/match-finder-2/match-testing-utils";
+import {
+  CandidateMatchVariant,
+  CandidateStandMatch,
+  MatchableUser,
+} from "@/collections/match/helpers/match-finder-2/match-types";
+import otto_treider_test_users_year_0 from "@/collections/match/helpers/match-finder-2/test-data/test_users_year_0.json";
+import otto_treider_test_users_year_1 from "@/collections/match/helpers/match-finder-2/test-data/test_users_year_1.json";
+import otto_treider_test_users_year_2 from "@/collections/match/helpers/match-finder-2/test-data/test_users_year_2.json";
+import ullern_test_users from "@/collections/match/helpers/match-finder-2/test-data/ullern_test_users.json";
+import { difference, intersect } from "@/collections/match/helpers/set-methods";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);

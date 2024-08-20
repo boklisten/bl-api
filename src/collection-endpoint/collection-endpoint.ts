@@ -1,17 +1,17 @@
 import { BlDocument, BlError } from "@boklisten/bl-model";
 import { Router } from "express";
 
-import { CollectionEndpointDelete } from "./collection-endpoint-delete/collection-endpoint-delete";
-import { CollectionEndpointGetAll } from "./collection-endpoint-get-all/collection-endpoint-get-all";
-import { CollectionEndpointGetId } from "./collection-endpoint-get-id/collection-endpoint-get-id";
-import { CollectionEndpointPatch } from "./collection-endpoint-patch/collection-endpoint-patch";
-import { CollectionEndpointPost } from "./collection-endpoint-post/collection-endpoint-post";
-import { CollectionEndpointPut } from "./collection-endpoint-put/collection-endpoint-put";
-import { PermissionService } from "../auth/permission/permission.service";
-import { BlCollection, BlEndpoint } from "../collections/bl-collection";
-import { ApiPath } from "../config/api-path";
-import { logger } from "../logger/logger";
-import { BlDocumentStorage } from "../storage/blDocumentStorage";
+import { PermissionService } from "@/auth/permission/permission.service";
+import { CollectionEndpointDelete } from "@/collection-endpoint/collection-endpoint-delete/collection-endpoint-delete";
+import { CollectionEndpointGetAll } from "@/collection-endpoint/collection-endpoint-get-all/collection-endpoint-get-all";
+import { CollectionEndpointGetId } from "@/collection-endpoint/collection-endpoint-get-id/collection-endpoint-get-id";
+import { CollectionEndpointPatch } from "@/collection-endpoint/collection-endpoint-patch/collection-endpoint-patch";
+import { CollectionEndpointPost } from "@/collection-endpoint/collection-endpoint-post/collection-endpoint-post";
+import { CollectionEndpointPut } from "@/collection-endpoint/collection-endpoint-put/collection-endpoint-put";
+import { BlCollection, BlEndpoint } from "@/collections/bl-collection";
+import { ApiPath } from "@/config/api-path";
+import { logger } from "@/logger/logger";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class CollectionEndpoint<T extends BlDocument> {
   private _documentStorage: BlDocumentStorage<T>;

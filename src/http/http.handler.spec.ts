@@ -1,7 +1,8 @@
 import "mocha";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { HttpHandler } from "./http.handler";
+
+import { HttpHandler } from "@/http/http.handler";
 
 chai.use(chaiAsPromised);
 

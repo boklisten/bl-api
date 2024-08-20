@@ -1,12 +1,12 @@
 import { BlError, Order, OrderItem, Period } from "@boklisten/bl-model";
 import { BranchPaymentInfo } from "@boklisten/bl-model/branch/branch-payment-info";
 
-import { APP_CONFIG } from "../../../../../../../application-config";
-import { isNotNullish } from "../../../../../../../helper/typescript-helpers";
-import { PriceService } from "../../../../../../../price/price.service";
-import { BlDocumentStorage } from "../../../../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../../../../bl-collection";
-import { orderSchema } from "../../../../../order.schema";
+import { APP_CONFIG } from "@/application-config";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { orderSchema } from "@/collections/order/order.schema";
+import { isNotNullish } from "@/helper/typescript-helpers";
+import { PriceService } from "@/price/price.service";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 type BranchPaymentPeriod = {
   type: Period;

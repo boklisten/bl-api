@@ -1,7 +1,7 @@
 import { UserDetail } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-import { ToSchema } from "../../helper/typescript-helpers";
+import { ToSchema } from "@/helper/typescript-helpers";
 
 export const userDetailSchema = new Schema<ToSchema<UserDetail>>({
   name: {

@@ -1,8 +1,8 @@
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { DbQueryLimitFilter } from "./db-query-limit-filter";
+
+import { DbQueryLimitFilter } from "@/query/limit-filter/db-query-limit-filter";
 
 chai.use(chaiAsPromised);
 

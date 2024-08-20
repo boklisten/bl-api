@@ -1,4 +1,5 @@
-import { CustomerItemActive } from "./customer-item-active";
+import { CustomerItemActive } from "@/collections/customer-item/helpers/customer-item-active";
+
 import "mocha";
 import { expect } from "chai";
 import { CustomerItem } from "@boklisten/bl-model";

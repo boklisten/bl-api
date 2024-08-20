@@ -1,10 +1,10 @@
 import { UserPermission } from "@boklisten/bl-model";
 import { Schema } from "mongoose";
 
-import { Hook } from "../hook/hook";
-import { Operation } from "../operation/operation";
-import { ValidParam } from "../query/valid-param/db-query-valid-params";
-import { NestedDocument } from "../storage/nested-document";
+import { Hook } from "@/hook/hook";
+import { Operation } from "@/operation/operation";
+import { ValidParam } from "@/query/valid-param/db-query-valid-params";
+import { NestedDocument } from "@/storage/nested-document";
 
 export enum BlCollectionName {
   BranchItems = "branchitems",

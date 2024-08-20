@@ -1,11 +1,11 @@
 import { BlError, DeliveryInfoBring, Item } from "@boklisten/bl-model";
 import moment from "moment";
 
-import { BringDelivery } from "./bringDelivery";
-import { APP_CONFIG } from "../../../../application-config";
-import { assertEnv, BlEnvironment } from "../../../../config/environment";
-import { isNullish } from "../../../../helper/typescript-helpers";
-import { HttpHandler } from "../../../../http/http.handler";
+import { APP_CONFIG } from "@/application-config";
+import { BringDelivery } from "@/collections/delivery/helpers/deliveryBring/bringDelivery";
+import { assertEnv, BlEnvironment } from "@/config/environment";
+import { isNullish } from "@/helper/typescript-helpers";
+import { HttpHandler } from "@/http/http.handler";
 
 export type ShipmentAddress = {
   name: string;

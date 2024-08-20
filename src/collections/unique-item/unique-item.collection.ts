@@ -1,12 +1,12 @@
-import { GenerateUniqueIdsOperation } from "./operations/generate-unique-ids-operation";
-import { UniqueItemActiveOperation } from "./operations/unique-item-active.operation";
-import { uniqueItemSchema } from "./unique-item.schema";
 import {
   BlCollection,
   BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
-} from "../bl-collection";
+} from "@/collections/bl-collection";
+import { GenerateUniqueIdsOperation } from "@/collections/unique-item/operations/generate-unique-ids-operation";
+import { UniqueItemActiveOperation } from "@/collections/unique-item/operations/unique-item-active.operation";
+import { uniqueItemSchema } from "@/collections/unique-item/unique-item.schema";
 
 export class UniqueItemCollection implements BlCollection {
   public collectionName = BlCollectionName.UniqueItems;

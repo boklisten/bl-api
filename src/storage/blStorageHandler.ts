@@ -7,8 +7,8 @@ import {
   UpdateWriteOpResult,
 } from "mongoose";
 
-import { NestedDocument } from "./nested-document";
-import { SEDbQuery } from "../query/se.db-query";
+import { SEDbQuery } from "@/query/se.db-query";
+import { NestedDocument } from "@/storage/nested-document";
 
 export interface BlStorageHandler<T extends BlDocument> {
   get(

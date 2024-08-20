@@ -1,5 +1,9 @@
-import { openingHourSchema } from "./opening-hour.schema";
-import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
+import {
+  BlCollection,
+  BlCollectionName,
+  BlEndpoint,
+} from "@/collections/bl-collection";
+import { openingHourSchema } from "@/collections/opening-hour/opening-hour.schema";
 
 export class OpeningHourCollection implements BlCollection {
   collectionName = BlCollectionName.OpeningHours;

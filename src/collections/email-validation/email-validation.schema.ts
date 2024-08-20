@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 
-import { EmailValidation } from "./email-validation";
-import { ToSchema } from "../../helper/typescript-helpers";
+import { EmailValidation } from "@/collections/email-validation/email-validation";
+import { ToSchema } from "@/helper/typescript-helpers";
 
 export const emailValidationSchema = new Schema<ToSchema<EmailValidation>>({
   email: {

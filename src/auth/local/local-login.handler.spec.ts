@@ -1,15 +1,15 @@
 import "mocha";
-import chai from "chai";
+import { BlError } from "@boklisten/bl-model";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
-import { expect } from "chai";
-import { LocalLoginHandler } from "./local-login.handler";
-import { localLoginSchema } from "../../collections/local-login/local-login.schema";
-import { LocalLogin } from "../../collections/local-login/local-login";
-import { SEDbQuery } from "../../query/se.db-query";
-import { BlError } from "@boklisten/bl-model";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../collections/bl-collection";
+
+import { LocalLoginHandler } from "@/auth/local/local-login.handler";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { LocalLogin } from "@/collections/local-login/local-login";
+import { localLoginSchema } from "@/collections/local-login/local-login.schema";
+import { SEDbQuery } from "@/query/se.db-query";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

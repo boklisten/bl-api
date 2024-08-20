@@ -21,18 +21,18 @@ import {
 } from "@boklisten/bl-post-office";
 import sgMail from "@sendgrid/mail";
 
-import { EMAIL_SETTINGS } from "./email-settings";
-import { OrderEmailHandler } from "./order-email/order-email-handler";
-import { dateService } from "../../blc/date.service";
-import { BlCollectionName } from "../../collections/bl-collection";
-import { itemSchema } from "../../collections/item/item.schema";
-import { assertEnv, BlEnvironment } from "../../config/environment";
-import { logger } from "../../logger/logger";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
+import { dateService } from "@/blc/date.service";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { itemSchema } from "@/collections/item/item.schema";
+import { assertEnv, BlEnvironment } from "@/config/environment";
+import { logger } from "@/logger/logger";
+import { EMAIL_SETTINGS } from "@/messenger/email/email-settings";
+import { OrderEmailHandler } from "@/messenger/email/order-email/order-email-handler";
 import {
   CustomerDetailWithCustomerItem,
   MessengerService,
-} from "../messenger-service";
+} from "@/messenger/messenger-service";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class EmailService implements MessengerService {
   private _emailHandler: EmailHandler;

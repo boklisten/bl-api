@@ -1,8 +1,11 @@
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { DbQueryValidParams, ValidParam } from "./db-query-valid-params";
+
+import {
+  DbQueryValidParams,
+  ValidParam,
+} from "@/query/valid-param/db-query-valid-params";
 
 chai.use(chaiAsPromised);
 

@@ -7,12 +7,12 @@ import {
 } from "@boklisten/bl-model";
 import moment from "moment-timezone";
 
-import { SystemUser } from "../../../auth/permission/permission.service";
-import { SEDbQueryBuilder } from "../../../query/se.db-query-builder";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { branchSchema } from "../../branch/branch.schema";
-import { customerItemSchema } from "../customer-item.schema";
+import { SystemUser } from "@/auth/permission/permission.service";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { branchSchema } from "@/collections/branch/branch.schema";
+import { customerItemSchema } from "@/collections/customer-item/customer-item.schema";
+import { SEDbQueryBuilder } from "@/query/se.db-query-builder";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class CustomerItemHandler {
   private _customerItemStorage: BlDocumentStorage<CustomerItem>;

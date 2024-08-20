@@ -6,14 +6,14 @@ import {
   UserDetail,
 } from "@boklisten/bl-model";
 
-import { DibsEasyItem } from "./dibs-easy-item/dibs-easy-item";
-import { DibsEasyOrder } from "./dibs-easy-order/dibs-easy-order";
-import { DibsEasyPayment } from "./dibs-easy-payment/dibs-easy-payment";
-import { APP_CONFIG } from "../../application-config";
-import { UserDetailHelper } from "../../collections/user-detail/helpers/user-detail.helper";
-import { assertEnv, BlEnvironment } from "../../config/environment";
-import { HttpHandler } from "../../http/http.handler";
-import { BlDocumentStorage } from "../../storage/blDocumentStorage";
+import { APP_CONFIG } from "@/application-config";
+import { UserDetailHelper } from "@/collections/user-detail/helpers/user-detail.helper";
+import { assertEnv, BlEnvironment } from "@/config/environment";
+import { HttpHandler } from "@/http/http.handler";
+import { DibsEasyItem } from "@/payment/dibs/dibs-easy-item/dibs-easy-item";
+import { DibsEasyOrder } from "@/payment/dibs/dibs-easy-order/dibs-easy-order";
+import { DibsEasyPayment } from "@/payment/dibs/dibs-easy-payment/dibs-easy-payment";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class DibsPaymentService {
   private _userDetailHelper: UserDetailHelper;

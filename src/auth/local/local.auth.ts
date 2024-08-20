@@ -3,10 +3,10 @@ import { Response, Router } from "express";
 import passport from "passport";
 import { Strategy } from "passport-local";
 
-import { LocalLoginValidator } from "./local-login.validator";
-import { ApiPath } from "../../config/api-path";
-import { SEResponseHandler } from "../../response/se.response.handler";
-import { TokenHandler } from "../token/token.handler";
+import { LocalLoginValidator } from "@/auth/local/local-login.validator";
+import { TokenHandler } from "@/auth/token/token.handler";
+import { ApiPath } from "@/config/api-path";
+import { SEResponseHandler } from "@/response/se.response.handler";
 
 export class LocalAuth {
   apiPath: ApiPath;

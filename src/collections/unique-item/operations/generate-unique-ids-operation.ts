@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 
-import { Operation } from "../../../operation/operation";
-import { BlApiRequest } from "../../../request/bl-api-request";
-import { SEResponseHandler } from "../../../response/se.response.handler";
-import generateBlIdPDF from "../helpers/bl-id-generator";
+import generateBlIdPDF from "@/collections/unique-item/helpers/bl-id-generator";
+import { Operation } from "@/operation/operation";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { SEResponseHandler } from "@/response/se.response.handler";
 
 export class GenerateUniqueIdsOperation implements Operation {
   constructor(private resHandler?: SEResponseHandler) {

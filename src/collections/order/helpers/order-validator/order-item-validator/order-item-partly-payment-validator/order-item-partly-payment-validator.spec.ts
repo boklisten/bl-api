@@ -1,9 +1,9 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
 import { BlError, OrderItem, Item, Branch } from "@boklisten/bl-model";
-import { OrderItemPartlyPaymentValidator } from "./order-item-partly-payment-validator";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+
+import { OrderItemPartlyPaymentValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-partly-payment-validator/order-item-partly-payment-validator";
 
 chai.use(chaiAsPromised);
 

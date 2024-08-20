@@ -5,15 +5,15 @@ import {
   PendingPasswordReset,
 } from "@boklisten/bl-model";
 
-import { LocalLoginHandler } from "../../../auth/local/local-login.handler";
-import { SystemUser } from "../../../auth/permission/permission.service";
-import { SeCrypto } from "../../../crypto/se.crypto";
-import { Operation } from "../../../operation/operation";
-import { BlApiRequest } from "../../../request/bl-api-request";
-import { SEResponseHandler } from "../../../response/se.response.handler";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { pendingPasswordResetSchema } from "../pending-password-reset.schema";
+import { LocalLoginHandler } from "@/auth/local/local-login.handler";
+import { SystemUser } from "@/auth/permission/permission.service";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { pendingPasswordResetSchema } from "@/collections/pending-password-reset/pending-password-reset.schema";
+import { SeCrypto } from "@/crypto/se.crypto";
+import { Operation } from "@/operation/operation";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { SEResponseHandler } from "@/response/se.response.handler";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class ConfirmPendingPasswordResetOperation implements Operation {
   constructor(

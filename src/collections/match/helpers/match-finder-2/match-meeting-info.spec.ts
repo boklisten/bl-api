@@ -2,21 +2,22 @@ import "mocha";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinonChai from "sinon-chai";
-import { MatchFinder } from "./match-finder";
+
+import { MatchFinder } from "@/collections/match/helpers/match-finder-2/match-finder";
+import assignMeetingInfoToMatches from "@/collections/match/helpers/match-finder-2/match-meeting-info";
 import {
   createFakeMatchableUser,
   createUserGroup,
   seededRandom,
   shuffler,
-} from "./match-testing-utils";
-import assignMeetingInfoToMatches from "./match-meeting-info";
+} from "@/collections/match/helpers/match-finder-2/match-testing-utils";
 import {
   CandidateMatchVariant,
   MatchableUser,
   MatchWithMeetingInfo,
-} from "./match-types";
-import otto_treider_test_users_year_0 from "./test-data/test_users_year_0.json";
-import otto_treider_test_users_year_1 from "./test-data/test_users_year_1.json";
+} from "@/collections/match/helpers/match-finder-2/match-types";
+import otto_treider_test_users_year_0 from "@/collections/match/helpers/match-finder-2/test-data/test_users_year_0.json";
+import otto_treider_test_users_year_1 from "@/collections/match/helpers/match-finder-2/test-data/test_users_year_1.json";
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);

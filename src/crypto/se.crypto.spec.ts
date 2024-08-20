@@ -1,8 +1,9 @@
 import "mocha";
+import { BlError } from "@boklisten/bl-model";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { SeCrypto } from "./se.crypto";
-import { BlError } from "@boklisten/bl-model";
+
+import { SeCrypto } from "@/crypto/se.crypto";
 
 chai.use(chaiAsPromised);
 chai.should();

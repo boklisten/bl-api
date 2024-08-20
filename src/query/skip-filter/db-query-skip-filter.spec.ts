@@ -1,8 +1,8 @@
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { DbQuerySkipFilter } from "./db-query-skip-filter";
+
+import { DbQuerySkipFilter } from "@/query/skip-filter/db-query-skip-filter";
 
 chai.use(chaiAsPromised);
 

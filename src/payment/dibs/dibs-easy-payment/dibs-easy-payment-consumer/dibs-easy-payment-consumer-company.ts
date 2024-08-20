@@ -1,4 +1,4 @@
-import { DibsEasyPaymentConsumerPhone } from "./dibs-easy-payment-consumer-phone";
+import { DibsEasyPaymentConsumerPhone } from "@/payment/dibs/dibs-easy-payment/dibs-easy-payment-consumer/dibs-easy-payment-consumer-phone";
 
 export interface DibsEasyPaymentConsumerCompany {
   name: string;

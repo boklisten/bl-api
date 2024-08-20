@@ -1,9 +1,9 @@
 import "mocha";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import { DbQueryObjectIdFilter } from "./db-query-object-id-filter";
 import mongoose from "mongoose";
+
+import { DbQueryObjectIdFilter } from "@/query/object-id-filter/db-query-object-id-filter";
 
 chai.use(chaiAsPromised);
 

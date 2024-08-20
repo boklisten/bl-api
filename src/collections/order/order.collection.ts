@@ -1,18 +1,18 @@
-import { OrderPatchHook } from "./hooks/order.patch.hook";
-import { OrderPostHook } from "./hooks/order.post.hook";
-import { OrderConfirmOperation } from "./operations/confirm/order-confirm.operation";
-import { OrderAgreementPdfOperation } from "./operations/order-agreement-pdf.operation";
-import { OrderReceiptPdfOperation } from "./operations/order-receipt-pdf.operation";
-import { OrderPlaceOperation } from "./operations/place/order-place.operation";
-import { RapidHandoutOperation } from "./operations/rapid-handout.operation";
-import { orderSchema } from "./order.schema";
 import {
   BlCollection,
   BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
-} from "../bl-collection";
-import { userDetailSchema } from "../user-detail/user-detail.schema";
+} from "@/collections/bl-collection";
+import { OrderPatchHook } from "@/collections/order/hooks/order.patch.hook";
+import { OrderPostHook } from "@/collections/order/hooks/order.post.hook";
+import { OrderConfirmOperation } from "@/collections/order/operations/confirm/order-confirm.operation";
+import { OrderAgreementPdfOperation } from "@/collections/order/operations/order-agreement-pdf.operation";
+import { OrderReceiptPdfOperation } from "@/collections/order/operations/order-receipt-pdf.operation";
+import { OrderPlaceOperation } from "@/collections/order/operations/place/order-place.operation";
+import { RapidHandoutOperation } from "@/collections/order/operations/rapid-handout.operation";
+import { orderSchema } from "@/collections/order/order.schema";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
 
 export class OrderCollection implements BlCollection {
   collectionName = BlCollectionName.Orders;

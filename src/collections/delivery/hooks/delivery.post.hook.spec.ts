@@ -1,9 +1,4 @@
 import "mocha";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { expect } from "chai";
-import sinon from "sinon";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
 import {
   BlError,
   Delivery,
@@ -11,13 +6,18 @@ import {
   Order,
   AccessToken,
 } from "@boklisten/bl-model";
-import { deliverySchema } from "../delivery.schema";
-import { orderSchema } from "../../order/order.schema";
-import { itemSchema } from "../../item/item.schema";
-import { DeliveryPostHook } from "./delivery.post.hook";
-import { DeliveryValidator } from "../helpers/deliveryValidator/delivery-validator";
-import { DeliveryHandler } from "../helpers/deliveryHandler/delivery-handler";
-import { BlCollectionName } from "../../bl-collection";
+import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
+
+import { BlCollectionName } from "@/collections/bl-collection";
+import { deliverySchema } from "@/collections/delivery/delivery.schema";
+import { DeliveryHandler } from "@/collections/delivery/helpers/deliveryHandler/delivery-handler";
+import { DeliveryValidator } from "@/collections/delivery/helpers/deliveryValidator/delivery-validator";
+import { DeliveryPostHook } from "@/collections/delivery/hooks/delivery.post.hook";
+import { itemSchema } from "@/collections/item/item.schema";
+import { orderSchema } from "@/collections/order/order.schema";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 chai.use(chaiAsPromised);
 

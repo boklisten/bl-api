@@ -6,21 +6,21 @@ import {
   Order,
 } from "@boklisten/bl-model";
 
+import { BlCollectionName } from "@/collections/bl-collection";
+import { customerItemSchema } from "@/collections/customer-item/customer-item.schema";
+import { MatchFinder } from "@/collections/match/helpers/match-finder-2/match-finder";
+import assignMeetingInfoToMatches from "@/collections/match/helpers/match-finder-2/match-meeting-info";
+import { matchSchema } from "@/collections/match/match.schema";
 import {
   candidateMatchToMatch,
   getMatchableReceivers,
   getMatchableSenders,
   verifyMatcherSpec,
-} from "./match-generate-operation-helper";
-import { Operation } from "../../../operation/operation";
-import { BlApiRequest } from "../../../request/bl-api-request";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { customerItemSchema } from "../../customer-item/customer-item.schema";
-import { orderSchema } from "../../order/order.schema";
-import { MatchFinder } from "../helpers/match-finder-2/match-finder";
-import assignMeetingInfoToMatches from "../helpers/match-finder-2/match-meeting-info";
-import { matchSchema } from "../match.schema";
+} from "@/collections/match/operations/match-generate-operation-helper";
+import { orderSchema } from "@/collections/order/order.schema";
+import { Operation } from "@/operation/operation";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class MatchGenerateOperation implements Operation {
   private readonly _customerItemStorage: BlDocumentStorage<CustomerItem>;

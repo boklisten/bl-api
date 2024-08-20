@@ -1,11 +1,11 @@
 import { BlError } from "@boklisten/bl-model";
 import isEmail from "validator/lib/isEmail";
 
-import { LocalLogin } from "../../../collections/local-login/local-login";
-import { SeCrypto } from "../../../crypto/se.crypto";
-import { HashedPasswordGenerator } from "../password/hashed-password-generator";
-import { ProviderIdGenerator } from "../provider-id/provider-id-generator";
-import { SaltGenerator } from "../salt/salt-generator";
+import { HashedPasswordGenerator } from "@/auth/local/password/hashed-password-generator";
+import { ProviderIdGenerator } from "@/auth/local/provider-id/provider-id-generator";
+import { SaltGenerator } from "@/auth/local/salt/salt-generator";
+import { LocalLogin } from "@/collections/local-login/local-login";
+import { SeCrypto } from "@/crypto/se.crypto";
 
 export class LocalLoginCreator {
   private _hashedPasswordGenerator: HashedPasswordGenerator;

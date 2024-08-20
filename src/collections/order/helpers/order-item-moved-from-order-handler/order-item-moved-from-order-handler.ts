@@ -1,10 +1,10 @@
 import { BlError, Order } from "@boklisten/bl-model";
 
-import { SystemUser } from "../../../../auth/permission/permission.service";
-import { isNullish } from "../../../../helper/typescript-helpers";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../bl-collection";
-import { orderSchema } from "../../order.schema";
+import { SystemUser } from "@/auth/permission/permission.service";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { orderSchema } from "@/collections/order/order.schema";
+import { isNullish } from "@/helper/typescript-helpers";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 type OrderItemToUpdate = {
   itemId: string;

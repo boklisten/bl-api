@@ -6,14 +6,14 @@ import {
 } from "@boklisten/bl-model";
 import { NextFunction, Request, Response } from "express";
 
-import { Operation } from "../../../../operation/operation";
-import { SEDbQueryBuilder } from "../../../../query/se.db-query-builder";
-import { BlApiRequest } from "../../../../request/bl-api-request";
-import { SEResponseHandler } from "../../../../response/se.response.handler";
-import { BlDocumentStorage } from "../../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../../bl-collection";
-import { OrderPlacedHandler } from "../../helpers/order-placed-handler/order-placed-handler";
-import { orderSchema } from "../../order.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { OrderPlacedHandler } from "@/collections/order/helpers/order-placed-handler/order-placed-handler";
+import { orderSchema } from "@/collections/order/order.schema";
+import { Operation } from "@/operation/operation";
+import { SEDbQueryBuilder } from "@/query/se.db-query-builder";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { SEResponseHandler } from "@/response/se.response.handler";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export class OrderConfirmOperation implements Operation {
   private _queryBuilder: SEDbQueryBuilder;

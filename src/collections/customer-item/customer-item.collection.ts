@@ -1,14 +1,14 @@
-import { CustomerItemGenerateReportOperation } from "./customer-item-generate-report.operation";
-import { customerItemSchema } from "./customer-item.schema";
-import { CustomerItemPostHook } from "./hooks/customer-item-post.hook";
-import { itemSchema } from "../../collections/item/item.schema";
-import { userDetailSchema } from "../../collections/user-detail/user-detail.schema";
 import {
   BlCollection,
   BlCollectionName,
   BlDocumentPermission,
   BlEndpoint,
-} from "../bl-collection";
+} from "@/collections/bl-collection";
+import { CustomerItemGenerateReportOperation } from "@/collections/customer-item/customer-item-generate-report.operation";
+import { customerItemSchema } from "@/collections/customer-item/customer-item.schema";
+import { CustomerItemPostHook } from "@/collections/customer-item/hooks/customer-item-post.hook";
+import { itemSchema } from "@/collections/item/item.schema";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
 
 export class CustomerItemCollection implements BlCollection {
   collectionName = BlCollectionName.CustomerItems;

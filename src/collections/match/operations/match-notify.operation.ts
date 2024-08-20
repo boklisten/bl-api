@@ -6,14 +6,14 @@ import {
   UserDetail,
 } from "@boklisten/bl-model";
 
-import { sendSMS } from "../../../messenger/sms/sms-service";
-import { Operation } from "../../../operation/operation";
-import { BlApiRequest } from "../../../request/bl-api-request";
-import { BlDocumentStorage } from "../../../storage/blDocumentStorage";
-import { BlCollectionName } from "../../bl-collection";
-import { userDetailSchema } from "../../user-detail/user-detail.schema";
-import { difference } from "../helpers/set-methods";
-import { matchSchema } from "../match.schema";
+import { BlCollectionName } from "@/collections/bl-collection";
+import { difference } from "@/collections/match/helpers/set-methods";
+import { matchSchema } from "@/collections/match/match.schema";
+import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
+import { sendSMS } from "@/messenger/sms/sms-service";
+import { Operation } from "@/operation/operation";
+import { BlApiRequest } from "@/request/bl-api-request";
+import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
 export interface MatchNotifySpec {
   target: "senders" | "receivers" | "stand-only" | "all";

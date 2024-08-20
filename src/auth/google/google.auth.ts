@@ -3,11 +3,11 @@ import { Router } from "express";
 import passport from "passport";
 import { Profile, Strategy as GoogleStrategy } from "passport-google-oauth20";
 
-import { APP_CONFIG } from "../../application-config";
-import { ApiPath } from "../../config/api-path";
-import { assertEnv, BlEnvironment } from "../../config/environment";
-import { SEResponseHandler } from "../../response/se.response.handler";
-import { UserProvider } from "../user/user-provider/user-provider";
+import { APP_CONFIG } from "@/application-config";
+import { UserProvider } from "@/auth/user/user-provider/user-provider";
+import { ApiPath } from "@/config/api-path";
+import { assertEnv, BlEnvironment } from "@/config/environment";
+import { SEResponseHandler } from "@/response/se.response.handler";
 
 export class GoogleAuth {
   private apiPath: ApiPath;

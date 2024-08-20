@@ -1,6 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 
-import { BlCollectionName } from "../../collections/bl-collection";
+import { BlCollectionName } from "@/collections/bl-collection";
 
 export class MongooseModelCreator<T> {
   constructor(
