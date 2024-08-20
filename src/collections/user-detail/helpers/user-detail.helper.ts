@@ -136,7 +136,7 @@ export class UserDetailHelper {
   }
 
   public getFirstName(name: string) {
-    const splitName = name.trimRight().split(" ");
+    const splitName = name.trimEnd().split(" ");
     if (splitName.length <= 1) {
       return name.trim();
     } else {
@@ -145,7 +145,7 @@ export class UserDetailHelper {
   }
 
   public getLastName(name: string) {
-    const splitName = name.trimRight().split(" ");
+    const splitName = name.trimEnd().split(" ");
     if (splitName.length <= 1) {
       return "";
     } else {
