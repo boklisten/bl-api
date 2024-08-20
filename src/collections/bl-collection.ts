@@ -8,7 +8,6 @@ import { NestedDocument } from "../storage/nested-document";
 
 export enum BlCollectionName {
   BlErrorLogs = "blerrorlogs",
-  Bookings = "bookings",
   BranchItems = "branchitems",
   Branches = "branches",
   Companies = "companies",

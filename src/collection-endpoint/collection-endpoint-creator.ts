@@ -1,5 +1,4 @@
 import {
-  Booking,
   Branch,
   BranchItem,
   Company,
@@ -23,7 +22,6 @@ import { Router } from "express";
 import { CollectionEndpoint } from "./collection-endpoint";
 import { BlErrorLog } from "../collections/bl-error-log/bl-error-log";
 import { BlErrorLogCollection } from "../collections/bl-error-log/bl-error-log.collection";
-import { BookingCollection } from "../collections/booking/booking.collection";
 import { BranchCollection } from "../collections/branch/branch.collection";
 import { BranchItemCollection } from "../collections/branch-item/branch-item.collection";
 import { CompanyCollection } from "../collections/company/company.collection";
@@ -89,7 +87,6 @@ export class CollectionEndpointCreator {
       new CollectionEndpoint<Match>(this._router, new MatchCollection()),
       new CollectionEndpoint<Invoice>(this._router, new InvoiceCollection()),
       new CollectionEndpoint<Company>(this._router, new CompanyCollection()),
-      new CollectionEndpoint<Booking>(this._router, new BookingCollection()),
       new CollectionEndpoint<UniqueItem>(
         this._router,
         new UniqueItemCollection(),

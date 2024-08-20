@@ -1,7 +1,6 @@
 import { branchSchema } from "./branch.schema";
 import { BranchGetHook } from "./hook/branch-get.hook";
 import { BranchPostHook } from "./hook/branch-post.hook";
-import { BranchBookingTimesOperation } from "./operations/branch-booking-times.operation";
 import { BlCollection, BlCollectionName, BlEndpoint } from "../bl-collection";
 
 export class BranchCollection implements BlCollection {
@@ -39,16 +38,6 @@ export class BranchCollection implements BlCollection {
         {
           fieldName: "openingHours",
           type: "expand",
-        },
-      ],
-    },
-    {
-      method: "getId",
-      hook: new BranchGetHook(),
-      operations: [
-        {
-          name: "booking-dates",
-          operation: new BranchBookingTimesOperation(),
         },
       ],
     },

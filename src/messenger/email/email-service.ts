@@ -65,16 +65,12 @@ export class EmailService implements MessengerService {
       reminder: { mediums: { email: true, sms: true } },
       generic: { mediums: { email: true } },
       receipt: { mediums: { email: false, sms: false } },
-      match: { mediums: { sms: true } },
-      booking: { mediums: { email: true } },
     });
   }
 
   public send(message: Message, customerDetail: UserDetail): Promise<void> {
     if (message.messageType === "generic") {
       return this.sendGeneric(message, customerDetail);
-    } else if (message.messageType === "match") {
-      return this.sendMatch(message, customerDetail);
     }
 
     throw `message type "${message.messageType}" not supported`;
@@ -117,67 +113,6 @@ export class EmailService implements MessengerService {
       await this._postOffice.send([recipient], messageOptions);
     } catch (e) {
       logger.error(`could not send generic mail: ${e}`);
-    }
-  }
-
-  public async sendBookingEmail(
-    message: Message,
-    customerDetail: UserDetail,
-    bookingDetails: {
-      date: string;
-      hour: string;
-      branch: string;
-      address: string;
-    },
-  ): Promise<boolean> {
-    const recipient = await this.customerDetailToRecipient(
-      message,
-      customerDetail,
-      [],
-    );
-
-    recipient["booking"] = bookingDetails;
-
-    const messageOptions: MessageOptions = {
-      type: "booking",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      subtype: message.messageSubtype as any,
-      mediums: { email: true },
-    };
-
-    try {
-      await this._postOffice.send([recipient], messageOptions);
-      return true;
-    } catch (e) {
-      logger.error(`could not send booking confirmation: ${e}`);
-    }
-    return false;
-  }
-
-  public async sendMatch(
-    message: Message,
-    customerDetail: UserDetail,
-  ): Promise<void> {
-    const recipient = await this.customerDetailToRecipient(
-      message,
-      customerDetail,
-      [],
-    );
-
-    const messageOptions: MessageOptions = {
-      type: "match",
-      subtype: "none",
-      subject: message.subject ?? "",
-      sequence_number: message.sequenceNumber ?? 0,
-      htmlContent: message.htmlContent ?? "",
-      textBlocks: message.textBlocks ?? [],
-      mediums: this.getMessageOptionMediums(message),
-    };
-
-    try {
-      await this._postOffice.send([recipient], messageOptions);
-    } catch (e) {
-      logger.error(`could not send match message: ${e}`);
     }
   }
 
