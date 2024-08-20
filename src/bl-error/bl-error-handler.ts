@@ -1,22 +1,9 @@
 import { BlError, BlapiErrorResponse } from "@boklisten/bl-model";
 
-import { BlCollectionName } from "../collections/bl-collection";
-import { BlErrorLog } from "../collections/bl-error-log/bl-error-log";
-import { blErrorLogSchema } from "../collections/bl-error-log/bl-error-log.schema";
 import { logger } from "../logger/logger";
-import { BlDocumentStorage } from "../storage/blDocumentStorage";
 
 export class BlErrorHandler {
-  private _errorLogStorage: BlDocumentStorage<BlErrorLog>;
-
-  constructor(errorLogStorage?: BlDocumentStorage<BlErrorLog>) {
-    this._errorLogStorage = errorLogStorage
-      ? errorLogStorage
-      : new BlDocumentStorage<BlErrorLog>(
-          BlCollectionName.BlErrorLogs,
-          blErrorLogSchema,
-        );
-  }
+  constructor() {}
 
   public createBlapiErrorResponse(err: unknown): BlapiErrorResponse {
     const blError =
@@ -29,7 +16,6 @@ export class BlErrorHandler {
           : new BlError(`unknown error: ${err}`).store("error", err);
 
     this.printErrorStack(blError);
-    this.storeError(blError);
 
     const blErrorResponse = this.getErrorResponse(blError);
 
@@ -39,26 +25,6 @@ export class BlErrorHandler {
       blErrorResponse.msg,
       blErrorResponse.data,
     );
-  }
-
-  public storeError(blError: BlError) {
-    if (blError && blError.getCode()) {
-      if (blError.getCode() === 909 || blError.getCode() === 910) {
-        // if it is a accessToken or RefreshToken error, don't store return;
-        return;
-      }
-    }
-
-    this._errorLogStorage
-      .add(new BlErrorLog(blError), { id: "SYSTEM", permission: "super" })
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      .then(() => {})
-      .catch((blErrorAddError) => {
-        logger.warn(
-          "blErrorHandler: there was a error saving the BlErrorLog: " +
-            blErrorAddError,
-        );
-      });
   }
 
   private printErrorStack(blError: unknown) {

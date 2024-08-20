@@ -20,8 +20,6 @@ import {
 import { Router } from "express";
 
 import { CollectionEndpoint } from "./collection-endpoint";
-import { BlErrorLog } from "../collections/bl-error-log/bl-error-log";
-import { BlErrorLogCollection } from "../collections/bl-error-log/bl-error-log.collection";
 import { BranchCollection } from "../collections/branch/branch.collection";
 import { BranchItemCollection } from "../collections/branch-item/branch-item.collection";
 import { CompanyCollection } from "../collections/company/company.collection";
@@ -70,10 +68,6 @@ export class CollectionEndpointCreator {
       new CollectionEndpoint<UserDetail>(
         this._router,
         new UserDetailCollection(),
-      ),
-      new CollectionEndpoint<BlErrorLog>(
-        this._router,
-        new BlErrorLogCollection(),
       ),
       new CollectionEndpoint<PendingPasswordReset>(
         this._router,
