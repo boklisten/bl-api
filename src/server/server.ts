@@ -185,9 +185,6 @@ export class Server {
   private serverStart() {
     this.app.set("port", assertEnv(BlEnvironment.PORT));
 
-    // eslint-disable-next-line import/no-named-as-default-member
-    this.app.use(express.static(path.join(__dirname, "../public")));
-
     this.app.listen(this.app.get("port"), () => {
       logger.info("blapi is ready to take requests!");
     });
