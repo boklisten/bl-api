@@ -1,7 +1,6 @@
 // IMPORTANT TO KEEP THIS ON TOP
 import "dotenv/config";
 
-import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, {
   json,
@@ -10,6 +9,7 @@ import express, {
   Response,
   Router,
 } from "express";
+import session from "express-session";
 import mongoose from "mongoose";
 import passport from "passport";
 
@@ -119,7 +119,13 @@ export class Server {
         ? cors(corsConfig)
         : cors(),
     );
-    this.app.use(cookieParser() as RequestHandler);
+
+    this.app.use(
+      session({
+        secret: assertEnv(BlEnvironment.SESSION_SECRET),
+        cookie: { secure: assertEnv(BlEnvironment.API_ENV) === "production" },
+      }) as RequestHandler,
+    );
     this.app.use(passport.initialize() as RequestHandler);
     this.app.use(passport.session());
 
