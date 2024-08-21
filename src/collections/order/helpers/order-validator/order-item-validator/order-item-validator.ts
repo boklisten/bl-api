@@ -7,6 +7,7 @@ import { OrderItemBuyValidator } from "@/collections/order/helpers/order-validat
 import { OrderItemExtendValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-extend-validator/order-item-extend-validator";
 import { OrderItemPartlyPaymentValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-partly-payment-validator/order-item-partly-payment-validator";
 import { OrderItemRentValidator } from "@/collections/order/helpers/order-validator/order-item-validator/order-item-rent-validator/order-item-rent-validator";
+import { isNotNullish } from "@/helper/typescript-helpers";
 import { PriceService } from "@/price/price.service";
 import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
@@ -56,6 +57,7 @@ export class OrderItemValidator {
         this.validateDeadlines(order.orderItems ?? []);
       }
       await this.orderItemFieldValidator.validate(order);
+      this.assertNoDuplicateOrderItems(order.orderItems);
       this.validateAmount(order);
 
       for (const orderItem of order.orderItems) {
@@ -77,6 +79,18 @@ export class OrderItemValidator {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return undefined;
+  }
+
+  private assertNoDuplicateOrderItems(orderItems: OrderItem[]): void {
+    const blids = orderItems
+      .filter(
+        (orderItem) =>
+          isNotNullish(orderItem.blid) &&
+          ["partly-payment", "rent"].includes(orderItem.type),
+      )
+      .map((orderItem) => orderItem.blid);
+    if (blids.length > 0 && blids.length !== new Set(blids).size)
+      throw new BlError("order contains multiple of the same blid").code(814);
   }
 
   private async validateOrderItemBasedOnType(

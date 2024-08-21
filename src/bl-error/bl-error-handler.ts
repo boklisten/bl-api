@@ -172,6 +172,11 @@ export class BlErrorHandler {
         blapiErrorResponse.msg = "Forsørger har allerede signert";
         blapiErrorResponse.httpStatus = 409;
         break;
+      case 814:
+        blapiErrorResponse.msg =
+          "Orderen inneholder en eller flere bøker med lik blid. Sjekk at du ikke har skannet samme bok to ganger";
+        blapiErrorResponse.httpStatus = 400;
+        break;
     }
 
     return blapiErrorResponse;

@@ -10,3 +10,4 @@ src/config/secrets.ts
 
 *.swp
 Session.vim
+.DS_Store
