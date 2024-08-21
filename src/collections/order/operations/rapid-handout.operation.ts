@@ -148,7 +148,7 @@ export class RapidHandoutOperation implements Operation {
       .find(({ relevantOrderItem }) => relevantOrderItem !== undefined);
 
     if (!customerOrder) {
-      throw new BlError("No customer order for rapid handout item").code(200);
+      throw new BlError("No customer order for rapid handout item").code(805);
     }
     const branch = await this._branchStorage.get(customerOrder.order.branch);
 
