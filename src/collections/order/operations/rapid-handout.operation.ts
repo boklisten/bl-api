@@ -142,7 +142,7 @@ export class RapidHandoutOperation implements Operation {
             !orderItem.delivered &&
             !orderItem.movedToOrder &&
             orderItem.item === itemId &&
-            orderItem.type === "rent",
+            (orderItem.type === "rent" || orderItem.type === "partly-payment"),
         ),
       }))
       .find(({ relevantOrderItem }) => relevantOrderItem !== undefined);
