@@ -26,9 +26,10 @@ export class LocalAuth {
   private createPassportStrategy(localLoginValidator: LocalLoginValidator) {
     passport.use(
       new Strategy((username, password, done) => {
-        localLoginValidator.validate(username, password).then(
+        const normalizedUsername = username.toLowerCase().replace(" ", "");
+        localLoginValidator.validate(normalizedUsername, password).then(
           () => {
-            this.tokenHandler.createTokens(username).then(
+            this.tokenHandler.createTokens(normalizedUsername).then(
               (tokens: { accessToken: string; refreshToken: string }) => {
                 done(null, tokens);
               },

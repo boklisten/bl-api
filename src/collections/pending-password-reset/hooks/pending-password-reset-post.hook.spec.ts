@@ -95,12 +95,15 @@ describe("PendingPasswordResetPostHook", () => {
 
     it("should reject if username (email) is not found in storage", async () => {
       const passwordResetRequest: PasswordResetRequest = {
-        email: "notFound@mail.com",
+        email: "cityofatlantis@mail.com",
       };
 
       await expect(
         pendingPasswordResetPostHook.before(passwordResetRequest),
-      ).to.be.rejectedWith(BlError, /username "notFound@mail.com" not found/);
+      ).to.be.rejectedWith(
+        BlError,
+        /username "cityofatlantis@mail.com" not found/,
+      );
     });
 
     describe("when user is found in storage", () => {

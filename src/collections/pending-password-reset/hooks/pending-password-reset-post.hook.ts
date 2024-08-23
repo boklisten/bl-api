@@ -26,12 +26,15 @@ export class PendingPasswordResetPostHook extends Hook {
   ): Promise<PendingPasswordReset> {
     validatePasswordResetRequest(passwordResetRequest);
 
+    const normalizedEmail = passwordResetRequest.email
+      .toLowerCase()
+      .replace(" ", "");
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const user = await this.userHandler
-      .getByUsername(passwordResetRequest.email)
+      .getByUsername(normalizedEmail)
       .catch((getUserError: BlError) => {
-        throw new BlError(`username "${passwordResetRequest.email}" not found`)
+        throw new BlError(`username "${normalizedEmail}" not found`)
           .code(10702)
           .add(getUserError);
       });
@@ -59,16 +62,16 @@ export class PendingPasswordResetPostHook extends Hook {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     await this.messenger
-      .passwordReset(user.id, passwordResetRequest.email, id, token)
+      .passwordReset(user.id, normalizedEmail, id, token)
       .catch(() => {
         throw new BlError(
-          `Unable to send password reset email to ${passwordResetRequest.email}`,
+          `Unable to send password reset email to ${normalizedEmail}`,
         ).code(10200);
       });
 
     return {
       id,
-      email: passwordResetRequest.email,
+      email: normalizedEmail,
       tokenHash,
       salt,
     };
