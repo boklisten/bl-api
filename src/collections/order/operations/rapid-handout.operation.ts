@@ -176,7 +176,7 @@ export class RapidHandoutOperation implements Operation {
       amount: 0,
       branch: branch.id,
       customer: customerId,
-      byCustomer: true,
+      byCustomer: false,
       pendingSignature: false,
       orderItems: [
         {
