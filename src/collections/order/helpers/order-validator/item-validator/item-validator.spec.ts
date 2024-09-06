@@ -15,12 +15,20 @@ describe("ItemValidator", () => {
   beforeEach(() => {
     testItem = {
       id: "i1",
+      buyback: false,
+      digital: false,
       title: "Signatur 2",
       type: "book",
       info: {
-        isbn: "",
+        isbn: 0,
+        subject: "",
+        year: 0,
+        price: {},
+        weight: "",
+        distributor: "",
+        discount: 0,
+        publisher: "",
       },
-      desc: "",
       taxRate: 0,
       price: 100,
       categories: [],

@@ -295,7 +295,7 @@ export class EmailService implements MessengerService {
   ): ItemList["items"][number] {
     if (message.messageSubtype === "partly-payment") {
       return {
-        id: this.getItemIsbn(item),
+        id: item.info.isbn.toString(),
         title: item.title, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         deadline: this.formatDeadline(message.info["deadline"]),
@@ -303,7 +303,7 @@ export class EmailService implements MessengerService {
       };
     } else {
       return {
-        id: this.getItemIsbn(item),
+        id: item.info.isbn.toString(),
         title: item.title, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         deadline: this.formatDeadline(message.info["deadline"]),
@@ -316,11 +316,6 @@ export class EmailService implements MessengerService {
       ? dateService.toPrintFormat(deadline, "Europe/Oslo")
       : "";
   }
-
-  private getItemIsbn(item: Item): string {
-    return item.info && item.info["isbn"] ? item.info["isbn"] : item.id;
-  }
-
   private getCustomerItemLeftToPayTotal(customerItems: CustomerItem[]): number {
     return customerItems.reduce(
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

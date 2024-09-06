@@ -83,6 +83,20 @@ describe("DeliveryPostHook", () => {
       type: "book",
       price: 100,
       taxRate: 0,
+
+      buyback: false,
+      categories: [],
+      digital: false,
+      info: {
+        isbn: 0,
+        subject: "",
+        year: 0,
+        price: {},
+        weight: "",
+        distributor: "",
+        discount: 0,
+        publisher: "",
+      },
     };
 
     testOrder = {

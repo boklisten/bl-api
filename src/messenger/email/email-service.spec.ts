@@ -111,7 +111,11 @@ describe("EmailService", () => {
     it("should call emailHandler.sendReminder", (done) => {
       postOfficeSendStub.reset();
       postOfficeSendStub.resolves(true);
-      itemStorageGetStub.resolves({ id: "item1", title: "title" } as Item);
+      itemStorageGetStub.resolves({
+        id: "item1",
+        title: "title",
+        info: { isbn: 123 },
+      } as Item);
 
       const message: Message = {
         id: "message1",
@@ -136,7 +140,11 @@ describe("EmailService", () => {
     it("should call emailHandler.sendReminder twice if userDetail.dob is under 18 and has a valid guardian", (done) => {
       postOfficeSendStub.reset();
       postOfficeSendStub.resolves(true);
-      itemStorageGetStub.resolves({ id: "item1", title: "title" } as Item);
+      itemStorageGetStub.resolves({
+        id: "item1",
+        title: "title",
+        info: { isbn: 123 },
+      } as Item);
 
       const message: Message = {
         id: "message1",
@@ -225,7 +233,7 @@ describe("EmailService", () => {
       const item1 = {
         id: "item1",
         info: {
-          isbn: "123",
+          isbn: 123,
         },
         title: "Signatur 1",
       } as Item;
@@ -233,7 +241,7 @@ describe("EmailService", () => {
       const item2 = {
         id: "item2",
         info: {
-          isbn: "456",
+          isbn: 456,
         },
         title: "Terra Mater",
       } as Item;

@@ -15,7 +15,6 @@ export const itemSchema = new Schema<ToSchema<Item>>({
   digital: {
     type: Boolean,
     default: false,
-    required: false,
   },
   price: {
     type: Number,
@@ -26,17 +25,46 @@ export const itemSchema = new Schema<ToSchema<Item>>({
     required: true,
   },
   info: {
-    type: Schema.Types.Mixed,
-    required: false,
+    type: {
+      isbn: {
+        type: Number,
+        required: true,
+      },
+      subject: {
+        type: String,
+        required: true,
+      },
+      year: {
+        type: Number,
+        required: true,
+      },
+      price: {
+        type: Map,
+        of: Number,
+        required: true,
+      },
+      weight: {
+        type: String,
+        required: true,
+      },
+      distributor: {
+        type: String,
+        required: true,
+      },
+      discount: {
+        type: Number,
+        required: true,
+      },
+      publisher: {
+        type: String,
+        required: true,
+      },
+    },
+    required: true,
   },
   buyback: {
     type: Boolean,
-    required: false,
     default: false,
-  },
-  desc: {
-    type: String,
-    required: false,
   },
   categories: {
     type: [String],

@@ -135,7 +135,7 @@ export class BringDeliveryService {
   private calculateTotalWeight(items: Item[]) {
     let totalWeightInGrams = items.reduce((total, nextItem) => {
       const defaultWeight = 1;
-      const weightField = Number(nextItem?.info["weight"] ?? defaultWeight);
+      const weightField = Number(nextItem.info.weight);
       const weight = isNaN(weightField) ? defaultWeight : weightField;
       return total + weight * 1000;
     }, 0);
