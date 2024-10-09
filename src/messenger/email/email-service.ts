@@ -470,7 +470,13 @@ export class EmailService implements MessengerService {
       pendingPasswordResetId +
       `?resetToken=${resetToken}`;
 
-    await this._emailHandler.sendPasswordReset(emailSetting, passwordResetUri);
+    await sendMail(
+      emailSetting,
+      EMAIL_SETTINGS.types.passwordReset.templateId,
+      {
+        passwordResetUri,
+      },
+    );
   }
 }
 

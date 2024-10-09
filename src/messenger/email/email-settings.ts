@@ -14,6 +14,7 @@ export const EMAIL_SETTINGS = {
       fromEmail: "ikkesvar@boklisten.no",
       subject: "Tilbakestill passordet hos Boklisten.no",
       path: "auth/reset/",
+      templateId: "d-66e886995d4e46a0adfb133a163952d9",
     },
     guardianSignature: {
       fromEmail: "ikkesvar@boklisten.no",
