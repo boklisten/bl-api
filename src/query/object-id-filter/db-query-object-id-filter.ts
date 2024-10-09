@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { Types } from "mongoose";
 
 export type ObjectIdFilter = {
@@ -20,6 +21,10 @@ export class DbQueryObjectIdFilter {
     if (validStringParams.length <= 0) return [];
 
     const objectIdFilters: ObjectIdFilter[] = [];
+
+    if (ObjectId.isValid(query.s)) {
+      query._id = query.s;
+    }
 
     try {
       for (const param in query) {
