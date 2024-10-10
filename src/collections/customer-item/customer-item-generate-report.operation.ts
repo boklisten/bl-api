@@ -132,7 +132,6 @@ export class CustomerItemGenerateReportOperation implements Operation {
         $project: {
           handoutBranch: { $first: "$branchInfo.name" },
           handoutTime: "$handoutInfo.time",
-          handoutEmployee: { $first: "$employeeInfo.name" },
           lastUpdated: 1,
           deadline: 1,
           blid: 1,
@@ -145,6 +144,7 @@ export class CustomerItemGenerateReportOperation implements Operation {
           guardianEmail: { $first: "$customerInfo.guardian.email" },
           guardianPhone: { $first: "$customerInfo.guardian.phone" },
           guardianName: { $first: "$customerInfo.guardian.name" },
+          handoutEmployee: { $first: "$employeeInfo.name" },
           comments: 1,
           pivot: "1",
         },
