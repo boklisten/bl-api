@@ -16,6 +16,18 @@ export class UserDetailUpdateHook extends Hook {
       .join("");
   };
 
+  private cleanGuardianInfo(
+    guardian: UserDetail["guardian"],
+  ): UserDetail["guardian"] {
+    return (
+      guardian && {
+        ...guardian,
+        name: this.cleanUserInput(guardian.name),
+        email: guardian.email.toLowerCase(),
+      }
+    );
+  }
+
   public override async before(
     body: unknown,
     accessToken: AccessToken,
@@ -51,7 +63,9 @@ export class UserDetailUpdateHook extends Hook {
       ...(postCode !== undefined && { postCode }),
       ...(phone !== undefined && { phone }),
       ...(emailConfirmed !== undefined && { emailConfirmed }),
-      ...(guardian !== undefined && { guardian }),
+      ...(guardian !== undefined && {
+        guardian: this.cleanGuardianInfo(guardian) ?? guardian,
+      }),
     };
   }
 }
