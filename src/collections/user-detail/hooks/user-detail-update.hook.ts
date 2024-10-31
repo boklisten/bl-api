@@ -63,9 +63,10 @@ export class UserDetailUpdateHook extends Hook {
       ...(postCode !== undefined && { postCode }),
       ...(phone !== undefined && { phone }),
       ...(emailConfirmed !== undefined && { emailConfirmed }),
-      ...(guardian !== undefined && {
-        guardian: this.cleanGuardianInfo(guardian) ?? guardian,
-      }),
+      ...(guardian?.name &&
+        guardian?.email && {
+          guardian: this.cleanGuardianInfo(guardian) ?? guardian,
+        }),
     };
   }
 }
