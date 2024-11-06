@@ -7,6 +7,7 @@ import {
 import { CustomerItemGenerateReportOperation } from "@/collections/customer-item/customer-item-generate-report.operation";
 import { customerItemSchema } from "@/collections/customer-item/customer-item.schema";
 import { CustomerItemPostHook } from "@/collections/customer-item/hooks/customer-item-post.hook";
+import { PublicBlidLookupOperation } from "@/collections/customer-item/public-blid-lookup.operation";
 import { itemSchema } from "@/collections/item/item.schema";
 import { userDetailSchema } from "@/collections/user-detail/user-detail.schema";
 
@@ -40,6 +41,13 @@ export class CustomerItemCollection implements BlCollection {
           operation: new CustomerItemGenerateReportOperation(),
           restriction: {
             permissions: ["admin", "super"],
+          },
+        },
+        {
+          name: "public-blid-lookup",
+          operation: new PublicBlidLookupOperation(),
+          restriction: {
+            permissions: ["customer", "employee", "manager", "admin", "super"],
           },
         },
       ],
