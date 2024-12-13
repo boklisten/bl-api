@@ -116,7 +116,7 @@ async function addIdPagesToDoc(
     pngBuffers.push(chunk);
   }
 
-  const pngBuffer = Buffer.concat(pngBuffers);
+  const pngBuffer = Buffer.concat(pngBuffers as Uint8Array[]);
 
   for (let i = 0; i < 2; i++) {
     doc.addPage({
@@ -142,7 +142,7 @@ async function generateBlIdPDF(): Promise<Buffer> {
     buffers.push(chunk as Buffer);
   }
 
-  return Buffer.concat(buffers);
+  return Buffer.concat(buffers as Uint8Array[]);
 }
 
 export default generateBlIdPDF;

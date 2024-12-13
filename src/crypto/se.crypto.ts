@@ -14,8 +14,12 @@ export class SeCrypto {
 
       const key = crypto.randomBytes(32);
       const iv = crypto.randomBytes(16);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(key), iv);
       const encrypted = cipher.update(msg);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       resolve(Buffer.concat([encrypted, cipher.final()]).toString("hex"));
     });
   }
@@ -47,6 +51,8 @@ export class SeCrypto {
   }
 
   public timingSafeEqual(a: string, b: string): boolean {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
   }
 
