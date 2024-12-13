@@ -757,10 +757,10 @@
     "@types/range-parser" "*"
     "@types/send" "*"
 
-"@types/express-session@^1.18.0":
-  version "1.18.0"
-  resolved "https://registry.yarnpkg.com/@types/express-session/-/express-session-1.18.0.tgz#7c6f25c3604b28d6bc08a2e3929997bbc7672fa2"
-  integrity sha512-27JdDRgor6PoYlURY+Y5kCakqp5ulC0kmf7y+QwaY+hv9jEFuQOThgkjyA53RP3jmKuBsH5GR6qEfFmvb8mwOA==
+"@types/express-session@^1.18.1":
+  version "1.18.1"
+  resolved "https://registry.yarnpkg.com/@types/express-session/-/express-session-1.18.1.tgz#67c629a34b60a63a4724f359aac0c0e6d1f15365"
+  integrity sha512-S6TkD/lljxDlQ2u/4A70luD8/ZxZcrU5pQwI1rVXCiaVIywoFgbA+PIUNDjPhQpPdK0dGleLtYc/y7XWBfclBg==
   dependencies:
     "@types/express" "*"
 
@@ -4319,10 +4319,10 @@ mocha@^10.7.3:
     yargs-parser "^20.2.9"
     yargs-unparser "^2.0.0"
 
-moment-timezone@^0.5.45:
-  version "0.5.45"
-  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.45.tgz#cb685acd56bac10e69d93c536366eb65aa6bcf5c"
-  integrity sha512-HIWmqA86KcmCAhnMAN0wuDOARV/525R2+lOLotuGFzn4HO+FH+/645z2wx0Dt3iDv6/p61SIvKnDstISainhLQ==
+moment-timezone@^0.5.46:
+  version "0.5.46"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.46.tgz#a21aa6392b3c6b3ed916cd5e95858a28d893704a"
+  integrity sha512-ZXm9b36esbe7OmdABqIWJuBBiLLwAjrN7CE+7sYdCCx82Nabt1wHDj8TVseS59QIlfFPbOoiBPm6ca9BioG4hw==
   dependencies:
     moment "^2.29.4"
 
