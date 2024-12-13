@@ -88,8 +88,8 @@ export class MongooseModelCreator<T> {
       delete document["__v"];
       for (const key of Object.keys(document)) {
         const value = document[key];
-        if (value instanceof mongoose.Types.ObjectId) {
-          document[key] = value.toString();
+        if (mongoose.isValidObjectId(value)) {
+          document[key] = String(value);
         } else if (typeof value === "object") {
           MongooseModelCreator.transformObject(value);
         }
