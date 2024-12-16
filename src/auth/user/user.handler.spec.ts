@@ -32,14 +32,16 @@ const testUser = {
 } as User;
 
 describe("UserHandler", () => {
-  const userStorage: BlDocumentStorage<User> = new BlDocumentStorage(
+  const userStorage = new BlDocumentStorage<User>(
     BlCollectionName.Users,
     UserSchema,
   );
   const emailValidationHelper: EmailValidationHelper =
     new EmailValidationHelper();
-  const userDetailStorage: BlDocumentStorage<UserDetail> =
-    new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails,
+    userDetailSchema,
+  );
   const localLoginHandler: LocalLoginHandler = new LocalLoginHandler();
   const userHandler = new UserHandler(
     userDetailStorage,

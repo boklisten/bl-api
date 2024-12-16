@@ -28,13 +28,13 @@ export interface MatcherSpec {
   deadlineBefore: string;
   matchMeetingDurationInMS: number;
   includeSenderItemsFromOtherBranches: boolean;
-  additionalReceiverItems: { [branch: string]: string[] };
-  deadlineOverrides: { [item: string]: string };
+  additionalReceiverItems: Record<string, string[]>;
+  deadlineOverrides: Record<string, string>;
 }
 
 export function candidateMatchToMatch(
   candidate: MatchWithMeetingInfo,
-  deadlineOverrides: { [item: string]: string },
+  deadlineOverrides: Record<string, string>,
 ): Match {
   switch (candidate.variant) {
     case CandidateMatchVariant.StandMatch:
@@ -129,7 +129,7 @@ export async function getMatchableSenders(
 export async function getMatchableReceivers(
   branchIds: string[],
   orderStorage: BlDocumentStorage<Order>,
-  additionalReceiverItems: { [branch: string]: string[] },
+  additionalReceiverItems: Record<string, string[]>,
 ): Promise<MatchableUser[]> {
   const aggregatedReceivers = (await orderStorage.aggregate([
     {

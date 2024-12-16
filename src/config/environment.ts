@@ -27,9 +27,7 @@ export enum BlEnvironment {
   BRING_API_ID = "BRING_API_ID",
 }
 
-const testPlaceHolders: {
-  [key in BlEnvironment]?: string;
-} = {
+const testPlaceHolders: Partial<Record<BlEnvironment, string>> = {
   [BlEnvironment.SENDGRID_API_KEY]: "SG.placeholder",
   [BlEnvironment.TWILIO_SMS_SID]: "AC.placeholder",
 };

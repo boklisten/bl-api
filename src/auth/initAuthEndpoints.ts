@@ -17,41 +17,39 @@ import { UserHandler } from "@/auth/user/user.handler";
 import { SeCrypto } from "@/crypto/se.crypto";
 import { SEResponseHandler } from "@/response/se.response.handler";
 
-export class BlAuth {
-  constructor(router: Router) {
-    const userHandler = new UserHandler();
+export function initAuthEndpoints(router: Router) {
+  const userHandler = new UserHandler();
 
-    const localLoginPasswordValidator = new LocalLoginPasswordValidator(
-      new SeCrypto(),
-    );
+  const localLoginPasswordValidator = new LocalLoginPasswordValidator(
+    new SeCrypto(),
+  );
 
-    const localLoginHandler = new LocalLoginHandler();
-    const seCrypto = new SeCrypto();
-    const saltGenerator = new SaltGenerator();
-    const hashedPasswordGenerator = new HashedPasswordGenerator(
-      saltGenerator,
-      seCrypto,
-    );
-    const providerIdGenerator = new ProviderIdGenerator(seCrypto);
-    const localLoginCreator = new LocalLoginCreator(
-      hashedPasswordGenerator,
-      providerIdGenerator,
-    );
-    const localLoginValidator = new LocalLoginValidator(
-      localLoginHandler,
-      localLoginPasswordValidator,
-      localLoginCreator,
-      userHandler,
-    );
-    const resHandler = new SEResponseHandler();
+  const localLoginHandler = new LocalLoginHandler();
+  const seCrypto = new SeCrypto();
+  const saltGenerator = new SaltGenerator();
+  const hashedPasswordGenerator = new HashedPasswordGenerator(
+    saltGenerator,
+    seCrypto,
+  );
+  const providerIdGenerator = new ProviderIdGenerator(seCrypto);
+  const localLoginCreator = new LocalLoginCreator(
+    hashedPasswordGenerator,
+    providerIdGenerator,
+  );
+  const localLoginValidator = new LocalLoginValidator(
+    localLoginHandler,
+    localLoginPasswordValidator,
+    localLoginCreator,
+    userHandler,
+  );
+  const resHandler = new SEResponseHandler();
 
-    const tokenHandler = new TokenHandler(userHandler);
+  const tokenHandler = new TokenHandler(userHandler);
 
-    new AccessTokenAuth();
+  new AccessTokenAuth();
 
-    new GoogleAuth(router, resHandler);
-    new FacebookAuth(router, resHandler);
-    new LocalAuth(router, localLoginValidator, resHandler, tokenHandler);
-    new TokenEndpoint(router, resHandler, tokenHandler);
-  }
+  new GoogleAuth(router, resHandler);
+  new FacebookAuth(router, resHandler);
+  new LocalAuth(router, localLoginValidator, resHandler, tokenHandler);
+  new TokenEndpoint(router, resHandler, tokenHandler);
 }

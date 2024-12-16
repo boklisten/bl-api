@@ -1,7 +1,7 @@
-export type BooleanFilter = {
+export interface BooleanFilter {
   fieldName: string;
   value: boolean;
-};
+}
 
 export class DbQueryBooleanFilter {
   public getBooleanFilters(

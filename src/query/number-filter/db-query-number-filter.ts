@@ -1,11 +1,11 @@
-export type NumberFilter = {
+export interface NumberFilter {
   fieldName: string;
   op: {
     $lt?: number;
     $gt?: number;
     $eq?: number;
   };
-};
+}
 
 export class DbQueryNumberFilter {
   private operationIdentifiers = [

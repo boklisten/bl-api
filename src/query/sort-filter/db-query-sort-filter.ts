@@ -1,7 +1,7 @@
-export type SortFilter = {
+export interface SortFilter {
   fieldName: string;
   direction: 1 | -1;
-};
+}
 export class DbQuerySortFilter {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public getSortFilters(query: any, validSortParams: string[]): SortFilter[] {

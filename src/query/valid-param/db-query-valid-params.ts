@@ -1,7 +1,7 @@
-export type ValidParam = {
+export interface ValidParam {
   fieldName: string;
   type: "string" | "number" | "boolean" | "date" | "expand" | "object-id";
-};
+}
 
 export class DbQueryValidParams {
   private validParams: ValidParam[];

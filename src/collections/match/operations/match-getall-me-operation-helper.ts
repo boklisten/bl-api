@@ -28,7 +28,7 @@ function selectMatchRelevantUserDetails({
 function mapBlIdsToItemIds(
   blIds: string[],
   blIdsToItemIdsMap: Map<string, string>,
-): { [customerItemId: string]: string } {
+): Record<string, string> {
   return Object.fromEntries(
     blIds.map(String).map((blId) => {
       const itemId = blIdsToItemIdsMap.get(blId);
@@ -43,7 +43,7 @@ function mapBlIdsToItemIds(
 function mapItemIdsToItemDetails(
   itemIds: string[],
   itemsMap: Map<string, Item>,
-): { [itemId: string]: MatchRelevantItemDetails } {
+): Record<string, MatchRelevantItemDetails> {
   return Object.fromEntries(
     Array.from(new Set(itemIds.map(String))).map((itemId) => {
       const item = itemsMap.get(itemId);
@@ -156,7 +156,7 @@ export async function addDetailsToAllMatches(
           .getByQuery(uniqueItemQuery)
           .then((uniqueItems): [string, string] => [
             blId,
-            uniqueItems[0]!.item,
+            uniqueItems[0]?.item ?? "",
           ]);
       }),
     ),

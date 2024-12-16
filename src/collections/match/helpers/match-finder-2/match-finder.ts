@@ -31,7 +31,7 @@ import {
 export class MatchFinder {
   public senders: MatchableUser[];
   public receivers: MatchableUser[];
-  public unmatchableItems: Set<string> = new Set();
+  public unmatchableItems = new Set<string>();
 
   private matches: CandidateMatch[] = [];
   private readonly MAX_USER_MATCH_COUNT = 2;
@@ -215,7 +215,7 @@ export class MatchFinder {
    */
   private createImbalanceMinimizingMatches(
     users: MatchableUser[],
-    itemImbalances: { [item: string]: number },
+    itemImbalances: Record<string, number>,
     userIsSender: boolean,
   ) {
     for (const user of users) {

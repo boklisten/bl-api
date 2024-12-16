@@ -1,6 +1,6 @@
-export type ExpandFilter = {
+export interface ExpandFilter {
   fieldName: string;
-};
+}
 
 /**
  * Expand filter is used to retrieve linked documents

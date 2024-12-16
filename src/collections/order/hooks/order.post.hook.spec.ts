@@ -17,12 +17,14 @@ chai.use(chaiAsPromised);
 
 describe("OrderPostHook", () => {
   const orderValidator: OrderValidator = new OrderValidator();
-  const orderStorage: BlDocumentStorage<Order> = new BlDocumentStorage(
+  const orderStorage = new BlDocumentStorage<Order>(
     BlCollectionName.Orders,
     orderSchema,
   );
-  const userDetailStorage: BlDocumentStorage<UserDetail> =
-    new BlDocumentStorage(BlCollectionName.UserDetails, userDetailSchema);
+  const userDetailStorage = new BlDocumentStorage<UserDetail>(
+    BlCollectionName.UserDetails,
+    userDetailSchema,
+  );
   const userDetailHelper = new UserDetailHelper(userDetailStorage);
   const orderHookBefore: OrderHookBefore = new OrderHookBefore();
   const orderPostHook: OrderPostHook = new OrderPostHook(

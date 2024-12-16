@@ -15,7 +15,7 @@ chai.use(chaiAsPromised);
 describe("PaymentPostHook", () => {
   const paymentValidator = new PaymentValidator();
   const orderStorage = new BlDocumentStorage<Order>(BlCollectionName.Orders);
-  const paymentStorage: BlDocumentStorage<Payment> = new BlDocumentStorage(
+  const paymentStorage = new BlDocumentStorage<Payment>(
     BlCollectionName.Payments,
   );
   const paymentDibsHandler = new PaymentDibsHandler();

@@ -1,10 +1,10 @@
 import { ObjectId } from "mongodb";
 import { Types } from "mongoose";
 
-export type ObjectIdFilter = {
+export interface ObjectIdFilter {
   fieldName: string;
   value: Types.ObjectId | string | (Types.ObjectId | string)[];
-};
+}
 
 export class DbQueryObjectIdFilter {
   getObjectIdFilters(

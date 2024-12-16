@@ -1,6 +1,6 @@
-export type SkipFilter = {
+export interface SkipFilter {
   skip: number;
-};
+}
 
 export class DbQuerySkipFilter {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

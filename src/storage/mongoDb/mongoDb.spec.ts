@@ -34,7 +34,7 @@ describe("MongooseModelCreator", () => {
     it("should convert objectIDs not named 'id' in nested objects to string", () => {
       const input = { orderItems: [{ item: new ObjectId() }] };
       const expectedOutput = {
-        orderItems: [{ item: input.orderItems[0]!.item.toString() }],
+        orderItems: [{ item: input.orderItems[0]?.item.toString() }],
       };
       MongooseModelCreator.transformObject(input, undefined);
       expect(input).to.deep.eq(expectedOutput);

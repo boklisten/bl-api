@@ -14,12 +14,10 @@ import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 chai.use(chaiAsPromised);
 
 describe("OrderItemValidator", () => {
-  const branchStorage: BlDocumentStorage<Branch> = new BlDocumentStorage(
+  const branchStorage = new BlDocumentStorage<Branch>(
     BlCollectionName.Branches,
   );
-  const itemStorage: BlDocumentStorage<Item> = new BlDocumentStorage(
-    BlCollectionName.Items,
-  );
+  const itemStorage = new BlDocumentStorage<Item>(BlCollectionName.Items);
   const orderItemFieldValidator = new OrderFieldValidator();
   const orderItemRentValidator = new OrderItemRentValidator();
   const orderItemBuyValidator = new OrderItemBuyValidator();

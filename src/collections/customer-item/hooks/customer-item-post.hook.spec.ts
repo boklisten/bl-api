@@ -35,7 +35,6 @@ describe("CustomerItemPostHook", () => {
   const customerItemValidator = new CustomerItemValidator(customerItemStorage);
   const customerItemPostHook = new CustomerItemPostHook(
     customerItemValidator,
-    customerItemStorage,
     userDetailStorage,
     orderStorage,
   );

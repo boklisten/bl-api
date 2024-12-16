@@ -382,7 +382,7 @@ export class OrderPlaceOperation implements Operation {
         ),
       (handoutCustomerItem, userMatch) => [
         ...userMatch.receivedBlIds,
-        handoutCustomerItem.blid!,
+        handoutCustomerItem?.blid ?? "",
       ],
     );
 
@@ -412,7 +412,7 @@ export class OrderPlaceOperation implements Operation {
         ),
       (returnCustomerItem, userMatch) => [
         ...userMatch.deliveredBlIds,
-        returnCustomerItem.blid!,
+        returnCustomerItem?.blid ?? "",
       ],
     );
 

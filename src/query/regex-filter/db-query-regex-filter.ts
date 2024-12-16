@@ -1,10 +1,10 @@
-export type RegexFilter = {
+export interface RegexFilter {
   fieldName: string;
   op: {
     $regex: string;
     $options: string;
   };
-};
+}
 
 export class DbQueryRegexFilter {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -13,11 +13,11 @@ chai.use(chaiAsPromised);
 describe("OrderPlacedValidator", () => {
   describe("#validate()", () => {
     let testOrder: Order;
-    const paymentStorage: BlDocumentStorage<Payment> = new BlDocumentStorage(
+    const paymentStorage = new BlDocumentStorage<Payment>(
       BlCollectionName.Payments,
     );
 
-    const deliveryStorage: BlDocumentStorage<Delivery> = new BlDocumentStorage(
+    const deliveryStorage = new BlDocumentStorage<Delivery>(
       BlCollectionName.Deliveries,
     );
     const orderPlacedValidator = new OrderPlacedValidator(

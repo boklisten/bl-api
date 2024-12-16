@@ -1,6 +1,6 @@
 import { UserPermission } from "@boklisten/bl-model";
 
-export type AccessToken = {
+export interface AccessToken {
   iss: string;
   aud: string;
   expiresIn: string;
@@ -9,4 +9,4 @@ export type AccessToken = {
   username: string;
   permission: UserPermission;
   details: string;
-};
+}

@@ -22,9 +22,6 @@ export class CustomerItemPostHook extends Hook {
 
   constructor(
     customerItemValidator?: CustomerItemValidator,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    customerItemStorage?: BlDocumentStorage<CustomerItem>,
     userDetailStorage?: BlDocumentStorage<UserDetail>,
     orderStorage?: BlDocumentStorage<Order>,
     userDetailHelper?: UserDetailHelper,
@@ -112,7 +109,7 @@ export class CustomerItemPostHook extends Hook {
     }
 
     return this._orderStorage
-      .get(customerItem.orders[0]!)
+      .get(customerItem.orders[0] ?? "")
       .then((order: Order) => {
         //update the corresponding orderItem with customerItem
         for (const orderItem of order.orderItems) {

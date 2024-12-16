@@ -8,12 +8,12 @@ import { isNotNullish } from "@/helper/typescript-helpers";
 import { PriceService } from "@/price/price.service";
 import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
-type BranchPaymentPeriod = {
+interface BranchPaymentPeriod {
   type: Period;
   date: Date;
   maxNumberOfPeriods: number;
   percentage: number;
-};
+}
 
 export class OrderItemRentPeriodValidator {
   private _priceService: PriceService;

@@ -15,7 +15,6 @@ import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   UserMatch,
   // used for jsdoc
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Match,
   // used for jsdoc
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

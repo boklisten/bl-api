@@ -133,7 +133,7 @@ describe("DeliveryPostHook", () => {
     });
 
   sinon
-    .stub(deliveryHandler, "updateOrderBasedOnMethod") // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    .stub(deliveryHandler, "updateOrderBasedOnMethod")
     .callsFake((delivery, order, accessToken) => {
       return Promise.reject(new BlError("order could not be updated"));
     });

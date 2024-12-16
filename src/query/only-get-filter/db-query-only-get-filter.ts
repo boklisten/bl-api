@@ -1,7 +1,7 @@
-export type OnlyGetFilter = {
+export interface OnlyGetFilter {
   fieldName: string;
   value: number;
-};
+}
 
 export class DbQueryOnlyGetFilter {
   public getOnlyGetFilters(

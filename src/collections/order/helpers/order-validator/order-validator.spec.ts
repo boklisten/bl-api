@@ -19,7 +19,7 @@ describe("OrderValidator", () => {
   let testOrder: Order;
   let testBranch: Branch;
 
-  const branchStorage: BlDocumentStorage<Branch> = new BlDocumentStorage(
+  const branchStorage = new BlDocumentStorage<Branch>(
     BlCollectionName.Branches,
   );
   const orderUserDetailValidator = new OrderUserDetailValidator();

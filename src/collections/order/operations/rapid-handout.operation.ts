@@ -185,7 +185,7 @@ export class RapidHandoutOperation implements Operation {
           item: itemId,
           title: item.title,
           blid,
-          type: customerOrder.relevantOrderItem!.type,
+          type: customerOrder.relevantOrderItem?.type ?? "rent",
           amount: 0,
           unitPrice: 0,
           taxRate: 0,
@@ -222,8 +222,8 @@ export class RapidHandoutOperation implements Operation {
       const activeCustomerItems =
         await new CustomerItemActiveBlid().getActiveCustomerItems(blid);
       if (activeCustomerItems.length > 0) {
-        const lastCustomerItem = activeCustomerItems[0]!;
-        if (lastCustomerItem.customer === customerId)
+        const lastCustomerItem = activeCustomerItems[0];
+        if (lastCustomerItem?.customer === customerId)
           return "Denne boken er allerede delt ut til denne kunden.";
         return "Denne boken er allerede delt ut til en annen kunde. Sjekk bl-admin for mer informasjon.";
       }
@@ -242,7 +242,7 @@ export class RapidHandoutOperation implements Operation {
       const uniqueItems =
         await this._uniqueItemStorage.getByQuery(uniqueItemQuery);
       if (uniqueItems.length === 0) return blidNotActiveFeedback;
-      return uniqueItems[0]!;
+      return uniqueItems[0] ?? "";
     } catch {
       return blidNotActiveFeedback;
     }

@@ -185,13 +185,13 @@ export function tryFindPartialMatch(
  * Count occurrences of each item in users list
  * @param users
  */
-export function countItemOccurrences(users: MatchableUser[]): {
-  [item: string]: number;
-} {
+export function countItemOccurrences(
+  users: MatchableUser[],
+): Record<string, number> {
   return users
     .flatMap((user) => Array.from(user.items))
     .reduce(
-      (acc: { [item: string]: number }, next) => ({
+      (acc: Record<string, number>, next) => ({
         ...acc,
         [next]: acc[next] ? acc[next] + 1 : 1,
       }),
@@ -209,9 +209,9 @@ export function countItemOccurrences(users: MatchableUser[]): {
  * @private
  */
 export function calculateItemImbalances(
-  groupedSenderItems: { [item: string]: number },
-  groupedReceiverItems: { [item: string]: number },
-): { [item: string]: number } {
+  groupedSenderItems: Record<string, number>,
+  groupedReceiverItems: Record<string, number>,
+): Record<string, number> {
   return Object.keys({ ...groupedReceiverItems, ...groupedSenderItems }).reduce(
     (diffs, item) => {
       const senderItemCount = groupedSenderItems[item] ?? 0;
@@ -238,7 +238,7 @@ export function calculateItemImbalances(
  **/
 export function canMatchPerfectlyWithStand(
   user: MatchableUser,
-  itemImbalances: { [key: string]: number },
+  itemImbalances: Record<string, number>,
   userIsSender: boolean,
 ): boolean {
   return Array.from(user.items).every((item) => {
@@ -257,7 +257,7 @@ export function canMatchPerfectlyWithStand(
  */
 export function updateItemImbalances(
   items: Set<string>,
-  itemImbalances: { [key: string]: number },
+  itemImbalances: Record<string, number>,
   userIsSender: boolean,
 ): void {
   const modifier = userIsSender ? -1 : 1;

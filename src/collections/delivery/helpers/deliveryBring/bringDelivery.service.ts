@@ -7,18 +7,18 @@ import { assertEnv, BlEnvironment } from "@/config/environment";
 import { isNullish } from "@/helper/typescript-helpers";
 import { HttpHandler } from "@/http/http.handler";
 
-export type ShipmentAddress = {
+export interface ShipmentAddress {
   name: string;
   postalCode: string;
   postalCity: string;
   address: string;
-};
+}
 
-export type FacilityAddress = {
+export interface FacilityAddress {
   address: string;
   postalCode: string;
   postalCity: string;
-};
+}
 
 export class BringDeliveryService {
   private httpHandler: HttpHandler;

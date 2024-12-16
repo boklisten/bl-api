@@ -1,7 +1,7 @@
-export type StringFilter = {
+export interface StringFilter {
   fieldName: string;
   value: string;
-};
+}
 
 export class DbQueryStringFilter {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

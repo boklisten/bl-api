@@ -132,7 +132,7 @@ export class MatchTransferItemOperation implements Operation {
       throw new BlError("blid is not a valid blid").code(803);
     }
 
-    const receiverUserDetailId = blApiRequest.user!.details;
+    const receiverUserDetailId = blApiRequest.user?.details ?? "";
     return { blid, receiverUserDetailId };
   }
 
@@ -147,7 +147,7 @@ export class MatchTransferItemOperation implements Operation {
         {
           deliveredBlIds: [
             ...senderUserMatch.deliveredBlIds,
-            customerItem.blid!,
+            customerItem?.blid ?? "",
           ],
         },
         new SystemUser(),
@@ -160,7 +160,7 @@ export class MatchTransferItemOperation implements Operation {
       .find(
         (standMatch) =>
           standMatch.expectedHandoffItems.includes(customerItem.item) &&
-          !standMatch.deliveredItems.includes(customerItem.blid!),
+          !standMatch.deliveredItems.includes(customerItem?.blid ?? ""),
       );
 
     if (senderStandMatch === undefined) {
@@ -188,7 +188,7 @@ export class MatchTransferItemOperation implements Operation {
       throw new BlError("Item not in receiver expectedItems").code(805);
     }
 
-    if (receiverUserMatch.receivedBlIds.includes(customerItem.blid!)) {
+    if (receiverUserMatch.receivedBlIds.includes(customerItem?.blid ?? "")) {
       throw new BlError("Receiver has already received this item").code(806);
     }
 
@@ -196,8 +196,8 @@ export class MatchTransferItemOperation implements Operation {
       receiverUserMatch.receivedBlIds.map(async (blId) => {
         const uniqueItemQuery = new SEDbQuery();
         uniqueItemQuery.stringFilters = [{ fieldName: "blid", value: blId }];
-        return (await this._uniqueItemStorage.getByQuery(uniqueItemQuery))[0]!
-          .item;
+        return (await this._uniqueItemStorage.getByQuery(uniqueItemQuery))[0]
+          ?.item;
       }),
     );
 
@@ -221,7 +221,7 @@ export class MatchTransferItemOperation implements Operation {
     const senderUserMatch = senderUserMatches.find(
       (userMatch) =>
         userMatch.expectedItems.includes(customerItem.item) &&
-        !userMatch.deliveredBlIds.includes(customerItem.blid!),
+        !userMatch.deliveredBlIds.includes(customerItem?.blid ?? ""),
     );
     return { allSenderMatches: allSenderMatches, senderUserMatch };
   }
@@ -338,7 +338,10 @@ export class MatchTransferItemOperation implements Operation {
       receiverUserMatch.id,
       {
         // We know there's a blid because we found the CustomerItem by blid
-        receivedBlIds: [...receiverUserMatch.receivedBlIds, customerItem.blid!],
+        receivedBlIds: [
+          ...receiverUserMatch.receivedBlIds,
+          customerItem?.blid ?? "",
+        ],
       },
       new SystemUser(),
     );

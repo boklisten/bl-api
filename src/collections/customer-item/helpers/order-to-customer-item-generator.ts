@@ -34,7 +34,7 @@ export class OrderToCustomerItemGenerator {
           order,
           orderItem,
         );
-        customerItem.viewableFor = [customerDetail.blid!];
+        customerItem.viewableFor = [customerDetail?.blid ?? ""];
         customerItems.push(customerItem);
       }
     }

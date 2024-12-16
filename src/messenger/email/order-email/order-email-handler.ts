@@ -99,7 +99,7 @@ export class OrderEmailHandler {
       const branch = await this._branchStorage?.get(branchId);
       this.requestGuardianSignature(
         customerDetail,
-        branch!.name,
+        branch?.name ?? "",
         emailOrder,
         emailUser,
       );

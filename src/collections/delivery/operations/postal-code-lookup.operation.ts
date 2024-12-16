@@ -6,7 +6,7 @@ import { HttpHandler } from "@/http/http.handler";
 import { Operation } from "@/operation/operation";
 import { BlApiRequest } from "@/request/bl-api-request";
 
-type SimplifiedBringPostalCodeResponse = {
+interface SimplifiedBringPostalCodeResponse {
   postal_codes?:
     | [
         {
@@ -20,7 +20,7 @@ type SimplifiedBringPostalCodeResponse = {
       description: string;
     },
   ];
-};
+}
 
 export interface PostalCodeLookupSpec {
   postalCode: string;

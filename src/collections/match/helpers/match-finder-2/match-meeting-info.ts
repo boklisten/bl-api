@@ -82,7 +82,7 @@ function findEarliestLocationTime(
 function findEarliestPossibleMeetingTime(
   users: string[],
   startTime: Date,
-  userMeetingTimes: { [userId: string]: Date[] },
+  userMeetingTimes: Record<string, Date[]>,
   meetingDurationInMS: number,
 ): Date {
   let earliestPossibleTime = startTime;
@@ -213,7 +213,7 @@ function assignMeetingInfoToMatches(
 
   const sendersWithMatches = groupMatchesBySender(userMatches);
 
-  const userMeetingTimes: { [userId: string]: Date[] } = userMatches.reduce(
+  const userMeetingTimes: Record<string, Date[]> = userMatches.reduce(
     (acc, userMatch) => ({
       ...acc,
       [userMatch.senderId]: [],
@@ -222,7 +222,7 @@ function assignMeetingInfoToMatches(
     {},
   );
 
-  const locationMeetingTimes: { [location: string]: Date[] } =
+  const locationMeetingTimes: Record<string, Date[]> =
     userMatchLocations.reduce(
       (acc, location) => ({
         ...acc,

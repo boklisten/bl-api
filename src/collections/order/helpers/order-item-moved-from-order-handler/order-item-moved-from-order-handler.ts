@@ -6,11 +6,11 @@ import { orderSchema } from "@/collections/order/order.schema";
 import { isNullish } from "@/helper/typescript-helpers";
 import { BlDocumentStorage } from "@/storage/blDocumentStorage";
 
-type OrderItemToUpdate = {
+interface OrderItemToUpdate {
   itemId: string;
   originalOrderId: string;
   newOrderId: string;
-};
+}
 
 export class OrderItemMovedFromOrderHandler {
   private readonly _orderStorage: BlDocumentStorage<Order>;

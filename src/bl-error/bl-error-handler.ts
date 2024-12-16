@@ -3,8 +3,6 @@ import { BlError, BlapiErrorResponse } from "@boklisten/bl-model";
 import { logger } from "@/logger/logger";
 
 export class BlErrorHandler {
-  constructor() {}
-
   public createBlapiErrorResponse(err: unknown): BlapiErrorResponse {
     const blError =
       err instanceof BlError

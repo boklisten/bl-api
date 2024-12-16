@@ -18,7 +18,7 @@ export async function createMatchReceiveOrder(
   userDetailId: string,
   itemStorage: BlDocumentStorage<Item>,
   branchStorage: BlDocumentStorage<Branch>,
-  deadlineOverrides?: { [item: string]: string },
+  deadlineOverrides?: Record<string, string>,
 ): Promise<Order> {
   const item = await itemStorage.get(customerItem.item);
 
@@ -90,7 +90,7 @@ export async function createMatchReceiveOrder(
         movedFromOrder,
         item: item.id,
         title: item.title,
-        blid: customerItem.blid!,
+        blid: customerItem?.blid ?? "",
         type: "match-receive",
         amount: 0,
         unitPrice: 0,
@@ -138,7 +138,7 @@ export async function createMatchDeliverOrder(
       {
         item: item.id,
         title: item.title,
-        blid: customerItem.blid!,
+        blid: customerItem.blid ?? "",
         customerItem: customerItem.id,
         type: "match-deliver",
         amount: 0,

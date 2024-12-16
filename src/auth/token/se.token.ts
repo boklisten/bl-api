@@ -1,7 +1,7 @@
 import { BlError, UserPermission } from "@boklisten/bl-model";
 import { sign, verify } from "jsonwebtoken";
 
-export type JwtPayload = {
+export interface JwtPayload {
   iss: string;
   aud: string;
   iat: number;
@@ -9,19 +9,19 @@ export type JwtPayload = {
   permission: UserPermission;
   blid: string;
   username: string;
-};
+}
 
-export type ValidCustomJwtPayload = {
+export interface ValidCustomJwtPayload {
   permissions?: string[];
   blid?: string;
   username?: string;
-};
+}
 
-export type JwtOptions = {
+export interface JwtOptions {
   exp: number;
   aud: string;
   iss: string;
-};
+}
 
 export class SEToken {
   private options: JwtOptions;

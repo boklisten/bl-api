@@ -44,7 +44,7 @@ export class GetMyMatchesOperation implements Operation {
 
   async run(blApiRequest: BlApiRequest): Promise<BlapiResponse> {
     const matches = await getAllMatchesForUser(
-      blApiRequest.user!.details,
+      blApiRequest.user?.details ?? "",
       this._matchStorage,
     );
 

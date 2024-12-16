@@ -10,7 +10,7 @@
     "serve": "node ./dist/index.js",
     "prettier": "prettier --write . --ignore-path=.gitignore",
     "prettier:check": "prettier --check . --ignore-path=.gitignore",
-    "lint": "eslint .",
+    "lint": "eslint src --ignore-pattern \"**/*.spec.ts\"",
     "type-check": "tsc --noEmit",
     "test": "API_ENV=test mocha \"src/**/*.spec.ts\""
   },
@@ -56,7 +56,7 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
-    "pdfkit": "^0.15.1",
+    "pdfkit": "^0.15.2",
     "qrcode": "^1.5.4",
     "qs": "^6.13.1",
     "request": "^2.88.0",
@@ -66,11 +66,12 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
     "@typescript-eslint/parser": "^8.18.0",
     "chai": "^4.4.1",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^8.57.1",
+    "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.7.0",
     "eslint-plugin-deprecation": "^3.0.0",
@@ -82,7 +83,8 @@
     "sinon": "^18.0.0",
     "sinon-chai": "^3.6.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0"
   },
   "repository": {
     "type": "git",

@@ -1,13 +1,13 @@
 import moment from "moment";
 
-export type DateFilter = {
+export interface DateFilter {
   fieldName: string;
   op: {
     $lt?: Date;
     $gt?: Date;
     $eq?: Date;
   };
-};
+}
 
 export class DbQueryDateFilter {
   private operationIdentifiers: {

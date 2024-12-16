@@ -42,7 +42,7 @@ export async function sendSMS(
 export async function massSendSMS(
   toNumbers: string[],
   message: string,
-): Promise<Array<PromiseSettledResult<Awaited<Promise<void>>>>> {
+): Promise<PromiseSettledResult<Awaited<Promise<void>>>[]> {
   return Promise.allSettled(
     toNumbers.map((toNumber) => sendSMS(toNumber, message)),
   );

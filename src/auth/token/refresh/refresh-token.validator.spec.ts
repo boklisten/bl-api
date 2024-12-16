@@ -67,7 +67,7 @@ describe("RefreshTokenValidator", () => {
         sign(
           { username: "test", iat: Math.floor(Date.now() / 1000) - 10000 },
           "test",
-          { expiresIn: "1s" }, // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          { expiresIn: "1s" },
           (error, refreshToken) => {
             refreshTokenValidator
               .validate(refreshToken)

@@ -1,6 +1,6 @@
-export type LimitFilter = {
+export interface LimitFilter {
   limit: number;
-};
+}
 
 export class DbQueryLimitFilter {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

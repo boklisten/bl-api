@@ -49,7 +49,7 @@ function printLocationMetrics(matches: MatchWithMeetingInfo[]) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           ...acc[location],
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
           count:
             // @ts-ignore
             acc[location]?.count === undefined ? 1 : acc[location].count + 1,

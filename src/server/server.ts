@@ -13,7 +13,7 @@ import session from "express-session";
 import mongoose from "mongoose";
 import passport from "passport";
 
-import { BlAuth } from "@/auth/bl.auth";
+import { initAuthEndpoints } from "@/auth/initAuthEndpoints";
 import { CollectionEndpointCreator } from "@/collection-endpoint/collection-endpoint-creator";
 import { assertEnv, BlEnvironment } from "@/config/environment";
 import { logger } from "@/logger/logger";
@@ -32,7 +32,7 @@ export class Server {
 
     this.initialServerConfig();
     this.initialPassportConfig();
-    new BlAuth(this.router);
+    initAuthEndpoints(this.router);
     this.generateEndpoints();
     this.connectToDbAndStartServer();
   }

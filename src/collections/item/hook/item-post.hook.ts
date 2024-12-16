@@ -3,10 +3,6 @@ import { AccessToken, Item } from "@boklisten/bl-model";
 import { Hook } from "@/hook/hook";
 
 export class ItemPostHook extends Hook {
-  constructor() {
-    super();
-  }
-
   public override before(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
